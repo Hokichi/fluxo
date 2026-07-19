@@ -31,7 +31,7 @@ public partial class TransactionSplitPopup : BasePopup
 
     private readonly IDialogService _dialogService;
     private readonly SettingsTagsTabVM _settingsTagsTabViewModel;
-    private readonly TransactionDetailVM _viewModel;
+    private readonly TransactionSplitVM _viewModel;
     private bool _allowClose;
     private bool _isHandlingAddTagSelection;
     private bool _isHandlingCloseRequest;
@@ -41,7 +41,7 @@ public partial class TransactionSplitPopup : BasePopup
     private readonly PropertyChangedEventHandler _viewModelPropertyChangedHandler;
 
     public TransactionSplitPopup(
-        TransactionDetailVM viewModel,
+        TransactionSplitVM viewModel,
         IDialogService dialogService,
         SettingsTagsTabVM settingsTagsTabViewModel)
     {
@@ -60,7 +60,7 @@ public partial class TransactionSplitPopup : BasePopup
 
         _viewModelPropertyChangedHandler = (_, e) =>
         {
-            if (e.PropertyName is nameof(TransactionDetailVM.IsEditing) or nameof(TransactionDetailVM.IsSplitMode))
+            if (e.PropertyName is nameof(TransactionSplitVM.IsEditing) or nameof(TransactionSplitVM.IsSplitMode))
             {
                 UpdateButtonStates();
                 RecalculateTagLayout();
@@ -110,7 +110,7 @@ public partial class TransactionSplitPopup : BasePopup
 
     protected override void OnCloneButtonClick()
     {
-        var draft = _viewModel.CreateAddNewTransactionDraft();
+        var draft = _viewModel.CreateTransactionPopupDraft();
         var ownerWindow = Owner as MainWindow;
 
         CloseForPopupHandoff();
@@ -527,7 +527,7 @@ public partial class TransactionSplitPopup : BasePopup
             _viewModel.RemoveNestedSplitRow(row);
     }
 
-    private async Task<TransactionDetailVM.TransactionDetailSaveResult?> TrySaveWithSplitRemainderConfirmationAsync()
+    private async Task<TransactionSplitVM.TransactionSplitSaveResult?> TrySaveWithSplitRemainderConfirmationAsync()
     {
         var result = await _viewModel.SaveAsync();
         if (!result.RequiresConfirmation)

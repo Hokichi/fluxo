@@ -147,7 +147,7 @@ public partial class TransactionSplitRowVM : ObservableObject
     {
         IsSplit = true;
         IsSplitEquallyEnabled = false;
-        TransactionDetailVM.ClearSplitAmounts(ChildRows);
+        TransactionSplitVM.ClearSplitAmounts(ChildRows);
         RecalculateChildRemainder(ChildRows.LastOrDefault());
     }
 
@@ -161,7 +161,7 @@ public partial class TransactionSplitRowVM : ObservableObject
 
     private void ApplyEqualSplitAmounts()
     {
-        TransactionDetailVM.ApplyEqualSplitAmounts(ChildRows, AmountText);
+        TransactionSplitVM.ApplyEqualSplitAmounts(ChildRows, AmountText);
         RecalculateChildRemainder(ChildRows.LastOrDefault());
     }
 }

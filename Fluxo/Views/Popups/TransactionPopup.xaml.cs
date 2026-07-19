@@ -31,7 +31,7 @@ public partial class TransactionPopup : BasePopup
 
     private readonly IDialogService _dialogService;
     private readonly SettingsTagsTabVM _settingsTagsTabViewModel;
-    private readonly AddNewTransactionVM _viewModel;
+    private readonly TransactionPopupVM _viewModel;
     private bool _isHandlingAddTagSelection;
     private readonly DispatcherTimer _moreTagsHoverCloseTimer;
     private MoreTagsPopupLifecycleState _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
@@ -39,7 +39,7 @@ public partial class TransactionPopup : BasePopup
     private bool _isFinalizingProcessing;
 
     public TransactionPopup(
-        AddNewTransactionVM viewModel,
+        TransactionPopupVM viewModel,
         IDialogService dialogService,
         SettingsTagsTabVM settingsTagsTabViewModel)
     {
@@ -432,7 +432,7 @@ public partial class TransactionPopup : BasePopup
         if (sender is not ListBox listBox)
             return;
 
-        if (listBox.SelectedItem is not AddNewTransactionVM.AddNewTransactionSuggestion suggestion)
+        if (listBox.SelectedItem is not TransactionPopupVM.AddNewTransactionSuggestion suggestion)
             return;
 
         _viewModel.ApplyTransactionNameSuggestion(suggestion);
@@ -457,14 +457,14 @@ public partial class TransactionPopup : BasePopup
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(AddNewTransactionVM.HasTransactionNameSuggestions) or
-            nameof(AddNewTransactionVM.IsExpense) or
-            nameof(AddNewTransactionVM.IsGoal) or
-            nameof(AddNewTransactionVM.IsIncome))
+        if (e.PropertyName is nameof(TransactionPopupVM.HasTransactionNameSuggestions) or
+            nameof(TransactionPopupVM.IsExpense) or
+            nameof(TransactionPopupVM.IsGoal) or
+            nameof(TransactionPopupVM.IsIncome))
             SyncNameSuggestionsPopupState();
 
-        if (e.PropertyName is nameof(AddNewTransactionVM.SelectedPinnedHistoryItem) or
-            nameof(AddNewTransactionVM.SelectedHistoryItem))
+        if (e.PropertyName is nameof(TransactionPopupVM.SelectedPinnedHistoryItem) or
+            nameof(TransactionPopupVM.SelectedHistoryItem))
         {
             SyncNoteDocumentFromViewModel();
             FocusPrimaryInput();

@@ -436,7 +436,7 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
         return AccountsTab.CreateAddAccountViewModel();
     }
 
-    public AddNewTransactionVM CreateAddRecurringTransactionViewModel()
+    public TransactionPopupVM CreateAddRecurringTransactionViewModel()
     {
         return RecurringTransactionsTab.CreateAddRecurringTransactionViewModel();
     }

@@ -5,14 +5,14 @@ using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups;
 
-public sealed class TransactionDetailBudgetExclusionTests
+public sealed class TransactionSplitBudgetExclusionTests
 {
     [Fact]
     public void ClearParentTransactionCategory_ClearsExistingCategory()
     {
         var parent = new Transaction { ExpenseCategory = ExpenseCategory.Needs };
 
-        TransactionDetailVM.ClearParentTransactionCategory(parent);
+        TransactionSplitVM.ClearParentTransactionCategory(parent);
 
         Assert.Null(parent.ExpenseCategory);
     }
@@ -29,7 +29,7 @@ public sealed class TransactionDetailBudgetExclusionTests
             new Transaction { SourceAccountId = 2, IsExcludedFromBudget = !isExcludedFromBudget }
         };
 
-        TransactionDetailVM.ApplyParentStateToChildTransactions(
+        TransactionSplitVM.ApplyParentStateToChildTransactions(
             children,
             parentAccount,
             isExcludedFromBudget);

@@ -28,9 +28,9 @@ public interface IDialogService
 
     bool? ShowBudgetForecast(Window? owner = null);
 
-    bool? ShowAddNewTransaction(AddNewTransactionVM viewModel, Window? owner = null);
+    bool? ShowAddNewTransaction(TransactionPopupVM viewModel, Window? owner = null);
 
-    bool? ShowTransactionSplit(TransactionDetailVM viewModel, Window? owner = null);
+    bool? ShowTransactionSplit(TransactionSplitVM viewModel, Window? owner = null);
 
     bool? ShowAccountDetail(AccountDetailVM viewModel, Window? owner = null);
 

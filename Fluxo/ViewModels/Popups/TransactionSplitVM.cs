@@ -19,7 +19,7 @@ using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups;
 
-public partial class TransactionDetailVM : ObservableObject
+public partial class TransactionSplitVM : ObservableObject
 {
     private const int DefaultVisibleTagSlots = 4;
     private readonly List<AccountVM> _availableAccounts = [];
@@ -59,7 +59,7 @@ public partial class TransactionDetailVM : ObservableObject
     [ObservableProperty] private AccountVM? _selectedAccount;
     [ObservableProperty] private TagVM? _selectedTag;
 
-    public TransactionDetailVM(MainVM mainViewModel, TransactionVM transaction, IAppDataService appData)
+    public TransactionSplitVM(MainVM mainViewModel, TransactionVM transaction, IAppDataService appData)
     {
         _mainViewModel = mainViewModel;
         _transaction = transaction;
@@ -494,7 +494,7 @@ public partial class TransactionDetailVM : ObservableObject
         }
 
         var selectedTagId = SelectedTag?.Id;
-        var persistedTags = AddNewTransactionVM.ProjectNonSystemTags(allTags).ToList();
+        var persistedTags = TransactionPopupVM.ProjectNonSystemTags(allTags).ToList();
         if (persistedTags.Count == 0)
             return;
 
@@ -507,9 +507,9 @@ public partial class TransactionDetailVM : ObservableObject
             : _orderedTags.FirstOrDefault(tag => tag.Id == selectedTagId.Value) ?? _orderedTags.FirstOrDefault();
     }
 
-    public AddNewTransactionVM.AddNewTransactionDraft CreateAddNewTransactionDraft()
+    public TransactionPopupVM.TransactionPopupDraft CreateTransactionPopupDraft()
     {
-        return new AddNewTransactionVM.AddNewTransactionDraft(
+        return new TransactionPopupVM.TransactionPopupDraft(
             IsExpense,
             NameText,
             AmountText,
@@ -521,18 +521,18 @@ public partial class TransactionDetailVM : ObservableObject
             ShouldAffectBalance: ShouldAffectBalance);
     }
 
-    public async Task<TransactionDetailSaveResult> SaveAsync(
+    public async Task<TransactionSplitSaveResult> SaveAsync(
         bool keepParentExpenseWhenRemainder = false,
         bool allowMaximumSpendingOverflow = false)
     {
         if (IsSaving)
-            return TransactionDetailSaveResult.Failure("This expense is already being saved.");
+            return TransactionSplitSaveResult.Failure("This expense is already being saved.");
 
         if (IsSplitMode || HasPendingSplitChanges)
             return await SaveSplitAsync(keepParentExpenseWhenRemainder);
 
         if (!TryBuildInput(out var input, out var validationMessage))
-            return TransactionDetailSaveResult.Failure(validationMessage);
+            return TransactionSplitSaveResult.Failure(validationMessage);
 
         var previousState = CreateMessageSnapshot(_savedState);
         var changedFields = GetChangedFields(input, _savedState);
@@ -541,7 +541,7 @@ public partial class TransactionDetailVM : ObservableObject
             IsEditing = false;
             ClearSplitMode();
             LoadFromSavedState();
-            return TransactionDetailSaveResult.Success();
+            return TransactionSplitSaveResult.Success();
         }
 
         IsSaving = true;
@@ -550,20 +550,20 @@ public partial class TransactionDetailVM : ObservableObject
         {
             var transaction = await _appData.GetTransactionByIdAsync(_transaction.Id);
             if (transaction is null || transaction.Type != _transaction.Type)
-                return TransactionDetailSaveResult.Failure("Unable to load this transaction.");
+                return TransactionSplitSaveResult.Failure("Unable to load this transaction.");
 
             var beforeHistorySnapshot = TransactionMemorySnapshot.Create(transaction);
             var currentAccount = transaction.Account;
             if (currentAccount is null)
-                return TransactionDetailSaveResult.Failure("Unable to load this expense source.");
+                return TransactionSplitSaveResult.Failure("Unable to load this expense source.");
 
             var newAccount = await _appData.GetAccountByIdAsync(input.AccountId);
             if (newAccount is null)
-                return TransactionDetailSaveResult.Failure("Please select a valid account.");
+                return TransactionSplitSaveResult.Failure("Please select a valid account.");
 
             var tag = await _appData.GetTagByIdAsync(input.TagId);
             if (tag is null)
-                return TransactionDetailSaveResult.Failure("Please select a valid tag.");
+                return TransactionSplitSaveResult.Failure("Please select a valid tag.");
 
             var resolvedName = BuildTransactionName(input.Name, input.Note, tag.Name);
 
@@ -590,7 +590,7 @@ public partial class TransactionDetailVM : ObservableObject
                     input.Amount,
                     allowMaximumSpendingOverflow))
             {
-                return TransactionDetailSaveResult.Confirmation(
+                return TransactionSplitSaveResult.Confirmation(
                     $"This expense exceeds {newAccount.Name}'s maximum spending limit. Save anyway?");
             }
 
@@ -645,12 +645,12 @@ public partial class TransactionDetailVM : ObservableObject
                 new TransactionDetailUpdate(_transaction.Id, previousState, changedFields)));
             WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
                 new EditTransactionMemoryAction(beforeHistorySnapshot, TransactionMemorySnapshot.Create(transaction))));
-            return TransactionDetailSaveResult.Success();
+            return TransactionSplitSaveResult.Success();
         }
         catch (Exception exception)
         {
             FluxoLogManager.LogError(exception, "Unable to save expense detail changes.");
-            return TransactionDetailSaveResult.Failure(FluxoLogManager.CreateFailureMessage("save expense"));
+            return TransactionSplitSaveResult.Failure(FluxoLogManager.CreateFailureMessage("save expense"));
         }
         finally
         {
@@ -672,21 +672,21 @@ public partial class TransactionDetailVM : ObservableObject
         return GetChangedFields(input, _savedState) != TransactionDetailChangedFields.None;
     }
 
-    public async Task<TransactionDetailSaveResult> DeleteAsync()
+    public async Task<TransactionSplitSaveResult> DeleteAsync()
     {
         if (IsSaving)
-            return TransactionDetailSaveResult.Failure("This expense is already being saved.");
+            return TransactionSplitSaveResult.Failure("This expense is already being saved.");
 
         IsSaving = true;
         try
         {
             var transaction = await _appData.GetTransactionByIdAsync(_transaction.Id);
             if (transaction is null)
-                return TransactionDetailSaveResult.Failure("Unable to load this expense.");
+                return TransactionSplitSaveResult.Failure("Unable to load this expense.");
 
             var plan = await BuildDeletionPlanAsync(_appData, transaction, CancellationToken.None);
             if (!plan.IsSuccess)
-                return TransactionDetailSaveResult.Failure(plan.ErrorMessage);
+                return TransactionSplitSaveResult.Failure(plan.ErrorMessage);
 
             var snapshots = plan.Transactions.Select(TransactionMemorySnapshot.Create).ToList();
             foreach (var item in plan.Transactions)
@@ -721,12 +721,12 @@ public partial class TransactionDetailVM : ObservableObject
 
             if (plan.RepaymentAccountName is { } accountName)
                 PublishRepaymentReversalNotification(WeakReferenceMessenger.Default, accountName);
-            return TransactionDetailSaveResult.Success();
+            return TransactionSplitSaveResult.Success();
         }
         catch (Exception exception)
         {
             FluxoLogManager.LogError(exception, "Unable to delete expense detail.");
-            return TransactionDetailSaveResult.Failure(FluxoLogManager.CreateFailureMessage("delete expense"));
+            return TransactionSplitSaveResult.Failure(FluxoLogManager.CreateFailureMessage("delete expense"));
         }
         finally
         {
@@ -881,10 +881,10 @@ public partial class TransactionDetailVM : ObservableObject
         return true;
     }
 
-    private async Task<TransactionDetailSaveResult> SaveSplitAsync(bool keepParentExpenseWhenRemainder)
+    private async Task<TransactionSplitSaveResult> SaveSplitAsync(bool keepParentExpenseWhenRemainder)
     {
         if (!TryBuildSplitInputs(keepParentExpenseWhenRemainder, out var inputs, out var validationMessage))
-            return TransactionDetailSaveResult.Failure(validationMessage);
+            return TransactionSplitSaveResult.Failure(validationMessage);
 
         IsSaving = true;
 
@@ -892,11 +892,11 @@ public partial class TransactionDetailVM : ObservableObject
         {
             var originalLog = await _appData.GetTransactionByIdAsync(_transaction.Id);
             if (originalLog is null || originalLog.Type != _transaction.Type)
-                return TransactionDetailSaveResult.Failure("Unable to load this transaction.");
+                return TransactionSplitSaveResult.Failure("Unable to load this transaction.");
 
             var account = originalLog.Account;
             if (account is null)
-                return TransactionDetailSaveResult.Failure("Unable to load this expense source.");
+                return TransactionSplitSaveResult.Failure("Unable to load this expense source.");
 
             var splitEntries = new List<(TransactionSplitInput Input, Tag? Tag)>();
             foreach (var input in inputs)
@@ -906,7 +906,7 @@ public partial class TransactionDetailVM : ObservableObject
                 {
                     tag = await _appData.GetTagByIdAsync(tagId);
                     if (tag is null)
-                        return TransactionDetailSaveResult.Failure("Please select a valid tag.");
+                        return TransactionSplitSaveResult.Failure("Please select a valid tag.");
                 }
 
                 splitEntries.Add((input, tag));
@@ -964,7 +964,7 @@ public partial class TransactionDetailVM : ObservableObject
 
                 var removedTag = await _appData.GetTagByIdAsync(removedRow.SelectedTag.Id);
                 if (removedTag is null)
-                    return TransactionDetailSaveResult.Failure("Please select a valid tag.");
+                    return TransactionSplitSaveResult.Failure("Please select a valid tag.");
 
                 var input = new TransactionSplitInput(
                     removedRow.TransactionId,
@@ -1017,7 +1017,7 @@ public partial class TransactionDetailVM : ObservableObject
                 {
                     var tag = await _appData.GetTagByIdAsync(childRow.SelectedTag!.Id);
                     if (tag is null)
-                        return TransactionDetailSaveResult.Failure("Please select a valid tag.");
+                        return TransactionSplitSaveResult.Failure("Please select a valid tag.");
 
                     var input = new TransactionSplitInput(
                         childRow.TransactionId,
@@ -1079,12 +1079,12 @@ public partial class TransactionDetailVM : ObservableObject
             IsEditing = false;
             ClearSplitMode();
             LoadFromSavedState();
-            return TransactionDetailSaveResult.Success();
+            return TransactionSplitSaveResult.Success();
         }
         catch (Exception exception)
         {
             FluxoLogManager.LogError(exception, "Unable to split expense.");
-            return TransactionDetailSaveResult.Failure(FluxoLogManager.CreateFailureMessage("split expense"));
+            return TransactionSplitSaveResult.Failure(FluxoLogManager.CreateFailureMessage("split expense"));
         }
         finally
         {
@@ -1630,24 +1630,24 @@ public partial class TransactionDetailVM : ObservableObject
         return expenses.Where(transaction => !parentIds.Contains(transaction.Id)).Sum(transaction => transaction.Amount);
     }
 
-    public readonly record struct TransactionDetailSaveResult(
+    public readonly record struct TransactionSplitSaveResult(
         bool IsSuccess,
         string? ErrorMessage,
         bool RequiresConfirmation)
     {
-        public static TransactionDetailSaveResult Success()
+        public static TransactionSplitSaveResult Success()
         {
-            return new TransactionDetailSaveResult(true, null, false);
+            return new TransactionSplitSaveResult(true, null, false);
         }
 
-        public static TransactionDetailSaveResult Failure(string? errorMessage)
+        public static TransactionSplitSaveResult Failure(string? errorMessage)
         {
-            return new TransactionDetailSaveResult(false, errorMessage, false);
+            return new TransactionSplitSaveResult(false, errorMessage, false);
         }
 
-        public static TransactionDetailSaveResult Confirmation(string message)
+        public static TransactionSplitSaveResult Confirmation(string message)
         {
-            return new TransactionDetailSaveResult(false, message, true);
+            return new TransactionSplitSaveResult(false, message, true);
         }
     }
 

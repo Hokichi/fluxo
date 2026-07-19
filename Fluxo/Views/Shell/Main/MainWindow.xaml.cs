@@ -1398,7 +1398,7 @@ public partial class MainWindow : Window, IPopupHost
         UnlockAppUiFromUser();
     }
 
-    public void OpenQuickAddPopup(AddNewTransactionVM.AddNewTransactionDraft? draft = null)
+    public void OpenQuickAddPopup(TransactionPopupVM.TransactionPopupDraft? draft = null)
     {
         if (draft is { } popupDraft)
         {
@@ -1417,7 +1417,7 @@ public partial class MainWindow : Window, IPopupHost
 
     public void OpenAddNewTransactionPopupForCategory(ExpenseCategory category)
     {
-        OpenAddNewTransactionPopup(new AddNewTransactionVM.AddNewTransactionDraft(
+        OpenAddNewTransactionPopup(new TransactionPopupVM.TransactionPopupDraft(
             true,
             string.Empty,
             0m,
@@ -1428,14 +1428,14 @@ public partial class MainWindow : Window, IPopupHost
             null));
     }
 
-    public void OpenAddNewTransactionPopup(AddNewTransactionVM.AddNewTransactionDraft? draft = null)
+    public void OpenAddNewTransactionPopup(TransactionPopupVM.TransactionPopupDraft? draft = null)
     {
         if (IsSufficientFundsActionGateLocked())
             return;
 
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popupViewModel = new AddNewTransactionVM(_mainVM, appData);
+        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
         if (draft is { } popupDraft)
             popupViewModel.InitializeFromDraft(popupDraft);
 
@@ -1449,7 +1449,7 @@ public partial class MainWindow : Window, IPopupHost
 
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popupViewModel = new AddNewTransactionVM(_mainVM, appData);
+        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
         popupViewModel.InitializeRecurringMode(isLocked: false);
         _dialogService.ShowAddNewTransaction(popupViewModel, this);
     }
@@ -1462,7 +1462,7 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new AddNewTransactionVM(_mainVM, appData);
+        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
         popupViewModel.InitializeView(targetTransaction);
         await InitializeTransactionChildrenAsync(popupViewModel, targetTransaction.Id, appData);
         _dialogService.ShowAddNewTransaction(popupViewModel, this);
@@ -1472,7 +1472,7 @@ public partial class MainWindow : Window, IPopupHost
     {
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popup = new AddNewTransactionVM(_mainVM, appData);
+        var popup = new TransactionPopupVM(_mainVM, appData);
 
         if (category == nameof(NotificationGroupCategory.LatePayment))
         {
@@ -1513,7 +1513,7 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new AddNewTransactionVM(_mainVM, appData);
+        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
         popupViewModel.InitializeView(targetTransaction);
         await InitializeTransactionChildrenAsync(popupViewModel, targetTransaction.Id, appData);
         _dialogService.ShowAddNewTransaction(popupViewModel, this);
@@ -1928,7 +1928,7 @@ public partial class MainWindow : Window, IPopupHost
 
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popupViewModel = new AddNewTransactionVM(_mainVM, appData);
+        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
         popupViewModel.InitializeRepayment(account);
         _dialogService.ShowAddNewTransaction(popupViewModel, this);
     }
@@ -1958,7 +1958,7 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new AddNewTransactionVM(_mainVM, appData);
+        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
         popupViewModel.InitializeView(targetTransaction);
         await popupViewModel.BeginEditingViewedTransactionAsync();
         _dialogService.ShowAddNewTransaction(popupViewModel, this);
@@ -1972,12 +1972,12 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new TransactionDetailVM(_mainVM, targetTransaction, appData);
+        var popupViewModel = new TransactionSplitVM(_mainVM, targetTransaction, appData);
         await popupViewModel.BeginSplitModeAsync();
         _dialogService.ShowTransactionSplit(popupViewModel, owner);
     }
 
-    public async Task RefreshTransactionPopupAsync(AddNewTransactionVM popupViewModel, TransactionVM transaction)
+    public async Task RefreshTransactionPopupAsync(TransactionPopupVM popupViewModel, TransactionVM transaction)
     {
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
@@ -1990,7 +1990,7 @@ public partial class MainWindow : Window, IPopupHost
     }
 
     private static async Task InitializeTransactionChildrenAsync(
-        AddNewTransactionVM popupViewModel,
+        TransactionPopupVM popupViewModel,
         int parentTransactionId,
         IAppDataService appData)
     {
@@ -2012,28 +2012,28 @@ public partial class MainWindow : Window, IPopupHost
         popupViewModel.InitializeChildTransactions(children);
     }
 
-    public async Task<TransactionDetailVM.TransactionDetailSaveResult> DeleteTransactionAsync(TransactionVM transaction)
+    public async Task<TransactionSplitVM.TransactionSplitSaveResult> DeleteTransactionAsync(TransactionVM transaction)
     {
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
         var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transaction, appData);
         if (targetTransaction is null)
-            return TransactionDetailVM.TransactionDetailSaveResult.Failure("Unable to load this transaction.");
+            return TransactionSplitVM.TransactionSplitSaveResult.Failure("Unable to load this transaction.");
 
-        return await new TransactionDetailVM(_mainVM, targetTransaction, appData).DeleteAsync();
+        return await new TransactionSplitVM(_mainVM, targetTransaction, appData).DeleteAsync();
     }
 
-    public async Task<TransactionDetailVM.TransactionDetailSaveResult> SaveTransactionEditAsync(
+    public async Task<TransactionSplitVM.TransactionSplitSaveResult> SaveTransactionEditAsync(
         TransactionVM transaction,
-        AddNewTransactionVM.TransactionEditInput input)
+        TransactionPopupVM.TransactionEditInput input)
     {
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
         var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transaction, appData);
         if (targetTransaction is null)
-            return TransactionDetailVM.TransactionDetailSaveResult.Failure("Unable to load this transaction.");
+            return TransactionSplitVM.TransactionSplitSaveResult.Failure("Unable to load this transaction.");
 
-        var editor = new TransactionDetailVM(_mainVM, targetTransaction, appData);
+        var editor = new TransactionSplitVM(_mainVM, targetTransaction, appData);
         await editor.BeginEditingAsync();
         editor.NameText = input.Name;
         editor.AmountText = input.Amount;

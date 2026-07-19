@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups;
 
-public sealed class TransactionDetailVMBalloonToggleTests
+public sealed class TransactionSplitVMBalloonToggleTests
 {
     [Theory]
     [InlineData(false, false, "A one-time transaction")]
@@ -14,7 +14,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
     [InlineData(true, true, "A transaction marked as debt/IoU and affects the accounts")]
     public void ModeDescription_MatchesBalanceBehavior(bool isIoU, bool posted, string expected)
     {
-        Assert.Equal(expected, TransactionDetailVM.GetTransactionModeDescription(isIoU, posted));
+        Assert.Equal(expected, TransactionSplitVM.GetTransactionModeDescription(isIoU, posted));
     }
 
     [Theory]
@@ -31,7 +31,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
         bool overflowApproved,
         bool expected)
     {
-        Assert.Equal(expected, TransactionDetailVM.RequiresMaximumSpendingConfirmation(
+        Assert.Equal(expected, TransactionSplitVM.RequiresMaximumSpendingConfirmation(
             currentAccountId,
             destinationAccountId,
             maximumSpending,
@@ -52,13 +52,13 @@ public sealed class TransactionDetailVMBalloonToggleTests
             new Transaction { Id = 5, SourceAccountId = 2, Type = TransactionType.Expense, Amount = 10m, ParentTransactionId = 1 }
         };
 
-        Assert.Equal(30m, TransactionDetailVM.CalculateAccountSpending(transactions, accountId: 2));
+        Assert.Equal(30m, TransactionSplitVM.CalculateAccountSpending(transactions, accountId: 2));
     }
 
     [Fact]
     public void CreateEqualSplitAmounts_PutsRoundingRemainderOnLastChild()
     {
-        Assert.Equal([33.33m, 33.33m, 33.34m], TransactionDetailVM.CreateEqualSplitAmounts(100m, 3));
+        Assert.Equal([33.33m, 33.33m, 33.34m], TransactionSplitVM.CreateEqualSplitAmounts(100m, 3));
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
         var parent = new TransactionSplitRowVM { IsExcludedFromBudget = parentExcluded };
         var child = new TransactionSplitRowVM { IsExcludedFromBudget = childExcluded, IsIoU = postedIou };
 
-        Assert.Equal(expected, TransactionDetailVM.IsNestedRowExcluded(parent, child));
+        Assert.Equal(expected, TransactionSplitVM.IsNestedRowExcluded(parent, child));
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
         var tag = new Tag { Id = 4, Name = "Food" };
         var transaction = new Transaction { ExpenseCategory = ExpenseCategory.Needs, Tag = tag, TagId = tag.Id };
 
-        TransactionDetailVM.ClearSplitParentMetadata(transaction);
+        TransactionSplitVM.ClearSplitParentMetadata(transaction);
 
         Assert.Null(transaction.ExpenseCategory);
         Assert.Null(transaction.Tag);
@@ -181,7 +181,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
         child.AmountText = 10m;
 
         parent.AmountText = 9m;
-        TransactionDetailVM.RecalculateNestedSplitRemainders([parent]);
+        TransactionSplitVM.RecalculateNestedSplitRemainders([parent]);
 
         Assert.True(parent.HasNegativeChildRemainder);
         Assert.True(child.IsCausingNegativeRemainder);
@@ -196,9 +196,9 @@ public sealed class TransactionDetailVMBalloonToggleTests
             new()
         };
 
-        TransactionDetailVM.ApplyEqualSplitAmounts(rows, 100m);
+        TransactionSplitVM.ApplyEqualSplitAmounts(rows, 100m);
         rows.Add(new TransactionSplitRowVM());
-        TransactionDetailVM.ApplyEqualSplitAmounts(rows, 100m);
+        TransactionSplitVM.ApplyEqualSplitAmounts(rows, 100m);
 
         Assert.Equal([33.33m, 33.33m, 33.34m], rows.Select(row => row.AmountText));
     }
@@ -216,7 +216,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
             SelectedTag = tag
         };
 
-        TransactionDetailVM.ClearSplitAmounts([row]);
+        TransactionSplitVM.ClearSplitAmounts([row]);
 
         Assert.Equal(0m, row.AmountText);
         Assert.Equal("Lunch", row.NameText);
@@ -230,7 +230,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
     {
         var row = new TransactionSplitRowVM();
 
-        Assert.False(TransactionDetailVM.HasEffectiveSplitChanges([row], [], []));
+        Assert.False(TransactionSplitVM.HasEffectiveSplitChanges([row], [], []));
     }
 
     [Fact]
@@ -239,7 +239,7 @@ public sealed class TransactionDetailVMBalloonToggleTests
         var saved = new TransactionSplitRowVM { TransactionId = 7, AmountText = 25m, NameText = "Lunch" };
         var changed = new TransactionSplitRowVM { TransactionId = 7, AmountText = 30m, NameText = "Lunch" };
 
-        Assert.True(TransactionDetailVM.HasEffectiveSplitChanges([changed], [saved], []));
+        Assert.True(TransactionSplitVM.HasEffectiveSplitChanges([changed], [saved], []));
     }
 
     [Theory]
@@ -247,6 +247,6 @@ public sealed class TransactionDetailVMBalloonToggleTests
     [InlineData(99, 100, false)]
     public void CanUseEqualSplit_RequiresAmountAtLeastOriginal(decimal amount, decimal original, bool expected)
     {
-        Assert.Equal(expected, TransactionDetailVM.CanUseEqualSplit(amount, original));
+        Assert.Equal(expected, TransactionSplitVM.CanUseEqualSplit(amount, original));
     }
 }

@@ -19,7 +19,7 @@ public sealed class TransactionDeletionSupportTests
         var recipient = new object();
         var requests = new List<FloatingNotificationRequest>();
         messenger.Register<ShowFloatingNotificationMessage>(recipient, (_, message) => requests.Add(message.Value));
-        TransactionDetailVM.PublishRepaymentReversalNotification(messenger, "Visa");
+        TransactionSplitVM.PublishRepaymentReversalNotification(messenger, "Visa");
 
         var request = Assert.Single(requests);
         Assert.Equal("Repayment for Visa reversed.", request.Header);
@@ -38,7 +38,7 @@ public sealed class TransactionDeletionSupportTests
 
         Assert.Equal(
             "Reverse this repayment? Both repayment transactions will be deleted.",
-            TransactionDetailVM.GetDeleteConfirmationMessage(transaction));
+            TransactionSplitVM.GetDeleteConfirmationMessage(transaction));
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class TransactionDeletionSupportTests
         var appData = Substitute.For<IAppDataService>();
         appData.GetSavingGoalByIdAsync(goal.Id, Arg.Any<CancellationToken>()).Returns(goal);
 
-        var plan = await TransactionDetailVM.BuildDeletionPlanAsync(appData, transaction, CancellationToken.None);
+        var plan = await TransactionSplitVM.BuildDeletionPlanAsync(appData, transaction, CancellationToken.None);
 
         Assert.True(plan.IsSuccess);
         Assert.Same(goal, plan.Goal);
@@ -75,7 +75,7 @@ public sealed class TransactionDeletionSupportTests
         var appData = Substitute.For<IAppDataService>();
         appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
 
-        var plan = await TransactionDetailVM.BuildDeletionPlanAsync(appData, expense, CancellationToken.None);
+        var plan = await TransactionSplitVM.BuildDeletionPlanAsync(appData, expense, CancellationToken.None);
 
         Assert.False(plan.IsSuccess);
         Assert.Empty(plan.Transactions);
@@ -105,7 +105,7 @@ public sealed class TransactionDeletionSupportTests
         appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
             .Returns([older, newer]);
 
-        var plan = await TransactionDetailVM.BuildDeletionPlanAsync(
+        var plan = await TransactionSplitVM.BuildDeletionPlanAsync(
             appData,
             expense,
             CancellationToken.None);

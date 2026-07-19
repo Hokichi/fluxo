@@ -59,16 +59,16 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
         IsRecurringTransactionChecksEnabled = false;
     }
 
-    public AddNewTransactionVM CreateAddRecurringTransactionViewModel()
+    public TransactionPopupVM CreateAddRecurringTransactionViewModel()
     {
-        var viewModel = new AddNewTransactionVM(_mainViewModel, _appData);
+        var viewModel = new TransactionPopupVM(_mainViewModel, _appData);
         viewModel.InitializeRecurringMode(isLocked: true);
         return viewModel;
     }
 
-    public async Task<AddNewTransactionVM?> CreateEditRecurringTransactionViewModelAsync(int fixedExpenseId)
+    public async Task<TransactionPopupVM?> CreateEditRecurringTransactionViewModelAsync(int fixedExpenseId)
     {
-        var viewModel = new AddNewTransactionVM(_mainViewModel, _appData);
+        var viewModel = new TransactionPopupVM(_mainViewModel, _appData);
         await viewModel.EnsureTagsLoadedAsync();
         return await viewModel.InitializeFromRecurringTransactionAsync(fixedExpenseId) ? viewModel : null;
     }

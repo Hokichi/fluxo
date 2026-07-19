@@ -99,7 +99,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<SavingGoalVM>();
         services.AddTransient<AccountVM>();
         services.AddTransient<UserSettingsVM>();
-        services.AddTransient<AddNewTransactionVM>();
+        services.AddTransient<TransactionPopupVM>();
         services.AddTransient<AddAccountVM>();
         services.AddTransient<AddSavingGoalVM>();
         services.AddTransient<PlanningReportVM>();

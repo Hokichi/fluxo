@@ -24,7 +24,7 @@ using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups;
 
-public partial class AddNewTransactionVM : ObservableValidator
+public partial class TransactionPopupVM : ObservableValidator
 {
     private const int DefaultVisibleTagSlots = 4;
     private const int MaxNameLength = 256;
@@ -35,7 +35,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     private readonly List<AccountVM> _availableAccounts = [];
     private readonly IReadOnlyList<AccountVM>? _accountsOverride;
-    private readonly Func<RecurringDraftSaveInput, Task<AddNewTransactionSubmissionResult>>? _saveRecurringDraftAsync;
+    private readonly Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? _saveRecurringDraftAsync;
     private readonly List<SavingGoalVM> _orderedGoals = [];
     private readonly MainVM _mainViewModel;
     private readonly List<TagVM> _orderedTags = [];
@@ -58,7 +58,7 @@ public partial class AddNewTransactionVM : ObservableValidator
     private int? _currentProcessingRecurringTransactionId;
 
     [ObservableProperty]
-    [CustomValidation(typeof(AddNewTransactionVM), nameof(ValidateAmountText))]
+    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateAmountText))]
     private decimal _amountText;
 
     [ObservableProperty] private bool _isExpense = true;
@@ -70,7 +70,7 @@ public partial class AddNewTransactionVM : ObservableValidator
     private int _visibleTagSlots = DefaultVisibleTagSlots;
 
     [ObservableProperty]
-    [CustomValidation(typeof(AddNewTransactionVM), nameof(ValidateNameText))]
+    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateNameText))]
     private string _nameText = string.Empty;
 
     [ObservableProperty] private string _noteText = string.Empty;
@@ -90,7 +90,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [CustomValidation(typeof(AddNewTransactionVM), nameof(ValidateRecurringTimeText))]
+    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateRecurringTimeText))]
     private string _recurringTimeText = string.Empty;
 
     [ObservableProperty] private bool _isRecurringModeLocked;
@@ -100,24 +100,24 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [CustomValidation(typeof(AddNewTransactionVM), nameof(ValidateSelectedGoal))]
+    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateSelectedGoal))]
     private SavingGoalVM? _selectedGoal;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [CustomValidation(typeof(AddNewTransactionVM), nameof(ValidateSelectedAccount))]
+    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateSelectedAccount))]
     private AccountVM? _selectedAccount;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
-    [CustomValidation(typeof(AddNewTransactionVM), nameof(ValidateSelectedTag))]
+    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateSelectedTag))]
     private TagVM? _selectedTag;
 
-    public AddNewTransactionVM(
+    public TransactionPopupVM(
         MainVM mainViewModel,
         IAppDataService appData,
         IReadOnlyList<AccountVM>? accountsOverride = null,
-        Func<RecurringDraftSaveInput, Task<AddNewTransactionSubmissionResult>>? saveRecurringDraftAsync = null)
+        Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? saveRecurringDraftAsync = null)
     {
         _mainViewModel = mainViewModel;
         _appData = appData;
@@ -410,20 +410,20 @@ public partial class AddNewTransactionVM : ObservableValidator
         NotifyProcessingChanged();
     }
 
-    public async Task<AddNewTransactionSubmissionResult> SaveCurrentAndAdvanceAsync()
+    public async Task<TransactionPopupSubmissionResult> SaveCurrentAndAdvanceAsync()
     {
         if (!IsProcessingSession)
             return await SaveAsync(false);
 
         if (!TryBuildTransactionInput(out _, out var validationMessage))
-            return AddNewTransactionSubmissionResult.Failure(validationMessage);
+            return TransactionPopupSubmissionResult.Failure(validationMessage);
 
         var current = CurrentProcessingTarget!;
         _processingSnapshots[current] = CaptureState();
         _processingStates[current] = ProcessingState.Processed;
         MoveToNextPending();
         NotifyProcessingChanged();
-        return AddNewTransactionSubmissionResult.Success();
+        return TransactionPopupSubmissionResult.Success();
     }
 
     public void NavigatePreviousProcessing()
@@ -455,7 +455,7 @@ public partial class AddNewTransactionVM : ObservableValidator
         return hasNext;
     }
 
-    public async Task<AddNewTransactionSubmissionResult> PersistProcessedItemsAsync()
+    public async Task<TransactionPopupSubmissionResult> PersistProcessedItemsAsync()
     {
         var processed = ProcessingTargets.Where(target => _processingStates[target] == ProcessingState.Processed).ToList();
         foreach (var target in processed)
@@ -472,7 +472,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
         ClearProcessing();
         await _mainViewModel.ReloadCurrentDataAsync(reloadNotifications: true);
-        return AddNewTransactionSubmissionResult.Success();
+        return TransactionPopupSubmissionResult.Success();
     }
 
     public void InitializeRepayment(AccountVM? target = null)
@@ -780,7 +780,7 @@ public partial class AddNewTransactionVM : ObservableValidator
         IsExcludedFromBudget = false;
     }
 
-    public void InitializeFromDraft(AddNewTransactionDraft draft)
+    public void InitializeFromDraft(TransactionPopupDraft draft)
     {
         ReloadChoicesFromMainViewModel();
 
@@ -901,10 +901,10 @@ public partial class AddNewTransactionVM : ObservableValidator
             IsExcludedFromBudget);
     }
 
-    public AddNewTransactionDraft CreateViewedTransactionDraft()
+    public TransactionPopupDraft CreateViewedTransactionDraft()
     {
         var transaction = ViewedTransaction ?? throw new InvalidOperationException("No transaction is being viewed.");
-        return new AddNewTransactionDraft(
+        return new TransactionPopupDraft(
             transaction.Type == TransactionType.Expense,
             transaction.Name,
             transaction.Amount,
@@ -1123,13 +1123,13 @@ public partial class AddNewTransactionVM : ObservableValidator
         IsMoreTagsOpen = false;
     }
 
-    public async Task<AddNewTransactionSubmissionResult> SaveAsync(bool resetAfterSave)
+    public async Task<TransactionPopupSubmissionResult> SaveAsync(bool resetAfterSave)
     {
         if (IsSaving)
-            return AddNewTransactionSubmissionResult.Failure("A transaction is already being saved.");
+            return TransactionPopupSubmissionResult.Failure("A transaction is already being saved.");
 
         if (!TryBuildTransactionInput(out var input, out var validationMessage))
-            return AddNewTransactionSubmissionResult.Failure(validationMessage);
+            return TransactionPopupSubmissionResult.Failure(validationMessage);
 
         IsSaving = true;
 
@@ -1138,10 +1138,10 @@ public partial class AddNewTransactionVM : ObservableValidator
             if (input.IsRecurring && _saveRecurringDraftAsync is not null)
             {
                 if (!TryNormalizeRecurringTime(input.RecurringPeriod, input.RecurringTimeText, out var recurringTime))
-                    return AddNewTransactionSubmissionResult.Failure(GetRecurringTimeValidationMessage(input.RecurringPeriod));
+                    return TransactionPopupSubmissionResult.Failure(GetRecurringTimeValidationMessage(input.RecurringPeriod));
 
                 if (!TryResolveRecurringSaveAmount(input, out var recurringAmount, out var recurringAmountValidationMessage))
-                    return AddNewTransactionSubmissionResult.Failure(recurringAmountValidationMessage);
+                    return TransactionPopupSubmissionResult.Failure(recurringAmountValidationMessage);
 
                 var recurringType = input.IsGoal
                     ? RecurringTransactionType.GoalUpdate
@@ -1183,18 +1183,18 @@ public partial class AddNewTransactionVM : ObservableValidator
                     isEdit ? "Recurring transaction was updated." : "Recurring transaction was added.",
                     true,
                     isEdit ? "Updated" : "Added");
-                return AddNewTransactionSubmissionResult.Success();
+                return TransactionPopupSubmissionResult.Success();
             }
 
             var account = await _appData.GetAccountByIdAsync(input.AccountId);
             if (account is null)
-                return AddNewTransactionSubmissionResult.Failure("Please select a valid account.");
+                return TransactionPopupSubmissionResult.Failure("Please select a valid account.");
 
             if (!TryResolveRecurringSaveAmount(input, out var effectiveSaveAmount, out var recurringAmountMessage))
-                return AddNewTransactionSubmissionResult.Failure(recurringAmountMessage);
+                return TransactionPopupSubmissionResult.Failure(recurringAmountMessage);
 
             if (!TryValidateSpendingAmountAgainstSource(input.IsExpense || input.IsRepayment, input.IsGoal, effectiveSaveAmount, account, out var spendingValidationMessage))
-                return AddNewTransactionSubmissionResult.Failure(spendingValidationMessage);
+                return TransactionPopupSubmissionResult.Failure(spendingValidationMessage);
 
             var invalidationScope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
 
@@ -1202,11 +1202,11 @@ public partial class AddNewTransactionVM : ObservableValidator
             {
                 var target = await _appData.GetAccountByIdAsync(input.RepaymentAccountId!.Value);
                 if (target is null || target.AccountType != AccountType.Credit)
-                    return AddNewTransactionSubmissionResult.Failure("Please select a valid credit account.");
+                    return TransactionPopupSubmissionResult.Failure("Please select a valid credit account.");
 
                 var tag = await ResolveBalanceUpdateTagAsync();
                 if (input.Amount > target.SpentAmount)
-                    return AddNewTransactionSubmissionResult.Failure("Invalid Repayment");
+                    return TransactionPopupSubmissionResult.Failure("Invalid Repayment");
 
                 var pair = RepaymentTransactionSupport.Create(
                     account,
@@ -1231,7 +1231,7 @@ public partial class AddNewTransactionVM : ObservableValidator
             else if (input.IsRecurring)
             {
                 if (!TryNormalizeRecurringTime(input.RecurringPeriod, input.RecurringTimeText, out var recurringTime))
-                    return AddNewTransactionSubmissionResult.Failure(GetRecurringTimeValidationMessage(input.RecurringPeriod));
+                    return TransactionPopupSubmissionResult.Failure(GetRecurringTimeValidationMessage(input.RecurringPeriod));
 
                 var recurringType = input.IsGoal
                     ? RecurringTransactionType.GoalUpdate
@@ -1278,14 +1278,14 @@ public partial class AddNewTransactionVM : ObservableValidator
             else if (input.IsGoal)
             {
                 if (input.GoalId is null)
-                    return AddNewTransactionSubmissionResult.Failure("Please choose a goal.");
+                    return TransactionPopupSubmissionResult.Failure("Please choose a goal.");
 
                 if (!GoalUpdateTransactionSupport.IsEligibleGoalSourceType(account.AccountType))
-                    return AddNewTransactionSubmissionResult.Failure("Goal updates can only be taken from Cash or Checking.");
+                    return TransactionPopupSubmissionResult.Failure("Goal updates can only be taken from Cash or Checking.");
 
                 var goal = await _appData.GetSavingGoalByIdAsync(input.GoalId.Value);
                 if (goal is null)
-                    return AddNewTransactionSubmissionResult.Failure("Please select a valid goal.");
+                    return TransactionPopupSubmissionResult.Failure("Please select a valid goal.");
 
                 if (!input.IsEffectivelyExcludedFromBudget)
                 {
@@ -1333,7 +1333,7 @@ public partial class AddNewTransactionVM : ObservableValidator
             {
                 var tag = await _appData.GetTagByIdAsync(input.TagId!.Value);
                 if (tag is null)
-                    return AddNewTransactionSubmissionResult.Failure("Please select a valid tag.");
+                    return TransactionPopupSubmissionResult.Failure("Please select a valid tag.");
 
                 if (!input.IsEffectivelyExcludedFromBudget)
                 {
@@ -1420,12 +1420,12 @@ public partial class AddNewTransactionVM : ObservableValidator
             var savedType = input.IsGoal ? "Goal contribution" : input.IsExpense ? "Expense" : "Income";
             FloatingNotificationPublisher.Success(
                 input.Name, $"{savedType} was recorded.", true, "Added");
-            return AddNewTransactionSubmissionResult.Success();
+            return TransactionPopupSubmissionResult.Success();
         }
         catch (Exception exception)
         {
             FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception, "save transaction");
-            return AddNewTransactionSubmissionResult.Failure(string.Empty);
+            return TransactionPopupSubmissionResult.Failure(string.Empty);
         }
         finally
         {
@@ -1669,14 +1669,14 @@ public partial class AddNewTransactionVM : ObservableValidator
         }
     }
 
-    private async Task<AddNewTransactionSubmissionResult> ApplyExpenseBudgetPolicyAsync(
+    private async Task<TransactionPopupSubmissionResult> ApplyExpenseBudgetPolicyAsync(
         ExpenseCategory category,
         decimal amount,
         DateTime expenseDate)
     {
         var allocation = await _appData.GetBudgetAllocationAsync();
         if (allocation.OverspendPolicy == OverspendPolicy.Ignore)
-            return AddNewTransactionSubmissionResult.Success();
+            return TransactionPopupSubmissionResult.Success();
 
         var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, expenseDate);
         var categoryState = GetCategoryState(snapshot, category);
@@ -1684,7 +1684,7 @@ public partial class AddNewTransactionVM : ObservableValidator
         if (allocation.OverspendPolicy == OverspendPolicy.HardStop &&
             BudgetAllocationCalculator.WouldHardStop(categoryState, amount))
         {
-            return AddNewTransactionSubmissionResult.Failure(
+            return TransactionPopupSubmissionResult.Failure(
                 $"{GetExpenseCategoryLabel(category)} budget is exhausted for this allocation period.");
         }
 
@@ -1698,7 +1698,7 @@ public partial class AddNewTransactionVM : ObservableValidator
             }
         }
 
-        return AddNewTransactionSubmissionResult.Success();
+        return TransactionPopupSubmissionResult.Success();
     }
 
     private async Task<BudgetAllocationSnapshot> BuildBudgetAllocationSnapshotAsync(
@@ -2586,7 +2586,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     public static ValidationResult? ValidateNameText(string value, ValidationContext validationContext)
     {
-        var viewModel = (AddNewTransactionVM)validationContext.ObjectInstance;
+        var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
         if (viewModel.IsGoal)
             return ValidationResult.Success;
 
@@ -2606,7 +2606,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     public static ValidationResult? ValidateAmountText(decimal value, ValidationContext validationContext)
     {
-        var viewModel = (AddNewTransactionVM)validationContext.ObjectInstance;
+        var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
         if (viewModel._isRepaymentAmountInvalid)
             return new ValidationResult("Invalid Repayment");
 
@@ -2684,7 +2684,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     public static ValidationResult? ValidateSelectedTag(TagVM? value, ValidationContext validationContext)
     {
-        var viewModel = (AddNewTransactionVM)validationContext.ObjectInstance;
+        var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
         if (!viewModel.IsExpense)
             return ValidationResult.Success;
 
@@ -2695,7 +2695,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     public static ValidationResult? ValidateSelectedGoal(SavingGoalVM? value, ValidationContext validationContext)
     {
-        var viewModel = (AddNewTransactionVM)validationContext.ObjectInstance;
+        var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
         if (!viewModel.IsGoal)
             return ValidationResult.Success;
 
@@ -2706,7 +2706,7 @@ public partial class AddNewTransactionVM : ObservableValidator
 
     public static ValidationResult? ValidateRecurringTimeText(string value, ValidationContext validationContext)
     {
-        var viewModel = (AddNewTransactionVM)validationContext.ObjectInstance;
+        var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
         if (!viewModel.IsRecurringTransactionMode || viewModel.SelectedRecurringPeriod == RecurringPeriod.None)
             return ValidationResult.Success;
 
@@ -2801,20 +2801,20 @@ public partial class AddNewTransactionVM : ObservableValidator
         bool ShouldAffectBalance,
         bool IsExcludedFromBudget);
 
-    public readonly record struct AddNewTransactionSubmissionResult(bool IsSuccess, string? ErrorMessage)
+    public readonly record struct TransactionPopupSubmissionResult(bool IsSuccess, string? ErrorMessage)
     {
-        public static AddNewTransactionSubmissionResult Success()
+        public static TransactionPopupSubmissionResult Success()
         {
-            return new AddNewTransactionSubmissionResult(true, null);
+            return new TransactionPopupSubmissionResult(true, null);
         }
 
-        public static AddNewTransactionSubmissionResult Failure(string? errorMessage)
+        public static TransactionPopupSubmissionResult Failure(string? errorMessage)
         {
-            return new AddNewTransactionSubmissionResult(false, errorMessage);
+            return new TransactionPopupSubmissionResult(false, errorMessage);
         }
     }
 
-    public readonly record struct AddNewTransactionDraft(
+    public readonly record struct TransactionPopupDraft(
         bool IsExpense,
         string Name,
         decimal AmountText,
