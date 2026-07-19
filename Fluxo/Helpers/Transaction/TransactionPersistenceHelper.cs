@@ -185,6 +185,12 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         if (loaded.Equals(pending))
             return Result.Success(loaded.Id);
 
+        if (options.IsRepayment)
+            return await EditRepaymentAsync(loaded, pending, transaction, cancellationToken);
+
+        if (pending.GoalId is > 0)
+            return await EditGoalAsync(loaded, pending, transaction, options, cancellationToken);
+
         var oldAccount = transaction.Account;
         if (oldAccount is null)
             return Result.Failure("Unable to load this transaction source.");
@@ -218,32 +224,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
 
         var before = TransactionMemorySnapshot.Create(transaction);
         var newAffectsBalance = TransactionEntity.ShouldAffectAccountBalance(pending.IsIoU, pending.ShouldAffectBalance);
-        if (sameAccount)
-        {
-            if (transaction.AffectsAccountBalance && newAffectsBalance)
-                ApplyAccountDelta(oldAccount, transaction.Type, pending.Amount - transaction.Amount);
-            else if (transaction.AffectsAccountBalance)
-                LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
-            else if (newAffectsBalance)
-                LogMemoryPersistence.ApplyTransactionToAccount(oldAccount, pending.Type, pending.Amount);
-
-            if (transaction.AffectsAccountBalance || newAffectsBalance)
-                appData.UpdateAccount(oldAccount);
-        }
-        else
-        {
-            if (transaction.AffectsAccountBalance)
-            {
-                LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
-                appData.UpdateAccount(oldAccount);
-            }
-
-            if (newAffectsBalance)
-            {
-                LogMemoryPersistence.ApplyTransactionToAccount(newAccount, pending.Type, pending.Amount);
-                appData.UpdateAccount(newAccount);
-            }
-        }
+        ApplyAccountEditBalance(oldAccount, transaction, newAccount, pending, newAffectsBalance);
 
         var sourceChanged = transaction.SourceAccountId != newAccount.Id;
         var exclusionChanged = transaction.IsExcludedFromBudget != pending.IsExcludedFromBudget;
@@ -278,6 +259,172 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
         messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
         return Result.Success(loaded.Id);
+    }
+
+    private async Task<Result> EditGoalAsync(
+        TransactionVM loaded,
+        TransactionVM pending,
+        TransactionEntity transaction,
+        SaveOptions options,
+        CancellationToken cancellationToken)
+    {
+        var oldAccount = transaction.Account;
+        var newAccount = await appData.GetAccountByIdAsync(pending.SourceAccountId, cancellationToken);
+        if (oldAccount is null || newAccount is null)
+            return Result.Failure("Please select a valid account.");
+
+        var goal = await appData.GetSavingGoalByIdAsync(pending.GoalId!.Value, cancellationToken);
+        if (goal is null)
+            return Result.Failure("Please select a valid goal.");
+
+        var oldGoal = transaction.GoalId is { } oldGoalId && oldGoalId != goal.Id
+            ? await appData.GetSavingGoalByIdAsync(oldGoalId, cancellationToken)
+            : goal;
+        if (oldGoal is null)
+            return Result.Failure("Unable to load the linked saving goal.");
+
+        var tag = await ResolveTagAsync(GoalUpdateTagName, GoalUpdateTagColor, false, cancellationToken);
+        var before = TransactionMemorySnapshot.Create(transaction);
+        var oldAmount = transaction.Amount;
+        ApplyAccountEditBalance(
+            oldAccount,
+            transaction,
+            newAccount,
+            pending,
+            TransactionEntity.ShouldAffectAccountBalance(pending.IsIoU, pending.ShouldAffectBalance));
+        ApplyPending(transaction, pending, newAccount, tag,
+            options.RelatedRecurringTransactionId ?? transaction.RelatedRecurringTransactionId);
+        transaction.Name = BuildGoalUpdateName(goal.Name);
+        transaction.Notes = $"Goal update for {goal.Name}";
+        transaction.ExpenseCategory = ExpenseCategory.Savings;
+        transaction.IsPinned = false;
+        appData.UpdateTransaction(transaction);
+
+        if (oldGoal.Id == goal.Id)
+            goal.CurrentAmount += pending.Amount - oldAmount;
+        else
+        {
+            oldGoal.CurrentAmount -= oldAmount;
+            goal.CurrentAmount += pending.Amount;
+            appData.UpdateSavingGoal(oldGoal);
+        }
+
+        appData.UpdateSavingGoal(goal);
+        await appData.SaveChangesAsync(cancellationToken);
+        messenger.Send(new TransactionDetailUpdatedMessage(new TransactionDetailUpdate(
+            loaded.Id,
+            new TransactionDetailSnapshot(
+                loaded.Amount,
+                loaded.OccurredOn,
+                loaded.ExpenseCategory ?? ExpenseCategory.Savings,
+                loaded.SourceAccountId,
+                loaded.Tag?.Id ?? tag.Id),
+            GetChangedFields(loaded, pending))));
+        messenger.Send(new RecordLogMemoryMessage(
+            new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
+        messenger.Send(new DashboardDataInvalidatedMessage(
+            DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.SavingGoals));
+        return Result.Success(loaded.Id);
+    }
+
+    private async Task<Result> EditRepaymentAsync(
+        TransactionVM loaded,
+        TransactionVM pending,
+        TransactionEntity transaction,
+        CancellationToken cancellationToken)
+    {
+        if (transaction.Type != TransactionType.Expense || transaction.RepaymentAccountId is null)
+            return Result.Failure("Unable to load this repayment.");
+
+        var income = RepaymentTransactionSupport.FindNewestIncome(
+            transaction, await appData.GetTransactionsAsync(cancellationToken));
+        if (income is null)
+            return Result.Failure("Unable to find the matching repayment income.");
+
+        var source = await appData.GetAccountByIdAsync(pending.SourceAccountId, cancellationToken);
+        if (pending.RepaymentAccountId is not { } repaymentAccountId)
+            return Result.Failure("Please select a valid credit account.");
+        var target = await appData.GetAccountByIdAsync(repaymentAccountId, cancellationToken);
+        var availableTargetAmount = target is not null && target.Id == income.Account.Id
+            ? target.SpentAmount + transaction.Amount
+            : target?.SpentAmount ?? 0m;
+        if (source is null || target is null || source.AccountType != AccountType.Checking ||
+            target.AccountType != AccountType.Credit || pending.Amount <= 0m || pending.Amount > availableTargetAmount)
+            return Result.Failure("Invalid Repayment");
+
+        var tag = await ResolveTagAsync(SystemTags.BalanceUpdateName, SystemTags.BalanceUpdateHexCode, true,
+            cancellationToken);
+        var beforeExpense = TransactionMemorySnapshot.Create(transaction);
+        var beforeIncome = TransactionMemorySnapshot.Create(income);
+
+        LogMemoryPersistence.RevertTransactionFromAccount(transaction.Account, transaction.Type, transaction.Amount);
+        LogMemoryPersistence.RevertTransactionFromAccount(income.Account, income.Type, income.Amount);
+        appData.UpdateAccount(transaction.Account);
+        appData.UpdateAccount(income.Account);
+        LogMemoryPersistence.ApplyTransactionToAccount(source, TransactionType.Expense, pending.Amount);
+        LogMemoryPersistence.ApplyTransactionToAccount(target, TransactionType.Income, pending.Amount);
+        appData.UpdateAccount(source);
+        appData.UpdateAccount(target);
+
+        ApplyPending(transaction, pending, source, tag, transaction.RelatedRecurringTransactionId);
+        transaction.Name = pending.Name.Trim();
+        transaction.ExpenseCategory = ExpenseCategory.Savings;
+        transaction.IsExcludedFromBudget = true;
+        transaction.IsPinned = false;
+        income.Type = TransactionType.Income;
+        income.SourceAccountId = target.Id;
+        income.Account = target;
+        income.RepaymentAccountId = target.Id;
+        income.Name = $"Repayment from {source.Name}";
+        income.Amount = pending.Amount;
+        income.OccurredOn = pending.OccurredOn;
+        income.Notes = string.Empty;
+        income.ExpenseCategory = null;
+        income.Tag = tag;
+        income.TagId = tag.Id;
+        income.IsExcludedFromBudget = true;
+        appData.UpdateTransaction(transaction);
+        appData.UpdateTransaction(income);
+        await appData.SaveChangesAsync(cancellationToken);
+
+        messenger.Send(new RecordLogMemoryMessage(new CompositeLogMemoryAction(
+            "Repayment",
+            [
+                new EditTransactionMemoryAction(beforeExpense, TransactionMemorySnapshot.Create(transaction)),
+                new EditTransactionMemoryAction(beforeIncome, TransactionMemorySnapshot.Create(income))
+            ])));
+        messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
+        return Result.Success(loaded.Id);
+    }
+
+    private void ApplyAccountEditBalance(
+        Account oldAccount,
+        TransactionEntity transaction,
+        Account newAccount,
+        TransactionVM pending,
+        bool newAffectsBalance)
+    {
+        if (oldAccount.Id == newAccount.Id)
+        {
+            if (transaction.AffectsAccountBalance)
+                LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
+            if (newAffectsBalance)
+                LogMemoryPersistence.ApplyTransactionToAccount(oldAccount, pending.Type, pending.Amount);
+            if (transaction.AffectsAccountBalance || newAffectsBalance)
+                appData.UpdateAccount(oldAccount);
+            return;
+        }
+
+        if (transaction.AffectsAccountBalance)
+        {
+            LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
+            appData.UpdateAccount(oldAccount);
+        }
+        if (newAffectsBalance)
+        {
+            LogMemoryPersistence.ApplyTransactionToAccount(newAccount, pending.Type, pending.Amount);
+            appData.UpdateAccount(newAccount);
+        }
     }
 
     private async Task<Tag> ResolveTagAsync(
@@ -369,23 +516,6 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         transaction.IsIoU = pending.IsIoU;
         transaction.ShouldAffectBalance = pending.ShouldAffectBalance;
         transaction.IsExcludedFromBudget = pending.IsExcludedFromBudget;
-    }
-
-    private static void ApplyAccountDelta(Account account, TransactionType type, decimal delta)
-    {
-        if (type == TransactionType.Expense)
-        {
-            if (account.AccountType == AccountType.Credit)
-                account.SpentAmount += delta;
-            else
-                account.Balance -= delta;
-            return;
-        }
-
-        if (account.AccountType == AccountType.Credit)
-            account.SpentAmount = Math.Max(0m, account.SpentAmount - delta);
-        else
-            account.Balance += delta;
     }
 
     internal static string BuildTransactionName(string name, string note, string fallbackName)

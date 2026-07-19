@@ -70,6 +70,29 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
+    public async Task Edit_same_credit_account_clamps_spent_amount_when_new_amount_is_smaller()
+    {
+        var loadedAccount = CreateAccount();
+        loadedAccount.AccountType = AccountType.Credit;
+        loadedAccount.SpentAmount = 5m;
+        var selectedAccount = CreateAccount();
+        selectedAccount.AccountType = AccountType.Credit;
+        selectedAccount.SpentAmount = 5m;
+        var transaction = CreateTransaction(loadedAccount);
+        var appData = CreateAppData(selectedAccount, transaction);
+        var loaded = CreateTransactionVm(CreateAccountVm());
+        var pending = TransactionMappingHelper.CreatePending(loaded);
+        pending.Amount = 2m;
+
+        var result = await new TransactionPersistenceHelper(appData, new WeakReferenceMessenger())
+            .SaveAsync(loaded, pending, new());
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(2m, loadedAccount.SpentAmount);
+        appData.Received(1).UpdateAccount(loadedAccount);
+    }
+
+    [Fact]
     public async Task Add_updates_account_balance_once_and_keeps_goal_tag_non_system()
     {
         var account = CreateAccount();
@@ -248,6 +271,143 @@ public sealed class TransactionPopupVMPersistenceTests
             {
                 WeakReferenceMessenger.Default.UnregisterAll(recipient);
             }
+        });
+    }
+
+    [Fact]
+    public void Processing_initializes_goal_repayment_and_recurring_state_before_async_initialization()
+    {
+        RunInSta(() =>
+        {
+            var source = CreateAccountVm();
+            var credit = new AccountVM
+            {
+                Id = 2,
+                Name = "Visa",
+                AccountType = AccountType.Credit,
+                SpentAmount = 50m,
+                DeductSource = source.Id,
+                IsEnabled = true
+            };
+            var vm = new TransactionPopupVM(CreateMainViewModel([source, credit]),
+                CreateAppData(CreateAccount(), CreateTransaction(CreateAccount())));
+
+            vm.InitializeGoalProcessing([new SavingGoalVM { Id = 1, Name = "Goal" }]);
+            Assert.NotNull(vm.LoadedTransaction);
+            vm.InitializeRepaymentProcessing([credit]);
+            Assert.NotNull(vm.LoadedTransaction);
+            vm.InitializeRecurringProcessing([
+                new RecurringTransactionVM
+                {
+                    Id = 3, Name = "Recurring", Amount = 10m, Type = RecurringTransactionType.Expense,
+                    Source = source, Category = ExpenseCategory.Needs,
+                    Tag = new TagVM { Id = 1, Name = "General" }
+                }
+            ]);
+            Assert.NotNull(vm.LoadedTransaction);
+        });
+    }
+
+    [Fact]
+    public void Goal_processing_back_then_next_edits_goal_contribution_without_duplicate_add()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            var account = CreateAccount();
+            var initialTransaction = CreateTransaction(account);
+            var appData = CreateAppData(account, initialTransaction);
+            var goal = new SavingGoal { Id = 1, Name = "Emergency", CurrentAmount = 100m };
+            var added = new List<Transaction>();
+            var nextId = 300;
+            appData.GetSavingGoalByIdAsync(1, Arg.Any<CancellationToken>()).Returns(goal);
+            appData.GetTransactionByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+                .Returns(call => Task.FromResult<Transaction?>(added.FirstOrDefault(item => item.Id == call.Arg<int>())));
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    var transaction = call.Arg<Transaction>();
+                    transaction.Id = nextId++;
+                    added.Add(transaction);
+                });
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<Transaction>>(added));
+
+            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            vm.InitializeGoalProcessing([
+                new SavingGoalVM { Id = 1, Name = "Emergency" },
+                new SavingGoalVM { Id = 1, Name = "Emergency" }
+            ]);
+
+            vm.AmountText = 10m;
+            var firstResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.True(firstResult.IsSuccess, firstResult.ErrorMessage);
+            vm.AmountText = 20m;
+            var secondResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.True(secondResult.IsSuccess, secondResult.ErrorMessage);
+            vm.NavigatePreviousProcessing();
+            vm.AmountText = 15m;
+            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+
+            Assert.Equal(2, added.Count);
+            appData.Received(1).UpdateTransaction(added[0]);
+            Assert.Equal(135m, goal.CurrentAmount);
+        });
+    }
+
+    [Fact]
+    public void Repayment_processing_back_then_next_edits_pair_and_preserves_balances()
+    {
+        RunInSta(() =>
+        {
+            var checkingVm = CreateAccountVm();
+            var creditOneVm = new AccountVM
+            {
+                Id = 2, Name = "Visa", AccountType = AccountType.Credit, SpentAmount = 100m,
+                DeductSource = checkingVm.Id, IsEnabled = true
+            };
+            var creditTwoVm = new AccountVM
+            {
+                Id = 3, Name = "Mastercard", AccountType = AccountType.Credit, SpentAmount = 100m,
+                DeductSource = checkingVm.Id, IsEnabled = true
+            };
+            var checking = CreateAccount();
+            var creditOne = new Account { Id = 2, Name = "Visa", AccountType = AccountType.Credit, SpentAmount = 100m };
+            var creditTwo = new Account { Id = 3, Name = "Mastercard", AccountType = AccountType.Credit, SpentAmount = 100m };
+            var appData = CreateAppData(checking, CreateTransaction(checking));
+            appData.GetAccountByIdAsync(2, Arg.Any<CancellationToken>()).Returns(creditOne);
+            appData.GetAccountByIdAsync(3, Arg.Any<CancellationToken>()).Returns(creditTwo);
+            var added = new List<Transaction>();
+            var nextId = 400;
+            appData.GetTransactionByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+                .Returns(call => Task.FromResult<Transaction?>(added.FirstOrDefault(item => item.Id == call.Arg<int>())));
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<Transaction>>(added));
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    var transaction = call.Arg<Transaction>();
+                    transaction.Id = nextId++;
+                    added.Add(transaction);
+                });
+
+            var vm = new TransactionPopupVM(CreateMainViewModel([checkingVm, creditOneVm, creditTwoVm]), appData);
+            vm.InitializeRepaymentProcessing([creditOneVm, creditTwoVm]);
+
+            var firstResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.True(firstResult.IsSuccess, firstResult.ErrorMessage);
+            var secondResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.True(secondResult.IsSuccess, secondResult.ErrorMessage);
+            vm.NavigatePreviousProcessing();
+            vm.AmountText = 50m;
+            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+
+            Assert.Equal(4, added.Count);
+            Assert.Equal(350m, checking.Balance);
+            Assert.Equal(50m, creditOne.SpentAmount);
+            Assert.Equal(0m, creditTwo.SpentAmount);
+            appData.Received(1).UpdateTransaction(added[0]);
+            appData.Received(1).UpdateTransaction(added[1]);
         });
     }
 

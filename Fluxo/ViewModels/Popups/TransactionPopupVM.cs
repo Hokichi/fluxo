@@ -2726,6 +2726,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     private void RestoreProcessingTransactionState(object target)
     {
+        EnsureTransactionState();
         SyncPendingTransactionFromForm();
         var loaded = TransactionMappingHelper.CreateLoaded(PendingTransaction);
         loaded.Id = _processingTransactionIds.GetValueOrDefault(target);
