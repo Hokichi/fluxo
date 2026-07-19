@@ -2012,43 +2012,6 @@ public partial class MainWindow : Window, IPopupHost
         popupViewModel.InitializeChildTransactions(children);
     }
 
-    public async Task<TransactionSplitVM.TransactionSplitSaveResult> DeleteTransactionAsync(TransactionVM transaction)
-    {
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transaction, appData);
-        if (targetTransaction is null)
-            return TransactionSplitVM.TransactionSplitSaveResult.Failure("Unable to load this transaction.");
-
-        return await new TransactionSplitVM(_mainVM, targetTransaction, appData).DeleteAsync();
-    }
-
-    public async Task<TransactionSplitVM.TransactionSplitSaveResult> SaveTransactionEditAsync(
-        TransactionVM transaction,
-        TransactionPopupVM.TransactionEditInput input)
-    {
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transaction, appData);
-        if (targetTransaction is null)
-            return TransactionSplitVM.TransactionSplitSaveResult.Failure("Unable to load this transaction.");
-
-        var editor = new TransactionSplitVM(_mainVM, targetTransaction, appData);
-        await editor.BeginEditingAsync();
-        editor.NameText = input.Name;
-        editor.AmountText = input.Amount;
-        editor.IsPinned = input.IsPinned;
-        editor.NoteText = input.Note;
-        editor.SelectedDate = input.Date;
-        editor.SelectedExpenseCategory = input.Category;
-        editor.SelectedAccount = editor.Accounts.FirstOrDefault(account => account.Id == input.AccountId);
-        editor.SelectedTag = editor.VisibleTags.Concat(editor.OverflowTags).FirstOrDefault(tag => tag.Id == input.TagId);
-        editor.IsIoU = input.IsIoU;
-        editor.ShouldAffectBalance = input.ShouldAffectBalance;
-        editor.IsExcludedFromBudget = input.IsExcludedFromBudget;
-        return await editor.SaveAsync();
-    }
-
     private void PublishDashboardViewMode()
     {
         var viewModeToggle = _mainVM.Dashboard.ViewModeToggle;

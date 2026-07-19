@@ -38,6 +38,7 @@ public partial class TransactionPopupVM : ObservableValidator
     private readonly Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? _saveRecurringDraftAsync;
     private readonly List<SavingGoalVM> _orderedGoals = [];
     private readonly MainVM _mainViewModel;
+    private readonly TransactionPersistenceHelper _persistence;
     private readonly List<TagVM> _orderedTags = [];
     private readonly IAppDataService _appData;
     private FormState _initialState;
@@ -122,6 +123,7 @@ public partial class TransactionPopupVM : ObservableValidator
     {
         _mainViewModel = mainViewModel;
         _appData = appData;
+        _persistence = new TransactionPersistenceHelper(appData, WeakReferenceMessenger.Default);
         _accountsOverride = accountsOverride;
         _saveRecurringDraftAsync = saveRecurringDraftAsync;
         ErrorsChanged += (_, e) =>
@@ -416,6 +418,9 @@ public partial class TransactionPopupVM : ObservableValidator
 
         var current = CurrentProcessingTarget!;
         _processingSnapshots[current] = CaptureState();
+        var result = await SaveAsync(false);
+        if (!result.IsSuccess)
+            return result;
         _processingStates[current] = ProcessingTransactionHelper.State.Processed;
         MoveToNextPending();
         NotifyProcessingChanged();
@@ -454,21 +459,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public async Task<TransactionPopupSubmissionResult> PersistProcessedItemsAsync()
     {
-        var processed = ProcessingTargets.Where(target => _processingStates[target] == ProcessingTransactionHelper.State.Processed).ToList();
-        foreach (var target in processed)
-        {
-            if (!_processingSnapshots.TryGetValue(target, out var snapshot))
-                continue;
-
-            _currentProcessingIndex = ProcessingTargets.ToList().IndexOf(target);
-            LoadProcessingTarget(target, snapshot);
-            var result = await SaveAsync(false);
-            if (!result.IsSuccess)
-                return result;
-        }
-
         ClearProcessing();
-        await _mainViewModel.ReloadCurrentDataAsync(reloadNotifications: true);
         return TransactionPopupSubmissionResult.Success();
     }
 
@@ -860,6 +851,7 @@ public partial class TransactionPopupVM : ObservableValidator
     public void SwitchToCloneAddMode()
     {
         EnsureTransactionState();
+        LoadedTransaction.Id = 0;
         PendingTransaction.Id = 0;
         PendingTransaction.LoggedOn = default;
         PendingTransaction.ParentTransactionId = null;
@@ -1212,35 +1204,40 @@ public partial class TransactionPopupVM : ObservableValidator
 
             var invalidationScope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
 
-            if (input.IsRepayment)
+            if (!input.IsRecurring)
             {
-                var target = await _appData.GetAccountByIdAsync(input.RepaymentAccountId!.Value);
-                if (target is null || target.AccountType != AccountType.Credit)
-                    return TransactionPopupSubmissionResult.Failure("Please select a valid credit account.");
+                if (LoadedTransaction.Id == 0 && input.IsGoal)
+                {
+                    if (input.GoalId is null)
+                        return TransactionPopupSubmissionResult.Failure("Please choose a goal.");
+                    if (!GoalUpdateTransactionSupport.IsEligibleGoalSourceType(account.AccountType))
+                        return TransactionPopupSubmissionResult.Failure("Goal updates can only be taken from Cash or Checking.");
+                    if (!input.IsEffectivelyExcludedFromBudget)
+                    {
+                        var budgetPolicyResult = await ApplyExpenseBudgetPolicyAsync(
+                            ExpenseCategory.Savings, input.Amount, input.Date);
+                        if (!budgetPolicyResult.IsSuccess)
+                            return budgetPolicyResult;
+                    }
+                }
+                else if (LoadedTransaction.Id == 0 && input.IsExpense && !input.IsEffectivelyExcludedFromBudget)
+                {
+                    var budgetPolicyResult = await ApplyExpenseBudgetPolicyAsync(
+                        input.Category!.Value, input.Amount, input.Date);
+                    if (!budgetPolicyResult.IsSuccess)
+                        return budgetPolicyResult;
+                }
 
-                var tag = await ResolveBalanceUpdateTagAsync();
-                if (input.Amount > target.SpentAmount)
-                    return TransactionPopupSubmissionResult.Failure("Invalid Repayment");
-
-                var pair = RepaymentTransactionSupport.Create(
-                    account,
-                    target,
-                    input.Amount,
-                    input.Date,
-                    tag,
-                    input.Name);
-                await _appData.AddTransactionAsync(pair.Expense);
-                await _appData.AddTransactionAsync(pair.Income);
-                _appData.UpdateAccount(account);
-                _appData.UpdateAccount(target);
-                await _appData.SaveChangesAsync();
-                WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
-                    new CompositeLogMemoryAction(
-                        "Repayment",
-                        [
-                            new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Expense)),
-                            new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Income))
-                        ])));
+                SyncPendingTransactionFromForm();
+                PendingTransaction.Amount = effectiveSaveAmount;
+                var persistenceResult = await _persistence.SaveAsync(
+                    LoadedTransaction,
+                    PendingTransaction,
+                    new TransactionPersistenceHelper.SaveOptions(
+                        IsRepayment: input.IsRepayment,
+                        RelatedRecurringTransactionId: input.RelatedRecurringTransactionId));
+                if (!persistenceResult.IsSuccess)
+                    return TransactionPopupSubmissionResult.Failure(persistenceResult.ErrorMessage);
             }
             else if (input.IsRecurring)
             {
@@ -1289,138 +1286,11 @@ public partial class TransactionPopupVM : ObservableValidator
                 if (input.EditingRecurringTransactionId is not > 0)
                     WeakReferenceMessenger.Default.Send(new NotificationEntityCreatedMessage(NotificationEntityKind.RecurringTransaction, recurring.Id));
             }
-            else if (input.IsGoal)
-            {
-                if (input.GoalId is null)
-                    return TransactionPopupSubmissionResult.Failure("Please choose a goal.");
-
-                if (!GoalUpdateTransactionSupport.IsEligibleGoalSourceType(account.AccountType))
-                    return TransactionPopupSubmissionResult.Failure("Goal updates can only be taken from Cash or Checking.");
-
-                var goal = await _appData.GetSavingGoalByIdAsync(input.GoalId.Value);
-                if (goal is null)
-                    return TransactionPopupSubmissionResult.Failure("Please select a valid goal.");
-
-                if (!input.IsEffectivelyExcludedFromBudget)
-                {
-                    var budgetPolicyResult = await ApplyExpenseBudgetPolicyAsync(
-                        ExpenseCategory.Savings,
-                        input.Amount,
-                        input.Date);
-                    if (!budgetPolicyResult.IsSuccess)
-                        return budgetPolicyResult;
-                }
-
-                var goalUpdateTag = await GoalUpdateTransactionSupport.ResolveGoalUpdateTagAsync(_appData);
-                var transaction = new Transaction
-                {
-                    Type = TransactionType.Expense,
-                    Name = BuildGoalUpdateName(goal.Name),
-                    Amount = input.Amount,
-                    OccurredOn = input.Date,
-                    Notes = $"Goal update for {goal.Name}",
-                    ExpenseCategory = ExpenseCategory.Savings,
-                    SourceAccountId = account.Id,
-                    GoalId = goal.Id,
-                    TagId = goalUpdateTag.Id,
-                    IsPinned = false,
-                    IsExcludedFromBudget = input.IsEffectivelyExcludedFromBudget
-                    ,RelatedRecurringTransactionId = input.RelatedRecurringTransactionId
-                };
-
-                goal.CurrentAmount += input.Amount;
-
-                await _appData.AddTransactionAsync(transaction);
-                _appData.UpdateSavingGoal(goal);
-
-                ApplyExpenseToAccount(account, input.Amount);
-                _appData.UpdateAccount(account);
-
-                await _appData.SaveChangesAsync();
-                WeakReferenceMessenger.Default.Send(
-                    new RecordLogMemoryMessage(new AddTransactionMemoryAction(
-                        TransactionMemorySnapshot.Create(transaction))));
-
-                invalidationScope |= DashboardDataInvalidationScope.SavingGoals;
-            }
-            else if (input.IsExpense)
-            {
-                var tag = await _appData.GetTagByIdAsync(input.TagId!.Value);
-                if (tag is null)
-                    return TransactionPopupSubmissionResult.Failure("Please select a valid tag.");
-
-                if (!input.IsEffectivelyExcludedFromBudget)
-                {
-                    var budgetPolicyResult = await ApplyExpenseBudgetPolicyAsync(input.Category!.Value, input.Amount, input.Date);
-                    if (!budgetPolicyResult.IsSuccess)
-                        return budgetPolicyResult;
-                }
-
-                var transaction = new Transaction
-                {
-                    Type = TransactionType.Expense,
-                    Name = BuildExpenseName(input.Name, input.Note, tag.Name),
-                    Amount = input.Amount,
-                    OccurredOn = input.Date,
-                    Notes = input.Note,
-                    ExpenseCategory = input.Category!.Value,
-                    SourceAccountId = account.Id,
-                    TagId = tag.Id,
-                    IsPinned = input.IsPinned,
-                    IsIoU = input.IsIoU,
-                    ShouldAffectBalance = input.ShouldAffectBalance,
-                    IsExcludedFromBudget = input.IsEffectivelyExcludedFromBudget
-                    ,RelatedRecurringTransactionId = input.RelatedRecurringTransactionId
-                };
-
-                await _appData.AddTransactionAsync(transaction);
-
-                if (transaction.AffectsAccountBalance)
-                {
-                    ApplyExpenseToAccount(account, input.Amount);
-                    _appData.UpdateAccount(account);
-                }
-
-                await _appData.SaveChangesAsync();
-                WeakReferenceMessenger.Default.Send(
-                    new RecordLogMemoryMessage(new AddTransactionMemoryAction(
-                        TransactionMemorySnapshot.Create(transaction))));
-            }
-            else
-            {
-                var transaction = new Transaction
-                {
-                    Type = TransactionType.Income,
-                    Name = input.Name,
-                    Amount = input.Amount,
-                    OccurredOn = input.Date,
-                    Notes = input.Note,
-                    SourceAccountId = account.Id,
-                    TagId = input.TagId,
-                    IsPinned = input.IsPinned,
-                    IsIoU = input.IsIoU,
-                    ShouldAffectBalance = input.ShouldAffectBalance,
-                    IsExcludedFromBudget = input.IsEffectivelyExcludedFromBudget
-                };
-
-                await _appData.AddTransactionAsync(transaction);
-
-                if (transaction.AffectsAccountBalance)
-                {
-                    ApplyIncomeToAccount(account, input.Amount);
-                    _appData.UpdateAccount(account);
-                }
-
-                await _appData.SaveChangesAsync();
-                WeakReferenceMessenger.Default.Send(
-                    new RecordLogMemoryMessage(new AddTransactionMemoryAction(
-                        TransactionMemorySnapshot.Create(transaction))));
-            }
-
             if (IsProcessingSession)
                 invalidationScope &= ~DashboardDataInvalidationScope.Notifications;
 
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(invalidationScope));
+            if (input.IsRecurring)
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(invalidationScope));
 
             await _mainViewModel.ReloadCurrentDataAsync(reloadNotifications: !IsProcessingSession);
 
@@ -1439,6 +1309,35 @@ public partial class TransactionPopupVM : ObservableValidator
         catch (Exception exception)
         {
             FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception, "save transaction");
+            return TransactionPopupSubmissionResult.Failure(string.Empty);
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    public async Task<TransactionPopupSubmissionResult> DeleteAsync()
+    {
+        if (IsSaving)
+            return TransactionPopupSubmissionResult.Failure("A transaction is already being saved.");
+        if (LoadedTransaction.Id <= 0)
+            return TransactionPopupSubmissionResult.Failure("Unable to load this transaction.");
+
+        IsSaving = true;
+        try
+        {
+            var result = await _persistence.DeleteAsync(LoadedTransaction);
+            if (!result.IsSuccess)
+                return TransactionPopupSubmissionResult.Failure(result.ErrorMessage);
+
+            await _mainViewModel.ReloadCurrentDataAsync(reloadNotifications: true);
+            return TransactionPopupSubmissionResult.Success();
+        }
+        catch (Exception exception)
+        {
+            FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception,
+                "delete transaction");
             return TransactionPopupSubmissionResult.Failure(string.Empty);
         }
         finally
@@ -2019,28 +1918,6 @@ public partial class TransactionPopupVM : ObservableValidator
                 null,
                 null,
                 null));
-    }
-
-    private static void ApplyExpenseToAccount(Account account, decimal amount)
-    {
-        if (account.AccountType == AccountType.Credit)
-        {
-            account.SpentAmount += amount;
-            return;
-        }
-
-        account.Balance -= amount;
-    }
-
-    private static void ApplyIncomeToAccount(Account account, decimal amount)
-    {
-        if (account.AccountType == AccountType.Credit)
-        {
-            account.SpentAmount = Math.Max(0m, account.SpentAmount - amount);
-            return;
-        }
-
-        account.Balance += amount;
     }
 
     private static void ReplaceCollection<T>(ObservableCollection<T> target, IEnumerable<T> items)
@@ -3094,23 +2971,4 @@ public partial class TransactionPopupVM : ObservableValidator
             AmountText = account.SpentAmount;
     }
 
-    private async Task<Tag> ResolveBalanceUpdateTagAsync()
-    {
-        var tags = await _appData.GetTagsAsync();
-        var existingTag = tags.FirstOrDefault(tag =>
-            string.Equals(tag.Name, SystemTags.BalanceUpdateName, StringComparison.OrdinalIgnoreCase));
-        if (existingTag is not null)
-            return existingTag;
-
-        var balanceUpdateTag = new Tag
-        {
-            Name = SystemTags.BalanceUpdateName,
-            HexCode = SystemTags.BalanceUpdateHexCode,
-            IsSystemTag = true
-        };
-
-        await _appData.AddTagAsync(balanceUpdateTag);
-        await _appData.SaveChangesAsync();
-        return balanceUpdateTag;
-    }
 }

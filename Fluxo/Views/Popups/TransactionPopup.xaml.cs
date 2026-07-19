@@ -36,7 +36,6 @@ public partial class TransactionPopup : BasePopup
     private readonly DispatcherTimer _moreTagsHoverCloseTimer;
     private MoreTagsPopupLifecycleState _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
     private bool _isSyncingNoteDocument;
-    private bool _isFinalizingProcessing;
 
     public TransactionPopup(
         TransactionPopupVM viewModel,
@@ -80,10 +79,10 @@ public partial class TransactionPopup : BasePopup
     {
         if (_viewModel.IsEditingViewedTransaction)
         {
-            if (_viewModel.ViewedTransaction is not { } transaction || Owner is not MainWindow owner)
+            if (_viewModel.ViewedTransaction is null)
                 return;
 
-            var editResult = await owner.SaveTransactionEditAsync(transaction, _viewModel.CreateTransactionEditInput());
+            var editResult = await _viewModel.SaveAsync(false);
             if (!editResult.IsSuccess)
             {
                 ShowValidationMessage(editResult.ErrorMessage);
@@ -163,12 +162,12 @@ public partial class TransactionPopup : BasePopup
 
     protected override async void OnDeleteButtonClick()
     {
-        if (_viewModel.ViewedTransaction is not { } transaction || Owner is not MainWindow owner ||
+        if (_viewModel.ViewedTransaction is null ||
             FluxoMessageBox.Show(this, "Delete this transaction?", "Transaction Detail", MessageBoxButton.YesNo,
                 MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
-        var result = await owner.DeleteTransactionAsync(transaction);
+        var result = await _viewModel.DeleteAsync();
         if (!result.IsSuccess)
         {
             ShowValidationMessage(result.ErrorMessage);
@@ -340,22 +339,9 @@ public partial class TransactionPopup : BasePopup
         }
     }
 
-    protected override async void OnClosing(CancelEventArgs e)
+    protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);
-
-        if (!_viewModel.IsProcessingSession || _isFinalizingProcessing)
-            return;
-
-        e.Cancel = true;
-        _isFinalizingProcessing = true;
-        var result = await _viewModel.PersistProcessedItemsAsync();
-        _isFinalizingProcessing = false;
-        if (!result.IsSuccess)
-        {
-            ShowValidationMessage(result.ErrorMessage);
-            return;
-        }
     }
 
     private async Task SaveAndAdvanceAsync()
