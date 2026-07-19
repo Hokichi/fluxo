@@ -376,13 +376,15 @@ public sealed class TransactionPopupVMPersistenceTests
                     transaction.Id = nextId++;
                     added.Add(transaction);
                 });
+            var messenger = new WeakReferenceMessenger();
             var scopes = new List<DashboardDataInvalidationScope>();
             var recipient = new object();
-            WeakReferenceMessenger.Default.Register<DashboardDataInvalidatedMessage>(recipient,
+            messenger.Register<DashboardDataInvalidatedMessage>(recipient,
                 (_, message) => scopes.Add(message.Value));
             try
             {
-                var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+                var vm = new TransactionPopupVM(
+                    CreateMainViewModel([accountVm]), appData, messenger: messenger);
                 vm.InitializeAsync().GetAwaiter().GetResult();
                 var first = new RecurringTransactionVM
                 {
@@ -397,23 +399,33 @@ public sealed class TransactionPopupVMPersistenceTests
                     Tag = new TagVM { Id = 1, Name = "General" }
                 };
                 vm.InitializeRecurringProcessing([first, second]);
+                scopes.Clear();
 
+                scopes.Clear();
                 Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+                Assert.All(scopes, scope => Assert.Equal(
+                    DashboardDataInvalidationScope.None,
+                    scope & DashboardDataInvalidationScope.Notifications));
+                scopes.Clear();
                 Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+                Assert.All(scopes, scope => Assert.Equal(
+                    DashboardDataInvalidationScope.None,
+                    scope & DashboardDataInvalidationScope.Notifications));
+                scopes.Clear();
                 vm.NavigatePreviousProcessing();
                 vm.NameText = "First edited";
                 Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+                Assert.All(scopes, scope => Assert.Equal(
+                    DashboardDataInvalidationScope.None,
+                    scope & DashboardDataInvalidationScope.Notifications));
 
                 appData.Received(2).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
                 appData.Received(1).UpdateTransaction(firstPersisted);
                 Assert.Equal([1, 2], added.Select(transaction => transaction.RelatedRecurringTransactionId));
-                Assert.All(scopes, scope => Assert.Equal(
-                    DashboardDataInvalidationScope.None,
-                    scope & DashboardDataInvalidationScope.Notifications));
             }
             finally
             {
-                WeakReferenceMessenger.Default.UnregisterAll(recipient);
+                messenger.UnregisterAll(recipient);
             }
         });
     }

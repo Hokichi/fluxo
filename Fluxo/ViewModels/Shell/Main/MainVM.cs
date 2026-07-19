@@ -141,7 +141,8 @@ public partial class MainVM : ObservableRecipient
         if (!message.Value.HasChanges)
             return;
 
-        _ = ReloadCurrentDataAsync();
+        _ = ReloadCurrentDataAsync(
+            reloadNotifications: !message.Value.SuppressNotificationInvalidation);
     }
 
     private void OnDashboardPropertyChanged(object? sender, PropertyChangedEventArgs e)

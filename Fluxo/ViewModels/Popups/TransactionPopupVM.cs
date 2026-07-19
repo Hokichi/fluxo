@@ -120,11 +120,12 @@ public partial class TransactionPopupVM : ObservableValidator
         MainVM mainViewModel,
         IAppDataService appData,
         IReadOnlyList<AccountVM>? accountsOverride = null,
-        Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? saveRecurringDraftAsync = null)
+        Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? saveRecurringDraftAsync = null,
+        IMessenger? messenger = null)
     {
         _mainViewModel = mainViewModel;
         _appData = appData;
-        _persistence = new TransactionPersistenceHelper(appData, WeakReferenceMessenger.Default);
+        _persistence = new TransactionPersistenceHelper(appData, messenger ?? WeakReferenceMessenger.Default);
         _accountsOverride = accountsOverride;
         _saveRecurringDraftAsync = saveRecurringDraftAsync;
         ErrorsChanged += (_, e) =>
@@ -2396,7 +2397,10 @@ public partial class TransactionPopupVM : ObservableValidator
 
         var amountValidation = TransactionValidationHelper.ValidateAmount(
             amountToValidate, viewModel._isRepaymentAmountInvalid,
-            viewModel.IsExpense || viewModel.IsRepayment, viewModel.IsGoal, viewModel.SelectedAccount);
+            viewModel.IsExpense || viewModel.IsRepayment,
+            viewModel.IsGoal,
+            viewModel.SelectedAccount,
+            ignoreMaximumSpending: viewModel.LoadedTransaction?.Id > 0);
         if (!amountValidation.IsValid)
             return ToValidationResult(amountValidation);
 

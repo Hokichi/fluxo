@@ -261,7 +261,8 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
                 loaded.ExpenseCategory ?? ExpenseCategory.Needs,
                 loaded.SourceAccountId,
                 loaded.Tag?.Id ?? 0),
-            changedFields)));
+            changedFields,
+            options.SuppressNotificationInvalidation)));
         messenger.Send(new RecordLogMemoryMessage(
             new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
         messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
@@ -326,7 +327,8 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
                 loaded.ExpenseCategory ?? ExpenseCategory.Savings,
                 loaded.SourceAccountId,
                 loaded.Tag?.Id ?? tag.Id),
-            GetChangedFields(loaded, pending))));
+            GetChangedFields(loaded, pending),
+            options.SuppressNotificationInvalidation)));
         messenger.Send(new RecordLogMemoryMessage(
             new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
         messenger.Send(new DashboardDataInvalidatedMessage(

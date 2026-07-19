@@ -29,13 +29,16 @@ public static class TransactionValidationHelper
         bool isRepaymentAmountInvalid,
         bool isExpense,
         bool isGoal,
-        AccountVM? source)
+        AccountVM? source,
+        bool ignoreMaximumSpending = false)
     {
         if (isRepaymentAmountInvalid)
             return Result.Failure("Invalid Repayment");
         if (amount <= 0m)
             return Result.Failure("Please enter a valid amount greater than zero.");
-        return source is null ? Result.Success() : ValidateSpendingAmount(isExpense, isGoal, amount, source);
+        return source is null
+            ? Result.Success()
+            : ValidateSpendingAmount(isExpense, isGoal, amount, source, ignoreMaximumSpending);
     }
 
     public static Result ValidateSpendingAmount(bool isExpense, bool isGoal, decimal amount, AccountVM source,

@@ -22,7 +22,8 @@ public sealed class TransactionDetailUpdatedMessage(TransactionDetailUpdate valu
 public sealed record TransactionDetailUpdate(
     int TransactionId,
     TransactionDetailSnapshot PreviousState,
-    TransactionDetailChangedFields ChangedFields)
+    TransactionDetailChangedFields ChangedFields,
+    bool SuppressNotificationInvalidation = false)
 {
     public bool HasChanges => ChangedFields != TransactionDetailChangedFields.None;
 
