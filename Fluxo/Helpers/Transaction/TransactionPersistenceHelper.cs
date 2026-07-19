@@ -222,6 +222,9 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
                     .Where(item => item.Id != transaction.Id && item.SourceAccountId == newAccount.Id &&
                                    item.Type == TransactionType.Expense && item.AffectsAccountBalance && !item.IsForDeletion)
                     .Sum(item => item.Amount);
+            if (newAccount.AccountType == AccountType.Credit && oldAccount.Id == newAccount.Id &&
+                transaction.AffectsAccountBalance)
+                currentSpending = Math.Max(0m, currentSpending - transaction.Amount);
             if (currentSpending + pending.Amount > newAccount.MaximumSpending)
                 return Result.Confirmation($"This expense exceeds {newAccount.Name}'s maximum spending limit. Save anyway?");
         }
@@ -349,10 +352,17 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         if (pending.RepaymentAccountId is not { } repaymentAccountId)
             return Result.Failure("Please select a valid credit account.");
         var target = await appData.GetAccountByIdAsync(repaymentAccountId, cancellationToken);
-        var availableTargetAmount = target is not null && target.Id == income.Account.Id
+        var oldSource = transaction.SourceAccountId == pending.SourceAccountId
+            ? source
+            : await appData.GetAccountByIdAsync(transaction.SourceAccountId, cancellationToken);
+        var oldTarget = transaction.RepaymentAccountId == repaymentAccountId
+            ? target
+            : await appData.GetAccountByIdAsync(transaction.RepaymentAccountId.Value, cancellationToken);
+        var availableTargetAmount = target is not null && oldTarget is not null && target.Id == oldTarget.Id
             ? target.SpentAmount + transaction.Amount
             : target?.SpentAmount ?? 0m;
-        if (source is null || target is null || source.AccountType != AccountType.Checking ||
+        if (source is null || target is null || oldSource is null || oldTarget is null ||
+            source.AccountType != AccountType.Checking ||
             target.AccountType != AccountType.Credit || pending.Amount <= 0m || pending.Amount > availableTargetAmount)
             return Result.Failure("Invalid Repayment");
 
@@ -361,14 +371,22 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         var beforeExpense = TransactionMemorySnapshot.Create(transaction);
         var beforeIncome = TransactionMemorySnapshot.Create(income);
 
-        LogMemoryPersistence.RevertTransactionFromAccount(transaction.Account, transaction.Type, transaction.Amount);
-        LogMemoryPersistence.RevertTransactionFromAccount(income.Account, income.Type, income.Amount);
-        appData.UpdateAccount(transaction.Account);
-        appData.UpdateAccount(income.Account);
-        LogMemoryPersistence.ApplyTransactionToAccount(source, TransactionType.Expense, pending.Amount);
-        LogMemoryPersistence.ApplyTransactionToAccount(target, TransactionType.Income, pending.Amount);
-        appData.UpdateAccount(source);
-        appData.UpdateAccount(target);
+        var accounts = new Dictionary<int, Account>
+        {
+            [source.Id] = source,
+            [target.Id] = target
+        };
+        if (!accounts.ContainsKey(oldSource.Id))
+            accounts[oldSource.Id] = oldSource;
+        if (!accounts.ContainsKey(oldTarget.Id))
+            accounts[oldTarget.Id] = oldTarget;
+
+        LogMemoryPersistence.RevertTransactionFromAccount(accounts[oldSource.Id], transaction.Type, transaction.Amount);
+        LogMemoryPersistence.RevertTransactionFromAccount(accounts[oldTarget.Id], income.Type, income.Amount);
+        LogMemoryPersistence.ApplyTransactionToAccount(accounts[source.Id], TransactionType.Expense, pending.Amount);
+        LogMemoryPersistence.ApplyTransactionToAccount(accounts[target.Id], TransactionType.Income, pending.Amount);
+        foreach (var account in accounts.Values)
+            appData.UpdateAccount(account);
 
         ApplyPending(transaction, pending, source, tag, transaction.RelatedRecurringTransactionId);
         transaction.Name = pending.Name.Trim();

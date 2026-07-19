@@ -2665,13 +2665,13 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingNextAndBack_RestoresEditsWithoutPersisting()
+    public void ProcessingNext_PersistsAndBackRestoresSavedEdits()
     {
         RunInSta(() =>
         {
             var source = CreateCheckingSource(balance: 500m);
             var appData = CreateAppData();
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData);
+            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData, [source]);
             var first = new RecurringTransactionVM
             {
                 Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense,
@@ -2697,7 +2697,7 @@ public sealed class TransactionPopupVMValidationTests
             Assert.Equal(first.Id, vm.CurrentProcessingRecurringTransactionId);
             Assert.Equal("First edited", vm.NameText);
             Assert.Equal(12m, vm.AmountText);
-            _ = appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>());
+            appData.Received(1).AddTransactionAsync(Arg.Any<Transaction>());
         });
     }
 

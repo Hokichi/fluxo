@@ -93,6 +93,85 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
+    public async Task Edit_same_credit_account_excludes_existing_transaction_from_maximum_spending_check()
+    {
+        var loadedAccount = CreateAccount();
+        loadedAccount.AccountType = AccountType.Credit;
+        loadedAccount.SpentAmount = 90m;
+        loadedAccount.MaximumSpending = 100m;
+        var selectedAccount = CreateAccount();
+        selectedAccount.AccountType = AccountType.Credit;
+        selectedAccount.SpentAmount = 90m;
+        selectedAccount.MaximumSpending = 100m;
+        var transaction = CreateTransaction(loadedAccount);
+        transaction.Amount = 20m;
+        var appData = CreateAppData(selectedAccount, transaction);
+        var loaded = CreateTransactionVm(CreateAccountVm());
+        loaded.Amount = 20m;
+        var pending = TransactionMappingHelper.CreatePending(loaded);
+        pending.Amount = 30m;
+
+        var result = await new TransactionPersistenceHelper(appData, new WeakReferenceMessenger())
+            .SaveAsync(loaded, pending, new());
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.False(result.RequiresConfirmation);
+        Assert.Equal(100m, loadedAccount.SpentAmount);
+    }
+
+    [Fact]
+    public async Task Edit_repayment_composes_detached_account_instances_by_logical_id()
+    {
+        var source = CreateAccount();
+        source.Balance = 480m;
+        var target = new Account { Id = 2, Name = "Visa", AccountType = AccountType.Credit, SpentAmount = 80m };
+        var detachedSource = new Account { Id = 1, Name = "Checking", AccountType = AccountType.Checking, Balance = 999m };
+        var detachedTarget = new Account { Id = 2, Name = "Visa", AccountType = AccountType.Credit, SpentAmount = 999m };
+        var tag = new Tag { Id = 9, Name = "Balance Update", HexCode = "#fff", IsSystemTag = true };
+        var expense = new Transaction
+        {
+            Id = 77, Type = TransactionType.Expense, SourceAccountId = 1, Account = detachedSource,
+            RepaymentAccountId = 2, RepaymentAccount = detachedTarget, Name = "Repayment to Visa",
+            Amount = 20m, OccurredOn = DateTime.Today, ExpenseCategory = ExpenseCategory.Savings,
+            Tag = tag, TagId = tag.Id, IsExcludedFromBudget = true
+        };
+        var income = new Transaction
+        {
+            Id = 78, Type = TransactionType.Income, SourceAccountId = 2, Account = detachedTarget,
+            RepaymentAccountId = 2, Name = "Repayment from Checking", Amount = 20m,
+            OccurredOn = expense.OccurredOn, Tag = tag, TagId = tag.Id, IsExcludedFromBudget = true
+        };
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetTransactionByIdAsync(77, Arg.Any<CancellationToken>()).Returns(expense);
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([expense, income]);
+        appData.GetAccountByIdAsync(1, Arg.Any<CancellationToken>()).Returns(source);
+        appData.GetAccountByIdAsync(2, Arg.Any<CancellationToken>()).Returns(target);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns([tag]);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        var loaded = new TransactionVM
+        {
+            Id = 77, Type = TransactionType.Expense, SourceAccountId = 1, RepaymentAccountId = 2,
+            Name = expense.Name, Amount = 20m, OccurredOn = expense.OccurredOn,
+            ExpenseCategory = ExpenseCategory.Savings
+        };
+        var pending = TransactionMappingHelper.CreatePending(loaded);
+        pending.Amount = 30m;
+
+        var result = await new TransactionPersistenceHelper(appData, new WeakReferenceMessenger())
+            .SaveAsync(loaded, pending, new(IsRepayment: true));
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(470m, source.Balance);
+        Assert.Equal(70m, target.SpentAmount);
+        appData.Received(1).UpdateAccount(source);
+        appData.Received(1).UpdateAccount(target);
+        appData.DidNotReceive().UpdateAccount(detachedSource);
+        appData.DidNotReceive().UpdateAccount(detachedTarget);
+        appData.Received(1).UpdateTransaction(expense);
+        appData.Received(1).UpdateTransaction(income);
+    }
+
+    [Fact]
     public async Task Add_updates_account_balance_once_and_keeps_goal_tag_non_system()
     {
         var account = CreateAccount();
