@@ -10,12 +10,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Fluxo.Resources.Infrastructure;
-using Fluxo.Services.Dialogs;
 using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
-using Fluxo.ViewModels.Popups.Settings;
-using Fluxo.Views.Shell.Main;
 
 namespace Fluxo.Views.Popups;
 
@@ -29,23 +26,17 @@ public partial class TransactionPopup : BasePopup
         Closing
     }
 
-    private readonly IDialogService _dialogService;
-    private readonly SettingsTagsTabVM _settingsTagsTabViewModel;
     private readonly TransactionPopupVM _viewModel;
+    private bool _isInitialized;
     private bool _isHandlingAddTagSelection;
     private readonly DispatcherTimer _moreTagsHoverCloseTimer;
     private MoreTagsPopupLifecycleState _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
     private bool _isSyncingNoteDocument;
 
-    public TransactionPopup(
-        TransactionPopupVM viewModel,
-        IDialogService dialogService,
-        SettingsTagsTabVM settingsTagsTabViewModel)
+    public TransactionPopup(TransactionPopupVM viewModel)
     {
         InitializeComponent();
 
-        _dialogService = dialogService;
-        _settingsTagsTabViewModel = settingsTagsTabViewModel;
         _viewModel = viewModel;
         DataContext = viewModel;
         _moreTagsHoverCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
@@ -57,6 +48,10 @@ public partial class TransactionPopup : BasePopup
 
         Loaded += async (_, _) =>
         {
+            if (_isInitialized)
+                return;
+
+            _isInitialized = true;
             await _viewModel.InitializeAsync();
             await _viewModel.EnsureTagsLoadedAsync();
             if (_viewModel.IsHistoryOpen)
@@ -74,6 +69,10 @@ public partial class TransactionPopup : BasePopup
         TagsDockPanel.SizeChanged += (_, _) => RecalculateTagLayout();
         PreviewMouseDown += OnPopupPreviewMouseDown;
     }
+
+    internal void Configure(TransactionPopupRequest request) => _viewModel.Configure(request);
+
+    internal bool IsViewingTransaction(int transactionId) => _viewModel.ViewedTransaction?.Id == transactionId;
 
     protected override async void OnSaveButtonClick()
     {
@@ -147,21 +146,7 @@ public partial class TransactionPopup : BasePopup
 
     protected override void OnSplitButtonClick()
     {
-        if (_viewModel.ViewedTransaction is not { } transaction || Owner is not MainWindow owner)
-            return;
-
-        owner.OpenTransactionSplitPopup(transaction, this);
-    }
-
-    internal async Task RefreshViewedTransactionAsync()
-    {
-        if (_viewModel.ViewedTransaction is not { } transaction || Owner is not MainWindow owner)
-            return;
-
-        await owner.RefreshTransactionPopupAsync(_viewModel, transaction);
-        SyncNoteDocumentFromViewModel();
-        RecalculateTagLayout();
-        ConfigureViewModeFocus();
+        _viewModel.RequestSplit();
     }
 
     protected override async void OnDeleteButtonClick()
@@ -207,11 +192,12 @@ public partial class TransactionPopup : BasePopup
         if (!result.RequiresConfirmation)
             return result;
 
-        var saveAnyway = _dialogService.ShowWarning(
+        var saveAnyway = FluxoMessageBox.Show(
+            this,
             result.ErrorMessage ?? "This expense exceeds the account's maximum spending limit. Save anyway?",
             "Transaction",
-            this,
-            MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning) == MessageBoxResult.Yes;
         if (!saveAnyway)
             return null;
 
@@ -222,11 +208,12 @@ public partial class TransactionPopup : BasePopup
     {
         if (_viewModel.TryGetRepaymentCorrection(out var correctedAmount))
         {
-            var useCorrectAmount = _dialogService.ShowWarning(
+            var useCorrectAmount = FluxoMessageBox.Show(
+                this,
                 $"Repayment exceeds the credit account's spent amount. Use {correctedAmount:N2} instead?",
                 "Invalid Repayment",
-                this,
-                MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) == MessageBoxResult.Yes;
             if (!useCorrectAmount)
             {
                 _viewModel.RejectRepaymentCorrection();
@@ -239,11 +226,12 @@ public partial class TransactionPopup : BasePopup
         if (!await _viewModel.HasSimilarTransactionAsync())
             return true;
 
-        return _dialogService.ShowWarning(
+        return FluxoMessageBox.Show(
+            this,
             "Potentially duplicated transaction found. Would you like to save the current one?",
             "Add New Transaction",
-            this,
-            MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning) == MessageBoxResult.Yes;
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -393,11 +381,12 @@ public partial class TransactionPopup : BasePopup
         if (!result.RequiresConfirmation)
             return result;
 
-        var saveAnyway = _dialogService.ShowWarning(
+        var saveAnyway = FluxoMessageBox.Show(
+            this,
             result.ErrorMessage ?? "This expense exceeds the account's maximum spending limit. Save anyway?",
             "Transaction",
-            this,
-            MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning) == MessageBoxResult.Yes;
         if (!saveAnyway)
             return null;
 
@@ -433,7 +422,7 @@ public partial class TransactionPopup : BasePopup
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            _dialogService.ShowAddTag(_settingsTagsTabViewModel, this);
+            _viewModel.RequestAddTag();
             await _viewModel.EnsureTagsLoadedAsync();
             RecalculateTagLayout();
 

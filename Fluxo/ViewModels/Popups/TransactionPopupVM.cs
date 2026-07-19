@@ -10,6 +10,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Helpers.Transaction;
+using Fluxo.Helper.MainWindow;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
@@ -21,7 +22,6 @@ using Fluxo.ViewModels.Popups.Helpers;
 using Fluxo.ViewModels.Shell;
 using Fluxo.ViewModels.Shell.Main;
 using System.Globalization;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups;
 
@@ -34,10 +34,10 @@ public partial class TransactionPopupVM : ObservableValidator
     private const decimal SimilarAmountTolerance = 0.05m;
 
     private readonly List<AccountVM> _availableAccounts = [];
-    private readonly IReadOnlyList<AccountVM>? _accountsOverride;
-    private readonly Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? _saveRecurringDraftAsync;
+    private IReadOnlyList<AccountVM>? _accountsOverride;
+    private Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? _saveRecurringDraftAsync;
     private readonly List<SavingGoalVM> _orderedGoals = [];
-    private readonly MainVM _mainViewModel;
+    private readonly IMessenger _messenger;
     private readonly TransactionPersistenceHelper _persistence;
     private readonly List<TagVM> _orderedTags = [];
     private readonly IAppDataService _appData;
@@ -59,6 +59,9 @@ public partial class TransactionPopupVM : ObservableValidator
     private int _currentProcessingIndex;
     private int? _currentProcessingRecurringTransactionId;
     private bool _isTransactionStateInitialized;
+    private bool _isInitialized;
+    private TransactionPopupRequest _request = TransactionPopupRequest.Add();
+    private bool _useRecurringDraftMessages;
 
     [ObservableProperty]
     [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateAmountText))]
@@ -116,18 +119,17 @@ public partial class TransactionPopupVM : ObservableValidator
     [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateSelectedTag))]
     private TagVM? _selectedTag;
 
-    public TransactionPopupVM(
-        MainVM mainViewModel,
-        IAppDataService appData,
-        IReadOnlyList<AccountVM>? accountsOverride = null,
-        Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? saveRecurringDraftAsync = null,
-        IMessenger? messenger = null)
+    public TransactionPopupVM(IAppDataService appData, IMessenger messenger)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
-        _persistence = new TransactionPersistenceHelper(appData, messenger ?? WeakReferenceMessenger.Default);
-        _accountsOverride = accountsOverride;
-        _saveRecurringDraftAsync = saveRecurringDraftAsync;
+        _messenger = messenger;
+        _persistence = new TransactionPersistenceHelper(appData, messenger);
+        _messenger.Register<TransactionPopupVM, TransactionPopupRefreshRequestedMessage>(this,
+            static (recipient, message) =>
+            {
+                if (recipient.ViewedTransaction?.Id == message.TransactionId)
+                    message.Reply(recipient.RefreshViewedTransactionAsync());
+            });
         ErrorsChanged += (_, e) =>
         {
             OnPropertyChanged(nameof(CanSave));
@@ -145,10 +147,32 @@ public partial class TransactionPopupVM : ObservableValidator
             Accounts,
             nameof(AccountVM.TypeDisplayName));
 
-        ReloadChoicesFromMainViewModel();
         ResetForm(false);
         _initialState = CaptureState();
     }
+
+    public void Configure(TransactionPopupRequest request)
+    {
+        if (_isInitialized)
+            throw new InvalidOperationException("The transaction popup is already initialized.");
+
+        _request = request;
+        _accountsOverride = request.Accounts;
+        _useRecurringDraftMessages = request.UseRecurringDraftMessages;
+    }
+
+    internal void ConfigureCatalogs(
+        IReadOnlyList<AccountVM> accounts,
+        IReadOnlyList<TagVM> tags,
+        IReadOnlyList<SavingGoalVM> goals)
+    {
+        _accountsOverride = accounts;
+        LoadChoices(accounts, tags, goals);
+    }
+
+    internal void ConfigureRecurringDraftSave(
+        Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>> saveAsync) =>
+        _saveRecurringDraftAsync = saveAsync;
 
     public IReadOnlyList<ExpenseCategoryOption> ExpenseCategories { get; } =
     [
@@ -470,7 +494,6 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public void InitializeRepayment(AccountVM? target = null)
     {
-        ReloadChoicesFromMainViewModel();
         CanChangeRepaymentAccount = target is null;
         SelectedRepaymentAccount = target is null
             ? RepaymentAccounts.FirstOrDefault()
@@ -545,11 +568,104 @@ public partial class TransactionPopupVM : ObservableValidator
         NotifyFormStateChanged();
     }
 
-    public Task InitializeAsync(CancellationToken cancellationToken = default)
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        if (_isInitialized)
+            return;
+
+        await ReloadChoicesAsync(cancellationToken);
+        await ApplyRequestAsync(cancellationToken);
         EnsureTransactionState();
-        return Task.CompletedTask;
+        _isInitialized = true;
+    }
+
+    public void RequestSplit()
+    {
+        if (ViewedTransaction is { Id: > 0 } transaction)
+            _messenger.Send(new TransactionSplitRequestedMessage(transaction.Id));
+    }
+
+    public void RequestAddTag() =>
+        _messenger.Send(new TransactionPopupAddTagRequestedMessage(ViewedTransaction?.Id ?? 0));
+
+    private async Task ApplyRequestAsync(CancellationToken cancellationToken)
+    {
+        switch (_request.Kind)
+        {
+            case TransactionPopupRequestKind.AddTransaction:
+                if (_request.Draft is { } draft)
+                    InitializeFromDraft(draft);
+                break;
+            case TransactionPopupRequestKind.AddRecurringTransaction:
+                InitializeRecurringMode(_request.LockRecurringMode);
+                break;
+            case TransactionPopupRequestKind.EditRecurringTransaction when _request.RecurringTransactionId is { } id:
+                await InitializeFromRecurringTransactionAsync(id, cancellationToken);
+                break;
+            case TransactionPopupRequestKind.ViewTransaction when _request.Transaction is { } transaction:
+                InitializeView(transaction);
+                await LoadChildTransactionsAsync(transaction.Id, cancellationToken);
+                break;
+            case TransactionPopupRequestKind.EditTransaction when _request.Transaction is { } transaction:
+                InitializeView(transaction);
+                await LoadChildTransactionsAsync(transaction.Id, cancellationToken);
+                await BeginEditingViewedTransactionAsync();
+                break;
+            case TransactionPopupRequestKind.Repayment:
+                InitializeRepayment(_request.Account);
+                break;
+            case TransactionPopupRequestKind.RepaymentProcessing:
+                InitializeRepaymentProcessing(_request.Accounts ?? []);
+                break;
+            case TransactionPopupRequestKind.GoalProcessing:
+                InitializeGoalProcessing(_request.Goals ?? []);
+                break;
+            case TransactionPopupRequestKind.RecurringProcessing:
+                InitializeRecurringProcessing(_request.RecurringTransactions ?? []);
+                break;
+            case TransactionPopupRequestKind.RecurringDraft:
+                if (_request.RecurringDraft is { } recurringDraft)
+                    InitializeFromRecurringDraft(recurringDraft);
+                else
+                    InitializeRecurringMode(isLocked: true);
+                break;
+        }
+    }
+
+    private async Task<bool> RefreshViewedTransactionAsync()
+    {
+        if (ViewedTransaction is not { Id: > 0 } viewed)
+            return false;
+
+        var transaction = await TransactionDetailTargetResolver.ResolveAsync(viewed.Id, _appData);
+        if (transaction is null)
+            return false;
+
+        await ReloadChoicesAsync(CancellationToken.None);
+        InitializeView(transaction);
+        await LoadChildTransactionsAsync(transaction.Id, CancellationToken.None);
+        BeginChangeTracking();
+        return true;
+    }
+
+    private async Task LoadChildTransactionsAsync(int parentTransactionId, CancellationToken cancellationToken)
+    {
+        var children = (await _appData.GetTransactionsAsync(cancellationToken))
+            .Where(transaction => transaction.ParentTransactionId == parentTransactionId && !transaction.IsForDeletion)
+            .Select(transaction => new TransactionDetailChildTransactionVM
+            {
+                Id = transaction.Id,
+                Name = transaction.Name,
+                Amount = transaction.Amount,
+                OccurredOn = transaction.OccurredOn,
+                Category = transaction.ExpenseCategory ?? ExpenseCategory.Needs,
+                AccountName = transaction.Account?.Name ?? string.Empty,
+                TagName = transaction.Tag?.Name ?? string.Empty,
+                TagHexCode = transaction.Tag?.HexCode ?? string.Empty,
+                Notes = transaction.Notes,
+                IsIoU = transaction.IsIoU
+            });
+        InitializeChildTransactions(children);
     }
 
     partial void OnIsInstallmentsChanged(bool value)
@@ -782,7 +898,6 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public void InitializeFromDraft(TransactionPopupDraft draft)
     {
-        ReloadChoicesFromMainViewModel();
         var state = AddTransactionHelper.CreateState(
             new AddTransactionHelper.Input(
                 draft.IsExpense, draft.IsGoal, draft.Name, draft.AmountText, draft.AccountId,
@@ -814,7 +929,6 @@ public partial class TransactionPopupVM : ObservableValidator
     {
         ArgumentNullException.ThrowIfNull(transaction);
 
-        ReloadChoicesFromMainViewModel();
         var state = ViewTransactionHelper.CreateState(transaction, Accounts, Goals, RepaymentAccounts);
         LoadedTransaction = state.LoadedTransaction;
         PendingTransaction = state.PendingTransaction;
@@ -1148,7 +1262,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
         try
         {
-            if (input.IsRecurring && _saveRecurringDraftAsync is not null)
+            if (input.IsRecurring && (_saveRecurringDraftAsync is not null || _useRecurringDraftMessages))
             {
                 if (!TryNormalizeRecurringTime(input.RecurringPeriod, input.RecurringTimeText, out var recurringTime))
                     return TransactionPopupSubmissionResult.Failure(GetRecurringTimeValidationMessage(input.RecurringPeriod));
@@ -1168,7 +1282,7 @@ public partial class TransactionPopupVM : ObservableValidator
                         ? BuildInstallmentRecurringName(input.Name)
                         : BuildExpenseName(input.Name, input.Note, input.IsExpense ? "Recurring Expense" : "Recurring Income");
 
-                var draftSaveResult = await _saveRecurringDraftAsync(new RecurringDraftSaveInput(
+                var draftInput = new RecurringDraftSaveInput(
                     input.EditingRecurringTransactionId,
                     recurringType,
                     recurringName,
@@ -1179,13 +1293,16 @@ public partial class TransactionPopupVM : ObservableValidator
                     input.IsExpense ? input.Category : null,
                     input.TagId,
                     input.GoalId,
-                    input.IsInstallments ? input.InstallmentEndDate : null));
+                    input.IsInstallments ? input.InstallmentEndDate : null);
+                var draftSaveResult = _saveRecurringDraftAsync is not null
+                    ? await _saveRecurringDraftAsync(draftInput)
+                    : await SendRecurringDraftSaveRequestAsync(draftInput);
                 if (!draftSaveResult.IsSuccess)
                     return draftSaveResult;
 
                 if (resetAfterSave)
                 {
-                    ReloadChoicesFromMainViewModel();
+                    await ReloadChoicesAsync(CancellationToken.None);
                     await EnsureTagsLoadedAsync();
                     ResetForm(true);
                 }
@@ -1306,19 +1423,17 @@ public partial class TransactionPopupVM : ObservableValidator
 
                 await _appData.SaveChangesAsync();
                 if (input.EditingRecurringTransactionId is not > 0)
-                    WeakReferenceMessenger.Default.Send(new NotificationEntityCreatedMessage(NotificationEntityKind.RecurringTransaction, recurring.Id));
+                    _messenger.Send(new NotificationEntityCreatedMessage(NotificationEntityKind.RecurringTransaction, recurring.Id));
             }
             if (IsProcessingSession)
                 invalidationScope &= ~DashboardDataInvalidationScope.Notifications;
 
             if (input.IsRecurring)
-                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(invalidationScope));
-
-            await _mainViewModel.ReloadCurrentDataAsync(reloadNotifications: !IsProcessingSession);
+                _messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
 
             if (resetAfterSave)
             {
-                ReloadChoicesFromMainViewModel();
+                await ReloadChoicesAsync(CancellationToken.None);
                 await EnsureTagsLoadedAsync();
                 ResetForm(true);
             }
@@ -1330,7 +1445,7 @@ public partial class TransactionPopupVM : ObservableValidator
         }
         catch (Exception exception)
         {
-            FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception, "save transaction");
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception, "save transaction");
             return TransactionPopupSubmissionResult.Failure(string.Empty);
         }
         finally
@@ -1353,12 +1468,11 @@ public partial class TransactionPopupVM : ObservableValidator
             if (!result.IsSuccess)
                 return TransactionPopupSubmissionResult.Failure(result.ErrorMessage);
 
-            await _mainViewModel.ReloadCurrentDataAsync(reloadNotifications: true);
             return TransactionPopupSubmissionResult.Success();
         }
         catch (Exception exception)
         {
-            FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception,
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception,
                 "delete transaction");
             return TransactionPopupSubmissionResult.Failure(string.Empty);
         }
@@ -1399,7 +1513,7 @@ public partial class TransactionPopupVM : ObservableValidator
         }
         catch (Exception exception)
         {
-            FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception,
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception,
                 "check for similar transactions");
             return false;
         }
@@ -1548,11 +1662,29 @@ public partial class TransactionPopupVM : ObservableValidator
         return true;
     }
 
-    private void ReloadChoicesFromMainViewModel()
+    private async Task ReloadChoicesAsync(CancellationToken cancellationToken)
+    {
+        var accounts = _accountsOverride ?? (await _appData.GetAccountsAsync(cancellationToken))
+            .Select(ProjectAccount)
+            .ToArray();
+        var tags = ProjectNonSystemTags(await _appData.GetTagsAsync(cancellationToken)).ToArray();
+        if (tags.Length == 0)
+            tags = _orderedTags.ToArray();
+        var goals = (await _appData.GetSavingGoalsAsync(cancellationToken))
+            .Select(ProjectSavingGoal)
+            .ToArray();
+        if (goals.Length == 0)
+            goals = _orderedGoals.ToArray();
+        LoadChoices(accounts, tags, goals);
+    }
+
+    private void LoadChoices(
+        IReadOnlyList<AccountVM> accounts,
+        IReadOnlyList<TagVM> tags,
+        IReadOnlyList<SavingGoalVM> goals)
     {
         _availableAccounts.Clear();
-        var sourceCatalog = _accountsOverride ?? _mainViewModel.BudgetPanel.Accounts;
-        _availableAccounts.AddRange(sourceCatalog.Where(source => source.IsEnabled));
+        _availableAccounts.AddRange(accounts.Where(source => source.IsEnabled));
         ReplaceCollection(
             RepaymentAccounts,
             _availableAccounts
@@ -1560,13 +1692,12 @@ public partial class TransactionPopupVM : ObservableValidator
                 .OrderBy(source => source.Name, StringComparer.OrdinalIgnoreCase));
 
         _orderedTags.Clear();
-        _orderedTags.AddRange(OrderNonSystemTags(_mainViewModel.BudgetPanel.Tags
-            .Concat(_mainViewModel.BudgetPanel.OtherTags)
+        _orderedTags.AddRange(OrderNonSystemTags(tags
             .GroupBy(tag => tag.Id)
             .Select(group => group.First())));
 
         _orderedGoals.Clear();
-        _orderedGoals.AddRange(_mainViewModel.SavingGoalsPanel.SavingGoals
+        _orderedGoals.AddRange(goals
             .GroupBy(goal => goal.Id)
             .Select(group => group.First())
             .OrderBy(goal => goal.Name));
@@ -1574,7 +1705,17 @@ public partial class TransactionPopupVM : ObservableValidator
         ReplaceCollection(Goals, _orderedGoals);
         RefreshTagCollections();
         RefreshAccounts();
+        ResetForm(false);
         _ = RefreshExpenseCategoryAvailabilityAsync();
+    }
+
+    private async Task<TransactionPopupSubmissionResult> SendRecurringDraftSaveRequestAsync(
+        RecurringDraftSaveInput input)
+    {
+        var message = _messenger.Send(new RecurringDraftSaveRequestedMessage(input));
+        return message.HasReceivedResponse
+            ? await message.Response
+            : TransactionPopupSubmissionResult.Failure("Unable to save the recurring transaction draft.");
     }
 
     private async Task RefreshExpenseCategoryAvailabilityAsync()
@@ -1653,7 +1794,25 @@ public partial class TransactionPopupVM : ObservableValidator
             TransactionCalculationHelper.CalculateSpentByCategory(expenseLogs, currentPeriod),
             TransactionCalculationHelper.CalculateSpentByCategory(expenseLogs, previousPeriod),
             allocationDate,
-            _mainViewModel.BudgetPanel.TotalIncomeAmount);
+            await CalculateBudgetAvailableBaseAsync(allocation));
+    }
+
+    private async Task<decimal> CalculateBudgetAvailableBaseAsync(BudgetAllocation allocation)
+    {
+        if (allocation.AllocationLimit > 0m)
+            return allocation.AllocationLimit;
+
+        var accounts = await _appData.GetAccountsAsync();
+        var balanceBackedSourceIds = accounts
+            .Where(account => account.AccountType != AccountType.Credit)
+            .Select(account => account.Id)
+            .ToHashSet();
+        var balanceBackedExpenses = BudgetEffectiveTransactionFilter
+            .Select(await _appData.GetTransactionsAsync())
+            .Where(transaction => transaction.Type == TransactionType.Expense &&
+                                  balanceBackedSourceIds.Contains(transaction.SourceAccountId))
+            .Sum(transaction => transaction.Amount);
+        return accounts.Sum(account => account.Balance) + balanceBackedExpenses;
     }
 
     private void SetAllExpenseCategoriesEnabled(bool isEnabled)
@@ -2071,7 +2230,7 @@ public partial class TransactionPopupVM : ObservableValidator
             var allowance = BudgetAllocationCalculator.CalculateDailyAllowance(
                 allocation,
                 SelectedDate.Date,
-                _mainViewModel.BudgetPanel.TotalIncomeAmount);
+                CalculateBudgetAvailableBaseAsync(allocation).GetAwaiter().GetResult());
 
             return spent + AmountText > allowance ? "Over Daily Allowance" : string.Empty;
         }
@@ -2188,7 +2347,7 @@ public partial class TransactionPopupVM : ObservableValidator
         }
         catch (Exception exception)
         {
-            FloatingNotificationPublisher.LoggedFailure(WeakReferenceMessenger.Default, exception,
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception,
                 "load transaction history");
             ResetHistoryLists();
         }
@@ -2533,6 +2692,34 @@ public partial class TransactionPopupVM : ObservableValidator
         [ObservableProperty]
         private bool _isEnabled = true;
     }
+
+    internal static AccountVM ProjectAccount(Account account) => new()
+    {
+        Id = account.Id,
+        Name = account.Name,
+        AccountType = account.AccountType,
+        AccountLimit = account.AccountLimit,
+        MaximumSpending = account.MaximumSpending,
+        MinimumPayment = account.MinimumPayment,
+        SpentAmount = account.SpentAmount,
+        Balance = account.Balance,
+        MonthlyDueDate = account.MonthlyDueDate,
+        DeductSource = account.DeductSource,
+        InterestRate = account.InterestRate,
+        PinnedOnUI = account.PinnedOnUI,
+        IsEnabled = account.IsEnabled,
+        IsDefault = account.IsDefault
+    };
+
+    internal static SavingGoalVM ProjectSavingGoal(SavingGoal goal) => new()
+    {
+        Id = goal.Id,
+        Name = goal.Name,
+        TargetAmount = goal.TargetAmount,
+        CurrentAmount = goal.CurrentAmount,
+        SavingEndDate = goal.SavingEndDate,
+        CreatedOn = goal.CreatedOn
+    };
 
     public sealed record TransactionWarning(string Message, bool IsWarning);
 

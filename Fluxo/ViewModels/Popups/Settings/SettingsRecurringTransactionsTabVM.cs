@@ -10,7 +10,6 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Logging;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Shell;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups.Settings;
 
@@ -18,7 +17,6 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
 {
     private const int PageSize = 25;
 
-    private readonly MainVM _mainViewModel;
     private readonly IMessenger _messenger;
     private readonly IAppDataService _appData;
     private readonly HashSet<SettingsRecurringTransactionItemVM> _fixedExpensesVisibleWindow = [];
@@ -29,11 +27,10 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
     [ObservableProperty] private bool _hasMoreItems;
     [ObservableProperty] private bool _isLoading;
 
-    public SettingsRecurringTransactionsTabVM(MainVM mainViewModel, IAppDataService appData, IMessenger? messenger = null)
+    public SettingsRecurringTransactionsTabVM(IAppDataService appData, IMessenger messenger)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
-        _messenger = messenger ?? WeakReferenceMessenger.Default;
+        _messenger = messenger;
 
         RecurringTransactionsView = CollectionViewSource.GetDefaultView(RecurringTransactions);
         RecurringTransactionsView.Filter = FilterRecurringTransaction;
@@ -53,24 +50,13 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
     public bool ShowRecurringTransactionUncheckAllButton => IsRecurringTransactionChecksEnabled && AreAllRecurringTransactionsChecked;
     public bool ShowRecurringTransactionEnableChecksButton => !IsRecurringTransactionChecksEnabled && HasRecurringTransactions;
 
+    public TransactionPopupRequest CreateAddRecurringTransactionViewModel() =>
+        TransactionPopupRequest.AddRecurring(isLocked: true);
+
     public async Task LoadAsync()
     {
         await RefreshRecurringTransactionsAsync();
         IsRecurringTransactionChecksEnabled = false;
-    }
-
-    public TransactionPopupVM CreateAddRecurringTransactionViewModel()
-    {
-        var viewModel = new TransactionPopupVM(_mainViewModel, _appData);
-        viewModel.InitializeRecurringMode(isLocked: true);
-        return viewModel;
-    }
-
-    public async Task<TransactionPopupVM?> CreateEditRecurringTransactionViewModelAsync(int fixedExpenseId)
-    {
-        var viewModel = new TransactionPopupVM(_mainViewModel, _appData);
-        await viewModel.EnsureTagsLoadedAsync();
-        return await viewModel.InitializeFromRecurringTransactionAsync(fixedExpenseId) ? viewModel : null;
     }
 
     public async Task OpenAddRecurringTransactionAsync()
@@ -84,14 +70,14 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
 
     public async Task OpenEditRecurringTransactionAsync(int fixedExpenseId)
     {
-        var viewModel = await CreateEditRecurringTransactionViewModelAsync(fixedExpenseId);
-        if (viewModel is null)
-            return;
-
         _messenger.Send(new SettingsDialogRequestedMessage(
             new SettingsDialogRequest(
                 SettingsDialogRequestType.AddRecurringTransaction,
-                viewModel)));
+                new TransactionPopupRequest
+                {
+                    Kind = TransactionPopupRequestKind.EditRecurringTransaction,
+                    RecurringTransactionId = fixedExpenseId
+                })));
 
         await RefreshRecurringTransactionsAsync(resetPagination: false);
         SelectSingleItem(fixedExpenseId);
@@ -166,7 +152,6 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
             _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.RecurringTransactions));
             _messenger.Send(new DashboardDataInvalidatedMessage(
                 DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-            await _mainViewModel.ReloadCurrentDataAsync();
             await RefreshRecurringTransactionsAsync(resetPagination: false);
 
             return SettingsOperationResult.Success();

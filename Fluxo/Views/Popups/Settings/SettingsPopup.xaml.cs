@@ -383,8 +383,8 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
                 _dialogService.ShowAddAccount(addAccount, this);
                 break;
 
-            case SettingsDialogRequestType.AddRecurringTransaction when request.Payload is TransactionPopupVM quickAdd:
-                _dialogService.ShowAddNewTransaction(quickAdd, this);
+            case SettingsDialogRequestType.AddRecurringTransaction when request.Payload is TransactionPopupRequest popupRequest:
+                _dialogService.ShowAddNewTransaction(popupRequest, this);
                 break;
 
             case SettingsDialogRequestType.AddSavingGoal when request.Payload is AddSavingGoalVM addSavingGoal:

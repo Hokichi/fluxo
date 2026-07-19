@@ -74,8 +74,8 @@
 
         <DataTemplate x:Key="PopupTagTemplate">
             <ToggleButton
-                Content="{Binding Name}"
-                IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+                Content="{Binding Name, Mode=OneWay}"
+                IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=OneWay}"
                 Style="{StaticResource PopupTagItemToggleStyle}" />
         </DataTemplate>
 
@@ -117,8 +117,8 @@
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding IsSplitMode}" Value="True" />
-                        <Condition Binding="{Binding HasNegativeSplitRemainder}" Value="True" />
+                        <Condition Binding="{Binding IsSplitMode, Mode=OneWay}" Value="True" />
+                        <Condition Binding="{Binding HasNegativeSplitRemainder, Mode=OneWay}" Value="True" />
                     </MultiDataTrigger.Conditions>
                     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                     <Setter Property="BorderThickness" Value="1" />
@@ -152,7 +152,7 @@
                                     Width="6"
                                     Height="6"
                                     VerticalAlignment="Center"
-                                    Fill="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Tag}" />
+                                    Fill="{Binding RelativeSource={RelativeSource AncestorType=ToggleButton}, Path=Tag, Mode=OneWay}" />
                                 <TextBlock
                                     Margin="6,0,0,0"
                                     VerticalAlignment="Center"
@@ -177,7 +177,7 @@
                     <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </Trigger>
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=Tag}" />
+                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource Self}, Path=Tag, Mode=OneWay}" />
                     <Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
                 </Trigger>
@@ -212,7 +212,7 @@
                             FontFamily="{DynamicResource Bold}"
                             FontSize="12"
                             Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding Name}"
+                            Text="{Binding Name, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis" />
                         <TextBlock
                             Grid.Column="1"
@@ -220,7 +220,7 @@
                             FontFamily="{DynamicResource Bold}"
                             FontSize="12"
                             Foreground="{DynamicResource Brush.Danger}"
-                            Text="{Binding Amount, StringFormat={}{0:#,##0}}" />
+                            Text="{Binding Amount, StringFormat={}{0:#,##0}, Mode=OneWay}" />
                     </Grid>
 
                     <TextBlock
@@ -229,7 +229,7 @@
                         FontFamily="{DynamicResource Medium}"
                         FontSize="11"
                         Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding OccurredOn, StringFormat={}{0:MMM d, yyyy}}" />
+                        Text="{Binding OccurredOn, StringFormat={}{0:MMM d, yyyy}, Mode=OneWay}" />
 
                     <StackPanel
                         Grid.Row="2"
@@ -238,12 +238,12 @@
                         <Border
                             MaxWidth="96"
                             Padding="8,2"
-                            Background="{Binding TagHexCode}"
+                            Background="{Binding TagHexCode, Mode=OneWay}"
                             CornerRadius="8">
                             <TextBlock
                                 FontFamily="{DynamicResource Bold}"
                                 FontSize="10"
-                                Text="{Binding TagName}"
+                                Text="{Binding TagName, Mode=OneWay}"
                                 TextTrimming="CharacterEllipsis">
                                 <TextBlock.Foreground>
                                     <Binding
@@ -259,7 +259,7 @@
                             FontFamily="{DynamicResource Medium}"
                             FontSize="10"
                             Foreground="{DynamicResource Brush.Text.Muted}"
-                            Text="{Binding CategoryLabel}" />
+                            Text="{Binding CategoryLabel, Mode=OneWay}" />
                     </StackPanel>
                     <Path
                         Grid.Row="2"
@@ -271,7 +271,7 @@
                         Fill="{DynamicResource Brush.Info}"
                         Stretch="Uniform"
                         ToolTip="Lend"
-                        Visibility="{Binding IsIoU, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        Visibility="{Binding IsIoU, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                 </Grid>
             </Border>
         </DataTemplate>
@@ -424,7 +424,7 @@
                             ItemContainerStyle="{StaticResource PopupTagListBoxItemStyle}"
                             ItemTemplate="{StaticResource PopupTagTemplate}"
                             ItemsPanel="{StaticResource PopupVisibleTagsItemsPanelTemplate}"
-                            ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}}"
+                            ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
                             SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                             Style="{StaticResource PopupTagListBoxStyle}" />
                     </StackPanel>
@@ -503,7 +503,7 @@
                     Visibility="{Binding IsSplit, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ItemsControl
                     ItemTemplate="{DynamicResource NestedSplitRowTemplate}"
-                    ItemsSource="{Binding ChildRows}"
+                    ItemsSource="{Binding ChildRows, Mode=OneWay}"
                     Visibility="{Binding IsSplit, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
             </StackPanel>
         </DataTemplate>
@@ -616,7 +616,7 @@
                         ItemContainerStyle="{StaticResource PopupTagListBoxItemStyle}"
                         ItemTemplate="{StaticResource PopupTagTemplate}"
                         ItemsPanel="{StaticResource PopupVisibleTagsItemsPanelTemplate}"
-                        ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}}"
+                        ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
                         SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                         Style="{StaticResource PopupTagListBoxStyle}" />
                 </StackPanel>
@@ -684,7 +684,7 @@
                 x:Name="NormalTransactionNamePinPanel"
                 Grid.Row="0"
                 Width="640"
-                Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                 <Grid Style="{StaticResource FieldHeaderGridStyle}">
                     <TextBlock
                         Margin="0"
@@ -701,7 +701,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBox
                         x:Name="TransactionNameTextBox"
-                        IsReadOnly="{Binding AreFieldsReadOnly}"
+                        IsReadOnly="{Binding AreFieldsReadOnly, Mode=OneWay}"
                         Style="{StaticResource RoundedTextInputStyle}"
                         Text="{Binding NameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <customControls:BalloonCheckBox
@@ -714,7 +714,7 @@
                         HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                         IconSize="14"
                         IsChecked="{Binding IsExcludedFromBudget, Mode=TwoWay}"
-                        IsEnabled="{Binding CanEditFields}"
+                        IsEnabled="{Binding CanEditFields, Mode=OneWay}"
                         ToolTip="Exclude from budget" />
                     <customControls:BalloonCheckBox
                         x:Name="TransactionPinButton"
@@ -726,7 +726,7 @@
                         HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                         IconSize="14"
                         IsChecked="{Binding IsPinned, Mode=TwoWay}"
-                        IsEnabled="{Binding CanEditFields}"
+                        IsEnabled="{Binding CanEditFields, Mode=OneWay}"
                         ToolTip="Pin transaction"
                         UncheckedIcon="{StaticResource Pin}"
                         UncheckedText="Pinned" />
@@ -745,7 +745,7 @@
                         HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                         IconSize="14"
                         IsChecked="{Binding IsRegularMode, Mode=TwoWay}"
-                        IsEnabled="{Binding CanEditFields}"
+                        IsEnabled="{Binding CanEditFields, Mode=OneWay}"
                         ShouldShowText="True"
                         UncheckedIcon="{StaticResource CreditCardAlt}"
                         UncheckedText="Regular" />
@@ -759,7 +759,7 @@
                         HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                         IconSize="14"
                         IsChecked="{Binding IsUnpostedIoUMode, Mode=TwoWay}"
-                        IsEnabled="{Binding CanEditFields}"
+                        IsEnabled="{Binding CanEditFields, Mode=OneWay}"
                         ShouldShowText="True"
                         UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                         UncheckedText="Unposted Debt/IoU" />
@@ -773,7 +773,7 @@
                         HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                         IconSize="14"
                         IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
-                        IsEnabled="{Binding CanEditFields}"
+                        IsEnabled="{Binding CanEditFields, Mode=OneWay}"
                         ShouldShowText="True"
                         UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                         UncheckedText="Posted Debt/IoU" />
@@ -790,7 +790,7 @@
             <Grid
                 x:Name="SplitTransactionAmountPanel"
                 Grid.Row="0"
-                Visibility="{Binding IsSplitMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding IsSplitMode, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -818,11 +818,11 @@
                         Grid.ColumnSpan="3"
                         Style="{StaticResource FieldValidationHintStyle}"
                         Text="Split amounts exceed the original transaction amount."
-                        Visibility="{Binding HasNegativeSplitRemainder, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        Visibility="{Binding HasNegativeSplitRemainder, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     <Border Grid.Row="1" Style="{StaticResource SplitParentAmountHighlightBorderStyle}">
                         <customControls:MoneyTextBox
                             x:Name="SplitTransactionAmountTextBox"
-                            IsReadOnly="{Binding AreFieldsReadOnly}"
+                            IsReadOnly="{Binding AreFieldsReadOnly, Mode=OneWay}"
                             Style="{StaticResource RoundedMoneyTextInputStyle}"
                             Text="{Binding SplitTotalAmount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </Border>
@@ -861,7 +861,7 @@
                 <Grid
                     x:Name="NormalTransactionNameDatePanel"
                     Grid.Row="0"
-                    Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="8" />
@@ -873,7 +873,7 @@
                         <Border Style="{StaticResource SplitParentAmountHighlightBorderStyle}">
                             <customControls:MoneyTextBox
                                 x:Name="TransactionAmountTextBox"
-                                IsReadOnly="{Binding AreFieldsReadOnly}"
+                                IsReadOnly="{Binding AreFieldsReadOnly, Mode=OneWay}"
                                 Style="{StaticResource RoundedMoneyTextInputStyle}"
                                 Text="{Binding AmountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         </Border>
@@ -889,7 +889,7 @@
                     x:Name="NormalTransactionCategorySourcePanel"
                     Grid.Row="1"
                     Margin="0,16,0,0"
-                    Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="8" />
@@ -901,8 +901,8 @@
                         <ComboBox
                             x:Name="TransactionCategoryComboBox"
                             DisplayMemberPath="Label"
-                            IsEnabled="{Binding IsCategoryEnabled}"
-                            ItemsSource="{Binding ExpenseCategories}"
+                            IsEnabled="{Binding IsCategoryEnabled, Mode=OneWay}"
+                            ItemsSource="{Binding ExpenseCategories, Mode=OneWay}"
                             SelectedValue="{Binding SelectedExpenseCategory, Mode=TwoWay}"
                             SelectedValuePath="Value"
                             Style="{StaticResource FluxoComboBoxStyle}" />
@@ -924,7 +924,7 @@
                         <ComboBox
                             x:Name="TransactionAccountComboBox"
                             DisplayMemberPath="Name"
-                            ItemsSource="{Binding AccountsView}"
+                            ItemsSource="{Binding AccountsView, Mode=OneWay}"
                             SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                             Style="{StaticResource FluxoComboBoxStyle}">
                             <ComboBox.GroupStyle>
@@ -938,7 +938,7 @@
                     x:Name="NormalTagsPanel"
                     Grid.Row="2"
                     Margin="0,16,0,0"
-                    Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags" />
                     <DockPanel x:Name="TagsDockPanel" LastChildFill="False">
                         <Button
@@ -948,16 +948,16 @@
                             Content="+ Add Tag"
                             DockPanel.Dock="Left"
                             Style="{StaticResource PopupTagButtonStyle}"
-                            Visibility="{Binding CanEditFields, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding CanEditFields, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
                         <ListBox
                             x:Name="VisibleTagsListBox"
                             DockPanel.Dock="Left"
-                            IsHitTestVisible="{Binding CanEditFields}"
+                            IsHitTestVisible="{Binding CanEditFields, Mode=OneWay}"
                             ItemContainerStyle="{StaticResource PopupTagListBoxItemStyle}"
                             ItemTemplate="{StaticResource PopupTagTemplate}"
                             ItemsPanel="{StaticResource PopupVisibleTagsItemsPanelTemplate}"
-                            ItemsSource="{Binding VisibleTags}"
+                            ItemsSource="{Binding VisibleTags, Mode=OneWay}"
                             SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                             SelectionChanged="OnTagSelectionChanged"
                             Style="{StaticResource PopupTagListBoxStyle}" />
@@ -972,7 +972,7 @@
                             MouseLeave="OnMoreTagsHoverChanged"
                             Style="{StaticResource PopupTagToggleStyle}"
                             Unchecked="OnMoreTagsButtonUnchecked"
-                            Visibility="{Binding HasMoreTags, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding HasMoreTags, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     </DockPanel>
 
                     <Popup
@@ -980,7 +980,7 @@
                         AllowsTransparency="True"
                         Closed="OnMoreTagsPopupClosed"
                         Placement="Bottom"
-                        PlacementTarget="{Binding ElementName=MoreTagsButton}"
+                        PlacementTarget="{Binding ElementName=MoreTagsButton, Mode=OneWay}"
                         PopupAnimation="Fade"
                         StaysOpen="True"
                         VerticalOffset="8">
@@ -1003,11 +1003,11 @@
                                     Text="More Tags" />
                                 <ListBox
                                     x:Name="MoreTagsListBox"
-                                    IsHitTestVisible="{Binding CanEditFields}"
+                                    IsHitTestVisible="{Binding CanEditFields, Mode=OneWay}"
                                     ItemContainerStyle="{StaticResource PopupOtherTagListBoxItemStyle}"
                                     ItemTemplate="{StaticResource PopupTagTemplate}"
                                     ItemsPanel="{StaticResource PopupOverflowTagsItemsPanelTemplate}"
-                                    ItemsSource="{Binding OverflowTags}"
+                                    ItemsSource="{Binding OverflowTags, Mode=OneWay}"
                                     SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                                     SelectionChanged="OnTagSelectionChanged"
                                     Style="{StaticResource PopupTagListBoxStyle}" />
@@ -1020,7 +1020,7 @@
                     x:Name="SplitRowsPanel"
                     Grid.Row="3"
                     Padding="0,12"
-                    Visibility="{Binding IsSplitMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding IsSplitMode, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <StackPanel Grid.IsSharedSizeScope="True">
                         <Button
                             Click="OnAddSplitRowClick"
@@ -1042,7 +1042,7 @@
                             <StackPanel>
                                 <ItemsControl
                                     x:Name="SplitRowsItemsControl"
-                                    ItemsSource="{Binding SplitRows}"
+                                    ItemsSource="{Binding SplitRows, Mode=OneWay}"
                                     Visibility="Collapsed">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -1087,7 +1087,7 @@
                                                                 BorderThickness="1"
                                                                 CornerRadius="8"
                                                                 IsHitTestVisible="False"
-                                                                Visibility="{Binding IsCausingNegativeRemainder, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                                                Visibility="{Binding IsCausingNegativeRemainder, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                                         </Grid>
 
                                                         <StackPanel
@@ -1121,16 +1121,16 @@
                                                             Visibility="{Binding ShowLeafTags, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                                             <ToggleButton
                                                                 x:Name="SplitRowTagToggleButton"
-                                                                Content="{Binding TagDisplayName}"
+                                                                Content="{Binding TagDisplayName, Mode=OneWay}"
                                                                 IsChecked="{Binding IsTagPopupOpen, Mode=TwoWay}"
                                                                 Style="{StaticResource SplitRowTagToggleStyle}"
-                                                                Tag="{Binding SelectedTag.HexCode}" />
+                                                                Tag="{Binding SelectedTag.HexCode, Mode=OneWay}" />
 
                                                             <Popup
                                                                 AllowsTransparency="True"
                                                                 IsOpen="{Binding IsTagPopupOpen, Mode=TwoWay}"
                                                                 Placement="Bottom"
-                                                                PlacementTarget="{Binding ElementName=SplitRowTagToggleButton}"
+                                                                PlacementTarget="{Binding ElementName=SplitRowTagToggleButton, Mode=OneWay}"
                                                                 PopupAnimation="Fade"
                                                                 StaysOpen="False"
                                                                 VerticalOffset="8">
@@ -1144,7 +1144,7 @@
                                                                     <ListBox
                                                                         ItemContainerStyle="{StaticResource SplitRowTagPopupItemStyle}"
                                                                         ItemTemplate="{StaticResource PopupTagTemplate}"
-                                                                        ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}}"
+                                                                        ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
                                                                         SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                                                                         Style="{StaticResource SplitRowTagPopupListBoxStyle}" />
                                                                 </Border>
@@ -1162,7 +1162,7 @@
                                                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                                                 IconSize="14"
                                                                 IsChecked="{Binding IsRegularMode, Mode=TwoWay}"
-                                                                IsEnabled="{Binding CanToggleRecurring}"
+                                                                IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                                                 ShouldShowText="True"
                                                                 UncheckedIcon="{StaticResource CreditCardAlt}"
                                                                 UncheckedText="Regular" />
@@ -1175,7 +1175,7 @@
                                                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                                                 IconSize="14"
                                                                 IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
-                                                                IsEnabled="{Binding CanUseIoU}"
+                                                                IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
                                                                 ShouldShowText="True"
                                                                 UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                                                 UncheckedText="Posted IoU" />
@@ -1212,11 +1212,11 @@
                                                                     <customControls:BalloonToggleState
                                                                         ButtonIcon="{StaticResource ArrowsOutLineVertical}"
                                                                         ButtonText="Split"
-                                                                        OnChecked="{Binding SetSplitModeCommand}" />
+                                                                        OnChecked="{Binding SetSplitModeCommand, Mode=OneWay}" />
                                                                     <customControls:BalloonToggleState
                                                                         ButtonIcon="{StaticResource CallSplit}"
                                                                         ButtonText="Split Equally"
-                                                                        OnChecked="{Binding SetSplitEquallyModeCommand}" />
+                                                                        OnChecked="{Binding SetSplitEquallyModeCommand, Mode=OneWay}" />
                                                                 </customControls:BalloonToggle.States>
                                                             </customControls:BalloonToggle>
 
@@ -1240,8 +1240,8 @@
 
                                                     <ItemsControl
                                                         Margin="0,0,0,0"
-                                                        ItemsSource="{Binding ChildRows}"
-                                                        Visibility="{Binding IsSplit, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                        ItemsSource="{Binding ChildRows, Mode=OneWay}"
+                                                        Visibility="{Binding IsSplit, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
                                                                 <StackPanel Margin="0,0,0,12">
@@ -1290,15 +1290,15 @@
                                                                         <Grid Grid.Column="3" Margin="0,0,8,0">
                                                                             <ToggleButton
                                                                                 x:Name="NestedSplitRowTagToggleButton"
-                                                                                Content="{Binding TagDisplayName}"
+                                                                                Content="{Binding TagDisplayName, Mode=OneWay}"
                                                                                 IsChecked="{Binding IsTagPopupOpen, Mode=TwoWay}"
                                                                                 Style="{StaticResource SplitRowTagToggleStyle}"
-                                                                                Tag="{Binding SelectedTag.HexCode}" />
+                                                                                Tag="{Binding SelectedTag.HexCode, Mode=OneWay}" />
                                                                             <Popup
                                                                                 AllowsTransparency="True"
                                                                                 IsOpen="{Binding IsTagPopupOpen, Mode=TwoWay}"
                                                                                 Placement="Bottom"
-                                                                                PlacementTarget="{Binding ElementName=NestedSplitRowTagToggleButton}"
+                                                                                PlacementTarget="{Binding ElementName=NestedSplitRowTagToggleButton, Mode=OneWay}"
                                                                                 PopupAnimation="Fade"
                                                                                 StaysOpen="False"
                                                                                 VerticalOffset="8">
@@ -1312,7 +1312,7 @@
                                                                                     <ListBox
                                                                                         ItemContainerStyle="{StaticResource SplitRowTagPopupItemStyle}"
                                                                                         ItemTemplate="{StaticResource PopupTagTemplate}"
-                                                                                        ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}}"
+                                                                                        ItemsSource="{Binding DataContext.AllSplitTags, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
                                                                                         SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                                                                                         Style="{StaticResource SplitRowTagPopupListBoxStyle}" />
                                                                                 </Border>
@@ -1329,7 +1329,7 @@
                                                                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                                                                 IconSize="14"
                                                                                 IsChecked="{Binding IsRegularMode, Mode=TwoWay}"
-                                                                                IsEnabled="{Binding CanToggleRecurring}"
+                                                                                IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                                                                 ShouldShowText="True"
                                                                                 UncheckedIcon="{StaticResource CreditCardAlt}"
                                                                                 UncheckedText="Regular" />
@@ -1342,7 +1342,7 @@
                                                                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                                                                 IconSize="14"
                                                                                 IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
-                                                                                IsEnabled="{Binding CanUseIoU}"
+                                                                                IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
                                                                                 ShouldShowText="True"
                                                                                 UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                                                                 UncheckedText="Posted IoU" />
@@ -1374,7 +1374,7 @@
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                                <ItemsControl ItemTemplate="{StaticResource SplitRowTemplate}" ItemsSource="{Binding SplitRows}" />
+                                <ItemsControl ItemTemplate="{StaticResource SplitRowTemplate}" ItemsSource="{Binding SplitRows, Mode=OneWay}" />
                             </StackPanel>
                         </customControls:FadingScrollViewer>
                     </StackPanel>
@@ -1385,7 +1385,7 @@
                 x:Name="NormalTransactionNotePanel"
                 Grid.Row="2"
                 Margin="0,16,0,0"
-                Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding ShowNormalTransactionFields, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                 <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Note" />
                 <Border Style="{StaticResource PopupFieldBorderStyle}">
                     <RichTextBox
@@ -1397,7 +1397,7 @@
                         FontFamily="{DynamicResource Regular}"
                         FontSize="13"
                         Foreground="{DynamicResource Brush.Text.Primary}"
-                        IsReadOnly="{Binding AreFieldsReadOnly}"
+                        IsReadOnly="{Binding AreFieldsReadOnly, Mode=OneWay}"
                         TextChanged="OnNoteTextChanged"
                         VerticalScrollBarVisibility="Auto" />
                 </Border>
@@ -1407,7 +1407,7 @@
                 Grid.Row="0"
                 Grid.RowSpan="3"
                 Background="Transparent"
-                Visibility="{Binding CanEditFields, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                Visibility="{Binding CanEditFields, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}" />
 
             <Border
                 Grid.Row="0"
@@ -1419,7 +1419,7 @@
                 BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="8"
-                Visibility="{Binding ShowChildTransactions, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding ShowChildTransactions, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                 <StackPanel>
                     <TextBlock
                         FontFamily="{DynamicResource Bold}"
@@ -1432,7 +1432,7 @@
                         Margin="0,12,0,0"
                         HorizontalScrollBarVisibility="Disabled"
                         VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemTemplate="{StaticResource ChildTransactionItemTemplate}" ItemsSource="{Binding ChildTransactions}" />
+                        <ItemsControl ItemTemplate="{StaticResource ChildTransactionItemTemplate}" ItemsSource="{Binding ChildTransactions, Mode=OneWay}" />
                     </ScrollViewer>
                 </StackPanel>
             </Border>

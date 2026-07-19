@@ -25,7 +25,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([CreateCheckingSource(balance: 500m)]),
                 CreateAppData());
 
@@ -46,7 +46,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             Assert.Equal("Add New Transaction", vm.PopupTitle);
             Assert.True(vm.CanChangeTransactionType);
@@ -60,7 +60,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([CreateCheckingSource(balance: 500m)]),
                 CreateAppData());
 
@@ -85,7 +85,7 @@ public sealed class TransactionPopupVMValidationTests
                 IsEnabled = true
             };
 
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checking, credit]),
                 CreateAppData());
 
@@ -98,7 +98,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             vm.InitializeRecurringMode(isLocked: false);
 
@@ -136,7 +136,7 @@ public sealed class TransactionPopupVMValidationTests
                 SpentAmount = 90m,
                 DeductSource = checking.Id
             };
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checking, cash, credit]),
                 CreateAppData());
 
@@ -172,7 +172,7 @@ public sealed class TransactionPopupVMValidationTests
                 SpentAmount = 80m,
                 IsEnabled = true
             };
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checking, credit]),
                 CreateAppData());
             if (startFromGoalUpdate)
@@ -208,7 +208,7 @@ public sealed class TransactionPopupVMValidationTests
                 SpentAmount = 120m,
                 IsEnabled = true
             };
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checking, visa, mastercard]),
                 CreateAppData());
             vm.IsRepayment = true;
@@ -295,7 +295,7 @@ public sealed class TransactionPopupVMValidationTests
                     Arg.Do<Transaction>(transaction => saved.Add(transaction)),
                     Arg.Any<CancellationToken>())
                 .Returns(Task.CompletedTask);
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checkingVm, creditVm]),
                 appData);
             vm.InitializeRepayment(creditVm);
@@ -361,7 +361,7 @@ public sealed class TransactionPopupVMValidationTests
                     Arg.Do<Transaction>(transaction => saved.Add(transaction)),
                     Arg.Any<CancellationToken>())
                 .Returns(Task.CompletedTask);
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checkingVm, creditVm]),
                 appData);
             vm.InitializeRepayment(creditVm);
@@ -399,7 +399,7 @@ public sealed class TransactionPopupVMValidationTests
             var appData = CreateAppData();
             appData.GetRecurringTransactionByIdAsync(42, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult<RecurringTransaction?>(recurring));
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), appData);
 
             var initialized = vm.InitializeFromRecurringTransactionAsync(42).GetAwaiter().GetResult();
 
@@ -416,7 +416,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             vm.IsGoal = true;
 
@@ -429,7 +429,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
             vm.IsGoal = true;
 
             vm.SelectedGoal = new SavingGoalVM { Id = 2, Name = "Emergency Fund" };
@@ -445,7 +445,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([CreateCheckingSource(balance: 500m)]),
                 CreateAppData());
             vm.IsGoal = true;
@@ -495,7 +495,7 @@ public sealed class TransactionPopupVMValidationTests
                 TargetAmount = 1_000m,
                 CurrentAmount = 100m
             });
-            var vm = new TransactionPopupVM(main, CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(main, CreateAppData());
 
             vm.InitializeFromDraft(new TransactionPopupVM.TransactionPopupDraft(
                 IsExpense: false,
@@ -572,7 +572,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             Assert.False(vm.HasErrors);
             Assert.False(vm.CanSave);
@@ -586,7 +586,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             vm.NameText = "Coffee";
             vm.AmountText = 5m;
@@ -603,7 +603,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             vm.ValidateAmountField();
 
@@ -619,7 +619,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
             var amountErrorsChangedCount = 0;
             vm.ErrorsChanged += (_, e) =>
             {
@@ -788,7 +788,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             vm.ValidateNameField();
 
@@ -832,7 +832,7 @@ public sealed class TransactionPopupVMValidationTests
                 Balance = 100m,
                 IsEnabled = true
             };
-            var vm = new TransactionPopupVM(CreateMainViewModel([lowBalance, highBalance]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([lowBalance, highBalance]), CreateAppData());
             vm.SelectedAccount = lowBalance;
             vm.AmountText = 30m;
             vm.ValidateAmountField();
@@ -851,7 +851,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = new TransactionPopupVM(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
             vm.BeginChangeTracking();
 
             vm.SelectedDate = vm.SelectedDate.AddDays(1);
@@ -1105,7 +1105,7 @@ public sealed class TransactionPopupVMValidationTests
                 new Tag { Id = 2, Name = "Alpha", HexCode = "#222222" },
                 new Tag { Id = 3, Name = "System", HexCode = "#333333", IsSystemTag = true }
             ]);
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
             vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
             vm.SelectedTag = vm.VisibleTags.Concat(vm.OverflowTags).Single(tag => tag.Id == 1);
             vm.NameText = "Groceries";
@@ -1332,7 +1332,7 @@ public sealed class TransactionPopupVMValidationTests
                 IsEnabled = true
             };
 
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([persistedSource]),
                 CreateAppData(),
                 accountsOverride: [temporarySource]);
@@ -1362,7 +1362,7 @@ public sealed class TransactionPopupVMValidationTests
                 .Returns(Task.FromResult<Account?>(null));
 
             TransactionPopupVM.RecurringDraftSaveInput? captured = null;
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([CreateCheckingSource(balance: 100m)]),
                 appData,
                 accountsOverride: [temporarySource],
@@ -1409,7 +1409,7 @@ public sealed class TransactionPopupVMValidationTests
             };
             var appData = CreateAppData(allocation, CreateTransactionsForBudget(ExpenseCategory.Wants, 30m));
             TransactionPopupVM.RecurringDraftSaveInput? captured = null;
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([source]),
                 appData,
                 saveRecurringDraftAsync: input =>
@@ -1451,7 +1451,7 @@ public sealed class TransactionPopupVMValidationTests
                 OverspendPolicy = OverspendPolicy.SoftDebt
             };
             var appData = CreateAppData(allocation, CreateTransactionsForBudget(ExpenseCategory.Wants, 30m));
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([source]),
                 appData,
                 saveRecurringDraftAsync: _ => Task.FromResult(TransactionPopupVM.TransactionPopupSubmissionResult.Success()));
@@ -2379,7 +2379,7 @@ public sealed class TransactionPopupVMValidationTests
     {
         var main = CreateMainViewModel([source]);
         var data = appData ?? CreateAppData();
-        var vm = new TransactionPopupVM(main, data);
+        var vm = TransactionPopupVMFactory.Create(main, data);
 
         switch (kind)
         {
@@ -2478,7 +2478,7 @@ public sealed class TransactionPopupVMValidationTests
             SpentAmount = spentAmount,
             DeductSource = checking.Id
         };
-        var vm = new TransactionPopupVM(
+        var vm = TransactionPopupVMFactory.Create(
             CreateMainViewModel([checking, credit]),
             CreateAppData());
         vm.InitializeRepayment(credit);
@@ -2671,7 +2671,7 @@ public sealed class TransactionPopupVMValidationTests
         {
             var source = CreateCheckingSource(balance: 500m);
             var appData = CreateAppData();
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData, [source]);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData, [source]);
             var first = new RecurringTransactionVM
             {
                 Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense,
@@ -2708,7 +2708,7 @@ public sealed class TransactionPopupVMValidationTests
         {
             var source = CreateCheckingSource(balance: 500m);
             var appData = CreateAppData();
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
             var tag = new TagVM { Id = 1, Name = "General" };
             vm.InitializeRecurringProcessing(
             [
@@ -2730,7 +2730,7 @@ public sealed class TransactionPopupVMValidationTests
         RunInSta(() =>
         {
             var source = CreateCheckingSource(balance: 500m);
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), CreateAppData());
 
             vm.InitializeView(new TransactionVM
             {
@@ -2817,7 +2817,7 @@ public sealed class TransactionPopupVMValidationTests
             };
             var appData = CreateAppData();
             appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>(tags));
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
 
             vm.InitializeView(new TransactionVM
             {
@@ -2853,7 +2853,7 @@ public sealed class TransactionPopupVMValidationTests
         RunInSta(() =>
         {
             var source = CreateCheckingSource(balance: 500m);
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), CreateAppData());
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), CreateAppData());
             var transaction = new TransactionVM
             {
                 Id = 15,
@@ -2902,7 +2902,7 @@ public sealed class TransactionPopupVMValidationTests
             };
             var appData = CreateAppData();
             appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>(tags));
-            var vm = new TransactionPopupVM(CreateMainViewModel([source]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
             var selectedTag = new TagVM { Id = 5, Name = "Echo", HexCode = "#555555" };
 
             if (editMode)

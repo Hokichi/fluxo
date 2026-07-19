@@ -86,10 +86,11 @@ public sealed class DialogService : IDialogService
         return ShowDialog(popup, owner);
     }
 
-    public bool? ShowAddNewTransaction(TransactionPopupVM viewModel, Window? owner = null)
+    public bool? ShowAddNewTransaction(TransactionPopupRequest request, Window? owner = null)
     {
         using var scope = _serviceProvider.CreateScope();
-        var popup = ActivatorUtilities.CreateInstance<TransactionPopup>(scope.ServiceProvider, viewModel);
+        var popup = scope.ServiceProvider.GetRequiredService<TransactionPopup>();
+        popup.Configure(request);
         return ShowDialog(popup, owner);
     }
 

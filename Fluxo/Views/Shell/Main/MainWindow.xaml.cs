@@ -159,6 +159,10 @@ public partial class MainWindow : Window, IPopupHost
             static (recipient, _) => recipient.OpenHistoryDrawer());
         _messenger.Register<MainWindow, NotificationProcessingRequestedMessage>(this,
             static (recipient, message) => _ = recipient.OpenNotificationProcessingAsync(message.Value.Category, message.Value.EntityIds));
+        _messenger.Register<MainWindow, TransactionSplitRequestedMessage>(this,
+            static (recipient, message) => recipient.OpenTransactionSplitPopup(message.Value));
+        _messenger.Register<MainWindow, TransactionPopupAddTagRequestedMessage>(this,
+            static (recipient, _) => recipient.OpenTransactionPopupTagDialog());
 
         HeaderSearchResultsList.ItemsSource = _headerSearchResults;
         HistoryItemsControl.ItemsSource = _logMemoryManager.HistoryEntries;
@@ -1433,13 +1437,7 @@ public partial class MainWindow : Window, IPopupHost
         if (IsSufficientFundsActionGateLocked())
             return;
 
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
-        if (draft is { } popupDraft)
-            popupViewModel.InitializeFromDraft(popupDraft);
-
-        _dialogService.ShowAddNewTransaction(popupViewModel, this);
+        _dialogService.ShowAddNewTransaction(TransactionPopupRequest.Add(draft), this);
     }
 
     public void OpenRecurringAddNewTransactionPopup()
@@ -1447,11 +1445,7 @@ public partial class MainWindow : Window, IPopupHost
         if (IsSufficientFundsActionGateLocked())
             return;
 
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
-        popupViewModel.InitializeRecurringMode(isLocked: false);
-        _dialogService.ShowAddNewTransaction(popupViewModel, this);
+        _dialogService.ShowAddNewTransaction(TransactionPopupRequest.AddRecurring(isLocked: false), this);
     }
 
     public async void OpenTransactionDetailPopup(TransactionVM transaction)
@@ -1462,17 +1456,14 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
-        popupViewModel.InitializeView(targetTransaction);
-        await InitializeTransactionChildrenAsync(popupViewModel, targetTransaction.Id, appData);
-        _dialogService.ShowAddNewTransaction(popupViewModel, this);
+        _dialogService.ShowAddNewTransaction(TransactionPopupRequest.View(targetTransaction), this);
     }
 
     private async Task OpenNotificationProcessingAsync(string category, IReadOnlyList<int> entityIds)
     {
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popup = new TransactionPopupVM(_mainVM, appData);
+        TransactionPopupRequest request;
 
         if (category == nameof(NotificationGroupCategory.LatePayment))
         {
@@ -1481,13 +1472,13 @@ public partial class MainWindow : Window, IPopupHost
                 Id = account.Id, Name = account.Name, AccountType = account.AccountType, SpentAmount = account.SpentAmount,
                 DeductSource = account.DeductSource, IsEnabled = account.IsEnabled
             }).ToList();
-            popup.InitializeRepaymentProcessing(accounts);
+            request = new TransactionPopupRequest { Kind = TransactionPopupRequestKind.RepaymentProcessing, Accounts = accounts };
         }
         else if (category == nameof(NotificationGroupCategory.GoalOverdue))
         {
             var goals = (await appData.GetSavingGoalsAsync()).Where(goal => entityIds.Contains(goal.Id)).Select(goal => new SavingGoalVM
             { Id = goal.Id, Name = goal.Name, CurrentAmount = goal.CurrentAmount, TargetAmount = goal.TargetAmount, SavingEndDate = goal.SavingEndDate }).ToList();
-            popup.InitializeGoalProcessing(goals);
+            request = new TransactionPopupRequest { Kind = TransactionPopupRequestKind.GoalProcessing, Goals = goals };
         }
         else if (category == nameof(NotificationGroupCategory.RecurringTransactionOverdue))
         {
@@ -1497,12 +1488,11 @@ public partial class MainWindow : Window, IPopupHost
                 Source = new AccountVM { Id = item.SourceId }, Tag = item.TagId is null ? null : new TagVM { Id = item.TagId.Value },
                 IsExcludedFromBudget = item.IsExcludedFromBudget
             }).ToList();
-            popup.InitializeRecurringProcessing(recurring);
+            request = new TransactionPopupRequest { Kind = TransactionPopupRequestKind.RecurringProcessing, RecurringTransactions = recurring };
         }
         else return;
 
-        if (popup.IsProcessingSession)
-            _dialogService.ShowAddNewTransaction(popup, this);
+        _dialogService.ShowAddNewTransaction(request, this);
     }
 
     public async void OpenLedgerTransactionDetailPopup(int transactionId)
@@ -1513,10 +1503,7 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
-        popupViewModel.InitializeView(targetTransaction);
-        await InitializeTransactionChildrenAsync(popupViewModel, targetTransaction.Id, appData);
-        _dialogService.ShowAddNewTransaction(popupViewModel, this);
+        _dialogService.ShowAddNewTransaction(TransactionPopupRequest.View(targetTransaction), this);
     }
 
     public void OpenAccountsListPopup()
@@ -1926,11 +1913,11 @@ public partial class MainWindow : Window, IPopupHost
         if (!account.IsCredit)
             return;
 
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
-        popupViewModel.InitializeRepayment(account);
-        _dialogService.ShowAddNewTransaction(popupViewModel, this);
+        _dialogService.ShowAddNewTransaction(new TransactionPopupRequest
+        {
+            Kind = TransactionPopupRequestKind.Repayment,
+            Account = account
+        }, this);
     }
 
     public void OpenAccountReconciliationPopup(AccountVM account)
@@ -1958,58 +1945,37 @@ public partial class MainWindow : Window, IPopupHost
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new TransactionPopupVM(_mainVM, appData);
-        popupViewModel.InitializeView(targetTransaction);
-        await popupViewModel.BeginEditingViewedTransactionAsync();
-        _dialogService.ShowAddNewTransaction(popupViewModel, this);
+        _dialogService.ShowAddNewTransaction(new TransactionPopupRequest
+        {
+            Kind = TransactionPopupRequestKind.EditTransaction,
+            Transaction = targetTransaction
+        }, this);
     }
 
-    public async void OpenTransactionSplitPopup(TransactionVM transaction, Window owner)
+    public async void OpenTransactionSplitPopup(int transactionId)
     {
         using var scope = _serviceProvider.CreateScope();
         var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transaction, appData);
+        var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transactionId, appData);
         if (targetTransaction is null)
             return;
 
-        var popupViewModel = new TransactionSplitVM(_mainVM, targetTransaction, appData);
+        var popupViewModel = ActivatorUtilities.CreateInstance<TransactionSplitVM>(scope.ServiceProvider, targetTransaction);
+        await popupViewModel.InitializeAsync();
         await popupViewModel.BeginSplitModeAsync();
+        var owner = (Window?)Application.Current.Windows.OfType<TransactionPopup>()
+            .FirstOrDefault(popup => popup.IsViewingTransaction(transactionId)) ?? this;
         _dialogService.ShowTransactionSplit(popupViewModel, owner);
     }
 
-    public async Task RefreshTransactionPopupAsync(TransactionPopupVM popupViewModel, TransactionVM transaction)
+    private void OpenTransactionPopupTagDialog()
     {
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transaction, appData);
-        if (targetTransaction is null)
+        var owner = Application.Current.Windows.OfType<TransactionPopup>().FirstOrDefault(popup => popup.IsActive);
+        if (owner is null)
             return;
 
-        popupViewModel.InitializeView(targetTransaction);
-        await InitializeTransactionChildrenAsync(popupViewModel, targetTransaction.Id, appData);
-    }
-
-    private static async Task InitializeTransactionChildrenAsync(
-        TransactionPopupVM popupViewModel,
-        int parentTransactionId,
-        IAppDataService appData)
-    {
-        var children = (await appData.GetTransactionsAsync())
-            .Where(transaction => transaction.ParentTransactionId == parentTransactionId && !transaction.IsForDeletion)
-            .Select(transaction => new TransactionDetailChildTransactionVM
-            {
-                Id = transaction.Id,
-                Name = transaction.Name,
-                Amount = transaction.Amount,
-                OccurredOn = transaction.OccurredOn,
-                Category = transaction.ExpenseCategory ?? ExpenseCategory.Needs,
-                AccountName = transaction.Account?.Name ?? string.Empty,
-                TagName = transaction.Tag?.Name ?? string.Empty,
-                TagHexCode = transaction.Tag?.HexCode ?? string.Empty,
-                Notes = transaction.Notes,
-                IsIoU = transaction.IsIoU
-            });
-        popupViewModel.InitializeChildTransactions(children);
+        using var scope = _serviceProvider.CreateScope();
+        _dialogService.ShowAddTag(scope.ServiceProvider.GetRequiredService<SettingsTagsTabVM>(), owner);
     }
 
     private void PublishDashboardViewMode()

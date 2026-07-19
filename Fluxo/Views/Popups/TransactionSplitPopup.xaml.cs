@@ -218,8 +218,7 @@ public partial class TransactionSplitPopup : BasePopup
     private void OnPopupClosed(object? sender, EventArgs e)
     {
         _viewModel.PropertyChanged -= _viewModelPropertyChangedHandler;
-        if (Owner is TransactionPopup popup)
-            _ = popup.RefreshViewedTransactionAsync();
+        _viewModel.RequestParentRefresh();
     }
 
     private void OnNoteTextChanged(object sender, TextChangedEventArgs e)

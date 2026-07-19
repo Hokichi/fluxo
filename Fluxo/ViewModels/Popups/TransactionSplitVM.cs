@@ -15,7 +15,6 @@ using Fluxo.Services.Transactions;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups.Helpers;
 using Fluxo.ViewModels.Shell;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups;
 
@@ -24,7 +23,7 @@ public partial class TransactionSplitVM : ObservableObject
     private const int DefaultVisibleTagSlots = 4;
     private readonly List<AccountVM> _availableAccounts = [];
     private readonly TransactionVM _transaction;
-    private readonly MainVM _mainViewModel;
+    private readonly IMessenger _messenger;
     private readonly List<TagVM> _orderedTags = [];
     private readonly List<TransactionSplitRowVM> _removedSplitRows = [];
     private readonly List<TransactionSplitRowVM> _savedSplitRows = [];
@@ -59,21 +58,36 @@ public partial class TransactionSplitVM : ObservableObject
     [ObservableProperty] private AccountVM? _selectedAccount;
     [ObservableProperty] private TagVM? _selectedTag;
 
-    public TransactionSplitVM(MainVM mainViewModel, TransactionVM transaction, IAppDataService appData)
+    public TransactionSplitVM(TransactionVM transaction, IAppDataService appData, IMessenger messenger)
     {
-        _mainViewModel = mainViewModel;
         _transaction = transaction;
         _appData = appData;
+        _messenger = messenger;
         AccountsView = AccountComboBoxViewFactory.CreateGroupedByTypeThenName(
             Accounts,
             nameof(AccountVM.TypeDisplayName),
             nameof(AccountVM.AccountType),
             nameof(AccountVM.Name));
 
-        ReloadChoicesFromMainViewModel();
         _savedState = CreateSavedState(transaction);
         LoadFromSavedState();
     }
+
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        _availableAccounts.Clear();
+        _availableAccounts.AddRange((await _appData.GetAccountsAsync(cancellationToken))
+            .Select(TransactionPopupVM.ProjectAccount)
+            .Where(source => source.IsEnabled));
+        _orderedTags.Clear();
+        _orderedTags.AddRange(TransactionPopupVM.ProjectNonSystemTags(
+            await _appData.GetTagsAsync(cancellationToken)));
+        RefreshTagCollections();
+        RefreshAccounts();
+    }
+
+    public void RequestParentRefresh() =>
+        _messenger.Send(new TransactionPopupRefreshRequestedMessage(_transaction.Id));
 
     public IReadOnlyList<ExpenseCategoryOption> ExpenseCategories { get; } =
     [
@@ -641,9 +655,9 @@ public partial class TransactionSplitVM : ObservableObject
             IsEditing = false;
             ClearSplitMode();
             LoadFromSavedState();
-            WeakReferenceMessenger.Default.Send(new TransactionDetailUpdatedMessage(
+            _messenger.Send(new TransactionDetailUpdatedMessage(
                 new TransactionDetailUpdate(_transaction.Id, previousState, changedFields)));
-            WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
+            _messenger.Send(new RecordLogMemoryMessage(
                 new EditTransactionMemoryAction(beforeHistorySnapshot, TransactionMemorySnapshot.Create(transaction))));
             return TransactionSplitSaveResult.Success();
         }
@@ -712,15 +726,15 @@ public partial class TransactionSplitVM : ObservableObject
                 : new CompositeLogMemoryAction(
                     "Reverse repayment",
                     snapshots.Select(snapshot => (ILogMemoryAction)new DeleteTransactionMemoryAction(snapshot)).ToList());
-            WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(historyAction));
+            _messenger.Send(new RecordLogMemoryMessage(historyAction));
 
             var scope = DashboardDataInvalidationScope.Budget;
             if (plan.Goal is not null)
                 scope |= DashboardDataInvalidationScope.SavingGoals;
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(scope));
+            _messenger.Send(new DashboardDataInvalidatedMessage(scope));
 
             if (plan.RepaymentAccountName is { } accountName)
-                PublishRepaymentReversalNotification(WeakReferenceMessenger.Default, accountName);
+                PublishRepaymentReversalNotification(_messenger, accountName);
             return TransactionSplitSaveResult.Success();
         }
         catch (Exception exception)
@@ -1069,11 +1083,10 @@ public partial class TransactionSplitVM : ObservableObject
                 )
                 .ToList();
 
-            WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
+            _messenger.Send(new RecordLogMemoryMessage(
                 new CompositeLogMemoryAction("Split expense", historyActions)));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+            _messenger.Send(new DashboardDataInvalidatedMessage(
                 DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-            await _mainViewModel.ReloadCurrentDataAsync();
             await LoadChildTransactionsAsync();
 
             IsEditing = false;
@@ -1090,21 +1103,6 @@ public partial class TransactionSplitVM : ObservableObject
         {
             IsSaving = false;
         }
-    }
-
-    private void ReloadChoicesFromMainViewModel()
-    {
-        _availableAccounts.Clear();
-        _availableAccounts.AddRange(_mainViewModel.BudgetPanel.Accounts.Where(source => source.IsEnabled));
-
-        _orderedTags.Clear();
-        _orderedTags.AddRange(_mainViewModel.BudgetPanel.Tags
-            .Concat(_mainViewModel.BudgetPanel.OtherTags)
-            .GroupBy(tag => tag.Id)
-            .Select(group => group.First()));
-
-        RefreshTagCollections();
-        RefreshAccounts();
     }
 
     private void PromoteTagToVisibleStart(TagVM selectedTag)

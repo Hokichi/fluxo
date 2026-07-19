@@ -37,7 +37,7 @@ public sealed class TransactionPopupVMPersistenceTests
                     added = call.Arg<Transaction>();
                     added.Id = 77;
                 });
-            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
             vm.NameText = "Standalone add";
             vm.AmountText = 25m;
 
@@ -67,7 +67,7 @@ public sealed class TransactionPopupVMPersistenceTests
             var transaction = CreateTransaction(account);
             transaction.Amount = 20m;
             var appData = CreateAppData(account, transaction);
-            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
             vm.InitializeView(CreateTransactionVm(accountVm));
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
             vm.AmountText = 40m;
@@ -123,7 +123,7 @@ public sealed class TransactionPopupVMPersistenceTests
             appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult<IReadOnlyList<Transaction>>(added));
             var messenger = new WeakReferenceMessenger();
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([accountVm]), appData, messenger: messenger);
             vm.InitializeRecurringProcessing([
                 new RecurringTransactionVM
@@ -173,7 +173,7 @@ public sealed class TransactionPopupVMPersistenceTests
             var account = CreateAccount();
             var transaction = CreateTransaction(account);
             var appData = CreateAppData(account, transaction);
-            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
             vm.InitializeView(CreateTransactionVm(accountVm));
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
             vm.NameText = "Updated";
@@ -383,7 +383,7 @@ public sealed class TransactionPopupVMPersistenceTests
         {
             var account = CreateAccountVm();
             var appData = CreateAppData(CreateAccount(), CreateTransaction(CreateAccount()));
-            var vm = new TransactionPopupVM(CreateMainViewModel([account]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([account]), appData);
             appData.ClearReceivedCalls();
 
             vm.InitializeAsync().GetAwaiter().GetResult();
@@ -422,7 +422,7 @@ public sealed class TransactionPopupVMPersistenceTests
                     added = call.Arg<Transaction>();
                     added.Id = 88;
                 });
-            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
             vm.InitializeView(CreateTransactionVm(accountVm));
             vm.SwitchToCloneAddMode();
 
@@ -460,7 +460,7 @@ public sealed class TransactionPopupVMPersistenceTests
                 (_, message) => scopes.Add(message.Value));
             try
             {
-                var vm = new TransactionPopupVM(
+                var vm = TransactionPopupVMFactory.Create(
                     CreateMainViewModel([accountVm]), appData, messenger: messenger);
                 vm.InitializeAsync().GetAwaiter().GetResult();
                 var first = new RecurringTransactionVM
@@ -522,7 +522,7 @@ public sealed class TransactionPopupVMPersistenceTests
                 DeductSource = source.Id,
                 IsEnabled = true
             };
-            var vm = new TransactionPopupVM(CreateMainViewModel([source, credit]),
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source, credit]),
                 CreateAppData(CreateAccount(), CreateTransaction(CreateAccount())));
 
             vm.InitializeGoalProcessing([new SavingGoalVM { Id = 1, Name = "Goal" }]);
@@ -566,7 +566,7 @@ public sealed class TransactionPopupVMPersistenceTests
             appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult<IReadOnlyList<Transaction>>(added));
 
-            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
             vm.InitializeGoalProcessing([
                 new SavingGoalVM { Id = 1, Name = "Emergency" },
                 new SavingGoalVM { Id = 1, Name = "Emergency" }
@@ -624,7 +624,7 @@ public sealed class TransactionPopupVMPersistenceTests
                     added.Add(transaction);
                 });
 
-            var vm = new TransactionPopupVM(
+            var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([checkingVm, creditOneVm, creditTwoVm]),
                 appData,
                 [checkingVm, creditOneVm, creditTwoVm]);

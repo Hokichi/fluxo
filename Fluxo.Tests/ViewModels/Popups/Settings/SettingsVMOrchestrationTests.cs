@@ -106,7 +106,7 @@ public sealed class SettingsVMOrchestrationTests
             Substitute.For<IUiSettleAwaiter>(),
             new SettingsBudgetTabVM(() => mainViewModel.BudgetPanel.TotalIncomeAmount, appData, messenger),
             new SettingsAccountsTabVM(mainViewModel, appData, messenger),
-            new SettingsRecurringTransactionsTabVM(mainViewModel, appData, messenger),
+            new SettingsRecurringTransactionsTabVM(appData, messenger),
             new SettingsGoalsTabVM(mainViewModel, appData, messenger),
             new SettingsIoUsTabVM(mainViewModel, appData, messenger),
             new SettingsTagsTabVM(mainViewModel, appData, messenger),

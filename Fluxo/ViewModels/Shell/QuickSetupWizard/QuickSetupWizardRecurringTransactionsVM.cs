@@ -9,7 +9,6 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 using Fluxo.ViewModels.Popups.Helpers;
 
 namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
@@ -18,7 +17,6 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
 {
     private const string DefaultTagColor = "#75B798";
 
-    private readonly MainVM _mainViewModel;
     private readonly IAppDataService _appData;
     private readonly IMessenger _messenger;
     private QuickSetupWizardAccountsVM? _accounts;
@@ -32,13 +30,13 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
     [ObservableProperty] private bool _isStep3Active;
 
     public QuickSetupWizardRecurringTransactionsVM(
-        MainVM mainViewModel,
         IAppDataService appData,
-        IMessenger? messenger = null)
+        IMessenger messenger)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
-        _messenger = messenger ?? WeakReferenceMessenger.Default;
+        _messenger = messenger;
+        _messenger.Register<QuickSetupWizardRecurringTransactionsVM, RecurringDraftSaveRequestedMessage>(this,
+            static (recipient, message) => message.Reply(recipient.SaveDraftRecurringTransactionAsync(message.Input)));
     }
 
     public ObservableCollection<QuickSetupWizardRecurringTransactionItemVM> RecurringTransactions { get; } = [];
@@ -48,33 +46,31 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
         _accounts = accounts;
     }
 
-    public TransactionPopupVM CreateAddViewModel()
+    public TransactionPopupRequest CreateAddViewModel()
     {
-        var accountsVm = GetAccountsOrThrow();
-        var vm = new TransactionPopupVM(
-            _mainViewModel,
-            _appData,
-            accountsOverride: accountsVm.BuildAccountOptions(),
-            saveRecurringDraftAsync: SaveDraftRecurringTransactionAsync);
-        vm.InitializeRecurringMode(isLocked: true);
-        return vm;
+        return new TransactionPopupRequest
+        {
+            Kind = TransactionPopupRequestKind.RecurringDraft,
+            Accounts = GetAccountsOrThrow().BuildAccountOptions(),
+            UseRecurringDraftMessages = true
+        };
     }
 
-    public async Task<TransactionPopupVM> CreateEditViewModelAsync(int id)
+    public async Task<TransactionPopupRequest> CreateEditViewModelAsync(int id)
     {
         if (!_isLoaded)
             await LoadDraftExpensesAsync();
 
-        var accountsVm = GetAccountsOrThrow();
-        var vm = new TransactionPopupVM(
-            _mainViewModel,
-            _appData,
-            accountsOverride: accountsVm.BuildAccountOptions(),
-            saveRecurringDraftAsync: SaveDraftRecurringTransactionAsync);
+        var accounts = GetAccountsOrThrow().BuildAccountOptions();
 
         if (_draftExpenses.TryGetValue(id, out var draft))
         {
-            vm.InitializeFromRecurringDraft(new TransactionPopupVM.RecurringDraftSnapshot(
+            return new TransactionPopupRequest
+            {
+                Kind = TransactionPopupRequestKind.RecurringDraft,
+                Accounts = accounts,
+                UseRecurringDraftMessages = true,
+                RecurringDraft = new TransactionPopupVM.RecurringDraftSnapshot(
                 draft.Id > 0 ? draft.Id : null,
                 draft.Type,
                 draft.Name,
@@ -84,12 +80,17 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
                 draft.AccountId,
                 draft.Category,
                 draft.TagId > 0 ? draft.TagId : null,
-                null));
-            return vm;
+                null)
+            };
         }
 
-        await vm.InitializeFromRecurringTransactionAsync(id);
-        return vm;
+        return new TransactionPopupRequest
+        {
+            Kind = TransactionPopupRequestKind.EditRecurringTransaction,
+            Accounts = accounts,
+            UseRecurringDraftMessages = true,
+            RecurringTransactionId = id
+        };
     }
 
     public Task DeleteAsync(int id)

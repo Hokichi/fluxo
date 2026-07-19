@@ -389,7 +389,7 @@ public sealed class TransactionPopupVMModeTests
         appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
         appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
         appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new BudgetAllocation()));
-        return (new TransactionPopupVM(CreateMainViewModel(accounts), appData), appData);
+        return (TransactionPopupVMFactory.Create(CreateMainViewModel(accounts), appData), appData);
     }
 
     private static AccountVM CreateCheckingAccount() => new()

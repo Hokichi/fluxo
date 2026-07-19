@@ -15,10 +15,10 @@
     CanSkip="{Binding CanSkipProcessing, Mode=OneWay}"
     CanSplit="{Binding CanSplitViewedTransaction, Mode=OneWay}"
     CurrentStep="{Binding CurrentProcessingStep, Mode=OneWay}"
-    IsSaveAndCreateNewButtonEnabled="{Binding CanSave}"
-    IsSaveButtonEnabled="{Binding CanSave}"
+    IsSaveAndCreateNewButtonEnabled="{Binding CanSave, Mode=OneWay}"
+    IsSaveButtonEnabled="{Binding CanSave, Mode=OneWay}"
     Mode="{Binding PopupMode, Mode=OneWay}"
-    PopupTitle="{Binding PopupTitle}"
+    PopupTitle="{Binding PopupTitle, Mode=OneWay}"
     StepCount="{Binding ProcessingStepCount, Mode=OneWay}"
     mc:Ignorable="d">
 
@@ -93,7 +93,7 @@
 
         <DataTemplate x:Key="PopupTagTemplate">
             <RadioButton
-                Content="{Binding Name}"
+                Content="{Binding Name, Mode=OneWay}"
                 GroupName="AddNewTransactionTags"
                 IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                 Style="{StaticResource PopupTagItemRadioStyle}" />
@@ -200,20 +200,20 @@
                     Height="8"
                     Margin="0,5,10,0"
                     VerticalAlignment="Top"
-                    Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}}" />
+                    Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                 <StackPanel Grid.Column="1">
                     <TextBlock
                         FontFamily="{DynamicResource Bold}"
                         FontSize="13"
                         Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Name}"
+                        Text="{Binding Name, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                     <TextBlock
                         Margin="0,3,0,0"
                         FontFamily="{DynamicResource Regular}"
                         FontSize="11"
                         Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding AccountName}"
+                        Text="{Binding AccountName, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="12,0,0,0">
@@ -222,14 +222,14 @@
                         FontFamily="{DynamicResource Bold}"
                         FontSize="13"
                         Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Amount, StringFormat={}{0:N2}}" />
+                        Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
                     <TextBlock
                         Margin="0,3,0,0"
                         HorizontalAlignment="Right"
                         FontFamily="{DynamicResource Regular}"
                         FontSize="11"
                         Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding Date, Converter={StaticResource DateTimeToRelativeDateConverter}}" />
+                        Text="{Binding Date, Converter={StaticResource DateTimeToRelativeDateConverter}, Mode=OneWay}" />
                 </StackPanel>
             </Grid>
         </DataTemplate>
@@ -326,13 +326,13 @@
             x:Key="ExpenseCategoryComboBoxItemStyle"
             BasedOn="{StaticResource FluxoComboBoxItemStyle}"
             TargetType="ComboBoxItem">
-            <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
+            <Setter Property="IsEnabled" Value="{Binding IsEnabled, Mode=OneWay}" />
             <Setter Property="Opacity" Value="1" />
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.4" />
                 </Trigger>
-                <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                <DataTrigger Binding="{Binding IsEnabled, Mode=OneWay}" Value="False">
                     <Setter Property="Opacity" Value="0.45" />
                 </DataTrigger>
             </Style.Triggers>
@@ -349,13 +349,13 @@
                         FontFamily="{DynamicResource Bold}"
                         FontSize="13"
                         Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Name}"
+                        Text="{Binding Name, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                     <TextBlock
                         FontFamily="{DynamicResource Regular}"
                         FontSize="11"
                         Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding AccountName}"
+                        Text="{Binding AccountName, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                 </StackPanel>
                 <TextBlock
@@ -365,7 +365,7 @@
                     FontFamily="{DynamicResource Bold}"
                     FontSize="12"
                     Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="{Binding Amount, StringFormat={}{0:N2}}" />
+                    Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
             </Grid>
         </DataTemplate>
     </customControls:BasePopup.Resources>
@@ -408,7 +408,7 @@
                 <customControls:SegmentedToggleGroup
                     Width="520"
                     HorizontalAlignment="Center"
-                    IsEnabled="{Binding CanChangeTransactionType}">
+                    IsEnabled="{Binding CanChangeTransactionType, Mode=OneWay}">
                     <customControls:SegmentedToggleOption
                         x:Name="ExpenseRadioButton"
                         Content="Expense"
@@ -458,7 +458,7 @@
                             <TextBox
                                 x:Name="ExpenseNameTextBox"
                                 GotKeyboardFocus="OnTransactionNameTextBoxFocusChanged"
-                                IsEnabled="{Binding CanEditTransactionName}"
+                                IsEnabled="{Binding CanEditTransactionName, Mode=OneWay}"
                                 LostKeyboardFocus="OnTransactionNameTextBoxLostKeyboardFocus"
                                 Style="{StaticResource RoundedTextInputStyle}"
                                 Text="{Binding NameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -471,7 +471,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsBudgetExcluded, Mode=TwoWay}"
-                                IsEnabled="{Binding CanToggleBudgetExclusion}"
+                                IsEnabled="{Binding CanToggleBudgetExclusion, Mode=OneWay}"
                                 ToolTip="Exclude from budget"
                                 UncheckedText="Exclude" />
                             <customControls:BalloonCheckBox
@@ -484,7 +484,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsPinned, Mode=TwoWay}"
-                                IsEnabled="{Binding CanPinTransaction}"
+                                IsEnabled="{Binding CanPinTransaction, Mode=OneWay}"
                                 ToolTip="Pin transaction"
                                 UncheckedText="Pinned" />
                         </Grid>
@@ -492,7 +492,7 @@
                             x:Name="ExpenseNameSuggestionsPopup"
                             AllowsTransparency="True"
                             Placement="Bottom"
-                            PlacementTarget="{Binding ElementName=ExpenseNameTextBox}"
+                            PlacementTarget="{Binding ElementName=ExpenseNameTextBox, Mode=OneWay}"
                             PopupAnimation="Fade"
                             StaysOpen="False"
                             VerticalOffset="6">
@@ -500,7 +500,7 @@
                                 x:Name="ExpenseNameSuggestionsListBox"
                                 ItemContainerStyle="{StaticResource TransactionNameSuggestionListBoxItemStyle}"
                                 ItemTemplate="{StaticResource TransactionNameSuggestionTemplate}"
-                                ItemsSource="{Binding TransactionNameSuggestions}"
+                                ItemsSource="{Binding TransactionNameSuggestions, Mode=OneWay}"
                                 SelectionChanged="OnTransactionNameSuggestionSelectionChanged"
                                 Style="{StaticResource TransactionNameSuggestionListBoxStyle}" />
                         </Popup>
@@ -527,7 +527,7 @@
                                     TextChanged="OnTransactionAmountTextBoxTextChanged" />
                             </StackPanel>
 
-                            <StackPanel Grid.Column="2" IsEnabled="{Binding ShowDateSelector}">
+                            <StackPanel Grid.Column="2" IsEnabled="{Binding ShowDateSelector, Mode=OneWay}">
                                 <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Date" />
                                 <components:DateSelector x:Name="ExpenseTransactionDateSelector" SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
                             </StackPanel>
@@ -570,7 +570,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsRegularMode, Mode=TwoWay}"
-                                IsEnabled="{Binding CanToggleRecurring}"
+                                IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                 ShouldShowText="True"
                                 UncheckedIcon="{StaticResource CreditCardAlt}"
                                 UncheckedText="Regular" />
@@ -584,7 +584,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsRecurring, Mode=TwoWay}"
-                                IsEnabled="{Binding CanToggleRecurring}"
+                                IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                 ShouldShowText="True"
                                 UncheckedIcon="{StaticResource RegularRepeat}"
                                 UncheckedText="Recurring" />
@@ -598,7 +598,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsInstallments, Mode=TwoWay}"
-                                IsEnabled="{Binding CanUseInstallments}"
+                                IsEnabled="{Binding CanUseInstallments, Mode=OneWay}"
                                 ShouldShowText="True"
                                 UncheckedIcon="{StaticResource CreditCardClockOutline}"
                                 UncheckedText="Installment" />
@@ -612,7 +612,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsUnpostedIoUMode, Mode=TwoWay}"
-                                IsEnabled="{Binding CanUseIoU}"
+                                IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
                                 ShouldShowText="True"
                                 UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                 UncheckedText="Unposted IoU" />
@@ -626,7 +626,7 @@
                                 HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="14"
                                 IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
-                                IsEnabled="{Binding CanUseIoU}"
+                                IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
                                 ShouldShowText="True"
                                 UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                 UncheckedText="Posted IoU" />
@@ -648,7 +648,7 @@
                         BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="12"
-                        Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}}">
+                        Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                         <StackPanel>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -663,7 +663,7 @@
                                 <StackPanel>
                                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Recurrence" />
                                     <ComboBox
-                                        ItemsSource="{Binding RecurringPeriods}"
+                                        ItemsSource="{Binding RecurringPeriods, Mode=OneWay}"
                                         SelectedItem="{Binding SelectedRecurringPeriod, Mode=TwoWay}"
                                         Style="{StaticResource FluxoComboBoxStyle}" />
                                 </StackPanel>
@@ -672,22 +672,22 @@
                                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Schedule" />
                                     <ComboBox
                                         DisplayMemberPath="Label"
-                                        ItemsSource="{Binding WeekdayOptions}"
+                                        ItemsSource="{Binding WeekdayOptions, Mode=OneWay}"
                                         SelectedValue="{Binding RecurringTimeText, Mode=TwoWay}"
                                         SelectedValuePath="Value"
                                         Style="{StaticResource FluxoComboBoxStyle}"
-                                        Visibility="{Binding ShowRecurringWeekdayInput, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                        Visibility="{Binding ShowRecurringWeekdayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                     <customControls:NumericUpDown
                                         LowerLimit="1"
                                         Step="1"
                                         UpperLimit="28"
-                                        Visibility="{Binding ShowRecurringMonthlyInput, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        Visibility="{Binding ShowRecurringMonthlyInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                         Value="{Binding RecurringTimeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                                 <StackPanel
                                     Grid.Row="1"
                                     Margin="0,16,0,0"
-                                    Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Start Date" />
                                     <components:DateSelector SelectedDate="{Binding StartDate, Mode=TwoWay}" />
                                 </StackPanel>
@@ -695,7 +695,7 @@
                                     Grid.Row="1"
                                     Grid.Column="2"
                                     Margin="0,16,0,0"
-                                    Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="End Date" />
                                     <components:DateSelector SelectedDate="{Binding InstallmentEndDate, Mode=TwoWay}" />
                                 </StackPanel>
@@ -705,9 +705,9 @@
                                 FontFamily="{DynamicResource Regular}"
                                 FontSize="12"
                                 Foreground="{DynamicResource Brush.Mint.Muted}"
-                                Text="{Binding InstallmentSummaryText}"
+                                Text="{Binding InstallmentSummaryText, Mode=OneWay}"
                                 TextWrapping="Wrap"
-                                Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                         </StackPanel>
                     </Border>
 
@@ -725,7 +725,7 @@
                                         <Style TargetType="ColumnDefinition">
                                             <Setter Property="Width" Value="*" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid}" Value="False">
+                                                <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
                                                     <Setter Property="Width" Value="0" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -737,7 +737,7 @@
                                         <Style TargetType="ColumnDefinition">
                                             <Setter Property="Width" Value="16" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid}" Value="False">
+                                                <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
                                                     <Setter Property="Width" Value="0" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -751,7 +751,7 @@
                                 Grid.Row="0"
                                 Grid.Column="0"
                                 Style="{StaticResource SectionLabelStyle}"
-                                Text="{Binding CategoryFieldLabel}"
+                                Text="{Binding CategoryFieldLabel, Mode=OneWay}"
                                 Visibility="{Binding ShowCategoryOrRepaymentField, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                             <TextBlock
                                 Grid.Row="0"
@@ -774,7 +774,7 @@
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="12"
                                             IsChecked="{Binding IsNeedsCategory, Mode=TwoWay}"
-                                            IsEnabled="{Binding CanEditCategory}"
+                                            IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                             ShouldShowText="True"
                                             UncheckedText="Needs" />
                                         <customControls:BalloonRadioButton
@@ -787,7 +787,7 @@
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="12"
                                             IsChecked="{Binding IsWantsCategory, Mode=TwoWay}"
-                                            IsEnabled="{Binding CanEditCategory}"
+                                            IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                             ShouldShowText="True"
                                             UncheckedText="Wants" />
                                         <customControls:BalloonRadioButton
@@ -800,7 +800,7 @@
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="12"
                                             IsChecked="{Binding IsInvestCategory, Mode=TwoWay}"
-                                            IsEnabled="{Binding CanEditCategory}"
+                                            IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                             ShouldShowText="True"
                                             UncheckedText="Invest" />
                                     </StackPanel>
@@ -808,11 +808,11 @@
 
                                 <ComboBox
                                     DisplayMemberPath="Name"
-                                    IsEnabled="{Binding CanChangeRepaymentAccount}"
-                                    ItemsSource="{Binding RepaymentAccounts}"
+                                    IsEnabled="{Binding CanChangeRepaymentAccount, Mode=OneWay}"
+                                    ItemsSource="{Binding RepaymentAccounts, Mode=OneWay}"
                                     SelectedItem="{Binding SelectedRepaymentAccount, Mode=TwoWay}"
                                     Style="{StaticResource FluxoComboBoxStyle}"
-                                    Visibility="{Binding ShowRepaymentAccountField, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding ShowRepaymentAccountField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
 
                             <ComboBox
@@ -820,7 +820,7 @@
                                 Grid.Row="1"
                                 Grid.Column="2"
                                 DisplayMemberPath="Name"
-                                ItemsSource="{Binding AccountsView}"
+                                ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
                                 <ComboBox.GroupStyle>
@@ -837,13 +837,13 @@
                                 <TextBlock
                                     FontFamily="{StaticResource Medium}"
                                     Foreground="{StaticResource Brush.Text.Primary}"
-                                    Text="{Binding CategoryCurrent, StringFormat=N0}" />
+                                    Text="{Binding CategoryCurrent, StringFormat=N0, Mode=OneWay}" />
                                 <components:Icon
                                     Width="6"
                                     Margin="16,0"
                                     Path="{StaticResource AngleRight}"
                                     Color="{StaticResource Brush.Text.Primary}" />
-                                <TextBlock FontFamily="{StaticResource Medium}" Text="{Binding CategoryToBe, StringFormat=N0}">
+                                <TextBlock FontFamily="{StaticResource Medium}" Text="{Binding CategoryToBe, StringFormat=N0, Mode=OneWay}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
@@ -866,13 +866,13 @@
                                 <TextBlock
                                     FontFamily="{StaticResource Medium}"
                                     Foreground="{StaticResource Brush.Text.Primary}"
-                                    Text="{Binding AccountCurrent, StringFormat=N0}" />
+                                    Text="{Binding AccountCurrent, StringFormat=N0, Mode=OneWay}" />
                                 <components:Icon
                                     Width="6"
                                     Margin="16,0"
                                     Path="{StaticResource AngleRight}"
                                     Color="{StaticResource Brush.Text.Primary}" />
-                                <TextBlock FontFamily="{StaticResource Medium}" Text="{Binding AccountToBe, StringFormat=N0}">
+                                <TextBlock FontFamily="{StaticResource Medium}" Text="{Binding AccountToBe, StringFormat=N0, Mode=OneWay}">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
@@ -897,7 +897,7 @@
                                             FontFamily="{StaticResource Medium}"
                                             FontSize="12"
                                             Foreground="{StaticResource Brush.Danger}"
-                                            Text="{Binding Message}"
+                                            Text="{Binding Message, Mode=OneWay}"
                                             TextWrapping="Wrap" />
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -930,7 +930,7 @@
                                 <TextBlock
                                     Grid.Column="0"
                                     Style="{StaticResource FieldValidationHintStyle}"
-                                    Text="{Binding NameValidationHint}" />
+                                    Text="{Binding NameValidationHint, Mode=OneWay}" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -953,7 +953,7 @@
                                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     IconSize="14"
-                                    IsEnabled="{Binding CanToggleRecurring}"
+                                    IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                     ToolTip="Transaction mode">
                                     <customControls:BalloonToggle.States>
                                         <customControls:BalloonToggleState
@@ -961,31 +961,31 @@
                                             ButtonText="Recurring"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
                                             HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            OnChecked="{Binding HandleRecurringModeClickCommand}" />
+                                            OnChecked="{Binding HandleRecurringModeClickCommand, Mode=OneWay}" />
                                         <customControls:BalloonToggleState
                                             ButtonIcon="{StaticResource CreditCardClockOutline}"
                                             ButtonText="Installments"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
                                             HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            OnChecked="{Binding HandleInstallmentsModeClickCommand}" />
+                                            OnChecked="{Binding HandleInstallmentsModeClickCommand, Mode=OneWay}" />
                                         <customControls:BalloonToggleState
                                             ButtonIcon="{StaticResource CreditCardMinusSolid}"
-                                            ButtonText="{Binding IoUTooltip}"
+                                            ButtonText="{Binding IoUTooltip, Mode=OneWay}"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
                                             HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            OnChecked="{Binding HandleIoUModeClickCommand}" />
+                                            OnChecked="{Binding HandleIoUModeClickCommand, Mode=OneWay}" />
                                         <customControls:BalloonToggleState
                                             ButtonIcon="{StaticResource CreditCardOff}"
                                             ButtonText="Exclude"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
                                             HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            OnChecked="{Binding HandleExcludeModeClickCommand}" />
+                                            OnChecked="{Binding HandleExcludeModeClickCommand, Mode=OneWay}" />
                                         <customControls:BalloonToggleState
                                             ButtonIcon="{StaticResource CreditCardXRegular}"
                                             ButtonText="Set as Debt and Exclude"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
                                             HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            OnChecked="{Binding HandleExcludedIoUModeClickCommand}" />
+                                            OnChecked="{Binding HandleExcludedIoUModeClickCommand, Mode=OneWay}" />
                                     </customControls:BalloonToggle.States>
                                 </customControls:BalloonToggle>
                                 <customControls:BalloonCheckBox
@@ -995,7 +995,7 @@
                                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     IsChecked="{Binding IsPinned, Mode=TwoWay}"
-                                    IsEnabled="{Binding CanPinTransaction}"
+                                    IsEnabled="{Binding CanPinTransaction, Mode=OneWay}"
                                     ToolTip="Pinned"
                                     UncheckedIcon="{StaticResource Pin}"
                                     UncheckedText="Pinned" />
@@ -1004,7 +1004,7 @@
                                 x:Name="IncomeNameSuggestionsPopup"
                                 AllowsTransparency="True"
                                 Placement="Bottom"
-                                PlacementTarget="{Binding ElementName=IncomeNameTextBox}"
+                                PlacementTarget="{Binding ElementName=IncomeNameTextBox, Mode=OneWay}"
                                 PopupAnimation="Fade"
                                 StaysOpen="False"
                                 VerticalOffset="6">
@@ -1012,7 +1012,7 @@
                                     x:Name="IncomeNameSuggestionsListBox"
                                     ItemContainerStyle="{StaticResource TransactionNameSuggestionListBoxItemStyle}"
                                     ItemTemplate="{StaticResource TransactionNameSuggestionTemplate}"
-                                    ItemsSource="{Binding TransactionNameSuggestions}"
+                                    ItemsSource="{Binding TransactionNameSuggestions, Mode=OneWay}"
                                     SelectionChanged="OnTransactionNameSuggestionSelectionChanged"
                                     Style="{StaticResource TransactionNameSuggestionListBoxStyle}" />
                             </Popup>
@@ -1032,7 +1032,7 @@
                                 Style="{StaticResource RoundedMoneyTextInputStyle}"
                                 Text="{Binding AmountText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}"
                                 TextChanged="OnTransactionAmountTextBoxTextChanged" />
-                            <StackPanel Margin="0,16,0,0" Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Margin="0,16,0,0" Visibility="{Binding ShowInstallmentEndDate, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                 <TextBlock Style="{StaticResource SectionLabelStyle}" Text="End Date" />
                                 <components:DateSelector SelectedDate="{Binding InstallmentEndDate, Mode=TwoWay}" />
                                 <TextBlock
@@ -1040,7 +1040,7 @@
                                     FontFamily="{DynamicResource Regular}"
                                     FontSize="11"
                                     Foreground="{DynamicResource Brush.Text.Muted}"
-                                    Text="{Binding InstallmentSummaryText}"
+                                    Text="{Binding InstallmentSummaryText, Mode=OneWay}"
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </StackPanel>
@@ -1058,7 +1058,7 @@
                             <ComboBox
                                 x:Name="IncomeAccountComboBox"
                                 DisplayMemberPath="Name"
-                                ItemsSource="{Binding AccountsView}"
+                                ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
                                 <ComboBox.GroupStyle>
@@ -1068,30 +1068,30 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
-                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel}" />
+                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel, Mode=OneWay}" />
                             <components:DateSelector
                                 x:Name="IncomeTransactionDateSelector"
                                 SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
-                                Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                            <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                 <ComboBox
-                                    ItemsSource="{Binding RecurringPeriods}"
+                                    ItemsSource="{Binding RecurringPeriods, Mode=OneWay}"
                                     SelectedItem="{Binding SelectedRecurringPeriod, Mode=TwoWay}"
                                     Style="{StaticResource FluxoComboBoxStyle}" />
                                 <ComboBox
                                     Margin="0,8,0,0"
                                     DisplayMemberPath="Label"
-                                    ItemsSource="{Binding WeekdayOptions}"
+                                    ItemsSource="{Binding WeekdayOptions, Mode=OneWay}"
                                     SelectedValue="{Binding RecurringTimeText, Mode=TwoWay}"
                                     SelectedValuePath="Value"
                                     Style="{StaticResource FluxoComboBoxStyle}"
-                                    Visibility="{Binding ShowRecurringWeekdayInput, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding ShowRecurringWeekdayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                 <customControls:NumericUpDown
                                     Margin="0,8,0,0"
                                     LowerLimit="1"
                                     Step="1"
                                     UpperLimit="28"
-                                    Visibility="{Binding ShowRecurringMonthlyInput, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Visibility="{Binding ShowRecurringMonthlyInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                     Value="{Binding RecurringTimeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </StackPanel>
@@ -1123,30 +1123,30 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel}" />
+                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel, Mode=OneWay}" />
                             <components:DateSelector
                                 x:Name="GoalTransactionDateSelector"
                                 SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
-                                Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                            <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                 <ComboBox
-                                    ItemsSource="{Binding RecurringPeriods}"
+                                    ItemsSource="{Binding RecurringPeriods, Mode=OneWay}"
                                     SelectedItem="{Binding SelectedRecurringPeriod, Mode=TwoWay}"
                                     Style="{StaticResource FluxoComboBoxStyle}" />
                                 <ComboBox
                                     Margin="0,8,0,0"
                                     DisplayMemberPath="Label"
-                                    ItemsSource="{Binding WeekdayOptions}"
+                                    ItemsSource="{Binding WeekdayOptions, Mode=OneWay}"
                                     SelectedValue="{Binding RecurringTimeText, Mode=TwoWay}"
                                     SelectedValuePath="Value"
                                     Style="{StaticResource FluxoComboBoxStyle}"
-                                    Visibility="{Binding ShowRecurringWeekdayInput, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding ShowRecurringWeekdayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                 <customControls:NumericUpDown
                                     Margin="0,8,0,0"
                                     LowerLimit="1"
                                     Step="1"
                                     UpperLimit="28"
-                                    Visibility="{Binding ShowRecurringMonthlyInput, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Visibility="{Binding ShowRecurringMonthlyInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                     Value="{Binding RecurringTimeText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </StackPanel>
@@ -1156,7 +1156,7 @@
                             <ComboBox
                                 x:Name="GoalAccountComboBox"
                                 DisplayMemberPath="Name"
-                                ItemsSource="{Binding AccountsView}"
+                                ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
                                 <ComboBox.GroupStyle>
@@ -1171,7 +1171,7 @@
                         <ComboBox
                             x:Name="GoalComboBox"
                             DisplayMemberPath="Name"
-                            ItemsSource="{Binding Goals}"
+                            ItemsSource="{Binding Goals, Mode=OneWay}"
                             SelectedItem="{Binding SelectedGoal, Mode=TwoWay}"
                             Style="{StaticResource FluxoComboBoxStyle}" />
                     </StackPanel>
@@ -1201,7 +1201,7 @@
                         ItemContainerStyle="{StaticResource PopupTagListBoxItemStyle}"
                         ItemTemplate="{StaticResource PopupTagTemplate}"
                         ItemsPanel="{StaticResource PopupVisibleTagsItemsPanelTemplate}"
-                        ItemsSource="{Binding VisibleTags}"
+                        ItemsSource="{Binding VisibleTags, Mode=OneWay}"
                         SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                         SelectionChanged="OnTagSelectionChanged"
                         Style="{StaticResource PopupTagListBoxStyle}" />
@@ -1216,7 +1216,7 @@
                         MouseLeave="OnMoreTagsHoverChanged"
                         Style="{StaticResource PopupTagToggleStyle}"
                         Unchecked="OnMoreTagsButtonUnchecked"
-                        Visibility="{Binding HasMoreTags, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        Visibility="{Binding HasMoreTags, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                 </DockPanel>
 
                 <Popup
@@ -1224,7 +1224,7 @@
                     AllowsTransparency="True"
                     Closed="OnMoreTagsPopupClosed"
                     Placement="Bottom"
-                    PlacementTarget="{Binding ElementName=MoreTagsButton}"
+                    PlacementTarget="{Binding ElementName=MoreTagsButton, Mode=OneWay}"
                     PopupAnimation="Fade"
                     StaysOpen="True"
                     VerticalOffset="8">
@@ -1250,7 +1250,7 @@
                                 ItemContainerStyle="{StaticResource PopupOtherTagListBoxItemStyle}"
                                 ItemTemplate="{StaticResource PopupTagTemplate}"
                                 ItemsPanel="{StaticResource PopupOverflowTagsItemsPanelTemplate}"
-                                ItemsSource="{Binding OverflowTags}"
+                                ItemsSource="{Binding OverflowTags, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                                 SelectionChanged="OnTagSelectionChanged"
                                 Style="{StaticResource PopupTagListBoxStyle}" />
@@ -1263,7 +1263,7 @@
                 Grid.Row="3"
                 Grid.Column="0"
                 Margin="0,16,0,0">
-                <StackPanel Visibility="{Binding ShowNoteField, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Visibility="{Binding ShowNoteField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Note" />
                     <Border Style="{StaticResource PopupFieldBorderStyle}">
                         <TextBox
@@ -1279,13 +1279,13 @@
                     </Border>
                 </StackPanel>
 
-                <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Goal" />
                     <ComboBox
                         x:Name="SharedGoalComboBox"
                         VerticalAlignment="Top"
                         DisplayMemberPath="Name"
-                        ItemsSource="{Binding Goals}"
+                        ItemsSource="{Binding Goals, Mode=OneWay}"
                         SelectedItem="{Binding SelectedGoal, Mode=TwoWay}"
                         Style="{StaticResource FluxoComboBoxStyle}" />
                 </StackPanel>
@@ -1308,13 +1308,13 @@
                     <Grid>
                         <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
                             <ListBox
-                                behaviors:ScrollOnDemandBehavior.HasMoreItems="{Binding PinnedHistory.HasMoreItems}"
+                                behaviors:ScrollOnDemandBehavior.HasMoreItems="{Binding PinnedHistory.HasMoreItems, Mode=OneWay}"
                                 behaviors:ScrollOnDemandBehavior.IsEnabled="True"
                                 behaviors:ScrollOnDemandBehavior.IsLoading="False"
-                                behaviors:ScrollOnDemandBehavior.LoadMoreCommand="{Binding PinnedHistory.LoadMoreCommand}"
+                                behaviors:ScrollOnDemandBehavior.LoadMoreCommand="{Binding PinnedHistory.LoadMoreCommand, Mode=OneWay}"
                                 ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
                                 ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
-                                ItemsSource="{Binding PinnedHistory.Items}"
+                                ItemsSource="{Binding PinnedHistory.Items, Mode=OneWay}"
                                 PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
                                 SelectedItem="{Binding SelectedPinnedHistoryItem, Mode=TwoWay}"
                                 Style="{StaticResource TransactionHistoryListBoxStyle}" />
@@ -1326,20 +1326,20 @@
                             FontSize="12"
                             Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="No pinned items"
-                            Visibility="{Binding PinnedHistory.IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding PinnedHistory.IsEmpty, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     </Grid>
                 </customControls:CollapsingCard>
 
                 <customControls:CollapsingCard Grid.Row="2" HeaderText="History">
                     <customControls:FadingScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Hidden">
                         <ListBox
-                            behaviors:ScrollOnDemandBehavior.HasMoreItems="{Binding TransactionHistory.HasMoreItems}"
+                            behaviors:ScrollOnDemandBehavior.HasMoreItems="{Binding TransactionHistory.HasMoreItems, Mode=OneWay}"
                             behaviors:ScrollOnDemandBehavior.IsEnabled="True"
                             behaviors:ScrollOnDemandBehavior.IsLoading="False"
-                            behaviors:ScrollOnDemandBehavior.LoadMoreCommand="{Binding TransactionHistory.LoadMoreCommand}"
+                            behaviors:ScrollOnDemandBehavior.LoadMoreCommand="{Binding TransactionHistory.LoadMoreCommand, Mode=OneWay}"
                             ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
                             ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
-                            ItemsSource="{Binding TransactionHistory.Items}"
+                            ItemsSource="{Binding TransactionHistory.Items, Mode=OneWay}"
                             PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
                             SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}"
                             Style="{StaticResource TransactionHistoryListBoxStyle}" />
