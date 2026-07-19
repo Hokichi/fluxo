@@ -847,7 +847,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasChanges_TracksOnlyNameAndAmountInput()
+    public void HasChanges_TracksEntityChanges()
     {
         RunInSta(() =>
         {
@@ -858,7 +858,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.NoteText = "Ignore for pending updates";
             vm.IsRecurring = true;
 
-            Assert.False(vm.HasChanges);
+            Assert.True(vm.HasChanges);
 
             vm.NameText = "Coffee";
 
@@ -2306,14 +2306,14 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasChanges_IgnoresGeneratedGoalName()
+    public void HasChanges_TracksGeneratedGoalName()
     {
         RunInSta(() =>
         {
             var vm = CreateVm(TransactionKind.Goal, CreateCheckingSource(balance: 500m), isRecurring: false);
             vm.BeginChangeTracking();
             vm.NameText = "Generated replacement";
-            Assert.False(vm.HasChanges);
+            Assert.True(vm.HasChanges);
             vm.AmountText = 1m;
             Assert.True(vm.HasChanges);
         });

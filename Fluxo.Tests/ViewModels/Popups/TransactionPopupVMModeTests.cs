@@ -195,6 +195,121 @@ public sealed class TransactionPopupVMModeTests
         });
     }
 
+    [Fact]
+    public void View_edit_mode_starts_with_equal_loaded_and_pending_transactions()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+
+            vm.InitializeView(CreateTransaction());
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+        });
+    }
+
+    [Fact]
+    public void View_mode_keeps_pending_equal_when_the_loaded_goal_is_not_available()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            var transaction = CreateTransaction();
+            transaction.GoalId = 99;
+            transaction.Tag = null;
+            transaction.ExpenseCategory = ExpenseCategory.Savings;
+            transaction.Name = "Goal Update for Legacy Goal";
+
+            vm.InitializeView(transaction);
+
+            Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+        });
+    }
+
+    [Fact]
+    public void Form_edits_update_pending_without_mutating_loaded_transaction()
+    {
+        RunInSta(() =>
+        {
+            var checking = CreateCheckingAccount();
+            var savings = new AccountVM
+            {
+                Id = 2,
+                Name = "Savings",
+                AccountType = AccountType.Checking,
+                IsEnabled = true
+            };
+            var (vm, _) = CreateVm([checking, savings]);
+            vm.InitializeView(CreateTransaction());
+            var loaded = vm.LoadedTransaction;
+
+            vm.AmountText = 20m;
+            vm.NameText = "Lunch";
+            vm.SelectedAccount = savings;
+
+            Assert.Equal(5m, loaded.Amount);
+            Assert.Equal("Coffee", loaded.Name);
+            Assert.Equal(checking.Id, loaded.SourceAccountId);
+            Assert.Equal(20m, vm.PendingTransaction.Amount);
+            Assert.Equal("Lunch", vm.PendingTransaction.Name);
+            Assert.Equal(savings.Id, vm.PendingTransaction.SourceAccountId);
+        });
+    }
+
+    [Fact]
+    public void HasChanges_uses_pending_entity_equality_after_form_synchronization()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeView(CreateTransaction());
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            Assert.False(vm.HasChanges);
+
+            vm.NoteText = "Afternoon";
+
+            Assert.False(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.True(vm.HasChanges);
+        });
+    }
+
+    [Fact]
+    public void Add_mode_starts_unchanged_and_tracks_a_real_form_edit()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.BeginChangeTracking();
+
+            Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.False(vm.HasChanges);
+
+            vm.NoteText = "Memo";
+
+            Assert.False(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.True(vm.HasChanges);
+        });
+    }
+
+    [Fact]
+    public void Form_synchronization_does_not_call_app_data()
+    {
+        RunInSta(() =>
+        {
+            var (vm, appData) = CreateVm();
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            appData.ClearReceivedCalls();
+
+            vm.IsPinned = true;
+
+            Assert.True(vm.PendingTransaction.IsPinned);
+            Assert.Empty(appData.ReceivedCalls());
+        });
+    }
+
     private static TransactionVM CreateTransaction()
     {
         var account = CreateCheckingAccount();

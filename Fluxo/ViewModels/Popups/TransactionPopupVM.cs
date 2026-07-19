@@ -206,7 +206,7 @@ public partial class TransactionPopupVM : ObservableValidator
     ];
 
     public bool CanSave => !IsSaving && IsCurrentInputValid();
-    public bool HasChanges => _isChangeTrackingInitialized && HasPendingTransactionInputChanges();
+    public bool HasChanges => _isChangeTrackingInitialized && !LoadedTransaction.Equals(PendingTransaction);
     public bool HasTransactionNameSuggestions => TransactionNameSuggestions.Count > 0;
     public bool IsRecurringTransactionMode => IsRecurring || IsInstallments;
     public bool IsRegularMode
@@ -315,6 +315,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public void BeginChangeTracking()
     {
+        EnsureTransactionState();
         _initialState = CaptureState();
         _isChangeTrackingInitialized = true;
         NotifyFormStateChanged();
@@ -845,6 +846,9 @@ public partial class TransactionPopupVM : ObservableValidator
         IsExcludedFromBudget = loaded.IsExcludedFromBudget;
         SelectedAccount = Accounts.FirstOrDefault(account => account.Id == loaded.SourceAccountId) ?? loaded.Account;
         SelectedTag = loaded.Tag;
+        SelectedGoal = Goals.FirstOrDefault(goal => goal.Id == loaded.GoalId);
+        SelectedRepaymentAccount = RepaymentAccounts.FirstOrDefault(account => account.Id == loaded.RepaymentAccountId);
+        PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
         ViewedTransaction = loaded;
         _isTransactionTypeLocked = true;
         RefreshTagCollections();
@@ -2298,6 +2302,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     private void NotifyFormStateChanged()
     {
+        SyncPendingTransactionFromForm();
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(HasChanges));
         OnPropertyChanged(nameof(ShowCategoryImpact));
@@ -2374,27 +2379,14 @@ public partial class TransactionPopupVM : ObservableValidator
         }
     }
 
-    private bool HasPendingTransactionInputChanges()
-    {
-        var initialInput = new PendingTransactionInputState(
-            IsGoal || IsRepayment ? string.Empty : _initialState.NameText ?? string.Empty,
-            _initialState.AmountText);
-        var currentInput = new PendingTransactionInputState(
-            IsGoal || IsRepayment ? string.Empty : NameText ?? string.Empty,
-            AmountText);
-
-        return HasPendingTransactionInputValue(currentInput) && !currentInput.Equals(initialInput);
-    }
-
-    private static bool HasPendingTransactionInputValue(PendingTransactionInputState state)
-    {
-        return !string.IsNullOrWhiteSpace(state.NameText) || state.AmountText > 0m;
-    }
-
     private void EnsureTransactionState()
     {
-        if (!_isTransactionStateInitialized)
-            SetTransactionState(new TransactionVM());
+        if (_isTransactionStateInitialized)
+            return;
+
+        SetTransactionState(new TransactionVM());
+        SyncPendingTransactionFromForm();
+        LoadedTransaction = TransactionMappingHelper.CreateLoaded(PendingTransaction);
     }
 
     private void SetTransactionState(TransactionVM source)
@@ -2414,10 +2406,29 @@ public partial class TransactionPopupVM : ObservableValidator
 
     private void SyncGeneratedPendingTransaction()
     {
-        if (!_isTransactionStateInitialized || !IsGeneratedAddMode)
+        SyncPendingTransactionFromForm();
+    }
+
+    private void SyncPendingTransactionFromForm()
+    {
+        if (!_isTransactionStateInitialized)
             return;
 
-        ApplyGeneratedAddTransaction(PendingTransaction, TransactionMappingHelper.CreatePending(CreateGeneratedAddTransaction()));
+        PendingTransaction.Type = IsExpense || IsGoal || IsRepayment ? TransactionType.Expense : TransactionType.Income;
+        PendingTransaction.SourceAccountId = SelectedAccount?.Id ?? 0;
+        PendingTransaction.GoalId = IsGoal ? SelectedGoal?.Id : null;
+        PendingTransaction.RepaymentAccountId = IsRepayment ? SelectedRepaymentAccount?.Id : null;
+        PendingTransaction.Account = SelectedAccount ?? new AccountVM();
+        PendingTransaction.Name = NameText;
+        PendingTransaction.Amount = AmountText;
+        PendingTransaction.OccurredOn = SelectedDate.Date;
+        PendingTransaction.Notes = NoteText;
+        PendingTransaction.ExpenseCategory = IsGoal ? ExpenseCategory.Savings : IsExpense ? SelectedExpenseCategory : null;
+        PendingTransaction.Tag = IsGoal || IsRepayment ? null : SelectedTag;
+        PendingTransaction.IsPinned = IsPinned;
+        PendingTransaction.IsIoU = IsIoU;
+        PendingTransaction.ShouldAffectBalance = ShouldAffectBalance;
+        PendingTransaction.IsExcludedFromBudget = IsBudgetExcluded;
     }
 
     private bool IsGeneratedAddMode => _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
@@ -2439,21 +2450,6 @@ public partial class TransactionPopupVM : ObservableValidator
         ExpenseCategory = IsGoal ? ExpenseCategory.Savings : null,
         IsExcludedFromBudget = IsBudgetExcluded
     };
-
-    private static void ApplyGeneratedAddTransaction(TransactionVM target, TransactionVM source)
-    {
-        target.Type = source.Type;
-        target.SourceAccountId = source.SourceAccountId;
-        target.GoalId = source.GoalId;
-        target.RepaymentAccountId = source.RepaymentAccountId;
-        target.Account = source.Account;
-        target.Name = source.Name;
-        target.Amount = source.Amount;
-        target.OccurredOn = source.OccurredOn;
-        target.Notes = source.Notes;
-        target.ExpenseCategory = source.ExpenseCategory;
-        target.IsExcludedFromBudget = source.IsExcludedFromBudget;
-    }
 
     [RelayCommand]
     public async Task LoadHistoryAsync(CancellationToken cancellationToken = default)
@@ -3129,10 +3125,6 @@ public partial class TransactionPopupVM : ObservableValidator
         int SelectedTagId,
         int SelectedGoalId,
         int SelectedRepaymentAccountId);
-
-    private readonly record struct PendingTransactionInputState(
-        string NameText,
-        decimal AmountText);
 
     private int? _editingRecurringTransactionId;
 
