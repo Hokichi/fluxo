@@ -55,6 +55,7 @@ public partial class TransactionPopupVM : ObservableValidator
     private readonly List<RecurringTransactionVM> _processingRecurringTransactions = [];
     private readonly Dictionary<object, ProcessingTransactionHelper.State> _processingStates = [];
     private readonly Dictionary<object, FormState> _processingSnapshots = [];
+    private readonly Dictionary<object, int> _processingTransactionIds = [];
     private int _currentProcessingIndex;
     private int? _currentProcessingRecurringTransactionId;
     private bool _isTransactionStateInitialized;
@@ -421,6 +422,8 @@ public partial class TransactionPopupVM : ObservableValidator
         var result = await SaveAsync(false);
         if (!result.IsSuccess)
             return result;
+        if (result.TransactionId is > 0)
+            _processingTransactionIds[current] = result.TransactionId.Value;
         _processingStates[current] = ProcessingTransactionHelper.State.Processed;
         MoveToNextPending();
         NotifyProcessingChanged();
@@ -1203,6 +1206,7 @@ public partial class TransactionPopupVM : ObservableValidator
                 return TransactionPopupSubmissionResult.Failure(spendingValidation.ErrorMessage);
 
             var invalidationScope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
+            int? persistedTransactionId = null;
 
             if (!input.IsRecurring)
             {
@@ -1235,9 +1239,11 @@ public partial class TransactionPopupVM : ObservableValidator
                     PendingTransaction,
                     new TransactionPersistenceHelper.SaveOptions(
                         IsRepayment: input.IsRepayment,
-                        RelatedRecurringTransactionId: input.RelatedRecurringTransactionId));
+                        RelatedRecurringTransactionId: input.RelatedRecurringTransactionId,
+                        SuppressNotificationInvalidation: IsProcessingSession));
                 if (!persistenceResult.IsSuccess)
                     return TransactionPopupSubmissionResult.Failure(persistenceResult.ErrorMessage);
+                persistedTransactionId = persistenceResult.TransactionId;
             }
             else if (input.IsRecurring)
             {
@@ -1304,7 +1310,7 @@ public partial class TransactionPopupVM : ObservableValidator
             var savedType = input.IsGoal ? "Goal contribution" : input.IsExpense ? "Expense" : "Income";
             FloatingNotificationPublisher.Success(
                 input.Name, $"{savedType} was recorded.", true, "Added");
-            return TransactionPopupSubmissionResult.Success();
+            return TransactionPopupSubmissionResult.Success(persistedTransactionId);
         }
         catch (Exception exception)
         {
@@ -2535,16 +2541,19 @@ public partial class TransactionPopupVM : ObservableValidator
         bool ShouldAffectBalance,
         bool IsExcludedFromBudget);
 
-    public readonly record struct TransactionPopupSubmissionResult(bool IsSuccess, string? ErrorMessage)
+    public readonly record struct TransactionPopupSubmissionResult(
+        bool IsSuccess,
+        string? ErrorMessage,
+        int? TransactionId = null)
     {
-        public static TransactionPopupSubmissionResult Success()
+        public static TransactionPopupSubmissionResult Success(int? transactionId = null)
         {
-            return new TransactionPopupSubmissionResult(true, null);
+            return new TransactionPopupSubmissionResult(true, null, transactionId);
         }
 
         public static TransactionPopupSubmissionResult Failure(string? errorMessage)
         {
-            return new TransactionPopupSubmissionResult(false, errorMessage);
+            return new TransactionPopupSubmissionResult(false, errorMessage, null);
         }
     }
 
@@ -2630,6 +2639,7 @@ public partial class TransactionPopupVM : ObservableValidator
         _processingRecurringTransactions.Clear();
         _processingStates.Clear();
         _processingSnapshots.Clear();
+        _processingTransactionIds.Clear();
         _currentProcessingIndex = 0;
         foreach (var target in targets)
             _processingStates[target] = ProcessingTransactionHelper.State.Pending;
@@ -2659,6 +2669,7 @@ public partial class TransactionPopupVM : ObservableValidator
         if (_processingSnapshots.TryGetValue(target, out var snapshot))
         {
             LoadProcessingTarget(target, snapshot);
+            RestoreProcessingTransactionState(target);
             return;
         }
 
@@ -2682,6 +2693,7 @@ public partial class TransactionPopupVM : ObservableValidator
         }
 
         SetPopupPurpose(TransactionPopupPurpose.Processing);
+        RestoreProcessingTransactionState(target);
     }
 
     private void LoadProcessingTarget(object target, FormState snapshot)
@@ -2712,6 +2724,18 @@ public partial class TransactionPopupVM : ObservableValidator
         SetPopupPurpose(TransactionPopupPurpose.Processing);
     }
 
+    private void RestoreProcessingTransactionState(object target)
+    {
+        SyncPendingTransactionFromForm();
+        var loaded = TransactionMappingHelper.CreateLoaded(PendingTransaction);
+        loaded.Id = _processingTransactionIds.GetValueOrDefault(target);
+        LoadedTransaction = loaded;
+        PendingTransaction.Id = 0;
+        PendingTransaction.LoggedOn = default;
+        PendingTransaction.ParentTransactionId = null;
+        PendingTransaction.IsForDeletion = false;
+    }
+
     private void ClearProcessing()
     {
         _processingRepayments.Clear();
@@ -2719,6 +2743,7 @@ public partial class TransactionPopupVM : ObservableValidator
         _processingRecurringTransactions.Clear();
         _processingStates.Clear();
         _processingSnapshots.Clear();
+        _processingTransactionIds.Clear();
         _currentProcessingIndex = 0;
         _currentProcessingRecurringTransactionId = null;
         ProcessingStepCount = 0;

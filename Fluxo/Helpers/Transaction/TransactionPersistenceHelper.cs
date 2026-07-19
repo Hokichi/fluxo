@@ -91,7 +91,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             return Result.Failure("Please select a valid account.");
 
         if (options.IsRepayment)
-            return await AddRepaymentAsync(loaded, pending, account, cancellationToken);
+            return await AddRepaymentAsync(loaded, pending, account, options, cancellationToken);
 
         SavingGoal? goal = null;
         Tag? tag = null;
@@ -100,7 +100,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             goal = await appData.GetSavingGoalByIdAsync(goalId, cancellationToken);
             if (goal is null)
                 return Result.Failure("Please select a valid goal.");
-            tag = await ResolveTagAsync(GoalUpdateTagName, GoalUpdateTagColor, true, cancellationToken);
+            tag = await ResolveTagAsync(GoalUpdateTagName, GoalUpdateTagColor, false, cancellationToken);
         }
         else if (pending.Tag is { Id: > 0 } pendingTag)
         {
@@ -129,7 +129,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(transaction))));
         messenger.Send(new DashboardDataInvalidatedMessage(
             DashboardDataInvalidationScope.Budget |
-            DashboardDataInvalidationScope.Notifications |
+            (options.SuppressNotificationInvalidation ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.Notifications) |
             (goal is null ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.SavingGoals)));
         return Result.Success(transaction.Id);
     }
@@ -138,6 +138,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         TransactionVM loaded,
         TransactionVM pending,
         Account source,
+        SaveOptions options,
         CancellationToken cancellationToken)
     {
         if (pending.RepaymentAccountId is not { } repaymentAccountId)
@@ -166,7 +167,8 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
                 new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Income))
             ])));
         messenger.Send(new DashboardDataInvalidatedMessage(
-            DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+            DashboardDataInvalidationScope.Budget |
+            (options.SuppressNotificationInvalidation ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.Notifications)));
         return Result.Success(pair.Expense.Id);
     }
 
@@ -186,9 +188,11 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         var oldAccount = transaction.Account;
         if (oldAccount is null)
             return Result.Failure("Unable to load this transaction source.");
-        var newAccount = await appData.GetAccountByIdAsync(pending.SourceAccountId, cancellationToken);
-        if (newAccount is null)
+        var selectedAccount = await appData.GetAccountByIdAsync(pending.SourceAccountId, cancellationToken);
+        if (selectedAccount is null)
             return Result.Failure("Please select a valid account.");
+        var sameAccount = oldAccount.Id == selectedAccount.Id;
+        var newAccount = sameAccount ? oldAccount : selectedAccount;
 
         Tag? tag = null;
         if (pending.Tag is { Id: > 0 } pendingTag)
@@ -213,22 +217,38 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         }
 
         var before = TransactionMemorySnapshot.Create(transaction);
-        if (transaction.AffectsAccountBalance)
-        {
-            LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
-            appData.UpdateAccount(oldAccount);
-        }
-
         var newAffectsBalance = TransactionEntity.ShouldAffectAccountBalance(pending.IsIoU, pending.ShouldAffectBalance);
-        if (newAffectsBalance)
+        if (sameAccount)
         {
-            LogMemoryPersistence.ApplyTransactionToAccount(newAccount, pending.Type, pending.Amount);
-            appData.UpdateAccount(newAccount);
+            if (transaction.AffectsAccountBalance && newAffectsBalance)
+                ApplyAccountDelta(oldAccount, transaction.Type, pending.Amount - transaction.Amount);
+            else if (transaction.AffectsAccountBalance)
+                LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
+            else if (newAffectsBalance)
+                LogMemoryPersistence.ApplyTransactionToAccount(oldAccount, pending.Type, pending.Amount);
+
+            if (transaction.AffectsAccountBalance || newAffectsBalance)
+                appData.UpdateAccount(oldAccount);
+        }
+        else
+        {
+            if (transaction.AffectsAccountBalance)
+            {
+                LogMemoryPersistence.RevertTransactionFromAccount(oldAccount, transaction.Type, transaction.Amount);
+                appData.UpdateAccount(oldAccount);
+            }
+
+            if (newAffectsBalance)
+            {
+                LogMemoryPersistence.ApplyTransactionToAccount(newAccount, pending.Type, pending.Amount);
+                appData.UpdateAccount(newAccount);
+            }
         }
 
         var sourceChanged = transaction.SourceAccountId != newAccount.Id;
         var exclusionChanged = transaction.IsExcludedFromBudget != pending.IsExcludedFromBudget;
-        ApplyPending(transaction, pending, newAccount, tag, options.RelatedRecurringTransactionId);
+        ApplyPending(transaction, pending, newAccount, tag,
+            options.RelatedRecurringTransactionId ?? transaction.RelatedRecurringTransactionId);
         appData.UpdateTransaction(transaction);
 
         if (sourceChanged || exclusionChanged)
@@ -351,6 +371,23 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         transaction.IsExcludedFromBudget = pending.IsExcludedFromBudget;
     }
 
+    private static void ApplyAccountDelta(Account account, TransactionType type, decimal delta)
+    {
+        if (type == TransactionType.Expense)
+        {
+            if (account.AccountType == AccountType.Credit)
+                account.SpentAmount += delta;
+            else
+                account.Balance -= delta;
+            return;
+        }
+
+        if (account.AccountType == AccountType.Credit)
+            account.SpentAmount = Math.Max(0m, account.SpentAmount - delta);
+        else
+            account.Balance += delta;
+    }
+
     internal static string BuildTransactionName(string name, string note, string fallbackName)
     {
         if (!string.IsNullOrWhiteSpace(name))
@@ -388,7 +425,8 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
     public readonly record struct SaveOptions(
         bool AllowMaximumSpendingOverflow = false,
         bool IsRepayment = false,
-        int? RelatedRecurringTransactionId = null);
+        int? RelatedRecurringTransactionId = null,
+        bool SuppressNotificationInvalidation = false);
 
     public readonly record struct Result(
         bool IsSuccess,

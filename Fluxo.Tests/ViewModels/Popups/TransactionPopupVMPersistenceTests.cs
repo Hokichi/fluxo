@@ -7,6 +7,8 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces;
 using Fluxo.Core.Interfaces.Repositories;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Helpers.Transaction;
+using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Transactions;
 using Fluxo.Tests.TestDoubles;
 using Fluxo.ViewModels.Entities;
@@ -41,6 +43,211 @@ public sealed class TransactionPopupVMPersistenceTests
             appData.Received(1).GetTransactionByIdAsync(42, Arg.Any<CancellationToken>());
             appData.Received(1).UpdateTransaction(transaction);
             _ = appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Fact]
+    public async Task Edit_same_account_applies_balance_delta_once_when_accounts_are_separate_instances()
+    {
+        var loadedAccount = CreateAccount();
+        loadedAccount.Balance = 90m;
+        var selectedAccount = CreateAccount();
+        selectedAccount.Balance = 100m;
+        var transaction = CreateTransaction(loadedAccount);
+        var appData = CreateAppData(selectedAccount, transaction);
+        var loaded = CreateTransactionVm(CreateAccountVm());
+        var pending = TransactionMappingHelper.CreatePending(loaded);
+        pending.Amount = 25m;
+
+        var result = await new TransactionPersistenceHelper(appData, new WeakReferenceMessenger())
+            .SaveAsync(loaded, pending, new());
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(75m, loadedAccount.Balance);
+        Assert.Equal(100m, selectedAccount.Balance);
+        appData.Received(1).UpdateAccount(loadedAccount);
+        appData.DidNotReceive().UpdateAccount(selectedAccount);
+    }
+
+    [Fact]
+    public async Task Add_updates_account_balance_once_and_keeps_goal_tag_non_system()
+    {
+        var account = CreateAccount();
+        account.Balance = 100m;
+        var appData = CreateAppData(account, CreateTransaction(account));
+        appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+            .Do(call => call.Arg<Transaction>().Id = 77);
+        appData.When(data => data.AddTagAsync(Arg.Any<Tag>(), Arg.Any<CancellationToken>()))
+            .Do(call => call.Arg<Tag>().Id = 99);
+        var pending = new TransactionVM
+        {
+            Type = TransactionType.Expense,
+            SourceAccountId = account.Id,
+            Name = "Goal contribution",
+            Amount = 10m,
+            OccurredOn = DateTime.Today,
+            ExpenseCategory = ExpenseCategory.Savings,
+            GoalId = 1
+        };
+        var goal = new SavingGoal { Id = 1, Name = "Emergency", CurrentAmount = 100m };
+        appData.GetSavingGoalByIdAsync(1, Arg.Any<CancellationToken>()).Returns(goal);
+        var scopes = new List<DashboardDataInvalidationScope>();
+        var messenger = new WeakReferenceMessenger();
+        var recipient = new object();
+        messenger.Register<DashboardDataInvalidatedMessage>(recipient, (_, message) => scopes.Add(message.Value));
+
+        var result = await new TransactionPersistenceHelper(appData, messenger)
+            .SaveAsync(new(), pending, new());
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(90m, account.Balance);
+        Assert.Equal(110m, goal.CurrentAmount);
+        await appData.Received(1).AddTagAsync(Arg.Is<Tag>(tag => !tag.IsSystemTag), Arg.Any<CancellationToken>());
+        Assert.Contains(DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.SavingGoals |
+                        DashboardDataInvalidationScope.Notifications, scopes);
+    }
+
+    [Fact]
+    public async Task Delete_reverts_balance_and_publishes_history_and_invalidation()
+    {
+        var account = CreateAccount();
+        account.Balance = 90m;
+        var transaction = CreateTransaction(account);
+        var appData = CreateAppData(account, transaction);
+        var messenger = new WeakReferenceMessenger();
+        var invalidations = new List<DashboardDataInvalidationScope>();
+        var histories = 0;
+        var recipient = new object();
+        messenger.Register<DashboardDataInvalidatedMessage>(recipient, (_, message) => invalidations.Add(message.Value));
+        messenger.Register<RecordLogMemoryMessage>(recipient, (_, _) => histories++);
+
+        var result = await new TransactionPersistenceHelper(appData, messenger)
+            .DeleteAsync(new TransactionVM { Id = transaction.Id });
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(100m, account.Balance);
+        appData.Received(1).RemoveTransaction(transaction);
+        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(1, histories);
+        Assert.Contains(DashboardDataInvalidationScope.Budget, invalidations);
+    }
+
+    [Fact]
+    public void Initialize_clone_and_discard_processing_are_write_free()
+    {
+        RunInSta(() =>
+        {
+            var account = CreateAccountVm();
+            var appData = CreateAppData(CreateAccount(), CreateTransaction(CreateAccount()));
+            var vm = new TransactionPopupVM(CreateMainViewModel([account]), appData);
+            appData.ClearReceivedCalls();
+
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.SwitchToCloneAddMode();
+            vm.InitializeRecurringProcessing([
+                new RecurringTransactionVM
+                {
+                    Id = 9,
+                    Name = "Recurring",
+                    Amount = 10m,
+                    Type = RecurringTransactionType.Expense,
+                    Source = account,
+                    Tag = new TagVM { Id = 1, Name = "General" }
+                }
+            ]);
+            vm.PersistProcessedItemsAsync().GetAwaiter().GetResult();
+
+            appData.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+            appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+            appData.DidNotReceive().RemoveTransaction(Arg.Any<Transaction>());
+        });
+    }
+
+    [Fact]
+    public void Clone_save_creates_a_new_transaction_id()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            var account = CreateAccount();
+            var appData = CreateAppData(account, CreateTransaction(account));
+            Transaction? added = null;
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    added = call.Arg<Transaction>();
+                    added.Id = 88;
+                });
+            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            vm.InitializeView(CreateTransactionVm(accountVm));
+            vm.SwitchToCloneAddMode();
+
+            var result = vm.SaveAsync(false).GetAwaiter().GetResult();
+
+            Assert.True(result.IsSuccess, result.ErrorMessage);
+            Assert.Equal(88, added?.Id);
+            _ = appData.DidNotReceive().GetTransactionByIdAsync(42, Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Fact]
+    public void Processing_back_after_next_edits_the_saved_item_and_suppresses_notification_invalidation()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            var account = CreateAccount();
+            var firstPersisted = CreateTransaction(account);
+            firstPersisted.Id = 100;
+            var appData = CreateAppData(account, firstPersisted);
+            var nextId = 100;
+            var added = new List<Transaction>();
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    var transaction = call.Arg<Transaction>();
+                    transaction.Id = nextId++;
+                    added.Add(transaction);
+                });
+            var scopes = new List<DashboardDataInvalidationScope>();
+            var recipient = new object();
+            WeakReferenceMessenger.Default.Register<DashboardDataInvalidatedMessage>(recipient,
+                (_, message) => scopes.Add(message.Value));
+            try
+            {
+                var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+                vm.InitializeAsync().GetAwaiter().GetResult();
+                var first = new RecurringTransactionVM
+                {
+                    Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense,
+                    Category = ExpenseCategory.Needs, Source = accountVm,
+                    Tag = new TagVM { Id = 1, Name = "General" }
+                };
+                var second = new RecurringTransactionVM
+                {
+                    Id = 2, Name = "Second", Amount = 20m, Type = RecurringTransactionType.Expense,
+                    Category = ExpenseCategory.Needs, Source = accountVm,
+                    Tag = new TagVM { Id = 1, Name = "General" }
+                };
+                vm.InitializeRecurringProcessing([first, second]);
+
+                Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+                Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+                vm.NavigatePreviousProcessing();
+                vm.NameText = "First edited";
+                Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+
+                appData.Received(2).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+                appData.Received(1).UpdateTransaction(firstPersisted);
+                Assert.Equal([1, 2], added.Select(transaction => transaction.RelatedRecurringTransactionId));
+                Assert.All(scopes, scope => Assert.Equal(
+                    DashboardDataInvalidationScope.None,
+                    scope & DashboardDataInvalidationScope.Notifications));
+            }
+            finally
+            {
+                WeakReferenceMessenger.Default.UnregisterAll(recipient);
+            }
         });
     }
 
