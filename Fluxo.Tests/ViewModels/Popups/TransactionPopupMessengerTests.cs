@@ -1,8 +1,12 @@
 using AutoMapper;
+using System.Windows;
+using System.Runtime.ExceptionServices;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces;
+using Fluxo.Core.Interfaces.Repositories;
+using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Tests.TestDoubles;
@@ -14,6 +18,7 @@ using Fluxo.ViewModels.Shell.QuickSetupWizard;
 using Fluxo.Services.Dialogs;
 using Fluxo.Mappings;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Xunit;
 
@@ -127,58 +132,186 @@ public sealed class TransactionPopupMessengerTests
     [Fact]
     public void FirstRunAddTagRequest_UsesHostBeforeMainWindowExists()
     {
-        var messenger = new WeakReferenceMessenger();
-        var dialog = Substitute.For<IDialogService>();
-        var tags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
-        using var host = new TransactionPopupAddTagHost(() => tags, dialog, messenger, () => null);
+        RunInSta(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var dialog = Substitute.For<IDialogService>();
+            var tags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            using var root = new ServiceCollection()
+                .AddScoped(_ => tags)
+                .BuildServiceProvider();
+            var owner = new Window();
+            using var host = new TransactionPopupAddTagHost(
+                root.GetRequiredService<IServiceScopeFactory>(), dialog, messenger, _ => owner);
 
-        messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
 
-        dialog.Received(1).ShowAddTag(tags, null);
+            dialog.Received(1).ShowAddTag(tags, owner);
+            owner.Close();
+        });
     }
 
     [Fact]
-    public async Task Ledger_ReceivesTransactionDetailAndInvalidationMessages()
+    public void AddTagRequest_WithTwoHosts_UsesOnlyLatestHostAndScopedWorkflow()
+    {
+        RunInSta(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var dialog = Substitute.For<IDialogService>();
+            var firstTags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            var secondTags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            using var firstRoot = new ServiceCollection().AddScoped(_ => firstTags).BuildServiceProvider();
+            using var secondRoot = new ServiceCollection().AddScoped(_ => secondTags).BuildServiceProvider();
+            var owner = new Window();
+            using var firstHost = new TransactionPopupAddTagHost(
+                firstRoot.GetRequiredService<IServiceScopeFactory>(), dialog, messenger, _ => owner);
+            using var secondHost = new TransactionPopupAddTagHost(
+                secondRoot.GetRequiredService<IServiceScopeFactory>(), dialog, messenger, _ => owner);
+
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
+
+            dialog.DidNotReceive().ShowAddTag(firstTags, owner);
+            dialog.Received(1).ShowAddTag(secondTags, owner);
+            secondHost.Dispose();
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
+            dialog.Received(1).ShowAddTag(secondTags, owner);
+            owner.Close();
+        });
+    }
+
+    [Fact]
+    public void AddTagRequest_FromSiblingPopup_IsIgnoredByActiveOwnerHost()
+    {
+        RunInSta(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var dialog = Substitute.For<IDialogService>();
+            var tags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            using var root = new ServiceCollection().AddScoped(_ => tags).BuildServiceProvider();
+            var owner = new Window();
+            var requester = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+            using var host = new TransactionPopupAddTagHost(
+                root.GetRequiredService<IServiceScopeFactory>(), dialog, messenger,
+                candidate => ReferenceEquals(candidate, requester) ? owner : null);
+
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, new TransactionPopupVM(
+                Substitute.For<IAppDataService>(), messenger)));
+            dialog.DidNotReceive().ShowAddTag(tags, owner);
+
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, requester));
+            dialog.Received(1).ShowAddTag(tags, owner);
+            owner.Close();
+        });
+    }
+
+    [Fact]
+    public async Task ComposedMainAndLedgerGraph_RefreshesEachOwnerOncePerPath()
     {
         var messenger = new WeakReferenceMessenger();
-        var vm = CreateLedgerVm([], messenger, out var transactionService, out var reloads);
+        var graph = CreateMainGraph(messenger);
 
         messenger.Send(new TransactionDetailUpdatedMessage(new TransactionDetailUpdate(
             42,
             new TransactionDetailSnapshot(10m, DateTime.Today, ExpenseCategory.Needs, 1, 1),
             TransactionDetailChangedFields.Amount)));
-        await reloads.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await graph.LedgerFirstReload.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        Assert.Equal(1, graph.LedgerCalls());
+        await graph.BudgetTransactionService.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
+        await graph.SpentTransactionService.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
 
         messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
-        await reloads.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        await graph.LedgerSecondReload.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
-        await transactionService.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
+        Assert.Equal(2, graph.LedgerCalls());
+        await graph.BudgetTransactionService.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
+        await graph.SpentTransactionService.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
     }
 
-    private static LedgerVM CreateLedgerVm(
-        IReadOnlyList<Fluxo.Core.DTO.TransactionDto> transactions,
-        IMessenger messenger,
-        out ITransactionService transactionService,
-        out TaskCompletionSource reloads)
+    private static MainGraph CreateMainGraph(IMessenger messenger)
     {
-        transactionService = Substitute.For<ITransactionService>();
-        var completion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        reloads = completion;
-        transactionService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(_ =>
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var userSettings = Substitute.For<IUserSettingsRepository>();
+        userSettings.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        unitOfWork.UserSettings.Returns(userSettings);
+        var budgetAllocation = Substitute.For<IBudgetAllocationRepository>();
+        budgetAllocation.GetAsync(Arg.Any<CancellationToken>()).Returns(new BudgetAllocation());
+        unitOfWork.BudgetAllocation.Returns(budgetAllocation);
+        var transactions = Substitute.For<ITransactionRepository>();
+        transactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        unitOfWork.Transactions.Returns(transactions);
+        var savingGoals = Substitute.For<ISavingGoalRepository>();
+        savingGoals.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        unitOfWork.SavingGoals.Returns(savingGoals);
+        var recurring = Substitute.For<IRecurringTransactionRepository>();
+        recurring.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        unitOfWork.RecurringTransactions.Returns(recurring);
+        var accounts = Substitute.For<IAccountRepository>();
+        accounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        unitOfWork.Accounts.Returns(accounts);
+
+        var runner = new InlineDataOperationRunner(unitOfWork);
+        var mapper = Substitute.For<IMapper>();
+        mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
+        mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
+        mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns([]);
+        mapper.Map<IReadOnlyList<Fluxo.Core.DTO.SavingGoalDto>>(Arg.Any<object>()).Returns([]);
+        mapper.Map<IReadOnlyList<RecurringTransactionVM>>(Arg.Any<object>()).Returns([]);
+        mapper.Map<IReadOnlyList<Fluxo.Core.DTO.RecurringTransactionDto>>(Arg.Any<object>()).Returns([]);
+
+        var budgetTransactions = Substitute.For<ITransactionService>();
+        budgetTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var budgetAccounts = Substitute.For<IAccountService>();
+        budgetAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var tags = Substitute.For<ITagService>();
+        tags.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var spentTransactions = Substitute.For<ITransactionService>();
+        spentTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var spentAccounts = Substitute.For<IAccountService>();
+        spentAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var notificationTransactions = Substitute.For<ITransactionService>();
+        notificationTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var notificationAccounts = Substitute.For<IAccountService>();
+        notificationAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+
+        var dashboard = new DashboardVM(
+            new NotificationPanelVM(notificationTransactions, notificationAccounts, runner, mapper, messenger: messenger),
+            new BudgetAllocationPanelVM(budgetTransactions, budgetAccounts, tags, runner, mapper, messenger),
+            new SpentAllowancePanelVM(spentTransactions, spentAccounts, runner, mapper, messenger),
+            new SavingGoalsPanelVM(runner, mapper, messenger),
+            new UpcomingEventsPanelVM(runner, mapper, messenger: messenger),
+            new MainViewModeToggleVM(messenger));
+
+        var ledgerTransactions = Substitute.For<ITransactionService>();
+        var ledgerReloads = new[]
         {
-            completion.TrySetResult();
-            return Task.FromResult(transactions);
+            new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously),
+            new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
+        };
+        var ledgerCalls = 0;
+        ledgerTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            var call = Interlocked.Increment(ref ledgerCalls);
+            if (call <= ledgerReloads.Length)
+                ledgerReloads[call - 1].TrySetResult();
+            return Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.TransactionDto>>([]);
         });
-        var accountService = Substitute.For<IAccountService>();
-        accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var tagService = Substitute.For<ITagService>();
-        tagService.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var mapper = new MapperConfiguration(
-            configuration => configuration.AddProfile<DtoViewModelProfile>(),
-            NullLoggerFactory.Instance).CreateMapper();
-        return new LedgerVM(transactionService, accountService, tagService,
-            Substitute.For<Fluxo.Core.Interfaces.Operations.IDataOperationRunner>(), mapper, messenger);
+        var ledgerAccounts = Substitute.For<IAccountService>();
+        ledgerAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var ledgerTags = Substitute.For<ITagService>();
+        ledgerTags.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var ledger = new LedgerVM(ledgerTransactions, ledgerAccounts, ledgerTags, runner,
+            new MapperConfiguration(configuration => configuration.AddProfile<DtoViewModelProfile>(), NullLoggerFactory.Instance).CreateMapper(), messenger);
+        var main = new MainVM(runner, dashboard, new DaySpinnerVM(messenger), ledger, messenger: messenger);
+        return new MainGraph(main, budgetTransactions, spentTransactions, ledgerReloads[0], ledgerReloads[1], () => ledgerCalls);
     }
+
+    private sealed record MainGraph(
+        MainVM Main,
+        ITransactionService BudgetTransactionService,
+        ITransactionService SpentTransactionService,
+        TaskCompletionSource LedgerFirstReload,
+        TaskCompletionSource LedgerSecondReload,
+        Func<int> LedgerCalls);
 
     private static IAppDataService CreateAppData(Account account)
     {
@@ -236,4 +369,19 @@ public sealed class TransactionPopupMessengerTests
         OccurredOn = DateTime.Today,
         ExpenseCategory = ExpenseCategory.Needs
     };
+
+    private static void RunInSta(Action action)
+    {
+        Exception? failure = null;
+        var thread = new Thread(() =>
+        {
+            try { action(); }
+            catch (Exception exception) { failure = exception; }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+        if (failure is not null)
+            ExceptionDispatchInfo.Capture(failure).Throw();
+    }
 }

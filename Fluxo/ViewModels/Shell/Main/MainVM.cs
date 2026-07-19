@@ -156,9 +156,8 @@ public partial class MainVM : ObservableRecipient
             !message.Value.HasFlag(DashboardDataInvalidationScope.All))
             return;
 
-        _ = ReloadCurrentDataAsync(
-            reloadNotifications: message.Value.HasFlag(DashboardDataInvalidationScope.Notifications) ||
-                                  message.Value.HasFlag(DashboardDataInvalidationScope.All));
+        if (Ledger is not null)
+            _ = Ledger.LoadAsync();
     }
 
     private void OnDashboardPropertyChanged(object? sender, PropertyChangedEventArgs e)

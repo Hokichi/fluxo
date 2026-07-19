@@ -12,6 +12,7 @@ using Fluxo.Services.Logging;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
+using Fluxo.Views.Popups;
 using Microsoft.Extensions.DependencyInjection;
 using QuickSetupWizardLoadingOutcome = Fluxo.ViewModels.Shell.QuickSetupWizard.QuickSetupWizardLoadingOutcome;
 using QuickSetupWizardVM = Fluxo.ViewModels.Shell.QuickSetupWizard.QuickSetupWizardVM;
@@ -39,7 +40,9 @@ public partial class QuickSetupWizard : BasePopup
         _dialogService = dialogService;
         _viewModel = viewModel;
         _addTagHost = new TransactionPopupAddTagHost(
-            () => serviceProvider.GetRequiredService<SettingsTagsTabVM>(), dialogService, messenger, () => this);
+            serviceProvider.GetRequiredService<IServiceScopeFactory>(), dialogService, messenger,
+            requester => Application.Current?.Windows.OfType<TransactionPopup>()
+                .FirstOrDefault(popup => requester is not null && popup.IsOwnedBy(requester)));
         DataContext = viewModel;
         Loaded += OnLoadedAsync;
         Closing += OnClosingAsync;

@@ -253,7 +253,6 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             options.SuppressNotificationInvalidation)));
         messenger.Send(new RecordLogMemoryMessage(
             new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
-        messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
         return Result.Success(loaded.Id);
     }
 
@@ -325,8 +324,6 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             options.SuppressNotificationInvalidation)));
         messenger.Send(new RecordLogMemoryMessage(
             new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
-        messenger.Send(new DashboardDataInvalidatedMessage(
-            DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.SavingGoals));
         return Result.Success(loaded.Id);
     }
 

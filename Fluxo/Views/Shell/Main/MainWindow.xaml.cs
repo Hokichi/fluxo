@@ -151,8 +151,9 @@ public partial class MainWindow : Window, IPopupHost
         _floatingNotificationOverlay = floatingNotificationOverlay;
         _messenger = messenger;
         _addTagHost = new TransactionPopupAddTagHost(
-            () => serviceProvider.GetRequiredService<SettingsTagsTabVM>(), dialogService, messenger,
-            () => Application.Current.Windows.OfType<TransactionPopup>().FirstOrDefault(popup => popup.IsActive) as Window ?? this);
+            serviceProvider.GetRequiredService<IServiceScopeFactory>(), dialogService, messenger,
+            requester => Application.Current?.Windows.OfType<TransactionPopup>()
+                .FirstOrDefault(popup => requester is not null && popup.IsOwnedBy(requester)));
         _appUpdateService = appUpdateService;
         _appUpdateInteractionService = appUpdateInteractionService;
         _logMemoryManager = new LogMemoryManager(_dataOperationRunner, _mainVM.ReloadCurrentDataAsync);

@@ -589,7 +589,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     }
 
     public void RequestAddTag() =>
-        _messenger.Send(new TransactionPopupAddTagRequestedMessage(ViewedTransaction?.Id ?? 0));
+        _messenger.Send(new TransactionPopupAddTagRequestedMessage(ViewedTransaction?.Id ?? 0, this));
 
     private async Task<bool> ApplyRequestAsync(CancellationToken cancellationToken)
     {
