@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups;
 
-public sealed class TransactionSplitBudgetExclusionTests
+public sealed class TransactionSplitVMBudgetExclusionTests
 {
     [Fact]
     public void ClearParentTransactionCategory_ClearsExistingCategory()

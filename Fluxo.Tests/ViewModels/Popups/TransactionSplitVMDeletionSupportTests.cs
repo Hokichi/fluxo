@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups;
 
-public sealed class TransactionDeletionSupportTests
+public sealed class TransactionSplitVMDeletionSupportTests
 {
     [Fact]
     public void PublishRepaymentReversalNotification_PublishesOneSingularNotification()
