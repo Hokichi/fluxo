@@ -116,6 +116,85 @@ public sealed class TransactionPopupVMModeTests
         });
     }
 
+    [Fact]
+    public void Goal_update_add_mode_seeds_generated_baseline_and_later_goal_change_updates_only_pending()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeAsync().GetAwaiter().GetResult();
+
+            vm.IsGoal = true;
+
+            var loaded = vm.LoadedTransaction;
+            var pending = vm.PendingTransaction;
+            Assert.Equal("Goal Update for Goal", loaded.Name);
+            Assert.Equal(1, loaded.SourceAccountId);
+            Assert.Equal(1, loaded.GoalId);
+            Assert.Equal(loaded, pending);
+
+            vm.SelectedGoal = new SavingGoalVM { Id = 2, Name = "Emergency Fund" };
+
+            Assert.Same(loaded, vm.LoadedTransaction);
+            Assert.Same(pending, vm.PendingTransaction);
+            Assert.Equal("Goal Update for Goal", loaded.Name);
+            Assert.Equal(1, loaded.GoalId);
+            Assert.Equal("Goal Update for Emergency Fund", pending.Name);
+            Assert.Equal(2, pending.GoalId);
+            Assert.NotEqual(loaded, pending);
+        });
+    }
+
+    [Fact]
+    public void Repayment_add_mode_seeds_generated_baseline_and_later_account_change_updates_only_pending()
+    {
+        RunInSta(() =>
+        {
+            var checking = CreateCheckingAccount();
+            var visa = new AccountVM
+            {
+                Id = 2,
+                Name = "Visa",
+                AccountType = AccountType.Credit,
+                IsEnabled = true,
+                SpentAmount = 80m
+            };
+            var mastercard = new AccountVM
+            {
+                Id = 3,
+                Name = "Mastercard",
+                AccountType = AccountType.Credit,
+                IsEnabled = true,
+                SpentAmount = 120m
+            };
+            var (vm, _) = CreateVm([checking, visa, mastercard]);
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.SelectedRepaymentAccount = visa;
+
+            vm.IsRepayment = true;
+
+            var loaded = vm.LoadedTransaction;
+            var pending = vm.PendingTransaction;
+            Assert.Equal("Repayment to Visa", loaded.Name);
+            Assert.Equal(80m, loaded.Amount);
+            Assert.Equal(checking.Id, loaded.SourceAccountId);
+            Assert.Equal(visa.Id, loaded.RepaymentAccountId);
+            Assert.Equal(loaded, pending);
+
+            vm.SelectedRepaymentAccount = mastercard;
+
+            Assert.Same(loaded, vm.LoadedTransaction);
+            Assert.Same(pending, vm.PendingTransaction);
+            Assert.Equal("Repayment to Visa", loaded.Name);
+            Assert.Equal(80m, loaded.Amount);
+            Assert.Equal(visa.Id, loaded.RepaymentAccountId);
+            Assert.Equal("Repayment to Mastercard", pending.Name);
+            Assert.Equal(120m, pending.Amount);
+            Assert.Equal(mastercard.Id, pending.RepaymentAccountId);
+            Assert.NotEqual(loaded, pending);
+        });
+    }
+
     private static TransactionVM CreateTransaction()
     {
         var account = CreateCheckingAccount();

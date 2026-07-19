@@ -483,7 +483,6 @@ public partial class TransactionPopupVM : ObservableValidator
     {
         ReloadChoicesFromMainViewModel();
         CanChangeRepaymentAccount = target is null;
-        IsRepayment = true;
         SelectedRepaymentAccount = target is null
             ? RepaymentAccounts.FirstOrDefault()
             : RepaymentAccounts.FirstOrDefault(account => account.Id == target.Id) ?? target;
@@ -491,9 +490,7 @@ public partial class TransactionPopupVM : ObservableValidator
         var deductSourceId = SelectedRepaymentAccount?.DeductSource;
         SelectedAccount = Accounts.FirstOrDefault(account => account.Id == deductSourceId) ??
                           Accounts.FirstOrDefault();
-
-        if (target is not null)
-            AmountText = target.SpentAmount;
+        IsRepayment = true;
     }
 
     public bool TryGetRepaymentCorrection(out decimal correctedAmount)
@@ -703,7 +700,10 @@ public partial class TransactionPopupVM : ObservableValidator
     partial void OnSelectedGoalChanged(SavingGoalVM? value)
     {
         if (IsGoal)
+        {
             SyncGoalUpdateName();
+            SyncGeneratedPendingTransaction();
+        }
 
         ResetHistoryLists();
         if (IsHistoryOpen)
@@ -828,6 +828,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
         SetTransactionState(transaction);
         var loaded = LoadedTransaction;
+        SetPopupPurpose(TransactionPopupPurpose.ViewTransaction);
 
         ReloadChoicesFromMainViewModel();
         IsExpense = loaded.Type == TransactionType.Expense;
@@ -846,7 +847,6 @@ public partial class TransactionPopupVM : ObservableValidator
         SelectedTag = loaded.Tag;
         ViewedTransaction = loaded;
         _isTransactionTypeLocked = true;
-        SetPopupPurpose(TransactionPopupPurpose.ViewTransaction);
         RefreshTagCollections();
         ClearViewModeFeedback();
         OnPropertyChanged(nameof(CanChangeTransactionType));
@@ -1024,6 +1024,8 @@ public partial class TransactionPopupVM : ObservableValidator
         }
 
         RefreshAccounts();
+        if (value)
+            SeedGeneratedAddBaseline();
         ClearNameValidation();
         RefreshActiveValidation(nameof(AmountText));
         RefreshAmountWarning();
@@ -1066,6 +1068,8 @@ public partial class TransactionPopupVM : ObservableValidator
         OnPropertyChanged(nameof(IsBudgetExcluded));
         OnPropertyChanged(nameof(CanToggleBudgetExclusion));
         RefreshAccounts();
+        if (value)
+            SeedGeneratedAddBaseline();
         NotifyFormStateChanged();
     }
 
@@ -1084,6 +1088,8 @@ public partial class TransactionPopupVM : ObservableValidator
             LoadRepaymentAmount();
         if (IsRepayment)
             SyncRepaymentName();
+        if (IsRepayment)
+            SyncGeneratedPendingTransaction();
         NotifyFormStateChanged();
     }
 
@@ -2396,6 +2402,57 @@ public partial class TransactionPopupVM : ObservableValidator
         LoadedTransaction = TransactionMappingHelper.CreateLoaded(source);
         PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
         _isTransactionStateInitialized = true;
+    }
+
+    private void SeedGeneratedAddBaseline()
+    {
+        if (!IsGeneratedAddMode)
+            return;
+
+        SetTransactionState(CreateGeneratedAddTransaction());
+    }
+
+    private void SyncGeneratedPendingTransaction()
+    {
+        if (!_isTransactionStateInitialized || !IsGeneratedAddMode)
+            return;
+
+        ApplyGeneratedAddTransaction(PendingTransaction, TransactionMappingHelper.CreatePending(CreateGeneratedAddTransaction()));
+    }
+
+    private bool IsGeneratedAddMode => _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
+                                       !IsRecurringTransactionMode &&
+                                       !IsProcessingSession &&
+                                       (IsGoal || IsRepayment);
+
+    private TransactionVM CreateGeneratedAddTransaction() => new()
+    {
+        Type = TransactionType.Expense,
+        SourceAccountId = SelectedAccount?.Id ?? 0,
+        GoalId = IsGoal ? SelectedGoal?.Id : null,
+        RepaymentAccountId = IsRepayment ? SelectedRepaymentAccount?.Id : null,
+        Account = SelectedAccount ?? new AccountVM(),
+        Name = NameText,
+        Amount = AmountText,
+        OccurredOn = SelectedDate,
+        Notes = NoteText,
+        ExpenseCategory = IsGoal ? ExpenseCategory.Savings : null,
+        IsExcludedFromBudget = IsBudgetExcluded
+    };
+
+    private static void ApplyGeneratedAddTransaction(TransactionVM target, TransactionVM source)
+    {
+        target.Type = source.Type;
+        target.SourceAccountId = source.SourceAccountId;
+        target.GoalId = source.GoalId;
+        target.RepaymentAccountId = source.RepaymentAccountId;
+        target.Account = source.Account;
+        target.Name = source.Name;
+        target.Amount = source.Amount;
+        target.OccurredOn = source.OccurredOn;
+        target.Notes = source.Notes;
+        target.ExpenseCategory = source.ExpenseCategory;
+        target.IsExcludedFromBudget = source.IsExcludedFromBudget;
     }
 
     [RelayCommand]
