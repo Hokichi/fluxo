@@ -80,7 +80,7 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
                 Kind = TransactionPopupRequestKind.RecurringDraft,
                 Accounts = accounts,
                 UseRecurringDraftMessages = true,
-                RecurringDraft = new TransactionPopupVM.RecurringDraftSnapshot(
+                RecurringDraft = new RecurringDraftSnapshot(
                 draft.Id > 0 ? draft.Id : null,
                 draft.Type,
                 draft.Name,
@@ -225,12 +225,12 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
         _isLoaded = true;
     }
 
-    private Task<TransactionPopupVM.TransactionPopupSubmissionResult> SaveDraftRecurringTransactionAsync(
-        TransactionPopupVM.RecurringDraftSaveInput input)
+    private Task<TransactionPopupSubmissionResult> SaveDraftRecurringTransactionAsync(
+        RecurringDraftSaveInput input)
     {
         if (input.Type is not (RecurringTransactionType.Expense or RecurringTransactionType.Income))
         {
-            return Task.FromResult(TransactionPopupVM.TransactionPopupSubmissionResult.Failure(
+            return Task.FromResult(TransactionPopupSubmissionResult.Failure(
                 "Startup Wizard supports recurring income and expenses only."));
         }
 
@@ -255,7 +255,7 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
             _removedPersistedIds.Remove(id);
 
         RefreshProjectionAndPublish();
-        return Task.FromResult(TransactionPopupVM.TransactionPopupSubmissionResult.Success());
+        return Task.FromResult(TransactionPopupSubmissionResult.Success());
     }
 
     private string ResolveDraftTagName(int? tagId)

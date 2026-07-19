@@ -166,6 +166,9 @@ public partial class MainWindow : Window, IPopupHost
             static (recipient, message) => _ = recipient.OpenNotificationProcessingAsync(message.Value.Category, message.Value.EntityIds));
         _messenger.Register<MainWindow, TransactionSplitRequestedMessage>(this,
             static (recipient, message) => recipient.OpenTransactionSplitPopup(message.Value));
+        _messenger.Register<MainWindow, TransactionSplitCloneRequestedMessage>(this,
+            static (recipient, message) => recipient.Dispatcher.BeginInvoke(
+                new Action(() => recipient.OpenAddNewTransactionPopup(message.Value))));
 
         HeaderSearchResultsList.ItemsSource = _headerSearchResults;
         HistoryItemsControl.ItemsSource = _logMemoryManager.HistoryEntries;
@@ -351,6 +354,7 @@ public partial class MainWindow : Window, IPopupHost
             _mainVM.PropertyChanged -= OnMainViewModelPropertyChanged;
             WeakReferenceMessenger.Default.Unregister<NavigateToLedgerRequestedMessage>(this);
             _messenger.Unregister<OpenHistoryDrawerMessage>(this);
+            _messenger.Unregister<TransactionSplitCloneRequestedMessage>(this);
             _addTagHost.Dispose();
             Activated -= OnWindowActivated;
             Deactivated -= OnWindowDeactivated;
@@ -1406,7 +1410,7 @@ public partial class MainWindow : Window, IPopupHost
         UnlockAppUiFromUser();
     }
 
-    public void OpenQuickAddPopup(TransactionPopupVM.TransactionPopupDraft? draft = null)
+    public void OpenQuickAddPopup(TransactionPopupDraft? draft = null)
     {
         if (draft is { } popupDraft)
         {
@@ -1425,7 +1429,7 @@ public partial class MainWindow : Window, IPopupHost
 
     public void OpenAddNewTransactionPopupForCategory(ExpenseCategory category)
     {
-        OpenAddNewTransactionPopup(new TransactionPopupVM.TransactionPopupDraft(
+        OpenAddNewTransactionPopup(new TransactionPopupDraft(
             true,
             string.Empty,
             0m,
@@ -1436,7 +1440,7 @@ public partial class MainWindow : Window, IPopupHost
             null));
     }
 
-    public void OpenAddNewTransactionPopup(TransactionPopupVM.TransactionPopupDraft? draft = null)
+    public void OpenAddNewTransactionPopup(TransactionPopupDraft? draft = null)
     {
         if (IsSufficientFundsActionGateLocked())
             return;

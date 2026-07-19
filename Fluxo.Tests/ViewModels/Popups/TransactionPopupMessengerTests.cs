@@ -58,7 +58,7 @@ public sealed class TransactionPopupMessengerTests
 
         var wizard = new QuickSetupWizardRecurringTransactionsVM(appData, messenger);
         wizard.Dispose();
-        var draft = new RecurringDraftSaveRequestedMessage(new TransactionPopupVM.RecurringDraftSaveInput(
+        var draft = new RecurringDraftSaveRequestedMessage(new RecurringDraftSaveInput(
             null, RecurringTransactionType.Expense, "Draft", 1m, RecurringPeriod.Monthly, 1, 1,
             ExpenseCategory.Needs, null, null, null));
         Assert.Throws<InvalidOperationException>(() => messenger.Send(draft).Response.GetAwaiter().GetResult());
@@ -80,6 +80,47 @@ public sealed class TransactionPopupMessengerTests
         vm.RequestSplit();
 
         Assert.Equal(42, requestedId);
+    }
+
+    [Fact]
+    public async Task SplitCloneRequest_PublishesNeutralDraft()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var account = CreateAccount();
+        var split = new TransactionSplitVM(CreateTransactionVm(account, "Expense"), CreateAppData(account), messenger);
+        await split.InitializeAsync();
+        TransactionPopupDraft? requestedDraft = null;
+        var recipient = new object();
+        messenger.Register<TransactionSplitCloneRequestedMessage>(recipient,
+            (_, message) => requestedDraft = message.Value);
+
+        split.RequestClone();
+
+        Assert.True(requestedDraft.HasValue);
+        Assert.Equal("Expense", requestedDraft.Value.Name);
+        Assert.Equal(10m, requestedDraft.Value.AmountText);
+        Assert.Equal(account.Id, requestedDraft.Value.AccountId);
+    }
+
+    [Fact]
+    public async Task PopupRequestAndRecurringMessage_UseNeutralContracts()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var popupDraft = new TransactionPopupDraft(
+            true, "Expense", 10m, 1, DateTime.Today, "Note", ExpenseCategory.Needs, 2);
+        var request = TransactionPopupRequest.Add(popupDraft);
+        var recurringInput = new RecurringDraftSaveInput(
+            null, RecurringTransactionType.Expense, "Draft", 1m, RecurringPeriod.Monthly, 1, 1,
+            ExpenseCategory.Needs, null, null, null);
+        var message = new RecurringDraftSaveRequestedMessage(recurringInput);
+        var recipient = new object();
+        messenger.Register<RecurringDraftSaveRequestedMessage>(recipient,
+            (_, requestMessage) => requestMessage.Reply(TransactionPopupSubmissionResult.Success()));
+        await messenger.Send(message);
+
+        Assert.Equal(popupDraft, request.Draft);
+        Assert.Equal(recurringInput, message.Input);
+        Assert.True((await message.Response).IsSuccess);
     }
 
     [Fact]

@@ -497,7 +497,7 @@ public sealed class TransactionPopupVMValidationTests
             });
             var vm = TransactionPopupVMFactory.Create(main, CreateAppData());
 
-            vm.InitializeFromDraft(new TransactionPopupVM.TransactionPopupDraft(
+            vm.InitializeFromDraft(new TransactionPopupDraft(
                 IsExpense: false,
                 Name: string.Empty,
                 AmountText: 0m,
@@ -1361,7 +1361,7 @@ public sealed class TransactionPopupVMValidationTests
             appData.GetAccountByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult<Account?>(null));
 
-            TransactionPopupVM.RecurringDraftSaveInput? captured = null;
+            RecurringDraftSaveInput? captured = null;
             var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([CreateCheckingSource(balance: 100m)]),
                 appData,
@@ -1369,7 +1369,7 @@ public sealed class TransactionPopupVMValidationTests
                 saveRecurringDraftAsync: input =>
                 {
                     captured = input;
-                    return Task.FromResult(TransactionPopupVM.TransactionPopupSubmissionResult.Success());
+                    return Task.FromResult(TransactionPopupSubmissionResult.Success());
                 });
 
             vm.IsExpense = true;
@@ -1408,14 +1408,14 @@ public sealed class TransactionPopupVMValidationTests
                 OverspendPolicy = OverspendPolicy.HardStop
             };
             var appData = CreateAppData(allocation, CreateTransactionsForBudget(ExpenseCategory.Wants, 30m));
-            TransactionPopupVM.RecurringDraftSaveInput? captured = null;
+            RecurringDraftSaveInput? captured = null;
             var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([source]),
                 appData,
                 saveRecurringDraftAsync: input =>
                 {
                     captured = input;
-                    return Task.FromResult(TransactionPopupVM.TransactionPopupSubmissionResult.Success());
+                    return Task.FromResult(TransactionPopupSubmissionResult.Success());
                 });
             vm.IsExpense = true;
             vm.IsRecurring = true;
@@ -1454,7 +1454,7 @@ public sealed class TransactionPopupVMValidationTests
             var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([source]),
                 appData,
-                saveRecurringDraftAsync: _ => Task.FromResult(TransactionPopupVM.TransactionPopupSubmissionResult.Success()));
+                saveRecurringDraftAsync: _ => Task.FromResult(TransactionPopupSubmissionResult.Success()));
             vm.IsExpense = true;
             vm.IsRecurring = true;
             vm.NameText = "Subscription";

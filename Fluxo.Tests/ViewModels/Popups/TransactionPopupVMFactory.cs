@@ -12,8 +12,8 @@ internal static class TransactionPopupVMFactory
         MainVM mainViewModel,
         IAppDataService appData,
         IReadOnlyList<AccountVM>? accountsOverride = null,
-        Func<TransactionPopupVM.RecurringDraftSaveInput,
-            Task<TransactionPopupVM.TransactionPopupSubmissionResult>>? saveRecurringDraftAsync = null,
+        Func<RecurringDraftSaveInput,
+            Task<TransactionPopupSubmissionResult>>? saveRecurringDraftAsync = null,
         IMessenger? messenger = null)
     {
         var viewModel = new TransactionPopupVM(appData, messenger ?? new WeakReferenceMessenger());

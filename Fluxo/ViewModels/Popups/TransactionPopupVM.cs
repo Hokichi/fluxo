@@ -354,7 +354,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             return;
         }
 
-        var persistedTags = ProjectNonSystemTags(allTags).ToList();
+        var persistedTags = TransactionCatalogProjection.ProjectNonSystemTags(allTags).ToList();
 
         if (persistedTags.Count == 0)
             return;
@@ -1686,9 +1686,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private async Task ReloadChoicesAsync(CancellationToken cancellationToken)
     {
         var accounts = _accountsOverride ?? (await _appData.GetAccountsAsync(cancellationToken))
-            .Select(ProjectAccount)
+            .Select(TransactionCatalogProjection.ProjectAccount)
             .ToArray();
-        var tags = ProjectNonSystemTags(await _appData.GetTagsAsync(cancellationToken)).ToArray();
+        var tags = TransactionCatalogProjection.ProjectNonSystemTags(await _appData.GetTagsAsync(cancellationToken)).ToArray();
         if (tags.Length == 0)
             tags = _orderedTags.ToArray();
         var goals = (await _appData.GetSavingGoalsAsync(cancellationToken))
@@ -2653,21 +2653,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private static ValidationResult? ToValidationResult(TransactionValidationHelper.Result result) =>
         result.IsValid ? ValidationResult.Success : new ValidationResult(result.ErrorMessage);
 
-    internal static IEnumerable<TagVM> ProjectNonSystemTags(IEnumerable<Tag> tags)
-    {
-        return tags
-            .Where(tag => !tag.IsSystemTag)
-            .OrderBy(tag => tag.Name, StringComparer.OrdinalIgnoreCase)
-            .Select(tag => new TagVM
-            {
-                Id = tag.Id,
-                Name = tag.Name,
-                HexCode = tag.HexCode,
-                IsSystemTag = false,
-                SpendingLimit = tag.SpendingLimit
-            });
-    }
-
     internal static IEnumerable<TagVM> OrderNonSystemTags(IEnumerable<TagVM> tags)
     {
         return tags
@@ -2714,24 +2699,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         private bool _isEnabled = true;
     }
 
-    internal static AccountVM ProjectAccount(Account account) => new()
-    {
-        Id = account.Id,
-        Name = account.Name,
-        AccountType = account.AccountType,
-        AccountLimit = account.AccountLimit,
-        MaximumSpending = account.MaximumSpending,
-        MinimumPayment = account.MinimumPayment,
-        SpentAmount = account.SpentAmount,
-        Balance = account.Balance,
-        MonthlyDueDate = account.MonthlyDueDate,
-        DeductSource = account.DeductSource,
-        InterestRate = account.InterestRate,
-        PinnedOnUI = account.PinnedOnUI,
-        IsEnabled = account.IsEnabled,
-        IsDefault = account.IsDefault
-    };
-
     internal static SavingGoalVM ProjectSavingGoal(SavingGoal goal) => new()
     {
         Id = goal.Id,
@@ -2766,69 +2733,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         bool IsIoU,
         bool ShouldAffectBalance,
         bool IsExcludedFromBudget);
-
-    public readonly record struct TransactionPopupSubmissionResult(
-        bool IsSuccess,
-        string? ErrorMessage,
-        int? TransactionId = null,
-        bool RequiresConfirmation = false)
-    {
-        public static TransactionPopupSubmissionResult Success(int? transactionId = null)
-        {
-            return new TransactionPopupSubmissionResult(true, null, transactionId, false);
-        }
-
-        public static TransactionPopupSubmissionResult Failure(string? errorMessage)
-        {
-            return new TransactionPopupSubmissionResult(false, errorMessage, null, false);
-        }
-
-        public static TransactionPopupSubmissionResult Confirmation(string? message)
-        {
-            return new TransactionPopupSubmissionResult(false, message, null, true);
-        }
-    }
-
-    public readonly record struct TransactionPopupDraft(
-        bool IsExpense,
-        string Name,
-        decimal AmountText,
-        int? AccountId,
-        DateTime Date,
-        string Note,
-        ExpenseCategory? Category,
-        int? TagId,
-        bool IsGoal = false,
-        int? GoalId = null,
-        bool IsIoU = false,
-        bool IsExcludedFromBudget = false,
-        bool LockTransactionType = false,
-        bool ShouldAffectBalance = false);
-
-    public readonly record struct RecurringDraftSaveInput(
-        int? EditingRecurringTransactionId,
-        RecurringTransactionType Type,
-        string Name,
-        decimal Amount,
-        RecurringPeriod RecurringPeriod,
-        int RecurringTime,
-        int AccountId,
-        ExpenseCategory? Category,
-        int? TagId,
-        int? GoalId,
-        DateTime? EndDate);
-
-    public readonly record struct RecurringDraftSnapshot(
-        int? EditingRecurringTransactionId,
-        RecurringTransactionType Type,
-        string Name,
-        decimal Amount,
-        RecurringPeriod RecurringPeriod,
-        int RecurringTime,
-        int AccountId,
-        ExpenseCategory? Category,
-        int? TagId,
-        int? GoalId);
 
     private readonly record struct QuickTransactionInput(
         bool IsExpense,

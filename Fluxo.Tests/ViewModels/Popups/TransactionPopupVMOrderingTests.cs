@@ -2,6 +2,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
+using Fluxo.ViewModels.Popups.Helpers;
 using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups;
@@ -18,7 +19,7 @@ public class TransactionPopupVMOrderingTests
             new Tag { Id = 3, Name = "System", HexCode = "#333333", IsSystemTag = true }
         };
 
-        var projected = TransactionPopupVM.ProjectNonSystemTags(tags).ToList();
+        var projected = TransactionCatalogProjection.ProjectNonSystemTags(tags).ToList();
 
         Assert.Collection(projected,
             first =>

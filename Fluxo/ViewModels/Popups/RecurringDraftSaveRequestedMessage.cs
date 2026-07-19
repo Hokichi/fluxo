@@ -2,8 +2,8 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 
 namespace Fluxo.ViewModels.Popups;
 
-public sealed class RecurringDraftSaveRequestedMessage(TransactionPopupVM.RecurringDraftSaveInput input)
-    : AsyncRequestMessage<TransactionPopupVM.TransactionPopupSubmissionResult>
+public sealed class RecurringDraftSaveRequestedMessage(RecurringDraftSaveInput input)
+    : AsyncRequestMessage<TransactionPopupSubmissionResult>
 {
-    public TransactionPopupVM.RecurringDraftSaveInput Input { get; } = input;
+    public RecurringDraftSaveInput Input { get; } = input;
 }

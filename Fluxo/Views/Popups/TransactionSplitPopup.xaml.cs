@@ -15,7 +15,6 @@ using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
 using Fluxo.Views.Shell;
-using Fluxo.Views.Shell.Main;
 
 namespace Fluxo.Views.Popups;
 
@@ -110,12 +109,8 @@ public partial class TransactionSplitPopup : BasePopup
 
     protected override void OnCloneButtonClick()
     {
-        var draft = _viewModel.CreateTransactionPopupDraft();
-        var ownerWindow = Owner as MainWindow;
-
         CloseForPopupHandoff();
-
-        ownerWindow?.Dispatcher.BeginInvoke(new Action(() => ownerWindow.OpenAddNewTransactionPopup(draft)));
+        _viewModel.RequestClone();
     }
 
     protected override async void OnDeleteButtonClick()

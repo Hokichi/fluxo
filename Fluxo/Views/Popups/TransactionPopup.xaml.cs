@@ -192,7 +192,7 @@ public partial class TransactionPopup : BasePopup
         FocusPrimaryInput();
     }
 
-    private async Task<TransactionPopupVM.TransactionPopupSubmissionResult?>
+    private async Task<TransactionPopupSubmissionResult?>
         TrySaveWithMaximumSpendingConfirmationAsync(bool resetAfterSave)
     {
         var result = await _viewModel.SaveAsync(resetAfterSave);
@@ -381,7 +381,7 @@ public partial class TransactionPopup : BasePopup
             Close();
     }
 
-    private async Task<TransactionPopupVM.TransactionPopupSubmissionResult?>
+    private async Task<TransactionPopupSubmissionResult?>
         TrySaveCurrentAndAdvanceWithMaximumSpendingConfirmationAsync()
     {
         var result = await _viewModel.SaveCurrentAndAdvanceAsync();

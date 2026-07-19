@@ -77,10 +77,10 @@ public partial class TransactionSplitVM : ObservableObject
     {
         _availableAccounts.Clear();
         _availableAccounts.AddRange((await _appData.GetAccountsAsync(cancellationToken))
-            .Select(TransactionPopupVM.ProjectAccount)
+            .Select(TransactionCatalogProjection.ProjectAccount)
             .Where(source => source.IsEnabled));
         _orderedTags.Clear();
-        _orderedTags.AddRange(TransactionPopupVM.ProjectNonSystemTags(
+        _orderedTags.AddRange(TransactionCatalogProjection.ProjectNonSystemTags(
             await _appData.GetTagsAsync(cancellationToken)));
         RefreshTagCollections();
         RefreshAccounts();
@@ -508,7 +508,7 @@ public partial class TransactionSplitVM : ObservableObject
         }
 
         var selectedTagId = SelectedTag?.Id;
-        var persistedTags = TransactionPopupVM.ProjectNonSystemTags(allTags).ToList();
+        var persistedTags = TransactionCatalogProjection.ProjectNonSystemTags(allTags).ToList();
         if (persistedTags.Count == 0)
             return;
 
@@ -521,9 +521,9 @@ public partial class TransactionSplitVM : ObservableObject
             : _orderedTags.FirstOrDefault(tag => tag.Id == selectedTagId.Value) ?? _orderedTags.FirstOrDefault();
     }
 
-    public TransactionPopupVM.TransactionPopupDraft CreateTransactionPopupDraft()
+    public TransactionPopupDraft CreateTransactionPopupDraft()
     {
-        return new TransactionPopupVM.TransactionPopupDraft(
+        return new TransactionPopupDraft(
             IsExpense,
             NameText,
             AmountText,
@@ -533,6 +533,11 @@ public partial class TransactionSplitVM : ObservableObject
             SelectedExpenseCategory,
             SelectedTag?.Id,
             ShouldAffectBalance: ShouldAffectBalance);
+    }
+
+    public void RequestClone()
+    {
+        _messenger.Send(new TransactionSplitCloneRequestedMessage(CreateTransactionPopupDraft()));
     }
 
     public async Task<TransactionSplitSaveResult> SaveAsync(

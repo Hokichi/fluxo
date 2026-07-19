@@ -19,8 +19,8 @@ public enum TransactionPopupRequestKind
 public sealed record TransactionPopupRequest
 {
     public TransactionPopupRequestKind Kind { get; init; } = TransactionPopupRequestKind.AddTransaction;
-    public TransactionPopupVM.TransactionPopupDraft? Draft { get; init; }
-    public TransactionPopupVM.RecurringDraftSnapshot? RecurringDraft { get; init; }
+    public TransactionPopupDraft? Draft { get; init; }
+    public RecurringDraftSnapshot? RecurringDraft { get; init; }
     public TransactionVM? Transaction { get; init; }
     public AccountVM? Account { get; init; }
     public int? RecurringTransactionId { get; init; }
@@ -30,7 +30,7 @@ public sealed record TransactionPopupRequest
     public IReadOnlyList<SavingGoalVM>? Goals { get; init; }
     public IReadOnlyList<RecurringTransactionVM>? RecurringTransactions { get; init; }
 
-    public static TransactionPopupRequest Add(TransactionPopupVM.TransactionPopupDraft? draft = null) =>
+    public static TransactionPopupRequest Add(TransactionPopupDraft? draft = null) =>
         new() { Draft = draft };
 
     public static TransactionPopupRequest AddRecurring(bool isLocked) => new()
