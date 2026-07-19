@@ -190,7 +190,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             return Result.Success(loaded.Id);
 
         if (options.IsRepayment)
-            return await EditRepaymentAsync(loaded, pending, transaction, cancellationToken);
+            return await EditRepaymentAsync(loaded, pending, transaction, options, cancellationToken);
 
         if (pending.GoalId is > 0)
             return await EditGoalAsync(loaded, pending, transaction, options, cancellationToken);
@@ -212,25 +212,13 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
                 return Result.Failure("Please select a valid tag.");
         }
 
-        if (!options.AllowMaximumSpendingOverflow && pending.Type == TransactionType.Expense &&
-            TransactionEntity.ShouldAffectAccountBalance(pending.IsIoU, pending.ShouldAffectBalance) &&
-            newAccount.MaximumSpending > 0m)
-        {
-            var currentSpending = newAccount.AccountType == AccountType.Credit
-                ? newAccount.SpentAmount
-                : (await appData.GetTransactionsAsync(cancellationToken))
-                    .Where(item => item.Id != transaction.Id && item.SourceAccountId == newAccount.Id &&
-                                   item.Type == TransactionType.Expense && item.AffectsAccountBalance && !item.IsForDeletion)
-                    .Sum(item => item.Amount);
-            if (newAccount.AccountType == AccountType.Credit && oldAccount.Id == newAccount.Id &&
-                transaction.AffectsAccountBalance)
-                currentSpending = Math.Max(0m, currentSpending - transaction.Amount);
-            if (currentSpending + pending.Amount > newAccount.MaximumSpending)
-                return Result.Confirmation($"This expense exceeds {newAccount.Name}'s maximum spending limit. Save anyway?");
-        }
-
         var before = TransactionMemorySnapshot.Create(transaction);
         var newAffectsBalance = TransactionEntity.ShouldAffectAccountBalance(pending.IsIoU, pending.ShouldAffectBalance);
+        var accountValidation = await ValidateEditedAccountAsync(
+            loaded, pending, transaction, oldAccount, newAccount, newAffectsBalance, options, cancellationToken);
+        if (!accountValidation.IsSuccess || accountValidation.RequiresConfirmation)
+            return accountValidation;
+
         ApplyAccountEditBalance(oldAccount, transaction, newAccount, pending, newAffectsBalance);
 
         var sourceChanged = transaction.SourceAccountId != newAccount.Id;
@@ -280,6 +268,12 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         var newAccount = await appData.GetAccountByIdAsync(pending.SourceAccountId, cancellationToken);
         if (oldAccount is null || newAccount is null)
             return Result.Failure("Please select a valid account.");
+
+        var newAffectsBalance = TransactionEntity.ShouldAffectAccountBalance(pending.IsIoU, pending.ShouldAffectBalance);
+        var accountValidation = await ValidateEditedAccountAsync(
+            loaded, pending, transaction, oldAccount, newAccount, newAffectsBalance, options, cancellationToken);
+        if (!accountValidation.IsSuccess || accountValidation.RequiresConfirmation)
+            return accountValidation;
 
         var goal = await appData.GetSavingGoalByIdAsync(pending.GoalId!.Value, cancellationToken);
         if (goal is null)
@@ -340,6 +334,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         TransactionVM loaded,
         TransactionVM pending,
         TransactionEntity transaction,
+        SaveOptions options,
         CancellationToken cancellationToken)
     {
         if (transaction.Type != TransactionType.Expense || transaction.RepaymentAccountId is null)
@@ -360,11 +355,18 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         var oldTarget = transaction.RepaymentAccountId == repaymentAccountId
             ? target
             : await appData.GetAccountByIdAsync(transaction.RepaymentAccountId.Value, cancellationToken);
+        if (source is null || target is null || oldSource is null || oldTarget is null)
+            return Result.Failure("Invalid Repayment");
+
+        var accountValidation = await ValidateEditedAccountAsync(
+            loaded, pending, transaction, oldSource, source, newAffectsBalance: true, options, cancellationToken);
+        if (!accountValidation.IsSuccess || accountValidation.RequiresConfirmation)
+            return accountValidation;
+
         var availableTargetAmount = target is not null && oldTarget is not null && target.Id == oldTarget.Id
             ? target.SpentAmount + transaction.Amount
             : target?.SpentAmount ?? 0m;
-        if (source is null || target is null || oldSource is null || oldTarget is null ||
-            source.AccountType != AccountType.Checking ||
+        if (source.AccountType != AccountType.Checking ||
             target.AccountType != AccountType.Credit || pending.Amount <= 0m || pending.Amount > availableTargetAmount)
             return Result.Failure("Invalid Repayment");
 
@@ -378,10 +380,10 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             [source.Id] = source,
             [target.Id] = target
         };
-        if (!accounts.ContainsKey(oldSource.Id))
-            accounts[oldSource.Id] = oldSource;
-        if (!accounts.ContainsKey(oldTarget.Id))
-            accounts[oldTarget.Id] = oldTarget;
+        if (!accounts.ContainsKey(oldSource!.Id))
+            accounts[oldSource!.Id] = oldSource;
+        if (!accounts.ContainsKey(oldTarget!.Id))
+            accounts[oldTarget!.Id] = oldTarget;
 
         LogMemoryPersistence.RevertTransactionFromAccount(accounts[oldSource.Id], transaction.Type, transaction.Amount);
         LogMemoryPersistence.RevertTransactionFromAccount(accounts[oldTarget.Id], income.Type, income.Amount);
@@ -449,6 +451,104 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             LogMemoryPersistence.ApplyTransactionToAccount(newAccount, pending.Type, pending.Amount);
             appData.UpdateAccount(newAccount);
         }
+    }
+
+    private async Task<Result> ValidateEditedAccountAsync(
+        TransactionVM loaded,
+        TransactionVM pending,
+        TransactionEntity transaction,
+        Account oldAccount,
+        Account newAccount,
+        bool newAffectsBalance,
+        SaveOptions options,
+        CancellationToken cancellationToken)
+    {
+        if (pending.Type != TransactionType.Expense || !newAffectsBalance)
+            return Result.Success(loaded.Id);
+
+        var (projectedBalance, projectedSpent) = ProjectAccountState(
+            transaction, pending, oldAccount, newAccount, newAffectsBalance);
+
+        if (newAccount.AccountType == AccountType.Credit)
+        {
+            if (newAccount.AccountLimit > 0m && projectedSpent > newAccount.AccountLimit)
+                return Result.Failure("Amount exceeds this source's account limit.");
+
+            if (!options.AllowMaximumSpendingOverflow && newAccount.MaximumSpending > 0m &&
+                projectedSpent > newAccount.MaximumSpending)
+                return Result.Confirmation($"This expense exceeds {newAccount.Name}'s maximum spending limit. Save anyway?");
+        }
+        else
+        {
+            if (projectedBalance < 0m)
+                return Result.Failure("Amount exceeds this source's available balance.");
+
+            if (!options.AllowMaximumSpendingOverflow && newAccount.MaximumSpending > 0m)
+            {
+                var currentSpending = (await appData.GetTransactionsAsync(cancellationToken))
+                    .Where(item => item.Id != transaction.Id && item.SourceAccountId == newAccount.Id &&
+                                   item.Type == TransactionType.Expense && item.AffectsAccountBalance && !item.IsForDeletion)
+                    .Sum(item => item.Amount);
+                if (currentSpending + pending.Amount > newAccount.MaximumSpending)
+                    return Result.Confirmation($"This expense exceeds {newAccount.Name}'s maximum spending limit. Save anyway?");
+            }
+        }
+
+        return Result.Success(loaded.Id);
+    }
+
+    private static (decimal Balance, decimal SpentAmount) ProjectAccountState(
+        TransactionEntity transaction,
+        TransactionVM pending,
+        Account oldAccount,
+        Account newAccount,
+        bool newAffectsBalance)
+    {
+        var balance = newAccount.Balance;
+        var spentAmount = newAccount.SpentAmount;
+        if (oldAccount.Id == newAccount.Id && transaction.AffectsAccountBalance)
+            RevertAccountEffect(transaction.Type, transaction.Amount, newAccount.AccountType, ref balance, ref spentAmount);
+
+        if (newAffectsBalance)
+            ApplyAccountEffect(pending.Type, pending.Amount, newAccount.AccountType, ref balance, ref spentAmount);
+
+        return (balance, spentAmount);
+    }
+
+    private static void ApplyAccountEffect(
+        TransactionType type,
+        decimal amount,
+        AccountType accountType,
+        ref decimal balance,
+        ref decimal spentAmount)
+    {
+        if (accountType == AccountType.Credit)
+        {
+            spentAmount = type == TransactionType.Expense
+                ? spentAmount + amount
+                : Math.Max(0m, spentAmount - amount);
+            return;
+        }
+
+        balance += type == TransactionType.Expense ? -amount : amount;
+    }
+
+    private static void RevertAccountEffect(
+        TransactionType type,
+        decimal amount,
+        AccountType accountType,
+        ref decimal balance,
+        ref decimal spentAmount)
+    {
+        if (accountType == AccountType.Credit)
+        {
+            spentAmount = type == TransactionType.Expense
+                ? Math.Max(0m, spentAmount - amount)
+                : spentAmount + amount;
+            return;
+        }
+
+        balance += type == TransactionType.Expense ? amount : -amount;
     }
 
     private async Task<Tag> ResolveTagAsync(

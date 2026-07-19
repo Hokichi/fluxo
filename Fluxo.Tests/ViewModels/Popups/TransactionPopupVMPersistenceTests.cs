@@ -88,6 +88,83 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
+    public void Processing_edit_confirmation_requires_approval_before_persisting_and_advancing()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            accountVm.AccountType = AccountType.Credit;
+            accountVm.SpentAmount = 90m;
+            accountVm.MaximumSpending = 200m;
+            accountVm.AccountLimit = 1000m;
+            var account = CreateAccount();
+            account.AccountType = AccountType.Credit;
+            account.SpentAmount = 90m;
+            account.MaximumSpending = 1000m;
+            account.AccountLimit = 1000m;
+            var firstPersisted = CreateTransaction(account);
+            firstPersisted.Id = 100;
+            firstPersisted.Amount = 10m;
+            var appData = CreateAppData(account, firstPersisted);
+            var added = new List<Transaction>();
+            var nextId = 100;
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    var transaction = call.Arg<Transaction>();
+                    transaction.Id = nextId++;
+                    added.Add(transaction);
+                });
+            appData.GetTransactionByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>())
+                .Returns(call => Task.FromResult<Transaction?>(
+                    call.Arg<int>() == firstPersisted.Id
+                        ? firstPersisted
+                        : added.FirstOrDefault(item => item.Id == call.Arg<int>())));
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<Transaction>>(added));
+            var messenger = new WeakReferenceMessenger();
+            var vm = new TransactionPopupVM(
+                CreateMainViewModel([accountVm]), appData, messenger: messenger);
+            vm.InitializeRecurringProcessing([
+                new RecurringTransactionVM
+                {
+                    Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense,
+                    Category = ExpenseCategory.Needs, Source = accountVm,
+                    Tag = new TagVM { Id = 1, Name = "General" }
+                },
+                new RecurringTransactionVM
+                {
+                    Id = 2, Name = "Second", Amount = 5m, Type = RecurringTransactionType.Expense,
+                    Category = ExpenseCategory.Needs, Source = accountVm,
+                    Tag = new TagVM { Id = 1, Name = "General" }
+                }
+            ]);
+
+            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+            var secondSave = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.True(secondSave.IsSuccess, secondSave.ErrorMessage);
+            account.MaximumSpending = 100m;
+            vm.NavigatePreviousProcessing();
+            vm.AmountText = 40m;
+
+            var confirmation = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+
+            Assert.False(confirmation.IsSuccess);
+            Assert.True(confirmation.RequiresConfirmation);
+            Assert.Equal(2, added.Count);
+            Assert.Equal(1, vm.CurrentProcessingStep);
+            appData.DidNotReceive().UpdateTransaction(firstPersisted);
+
+            var approved = vm.SaveCurrentAndAdvanceAsync(allowMaximumSpendingOverflow: true)
+                .GetAwaiter().GetResult();
+
+            Assert.True(approved.IsSuccess, approved.ErrorMessage);
+            Assert.True(vm.IsProcessingComplete);
+            appData.Received(1).UpdateTransaction(firstPersisted);
+        });
+    }
+
+    [Fact]
     public void SaveAsync_Edit_updates_the_loaded_transaction_id()
     {
         RunInSta(() =>

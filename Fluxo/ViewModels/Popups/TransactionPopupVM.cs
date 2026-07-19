@@ -410,17 +410,18 @@ public partial class TransactionPopupVM : ObservableValidator
         NotifyProcessingChanged();
     }
 
-    public async Task<TransactionPopupSubmissionResult> SaveCurrentAndAdvanceAsync()
+    public async Task<TransactionPopupSubmissionResult> SaveCurrentAndAdvanceAsync(
+        bool allowMaximumSpendingOverflow = false)
     {
         if (!IsProcessingSession)
-            return await SaveAsync(false);
+            return await SaveAsync(false, allowMaximumSpendingOverflow);
 
         if (!TryBuildTransactionInput(out _, out var validationMessage))
             return TransactionPopupSubmissionResult.Failure(validationMessage);
 
         var current = CurrentProcessingTarget!;
         _processingSnapshots[current] = CaptureState();
-        var result = await SaveAsync(false);
+        var result = await SaveAsync(false, allowMaximumSpendingOverflow);
         if (!result.IsSuccess)
             return result;
         if (result.TransactionId is > 0)
@@ -1205,14 +1206,16 @@ public partial class TransactionPopupVM : ObservableValidator
             if (!TryResolveRecurringSaveAmount(input, out var effectiveSaveAmount, out var recurringAmountMessage))
                 return TransactionPopupSubmissionResult.Failure(recurringAmountMessage);
 
-            var spendingValidation = TransactionValidationHelper.ValidateSpendingAmount(
-                input.IsExpense || input.IsRepayment,
-                input.IsGoal,
-                effectiveSaveAmount,
-                account,
-                ignoreMaximumSpending: LoadedTransaction.Id > 0);
-            if (!spendingValidation.IsValid)
-                return TransactionPopupSubmissionResult.Failure(spendingValidation.ErrorMessage);
+            if (LoadedTransaction.Id == 0)
+            {
+                var spendingValidation = TransactionValidationHelper.ValidateSpendingAmount(
+                    input.IsExpense || input.IsRepayment,
+                    input.IsGoal,
+                    effectiveSaveAmount,
+                    account);
+                if (!spendingValidation.IsValid)
+                    return TransactionPopupSubmissionResult.Failure(spendingValidation.ErrorMessage);
+            }
 
             var invalidationScope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
             int? persistedTransactionId = null;
@@ -2399,8 +2402,7 @@ public partial class TransactionPopupVM : ObservableValidator
             amountToValidate, viewModel._isRepaymentAmountInvalid,
             viewModel.IsExpense || viewModel.IsRepayment,
             viewModel.IsGoal,
-            viewModel.SelectedAccount,
-            ignoreMaximumSpending: viewModel.LoadedTransaction?.Id > 0);
+            viewModel.LoadedTransaction?.Id > 0 ? null : viewModel.SelectedAccount);
         if (!amountValidation.IsValid)
             return ToValidationResult(amountValidation);
 

@@ -373,15 +373,35 @@ public partial class TransactionPopup : BasePopup
         if (!await ShouldSaveCurrentTransactionAsync())
             return;
 
-        var result = await _viewModel.SaveCurrentAndAdvanceAsync();
-        if (!result.IsSuccess)
+        var result = await TrySaveCurrentAndAdvanceWithMaximumSpendingConfirmationAsync();
+        if (result is not { } resultValue)
+            return;
+        if (!resultValue.IsSuccess)
         {
-            ShowValidationMessage(result.ErrorMessage);
+            ShowValidationMessage(resultValue.ErrorMessage);
             return;
         }
 
         if (!_viewModel.IsProcessingSession || _viewModel.IsProcessingComplete)
             Close();
+    }
+
+    private async Task<TransactionPopupVM.TransactionPopupSubmissionResult?>
+        TrySaveCurrentAndAdvanceWithMaximumSpendingConfirmationAsync()
+    {
+        var result = await _viewModel.SaveCurrentAndAdvanceAsync();
+        if (!result.RequiresConfirmation)
+            return result;
+
+        var saveAnyway = _dialogService.ShowWarning(
+            result.ErrorMessage ?? "This expense exceeds the account's maximum spending limit. Save anyway?",
+            "Transaction",
+            this,
+            MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+        if (!saveAnyway)
+            return null;
+
+        return await _viewModel.SaveCurrentAndAdvanceAsync(allowMaximumSpendingOverflow: true);
     }
 
     private void SyncNoteDocumentFromViewModel()
