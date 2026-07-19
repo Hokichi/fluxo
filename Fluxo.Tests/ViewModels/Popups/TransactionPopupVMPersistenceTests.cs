@@ -23,6 +23,71 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMPersistenceTests
 {
     [Fact]
+    public void SaveAsync_without_initialize_saves_a_new_add_transaction()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            var account = CreateAccount();
+            var appData = CreateAppData(account, CreateTransaction(account));
+            var added = new Transaction();
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    added = call.Arg<Transaction>();
+                    added.Id = 77;
+                });
+            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            vm.NameText = "Standalone add";
+            vm.AmountText = 25m;
+
+            var result = vm.SaveAsync(false).GetAwaiter().GetResult();
+
+            Assert.True(result.IsSuccess, result.ErrorMessage);
+            Assert.Equal(77, added.Id);
+            appData.Received(1).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Fact]
+    public void SaveAsync_edit_returns_confirmation_then_succeeds_when_overflow_is_approved()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            accountVm.AccountType = AccountType.Credit;
+            accountVm.SpentAmount = 90m;
+            accountVm.MaximumSpending = 100m;
+            accountVm.AccountLimit = 1000m;
+            var account = CreateAccount();
+            account.AccountType = AccountType.Credit;
+            account.SpentAmount = 90m;
+            account.MaximumSpending = 100m;
+            account.AccountLimit = 1000m;
+            var transaction = CreateTransaction(account);
+            transaction.Amount = 20m;
+            var appData = CreateAppData(account, transaction);
+            var vm = new TransactionPopupVM(CreateMainViewModel([accountVm]), appData);
+            vm.InitializeView(CreateTransactionVm(accountVm));
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+            vm.AmountText = 40m;
+
+            var confirmation = vm.SaveAsync(false).GetAwaiter().GetResult();
+
+            Assert.False(confirmation.IsSuccess);
+            Assert.True(confirmation.RequiresConfirmation);
+            Assert.Equal(90m, account.SpentAmount);
+            appData.DidNotReceive().UpdateTransaction(transaction);
+
+            var approved = vm.SaveAsync(false, allowMaximumSpendingOverflow: true).GetAwaiter().GetResult();
+
+            Assert.True(approved.IsSuccess, approved.ErrorMessage);
+            Assert.Equal(110m, account.SpentAmount);
+            appData.Received(1).UpdateTransaction(transaction);
+        });
+    }
+
+    [Fact]
     public void SaveAsync_Edit_updates_the_loaded_transaction_id()
     {
         RunInSta(() =>

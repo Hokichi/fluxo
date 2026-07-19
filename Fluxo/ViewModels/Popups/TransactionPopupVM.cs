@@ -1130,10 +1130,14 @@ public partial class TransactionPopupVM : ObservableValidator
         IsMoreTagsOpen = false;
     }
 
-    public async Task<TransactionPopupSubmissionResult> SaveAsync(bool resetAfterSave)
+    public async Task<TransactionPopupSubmissionResult> SaveAsync(
+        bool resetAfterSave,
+        bool allowMaximumSpendingOverflow = false)
     {
         if (IsSaving)
             return TransactionPopupSubmissionResult.Failure("A transaction is already being saved.");
+
+        EnsureTransactionState();
 
         if (!TryBuildTransactionInput(out var input, out var validationMessage))
             return TransactionPopupSubmissionResult.Failure(validationMessage);
@@ -1201,7 +1205,11 @@ public partial class TransactionPopupVM : ObservableValidator
                 return TransactionPopupSubmissionResult.Failure(recurringAmountMessage);
 
             var spendingValidation = TransactionValidationHelper.ValidateSpendingAmount(
-                input.IsExpense || input.IsRepayment, input.IsGoal, effectiveSaveAmount, account);
+                input.IsExpense || input.IsRepayment,
+                input.IsGoal,
+                effectiveSaveAmount,
+                account,
+                ignoreMaximumSpending: LoadedTransaction.Id > 0);
             if (!spendingValidation.IsValid)
                 return TransactionPopupSubmissionResult.Failure(spendingValidation.ErrorMessage);
 
@@ -1234,13 +1242,17 @@ public partial class TransactionPopupVM : ObservableValidator
 
                 SyncPendingTransactionFromForm();
                 PendingTransaction.Amount = effectiveSaveAmount;
+                PendingTransaction.OccurredOn = input.Date;
                 var persistenceResult = await _persistence.SaveAsync(
                     LoadedTransaction,
                     PendingTransaction,
                     new TransactionPersistenceHelper.SaveOptions(
+                        AllowMaximumSpendingOverflow: allowMaximumSpendingOverflow,
                         IsRepayment: input.IsRepayment,
                         RelatedRecurringTransactionId: input.RelatedRecurringTransactionId,
                         SuppressNotificationInvalidation: IsProcessingSession));
+                if (persistenceResult.RequiresConfirmation)
+                    return TransactionPopupSubmissionResult.Confirmation(persistenceResult.ErrorMessage);
                 if (!persistenceResult.IsSuccess)
                     return TransactionPopupSubmissionResult.Failure(persistenceResult.ErrorMessage);
                 persistedTransactionId = persistenceResult.TransactionId;
@@ -2544,16 +2556,22 @@ public partial class TransactionPopupVM : ObservableValidator
     public readonly record struct TransactionPopupSubmissionResult(
         bool IsSuccess,
         string? ErrorMessage,
-        int? TransactionId = null)
+        int? TransactionId = null,
+        bool RequiresConfirmation = false)
     {
         public static TransactionPopupSubmissionResult Success(int? transactionId = null)
         {
-            return new TransactionPopupSubmissionResult(true, null, transactionId);
+            return new TransactionPopupSubmissionResult(true, null, transactionId, false);
         }
 
         public static TransactionPopupSubmissionResult Failure(string? errorMessage)
         {
-            return new TransactionPopupSubmissionResult(false, errorMessage, null);
+            return new TransactionPopupSubmissionResult(false, errorMessage, null, false);
+        }
+
+        public static TransactionPopupSubmissionResult Confirmation(string? message)
+        {
+            return new TransactionPopupSubmissionResult(false, message, null, true);
         }
     }
 

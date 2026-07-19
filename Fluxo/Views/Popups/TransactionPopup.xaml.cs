@@ -82,10 +82,12 @@ public partial class TransactionPopup : BasePopup
             if (_viewModel.ViewedTransaction is null)
                 return;
 
-            var editResult = await _viewModel.SaveAsync(false);
-            if (!editResult.IsSuccess)
+            var editResult = await TrySaveWithMaximumSpendingConfirmationAsync(false);
+            if (editResult is not { } editResultValue)
+                return;
+            if (!editResultValue.IsSuccess)
             {
-                ShowValidationMessage(editResult.ErrorMessage);
+                ShowValidationMessage(editResultValue.ErrorMessage);
                 return;
             }
 
@@ -96,10 +98,12 @@ public partial class TransactionPopup : BasePopup
         if (!await ShouldSaveCurrentTransactionAsync())
             return;
 
-        var result = await _viewModel.SaveAsync(false);
-        if (!result.IsSuccess)
+        var result = await TrySaveWithMaximumSpendingConfirmationAsync(false);
+        if (result is not { } resultValue)
+            return;
+        if (!resultValue.IsSuccess)
         {
-            ShowValidationMessage(result.ErrorMessage);
+            ShowValidationMessage(resultValue.ErrorMessage);
             return;
         }
 
@@ -182,16 +186,36 @@ public partial class TransactionPopup : BasePopup
         if (!await ShouldSaveCurrentTransactionAsync())
             return;
 
-        var result = await _viewModel.SaveAsync(true);
-        if (!result.IsSuccess)
+        var result = await TrySaveWithMaximumSpendingConfirmationAsync(true);
+        if (result is not { } resultValue)
+            return;
+        if (!resultValue.IsSuccess)
         {
-            ShowValidationMessage(result.ErrorMessage);
+            ShowValidationMessage(resultValue.ErrorMessage);
             return;
         }
 
         NoteRichTextBox.Text = string.Empty;
         _viewModel.BeginChangeTracking();
         FocusPrimaryInput();
+    }
+
+    private async Task<TransactionPopupVM.TransactionPopupSubmissionResult?>
+        TrySaveWithMaximumSpendingConfirmationAsync(bool resetAfterSave)
+    {
+        var result = await _viewModel.SaveAsync(resetAfterSave);
+        if (!result.RequiresConfirmation)
+            return result;
+
+        var saveAnyway = _dialogService.ShowWarning(
+            result.ErrorMessage ?? "This expense exceeds the account's maximum spending limit. Save anyway?",
+            "Transaction",
+            this,
+            MessageBoxButton.YesNo) == MessageBoxResult.Yes;
+        if (!saveAnyway)
+            return null;
+
+        return await _viewModel.SaveAsync(resetAfterSave, allowMaximumSpendingOverflow: true);
     }
 
     private async Task<bool> ShouldSaveCurrentTransactionAsync()

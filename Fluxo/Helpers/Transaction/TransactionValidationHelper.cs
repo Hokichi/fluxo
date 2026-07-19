@@ -38,13 +38,15 @@ public static class TransactionValidationHelper
         return source is null ? Result.Success() : ValidateSpendingAmount(isExpense, isGoal, amount, source);
     }
 
-    public static Result ValidateSpendingAmount(bool isExpense, bool isGoal, decimal amount, AccountVM source) =>
+    public static Result ValidateSpendingAmount(bool isExpense, bool isGoal, decimal amount, AccountVM source,
+        bool ignoreMaximumSpending = false) =>
         ValidateSpendingAmount(isExpense, isGoal, amount, source.MaximumSpending, source.AccountType,
-            source.Balance, source.AccountLimit, source.SpentAmount, source.MoneyOut);
+            source.Balance, source.AccountLimit, source.SpentAmount, source.MoneyOut, ignoreMaximumSpending);
 
-    public static Result ValidateSpendingAmount(bool isExpense, bool isGoal, decimal amount, Account source) =>
+    public static Result ValidateSpendingAmount(bool isExpense, bool isGoal, decimal amount, Account source,
+        bool ignoreMaximumSpending = false) =>
         ValidateSpendingAmount(isExpense, isGoal, amount, source.MaximumSpending, source.AccountType,
-            source.Balance, source.AccountLimit, source.SpentAmount, GetPersistedMoneyOut(source));
+            source.Balance, source.AccountLimit, source.SpentAmount, GetPersistedMoneyOut(source), ignoreMaximumSpending);
 
     public static Result ValidateAccount(AccountVM? account) => account is null
         ? Result.Failure("Please choose a account.")
@@ -91,7 +93,8 @@ public static class TransactionValidationHelper
         decimal balance,
         decimal accountLimit,
         decimal spentAmount,
-        decimal moneyOut)
+        decimal moneyOut,
+        bool ignoreMaximumSpending)
     {
         if (amount <= 0m)
             return Result.Failure("Please enter a valid amount greater than zero.");
@@ -99,7 +102,7 @@ public static class TransactionValidationHelper
             return Result.Success();
 
         var projectedSpending = accountType == AccountType.Credit ? spentAmount + amount : moneyOut + amount;
-        if (maximumSpending > 0m && projectedSpending > maximumSpending)
+        if (!ignoreMaximumSpending && maximumSpending > 0m && projectedSpending > maximumSpending)
             return Result.Failure("Amount exceeds this source's maximum spending limit.");
 
         if (accountType == AccountType.Credit)
