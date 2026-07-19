@@ -58,6 +58,7 @@ public partial class TransactionPopup : BasePopup
 
         Loaded += async (_, _) =>
         {
+            await _viewModel.InitializeAsync();
             await _viewModel.EnsureTagsLoadedAsync();
             if (_viewModel.IsHistoryOpen)
                 await _viewModel.LoadHistoryAsync();
@@ -130,12 +131,15 @@ public partial class TransactionPopup : BasePopup
 
     protected override void OnCloneButtonClick()
     {
-        if (_viewModel.ViewedTransaction is null || Owner is not MainWindow owner)
+        if (_viewModel.ViewedTransaction is null)
             return;
 
-        var draft = _viewModel.CreateViewedTransactionDraft();
-        CloseForPopupHandoff();
-        owner.Dispatcher.BeginInvoke(new Action(() => owner.OpenAddNewTransactionPopup(draft)));
+        _viewModel.SwitchToCloneAddMode();
+        RecalculateTagLayout();
+        SyncMoreTagsPopupState();
+        SyncNameSuggestionsPopupState();
+        SyncNoteDocumentFromViewModel();
+        FocusPrimaryInput();
     }
 
     protected override void OnSplitButtonClick()
