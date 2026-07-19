@@ -391,7 +391,10 @@ public sealed class TransactionPopupVMPersistenceTests
                     added.Add(transaction);
                 });
 
-            var vm = new TransactionPopupVM(CreateMainViewModel([checkingVm, creditOneVm, creditTwoVm]), appData);
+            var vm = new TransactionPopupVM(
+                CreateMainViewModel([checkingVm, creditOneVm, creditTwoVm]),
+                appData,
+                [checkingVm, creditOneVm, creditTwoVm]);
             vm.InitializeRepaymentProcessing([creditOneVm, creditTwoVm]);
 
             var firstResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
@@ -400,7 +403,8 @@ public sealed class TransactionPopupVMPersistenceTests
             Assert.True(secondResult.IsSuccess, secondResult.ErrorMessage);
             vm.NavigatePreviousProcessing();
             vm.AmountText = 50m;
-            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+            var editResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.True(editResult.IsSuccess, editResult.ErrorMessage);
 
             Assert.Equal(4, added.Count);
             Assert.Equal(350m, checking.Balance);

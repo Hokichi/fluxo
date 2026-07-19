@@ -154,6 +154,10 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             cancellationToken);
         var pair = RepaymentTransactionSupport.Create(source, target, pending.Amount, pending.OccurredOn, tag,
             pending.Name);
+        pair.Expense.Account = source;
+        pair.Expense.RepaymentAccount = target;
+        pair.Income.Account = target;
+        pair.Income.RepaymentAccount = target;
         await appData.AddTransactionAsync(pair.Expense, cancellationToken);
         await appData.AddTransactionAsync(pair.Income, cancellationToken);
         appData.UpdateAccount(source);
