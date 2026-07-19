@@ -144,7 +144,7 @@ public sealed class TransactionPopupMessengerTests
             using var host = new TransactionPopupAddTagHost(
                 root.GetRequiredService<IServiceScopeFactory>(), dialog, messenger, _ => owner);
 
-            messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, Guid.NewGuid()));
 
             dialog.Received(1).ShowAddTag(tags, owner);
             owner.Close();
@@ -168,13 +168,13 @@ public sealed class TransactionPopupMessengerTests
             using var secondHost = new TransactionPopupAddTagHost(
                 secondRoot.GetRequiredService<IServiceScopeFactory>(), dialog, messenger, _ => owner);
 
-            messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, Guid.NewGuid()));
 
             dialog.DidNotReceive().ShowAddTag(firstTags, owner);
             dialog.Received(1).ShowAddTag(secondTags, owner);
             secondHost.Dispose();
-            messenger.Send(new TransactionPopupAddTagRequestedMessage(0));
-            dialog.Received(1).ShowAddTag(secondTags, owner);
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, Guid.NewGuid()));
+            dialog.Received(1).ShowAddTag(firstTags, owner);
             owner.Close();
         });
     }
@@ -189,13 +189,12 @@ public sealed class TransactionPopupMessengerTests
             var tags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
             using var root = new ServiceCollection().AddScoped(_ => tags).BuildServiceProvider();
             var owner = new Window();
-            var requester = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+            var requester = Guid.NewGuid();
             using var host = new TransactionPopupAddTagHost(
                 root.GetRequiredService<IServiceScopeFactory>(), dialog, messenger,
-                candidate => ReferenceEquals(candidate, requester) ? owner : null);
+                candidate => candidate == requester ? owner : null);
 
-            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, new TransactionPopupVM(
-                Substitute.For<IAppDataService>(), messenger)));
+            messenger.Send(new TransactionPopupAddTagRequestedMessage(0, Guid.NewGuid()));
             dialog.DidNotReceive().ShowAddTag(tags, owner);
 
             messenger.Send(new TransactionPopupAddTagRequestedMessage(0, requester));

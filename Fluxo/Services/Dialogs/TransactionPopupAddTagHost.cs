@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
@@ -13,14 +14,15 @@ public sealed class TransactionPopupAddTagHost : IDisposable
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IDialogService _dialogService;
     private readonly IMessenger _messenger;
-    private readonly Func<TransactionPopupVM?, Window?> _ownerProvider;
+    private readonly Func<Guid, Window?> _ownerProvider;
+    private readonly Registration _registration;
     private bool _disposed;
 
     public TransactionPopupAddTagHost(
         IServiceScopeFactory scopeFactory,
         IDialogService dialogService,
         IMessenger messenger,
-        Func<TransactionPopupVM?, Window?> ownerProvider)
+        Func<Guid, Window?> ownerProvider)
     {
         _scopeFactory = scopeFactory;
         _dialogService = dialogService;
@@ -28,14 +30,15 @@ public sealed class TransactionPopupAddTagHost : IDisposable
         _ownerProvider = ownerProvider;
         lock (Registrations)
         {
-            if (Registrations.TryGetValue(messenger, out var previous))
-                previous.Host.Dispose();
-            Registrations.Remove(messenger);
-            Registrations.Add(messenger, new Registration(this));
+            if (Registrations.TryGetValue(messenger, out var registration))
+                _registration = registration;
+            else
+            {
+                _registration = new Registration(messenger);
+                Registrations.Add(messenger, _registration);
+            }
+            _registration.Push(this);
         }
-        _messenger.Register<TransactionPopupAddTagHost, TransactionPopupAddTagRequestedMessage>(
-            this,
-            static (recipient, message) => recipient.ShowAddTag(message));
     }
 
     private void ShowAddTag(TransactionPopupAddTagRequestedMessage message)
@@ -43,7 +46,7 @@ public sealed class TransactionPopupAddTagHost : IDisposable
         if (_disposed)
             return;
 
-        var owner = _ownerProvider(message.Requester);
+        var owner = _ownerProvider(message.OwnerToken);
         if (owner is null)
             return;
 
@@ -57,16 +60,46 @@ public sealed class TransactionPopupAddTagHost : IDisposable
             return;
 
         _disposed = true;
-        _messenger.Unregister<TransactionPopupAddTagRequestedMessage>(this);
         lock (Registrations)
         {
-            if (Registrations.TryGetValue(_messenger, out var registration) && ReferenceEquals(registration.Host, this))
+            _registration.Remove(this);
+            if (_registration.IsEmpty)
                 Registrations.Remove(_messenger);
         }
     }
 
-    private sealed class Registration(TransactionPopupAddTagHost host)
+    private sealed class Registration(IMessenger messenger)
     {
-        public TransactionPopupAddTagHost Host { get; } = host;
+        private readonly IMessenger _messenger = messenger;
+        private readonly List<TransactionPopupAddTagHost> _hosts = [];
+        public bool IsEmpty => _hosts.Count == 0;
+
+        public void Push(TransactionPopupAddTagHost host)
+        {
+            if (_hosts.Count > 0)
+                _hosts[^1].Deactivate();
+            _hosts.Add(host);
+            host.Activate();
+        }
+
+        public void Remove(TransactionPopupAddTagHost host)
+        {
+            var wasCurrent = _hosts.Count > 0 && ReferenceEquals(_hosts[^1], host);
+            _hosts.Remove(host);
+            host.Deactivate();
+            if (wasCurrent && _hosts.Count > 0)
+                _hosts[^1].Activate();
+        }
+
+        public void Activate(TransactionPopupAddTagHost host)
+        {
+            _messenger.Register<TransactionPopupAddTagHost, TransactionPopupAddTagRequestedMessage>(
+                host,
+                static (recipient, message) => recipient.ShowAddTag(message));
+        }
     }
+
+    private void Activate() => _registration.Activate(this);
+
+    private void Deactivate() => _messenger.Unregister<TransactionPopupAddTagRequestedMessage>(this);
 }

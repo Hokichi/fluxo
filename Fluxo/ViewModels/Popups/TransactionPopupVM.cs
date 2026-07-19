@@ -63,6 +63,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private TransactionPopupRequest _request = TransactionPopupRequest.Add();
     private bool _useRecurringDraftMessages;
     private bool _isDisposed;
+    public Guid AddTagOwnerToken { get; } = Guid.NewGuid();
 
     [ObservableProperty]
     [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateAmountText))]
@@ -589,7 +590,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     }
 
     public void RequestAddTag() =>
-        _messenger.Send(new TransactionPopupAddTagRequestedMessage(ViewedTransaction?.Id ?? 0, this));
+        _messenger.Send(new TransactionPopupAddTagRequestedMessage(ViewedTransaction?.Id ?? 0, AddTagOwnerToken));
 
     private async Task<bool> ApplyRequestAsync(CancellationToken cancellationToken)
     {

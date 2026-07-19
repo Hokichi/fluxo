@@ -728,7 +728,7 @@ public partial class TransactionSplitVM : ObservableObject
                     snapshots.Select(snapshot => (ILogMemoryAction)new DeleteTransactionMemoryAction(snapshot)).ToList());
             _messenger.Send(new RecordLogMemoryMessage(historyAction));
 
-            var scope = DashboardDataInvalidationScope.Budget;
+            var scope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
             if (plan.Goal is not null)
                 scope |= DashboardDataInvalidationScope.SavingGoals;
             _messenger.Send(new DashboardDataInvalidatedMessage(scope));

@@ -79,7 +79,7 @@ public partial class TransactionPopup : BasePopup
 
     internal bool IsViewingTransaction(int transactionId) => _viewModel.ViewedTransaction?.Id == transactionId;
 
-    public bool IsOwnedBy(TransactionPopupVM viewModel) => IsActive && ReferenceEquals(_viewModel, viewModel);
+    public bool IsOwnedBy(Guid ownerToken) => IsActive && _viewModel.AddTagOwnerToken == ownerToken;
 
     protected override async void OnSaveButtonClick()
     {

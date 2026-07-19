@@ -72,6 +72,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         messenger.Send(new RecordLogMemoryMessage(historyAction));
         messenger.Send(new DashboardDataInvalidatedMessage(
             DashboardDataInvalidationScope.Budget |
+            DashboardDataInvalidationScope.Notifications |
             (plan.Goal is null ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.SavingGoals)));
 
         if (plan.RepaymentAccountName is { } accountName)
@@ -416,7 +417,10 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
                 new EditTransactionMemoryAction(beforeExpense, TransactionMemorySnapshot.Create(transaction)),
                 new EditTransactionMemoryAction(beforeIncome, TransactionMemorySnapshot.Create(income))
             ])));
-        messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
+        var invalidationScope = DashboardDataInvalidationScope.Budget;
+        if (!options.SuppressNotificationInvalidation)
+            invalidationScope |= DashboardDataInvalidationScope.Notifications;
+        messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
         return Result.Success(loaded.Id);
     }
 

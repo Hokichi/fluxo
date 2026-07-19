@@ -41,8 +41,8 @@ public partial class QuickSetupWizard : BasePopup
         _viewModel = viewModel;
         _addTagHost = new TransactionPopupAddTagHost(
             serviceProvider.GetRequiredService<IServiceScopeFactory>(), dialogService, messenger,
-            requester => Application.Current?.Windows.OfType<TransactionPopup>()
-                .FirstOrDefault(popup => requester is not null && popup.IsOwnedBy(requester)));
+            ownerToken => Application.Current?.Windows.OfType<TransactionPopup>()
+                .FirstOrDefault(popup => popup.IsOwnedBy(ownerToken)));
         DataContext = viewModel;
         Loaded += OnLoadedAsync;
         Closing += OnClosingAsync;

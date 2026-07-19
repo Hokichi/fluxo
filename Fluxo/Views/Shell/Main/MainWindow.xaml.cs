@@ -152,8 +152,8 @@ public partial class MainWindow : Window, IPopupHost
         _messenger = messenger;
         _addTagHost = new TransactionPopupAddTagHost(
             serviceProvider.GetRequiredService<IServiceScopeFactory>(), dialogService, messenger,
-            requester => Application.Current?.Windows.OfType<TransactionPopup>()
-                .FirstOrDefault(popup => requester is not null && popup.IsOwnedBy(requester)));
+            ownerToken => Application.Current?.Windows.OfType<TransactionPopup>()
+                .FirstOrDefault(popup => popup.IsOwnedBy(ownerToken)));
         _appUpdateService = appUpdateService;
         _appUpdateInteractionService = appUpdateInteractionService;
         _logMemoryManager = new LogMemoryManager(_dataOperationRunner, _mainVM.ReloadCurrentDataAsync);

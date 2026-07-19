@@ -298,8 +298,13 @@ public sealed class TransactionPopupVMPersistenceTests
         };
         var pending = TransactionMappingHelper.CreatePending(loaded);
         pending.Amount = 30m;
+        var messenger = new WeakReferenceMessenger();
+        var invalidations = new List<DashboardDataInvalidationScope>();
+        var recipient = new object();
+        messenger.Register<DashboardDataInvalidatedMessage>(recipient,
+            (_, message) => invalidations.Add(message.Value));
 
-        var result = await new TransactionPersistenceHelper(appData, new WeakReferenceMessenger())
+        var result = await new TransactionPersistenceHelper(appData, messenger)
             .SaveAsync(loaded, pending, new(IsRepayment: true));
 
         Assert.True(result.IsSuccess, result.ErrorMessage);
@@ -311,6 +316,8 @@ public sealed class TransactionPopupVMPersistenceTests
         appData.DidNotReceive().UpdateAccount(detachedTarget);
         appData.Received(1).UpdateTransaction(expense);
         appData.Received(1).UpdateTransaction(income);
+        Assert.Contains(DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications,
+            invalidations);
     }
 
     [Fact]
@@ -373,7 +380,8 @@ public sealed class TransactionPopupVMPersistenceTests
         appData.Received(1).RemoveTransaction(transaction);
         await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
         Assert.Equal(1, histories);
-        Assert.Contains(DashboardDataInvalidationScope.Budget, invalidations);
+        Assert.Contains(DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications,
+            invalidations);
     }
 
     [Fact]
