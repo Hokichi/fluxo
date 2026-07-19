@@ -9,6 +9,7 @@ using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Helpers.Transaction;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
@@ -56,6 +57,7 @@ public partial class TransactionPopupVM : ObservableValidator
     private readonly Dictionary<object, FormState> _processingSnapshots = [];
     private int _currentProcessingIndex;
     private int? _currentProcessingRecurringTransactionId;
+    private bool _isTransactionStateInitialized;
 
     [ObservableProperty]
     [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateAmountText))]
@@ -290,6 +292,8 @@ public partial class TransactionPopupVM : ObservableValidator
     public bool IsEditingViewedTransaction => _popupPurpose == TransactionPopupPurpose.EditTransaction;
     public bool CanContinue => _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.AddRecurringTransaction;
     public bool CanDiscard => _popupPurpose is TransactionPopupPurpose.EditRecurringTransaction or TransactionPopupPurpose.EditTransaction;
+    public TransactionVM LoadedTransaction { get; private set; } = null!;
+    public TransactionVM PendingTransaction { get; private set; } = null!;
     public TransactionVM? ViewedTransaction { get; private set; }
 
     public bool ShowNoteField => !IsGoal && !IsRepayment;
@@ -555,6 +559,13 @@ public partial class TransactionPopupVM : ObservableValidator
         NotifyFormStateChanged();
     }
 
+    public Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        EnsureTransactionState();
+        return Task.CompletedTask;
+    }
+
     partial void OnIsInstallmentsChanged(bool value)
     {
         if (value)
@@ -815,22 +826,25 @@ public partial class TransactionPopupVM : ObservableValidator
     {
         ArgumentNullException.ThrowIfNull(transaction);
 
+        SetTransactionState(transaction);
+        var loaded = LoadedTransaction;
+
         ReloadChoicesFromMainViewModel();
-        IsExpense = transaction.Type == TransactionType.Expense;
-        IsGoal = transaction.GoalId is not null;
-        IsRepayment = transaction.RepaymentAccountId is not null;
-        NameText = transaction.Name;
-        AmountText = transaction.Amount;
-        NoteText = transaction.Notes;
-        SelectedDate = transaction.OccurredOn.Date;
-        SelectedExpenseCategory = transaction.ExpenseCategory ?? ExpenseCategory.Needs;
-        IsPinned = transaction.IsPinned;
-        IsIoU = transaction.IsIoU;
-        ShouldAffectBalance = transaction.ShouldAffectBalance;
-        IsExcludedFromBudget = transaction.IsExcludedFromBudget;
-        SelectedAccount = Accounts.FirstOrDefault(account => account.Id == transaction.SourceAccountId) ?? transaction.Account;
-        SelectedTag = transaction.Tag;
-        ViewedTransaction = transaction;
+        IsExpense = loaded.Type == TransactionType.Expense;
+        IsGoal = loaded.GoalId is not null;
+        IsRepayment = loaded.RepaymentAccountId is not null;
+        NameText = loaded.Name;
+        AmountText = loaded.Amount;
+        NoteText = loaded.Notes;
+        SelectedDate = loaded.OccurredOn.Date;
+        SelectedExpenseCategory = loaded.ExpenseCategory ?? ExpenseCategory.Needs;
+        IsPinned = loaded.IsPinned;
+        IsIoU = loaded.IsIoU;
+        ShouldAffectBalance = loaded.ShouldAffectBalance;
+        IsExcludedFromBudget = loaded.IsExcludedFromBudget;
+        SelectedAccount = Accounts.FirstOrDefault(account => account.Id == loaded.SourceAccountId) ?? loaded.Account;
+        SelectedTag = loaded.Tag;
+        ViewedTransaction = loaded;
         _isTransactionTypeLocked = true;
         SetPopupPurpose(TransactionPopupPurpose.ViewTransaction);
         RefreshTagCollections();
@@ -843,6 +857,17 @@ public partial class TransactionPopupVM : ObservableValidator
         OnPropertyChanged(nameof(CanEditViewedTransaction));
         OnPropertyChanged(nameof(CanCloneViewedTransaction));
         OnPropertyChanged(nameof(CanSplitViewedTransaction));
+    }
+
+    public void SwitchToCloneAddMode()
+    {
+        EnsureTransactionState();
+        PendingTransaction.Id = 0;
+        PendingTransaction.LoggedOn = default;
+        PendingTransaction.ParentTransactionId = null;
+        PendingTransaction.IsForDeletion = false;
+        SetPopupPurpose(TransactionPopupPurpose.AddNewTransaction);
+        BeginChangeTracking();
     }
 
     public void InitializeChildTransactions(IEnumerable<TransactionDetailChildTransactionVM> childTransactions)
@@ -2358,6 +2383,19 @@ public partial class TransactionPopupVM : ObservableValidator
     private static bool HasPendingTransactionInputValue(PendingTransactionInputState state)
     {
         return !string.IsNullOrWhiteSpace(state.NameText) || state.AmountText > 0m;
+    }
+
+    private void EnsureTransactionState()
+    {
+        if (!_isTransactionStateInitialized)
+            SetTransactionState(new TransactionVM());
+    }
+
+    private void SetTransactionState(TransactionVM source)
+    {
+        LoadedTransaction = TransactionMappingHelper.CreateLoaded(source);
+        PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
+        _isTransactionStateInitialized = true;
     }
 
     [RelayCommand]
