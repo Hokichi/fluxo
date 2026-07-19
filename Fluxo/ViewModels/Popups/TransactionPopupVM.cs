@@ -318,7 +318,7 @@ public partial class TransactionPopupVM : ObservableValidator
         EnsureTransactionState();
         _initialState = CaptureState();
         _isChangeTrackingInitialized = true;
-        NotifyFormStateChanged();
+        OnPropertyChanged(nameof(HasChanges));
     }
 
     public async Task EnsureTagsLoadedAsync(CancellationToken cancellationToken = default)
@@ -899,6 +899,7 @@ public partial class TransactionPopupVM : ObservableValidator
             PromoteTagToVisibleStart(selectedTag);
         else
             RefreshTagCollections();
+        PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
         BeginChangeTracking();
     }
 

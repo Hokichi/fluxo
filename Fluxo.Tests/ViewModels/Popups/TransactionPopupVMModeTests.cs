@@ -228,6 +228,57 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
+    public void Begin_editing_goal_with_unavailable_generated_tag_keeps_loaded_relationships_unchanged()
+    {
+        RunInSta(() =>
+        {
+            var (vm, appData) = CreateVm();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>(
+            [
+                new Tag { Id = 2, Name = "General", HexCode = "#22C55E" }
+            ]));
+            var transaction = CreateTransaction();
+            transaction.Name = "Goal Update for Legacy Goal";
+            transaction.GoalId = 99;
+            transaction.ExpenseCategory = ExpenseCategory.Savings;
+            transaction.Tag = new TagVM { Id = 10, Name = "Goal Update", HexCode = "#000000" };
+
+            vm.InitializeView(transaction);
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            Assert.Equal("Modify Transaction", vm.PopupTitle);
+            Assert.False(vm.HasChanges);
+            Assert.Equal(99, vm.PendingTransaction.GoalId);
+            Assert.Equal(10, vm.PendingTransaction.Tag?.Id);
+        });
+    }
+
+    [Fact]
+    public void Begin_editing_repayment_with_unavailable_generated_tag_keeps_loaded_relationships_unchanged()
+    {
+        RunInSta(() =>
+        {
+            var (vm, appData) = CreateVm();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>(
+            [
+                new Tag { Id = 2, Name = "General", HexCode = "#22C55E" }
+            ]));
+            var transaction = CreateTransaction();
+            transaction.Name = "Repayment to Legacy Card";
+            transaction.RepaymentAccountId = 99;
+            transaction.Tag = new TagVM { Id = 11, Name = "Balance Update", HexCode = "#000000" };
+
+            vm.InitializeView(transaction);
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            Assert.Equal("Modify Transaction", vm.PopupTitle);
+            Assert.False(vm.HasChanges);
+            Assert.Equal(99, vm.PendingTransaction.RepaymentAccountId);
+            Assert.Equal(11, vm.PendingTransaction.Tag?.Id);
+        });
+    }
+
+    [Fact]
     public void Form_edits_update_pending_without_mutating_loaded_transaction()
     {
         RunInSta(() =>
