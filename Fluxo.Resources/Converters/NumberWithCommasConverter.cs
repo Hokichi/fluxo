@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows.Data;
+using Fluxo.Resources.Helpers;
 
 namespace Fluxo.Resources.Converters;
 

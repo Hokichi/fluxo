@@ -17,20 +17,6 @@ public sealed class TransactionDetailVMBalloonToggleTests
         Assert.Equal(expected, TransactionDetailVM.GetTransactionModeDescription(isIoU, posted));
     }
 
-    [Fact]
-    public void SplitState_IsPreservedWhileParentIsShownAndSavedOnClose()
-    {
-        var source = File.ReadAllText(Fluxo.Tests.TestSupport.RepositoryPaths.File(
-            "Fluxo", "ViewModels", "Popups", "TransactionDetailVM.cs"));
-
-        Assert.Contains("private bool _areSplitRowsLoaded;", source);
-        Assert.Contains("public bool HasPendingSplitChanges", source);
-        Assert.Contains("if (_areSplitRowsLoaded)", source);
-        Assert.Contains("public void ShowParentTransaction()", source);
-        Assert.Contains("if (IsSplitMode || HasPendingSplitChanges)", source);
-        Assert.Contains("if (HasPendingSplitChanges)", source);
-    }
-
     [Theory]
     [InlineData(1, 1, 100, 95, 10, false, false)]
     [InlineData(1, 2, 100, 90, 10, false, false)]

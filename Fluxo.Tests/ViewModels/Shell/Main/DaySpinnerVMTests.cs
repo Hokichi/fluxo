@@ -245,7 +245,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public async Task SelectAdjacentVisibleDayFromUserAsync_WhenFutureNavigationAllowed_SelectsFuturePeriod()
+    public async Task SelectAdjacentVisibleDayFromUserAsync_WhenFutureNavigationAllowed_SelectsNextFuturePageDay()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -256,14 +256,14 @@ public class DaySpinnerVMTests
         {
             AllowFuturePeriodNavigation = true
         };
-        var today = DateTime.Today;
-        var currentDay = vm.DaysOfWeek.Single(day => day.Date.Date == today);
-        vm.SelectedDay = currentDay;
+        vm.NavigateSpinnerForwardCommand.Execute(null);
+        vm.SelectedDay = vm.DaysOfWeek[0];
         recipient.DateRanges.Clear();
 
         await vm.SelectAdjacentVisibleDayFromUserAsync(1);
 
-        Assert.Equal(today.AddDays(1), vm.SelectedDay.Date.Date);
+        Assert.Equal(vm.DaysOfWeek[1].Date.Date, vm.SelectedDay.Date.Date);
+        Assert.True(vm.SelectedDay.Date.Date > DateTime.Today);
         Assert.Single(recipient.DateRanges);
     }
 

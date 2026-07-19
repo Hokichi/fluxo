@@ -45,7 +45,7 @@ public sealed class DotNetRuntimeDetectorTests
     }
 
     [Fact]
-    public async Task InstallCommand_Continues_When_MachineWideRuntimeMissing()
+    public async Task InstallCommand_Continues_When_RuntimeInstallerInstallsRuntime()
     {
         var detectCalls = 0;
         var vm = new InstallerViewModel(
@@ -54,7 +54,8 @@ public sealed class DotNetRuntimeDetectorTests
                 ensureInstalledAsync: _ => Task.FromResult(new DotNetRuntimeInstallResult(
                     DotNetRuntimeInstallStatus.InstalledByFluxo,
                     "installed"))),
-            requestDetect: () => detectCalls++);
+            requestDetect: () => detectCalls++,
+            getRunningFluxoProcessIds: static () => []);
 
         await vm.InstallCommand.ExecuteAsync(null);
 

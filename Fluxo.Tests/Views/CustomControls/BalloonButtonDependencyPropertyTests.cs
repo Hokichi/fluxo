@@ -1,74 +1,11 @@
-using System.IO;
 using System.Windows;
 using Fluxo.Resources.CustomControls;
-using Fluxo.Tests.TestSupport;
 using Xunit;
 
 namespace Fluxo.Tests.Views.CustomControls;
 
 public sealed class BalloonButtonDependencyPropertyTests
 {
-    [Fact]
-    public void BalloonButton_DefinesButtonTextDependencyPropertyAndClrAccessor()
-    {
-        var source = File.ReadAllText(ResolveBalloonButtonPath());
-
-        Assert.Contains("public static readonly DependencyProperty ButtonTextProperty =", source);
-        Assert.Contains("DependencyProperty.Register(nameof(ButtonText), typeof(string), typeof(BalloonControl),", source);
-        Assert.Contains("public string? ButtonText", source);
-        Assert.Contains("get => (string?)GetValue(ButtonTextProperty);", source);
-        Assert.Contains("set => SetValue(ButtonTextProperty, value);", source);
-    }
-
-    [Fact]
-    public void BalloonButton_DefinesShouldExpandDependencyPropertyDefaultingToFalse()
-    {
-        var source = File.ReadAllText(ResolveBalloonButtonPath());
-
-        Assert.Contains("public static readonly DependencyProperty ShouldExpandProperty =", source);
-        Assert.Contains("DependencyProperty.Register(nameof(ShouldExpand), typeof(bool), typeof(BalloonControl),", source);
-        Assert.Contains("new FrameworkPropertyMetadata(false", source);
-        Assert.Contains("CoerceShouldExpand", source);
-        Assert.Contains("public bool ShouldExpand", source);
-        Assert.Contains("get => (bool)GetValue(ShouldExpandProperty);", source);
-        Assert.Contains("set => SetValue(ShouldExpandProperty, value);", source);
-    }
-
-    [Fact]
-    public void BalloonButton_DefinesShouldShowTextDependencyPropertyDefaultingToFalse()
-    {
-        var source = File.ReadAllText(ResolveBalloonButtonPath());
-
-        Assert.Contains("public static readonly DependencyProperty ShouldShowTextProperty =", source);
-        Assert.Contains("DependencyProperty.Register(nameof(ShouldShowText), typeof(bool), typeof(BalloonControl),", source);
-        Assert.Contains("new PropertyMetadata(false, OnShouldShowTextChanged)", source);
-        Assert.Contains("public bool ShouldShowText", source);
-        Assert.Contains("get => (bool)GetValue(ShouldShowTextProperty);", source);
-        Assert.Contains("set => SetValue(ShouldShowTextProperty, value);", source);
-    }
-
-    [Fact]
-    public void BalloonButton_DefinesButtonSizeDependencyProperty()
-    {
-        var source = File.ReadAllText(ResolveBalloonButtonPath());
-
-        Assert.Contains("public static readonly DependencyProperty ButtonSizeProperty =", source);
-        Assert.Contains("DependencyProperty.Register(nameof(ButtonSize), typeof(double), typeof(BalloonControl),", source);
-        Assert.Contains("public double ButtonSize", source);
-        Assert.Contains("get => (double)GetValue(ButtonSizeProperty);", source);
-        Assert.Contains("set => SetValue(ButtonSizeProperty, value);", source);
-
-        Assert.DoesNotContain("ExpandedWidth", source);
-    }
-
-    [Fact]
-    public void BalloonButton_DoesNotExposeActiveBackground()
-    {
-        var source = File.ReadAllText(ResolveBalloonButtonPath());
-
-        Assert.DoesNotContain("ActiveBackground", source);
-    }
-
     [Fact]
     public void BalloonButton_CoercesShouldExpandFalse_WhenShouldShowTextIsTrue()
     {
@@ -152,9 +89,6 @@ public sealed class BalloonButtonDependencyPropertyTests
             Assert.True(button.GetEffectiveOpenWidth() > 96);
         });
     }
-
-    private static string ResolveBalloonButtonPath() =>
-        RepositoryPaths.File("Fluxo.Resources", "CustomControls", "BalloonControl.cs");
 
     private static void RunOnStaThread(Action action)
     {

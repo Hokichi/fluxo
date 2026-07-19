@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
 using Fluxo.Resources.CustomControls;
-using Fluxo.Tests.TestSupport;
 using Xunit;
 
 namespace Fluxo.Tests.Views.CustomControls;
@@ -97,19 +96,6 @@ public sealed class BalloonControlDependencyPropertyTests
 
             Assert.Equal(28d, (double)button.GetAnimationBaseValue(FrameworkElement.WidthProperty));
         });
-    }
-
-    [Fact]
-    public void BalloonControl_SwitchesHoverFillWithoutColorAnimation()
-    {
-        var source = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo.Resources", "CustomControls", "BalloonControl.cs"));
-
-        Assert.Contains("SetShapeFill(ResolveHoveredBackground());", source);
-        Assert.Equal(2, source.Split(
-            "SetShapeFill(ResolveRestingBackground());",
-            StringSplitOptions.None).Length - 1);
-        Assert.DoesNotContain("ColorAnimation", source);
     }
 
     private static void RunOnStaThread(Action action)

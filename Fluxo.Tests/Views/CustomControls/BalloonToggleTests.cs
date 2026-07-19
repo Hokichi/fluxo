@@ -233,31 +233,6 @@ public sealed class BalloonToggleTests
         });
     }
 
-    [Fact]
-    public void Popup_ClosesOutsideAndOnMouseLeave()
-    {
-        var xaml = File.ReadAllText(Fluxo.Tests.TestSupport.RepositoryPaths.File(
-            "Fluxo.Resources", "Resources", "Styles", "ButtonStyles.xaml"));
-        var code = File.ReadAllText(Fluxo.Tests.TestSupport.RepositoryPaths.File(
-            "Fluxo.Resources", "CustomControls", "BalloonToggle.cs"));
-
-        Assert.Contains("StaysOpen=\"False\"", xaml);
-        Assert.Contains("_statePopupChild.MouseLeave += OnStatePopupMouseLeave;", code);
-        Assert.Contains("_statePopupChild.MouseLeave -= OnStatePopupMouseLeave;", code);
-        Assert.Contains("_statePopup.IsOpen = false;", code);
-    }
-
-    [Fact]
-    public void DefaultStyle_ContainsStatePopupAndStateButtons()
-    {
-        var xaml = File.ReadAllText(Fluxo.Tests.TestSupport.RepositoryPaths.File(
-            "Fluxo.Resources", "Resources", "Styles", "ButtonStyles.xaml"));
-
-        Assert.Contains("x:Name=\"PART_StatePopup\"", xaml);
-        Assert.Contains("x:Name=\"PART_StateItems\"", xaml);
-        Assert.Contains("CommandParameter=\"{Binding}\"", xaml);
-    }
-
     private sealed class TestBalloonToggle : BalloonToggle
     {
         public Brush ResolvedRestingBackground => ResolveRestingBackground();

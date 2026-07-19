@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text;
 
-namespace Fluxo.Resources.Converters;
+namespace Fluxo.Resources.Helpers;
 
-internal static class MoneyFormatUtility
+public static class MoneyFormatUtility
 {
     private const decimal ThousandDivisor = 1_000m;
     private const decimal MillionDivisor = 1_000_000m;

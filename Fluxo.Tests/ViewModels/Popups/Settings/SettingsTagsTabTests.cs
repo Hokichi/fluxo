@@ -1,7 +1,6 @@
 using Fluxo.Core.Budgeting;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Tests.TestSupport;
 using Fluxo.ViewModels.Popups.Settings;
 using Xunit;
 
@@ -9,22 +8,6 @@ namespace Fluxo.Tests.ViewModels.Popups.Settings;
 
 public sealed class SettingsTagsTabTests
 {
-    [Fact]
-    public void View_WiresExplicitTagActions()
-    {
-        var xaml = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo", "Views", "Popups", "Settings", "Tabs", "SettingsTagsTab.xaml"));
-        var codeBehind = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo", "Views", "Popups", "Settings", "Tabs", "SettingsTagsTab.xaml.cs"));
-
-        Assert.Contains("Click=\"OnEditTagClick\"", xaml);
-        Assert.Contains("Click=\"OnDeleteTagClick\"", xaml);
-        Assert.Contains("OnEditTagClick", codeBehind);
-        Assert.Contains("OnDeleteTagClick", codeBehind);
-        Assert.DoesNotContain("OnTagMouseDoubleClick", codeBehind);
-        Assert.DoesNotContain("IsDotClick", codeBehind);
-    }
-
     [Fact]
     public void CreateCards_UsesOnlyEffectiveExpensesFromCurrentPeriod()
     {

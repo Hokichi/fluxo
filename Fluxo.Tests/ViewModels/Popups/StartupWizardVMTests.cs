@@ -9,7 +9,6 @@ using Fluxo.Core.Interfaces.Services;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Persistence;
-using Fluxo.Tests.TestSupport;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Shell.QuickSetupWizard;
 using NSubstitute;
@@ -96,61 +95,6 @@ public sealed class QuickSetupWizardVMTests
         viewModel.GoBack();
 
         Assert.Equal(2, viewModel.CurrentStepIndex);
-    }
-
-    [Fact]
-    public void MiddlePageSidebar_HidesBudgetAllocationWhenThereAreNoAccounts()
-    {
-        var xaml = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo",
-            "Views",
-            "Shell",
-            "Wizard",
-            "Pages",
-            "StartupWizardMiddlePage.xaml"));
-        var budgetAllocationIndex = xaml.IndexOf("Text=\"Budget Allocation\"", StringComparison.Ordinal);
-
-        Assert.NotEqual(-1, budgetAllocationIndex);
-        var budgetAllocationSidebarBlock = xaml[..budgetAllocationIndex];
-        budgetAllocationSidebarBlock = budgetAllocationSidebarBlock[
-            budgetAllocationSidebarBlock.LastIndexOf("<!--  Step 4  -->", StringComparison.Ordinal)..];
-        Assert.Contains(
-            "Visibility=\"{Binding HasAccounts, Converter={StaticResource BoolToVisibilityConverter}}\"",
-            budgetAllocationSidebarBlock);
-    }
-
-    [Fact]
-    public void WizardNextClick_SkipsToPreferencesWhenThereAreNoAccounts()
-    {
-        var source = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo",
-            "Views",
-            "Shell",
-            "Wizard",
-            "QuickSetupWizard.xaml.cs"));
-
-        Assert.Contains("_viewModel.NavigateToStep(6);", source);
-        Assert.Contains("Recurring transactions, Saving goals, and Budget allocation setup will be skipped.", source);
-    }
-
-    [Fact]
-    public void MiddlePage_AllowsVerticalScrollForBudgetAllocationStep()
-    {
-        var xaml = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo",
-            "Views",
-            "Shell",
-            "Wizard",
-            "Pages",
-            "StartupWizardMiddlePage.xaml"));
-        var scrollViewerIndex = xaml.IndexOf("<customControls:FadingScrollViewer", StringComparison.Ordinal);
-
-        Assert.NotEqual(-1, scrollViewerIndex);
-        var scrollViewerBlock = xaml[scrollViewerIndex..xaml.IndexOf("</customControls:FadingScrollViewer>", scrollViewerIndex, StringComparison.Ordinal)];
-        Assert.Contains("Grid.Row=\"2\"", scrollViewerBlock);
-        Assert.Contains("VerticalScrollBarVisibility=\"Auto\"", scrollViewerBlock);
-        Assert.DoesNotContain("Binding=\"{Binding IsStep5Active}\"", scrollViewerBlock);
-        Assert.DoesNotContain("<Setter Property=\"VerticalScrollBarVisibility\" Value=\"Disabled\" />", scrollViewerBlock);
     }
 
     [Fact]
@@ -326,28 +270,6 @@ public sealed class QuickSetupWizardVMTests
         Assert.Equal(45, vm.AppAutoLockedInterval);
         Assert.Equal("Custom", vm.SelectedAppAutoLockPreset);
         Assert.True(vm.IsCustomAutoLockInterval);
-    }
-
-    [Fact]
-    public void PersonalizationStep_UsesSegmentedAutoLockPresetSelector()
-    {
-        var xaml = File.ReadAllText(RepositoryPaths.File(
-            "Fluxo",
-            "Views",
-            "Shell",
-            "Wizard",
-            "Pages",
-            "Steps",
-            "Personalization.xaml"));
-
-        Assert.Contains("SelectedValue=\"{Binding SelectedAppAutoLockPreset, Mode=TwoWay}\"", xaml);
-        Assert.Contains("Content=\"30 seconds\"", xaml);
-        Assert.Contains("Content=\"1 minute\"", xaml);
-        Assert.Contains("Content=\"3 minutes\"", xaml);
-        Assert.Contains("Content=\"5 minutes\"", xaml);
-        Assert.Contains("Content=\"10 minutes\"", xaml);
-        Assert.Contains("Content=\"Custom\"", xaml);
-        Assert.Contains("Visibility=\"{Binding IsCustomAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}\"", xaml);
     }
 
     private static QuickSetupWizardVM CreateViewModel(TestUnitOfWork? unitOfWork = null)

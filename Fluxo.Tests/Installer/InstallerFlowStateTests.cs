@@ -339,7 +339,8 @@ public sealed class InstallerFlowStateTests
         var vm = new InstallerViewModel(
             dotNetRuntimeDetector: new FixedRuntimeDetector(true),
             bundleExecutablePath: WindowsPathFixtures.AlternateRepairerExecutable,
-            copyFile: static (_, _, _) => { });
+            copyFile: static (_, _, _) => { },
+            getRunningFluxoProcessIds: static () => []);
 
         vm.Begin();
 
@@ -368,7 +369,8 @@ public sealed class InstallerFlowStateTests
         var vm = new InstallerViewModel(
             dotNetRuntimeDetector: new FixedRuntimeDetector(true),
             bundleExecutablePath: WindowsPathFixtures.AlternateRepairerExecutable,
-            copyFile: static (_, _, _) => { });
+            copyFile: static (_, _, _) => { },
+            getRunningFluxoProcessIds: static () => []);
 
         vm.Begin();
 
