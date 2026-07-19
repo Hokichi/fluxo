@@ -28,7 +28,6 @@ namespace Fluxo.ViewModels.Popups;
 public partial class TransactionPopupVM : ObservableValidator
 {
     private const int DefaultVisibleTagSlots = 4;
-    private const int MaxNameLength = 256;
     private const int NoAccountId = -1;
     private const int NoTagId = -1;
     private const int NoSavingGoalId = -1;
@@ -53,7 +52,7 @@ public partial class TransactionPopupVM : ObservableValidator
     private readonly List<AccountVM> _processingRepayments = [];
     private readonly List<SavingGoalVM> _processingGoals = [];
     private readonly List<RecurringTransactionVM> _processingRecurringTransactions = [];
-    private readonly Dictionary<object, ProcessingState> _processingStates = [];
+    private readonly Dictionary<object, ProcessingTransactionHelper.State> _processingStates = [];
     private readonly Dictionary<object, FormState> _processingSnapshots = [];
     private int _currentProcessingIndex;
     private int? _currentProcessingRecurringTransactionId;
@@ -173,17 +172,9 @@ public partial class TransactionPopupVM : ObservableValidator
     public decimal CategoryCurrent => IsRepayment
         ? SelectedRepaymentAccount?.SpentAmount ?? 0m
         : ShowCategoryImpact ? GetCategoryCurrentAmount() : 0m;
-    public decimal CategoryToBe => IsRepayment
-        ? Math.Max(0m, CategoryCurrent - AmountText)
-        : CategoryCurrent + AmountText;
-    public decimal AccountCurrent => SelectedAccount is { } account
-        ? account.IsCredit ? account.SpentAmount : account.Balance
-        : 0m;
-    public decimal AccountToBe => SelectedAccount is { } account
-        ? account.IsCredit
-            ? AccountCurrent + (IsIncome ? -AmountText : AmountText)
-            : AccountCurrent + (IsIncome ? AmountText : -AmountText)
-        : 0m;
+    public decimal CategoryToBe => TransactionCalculationHelper.CalculateCategoryToBe(CategoryCurrent, AmountText, IsRepayment);
+    public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
+    public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
     public IReadOnlyList<TransactionWarning> TransactionWarnings => BuildTransactionWarnings();
 
     public IReadOnlyList<RecurringPeriod> RecurringPeriods { get; } =
@@ -245,7 +236,7 @@ public partial class TransactionPopupVM : ObservableValidator
         "A one-time transaction";
     public bool ShowRecurringDayInput => IsRecurringTransactionMode;
     public bool ShowRecurringNoneInput => IsRecurringTransactionMode && SelectedRecurringPeriod == RecurringPeriod.None;
-    public bool ShowRecurringWeekdayInput => IsRecurringTransactionMode && IsWeekdayRecurringPeriod(SelectedRecurringPeriod);
+    public bool ShowRecurringWeekdayInput => IsRecurringTransactionMode && RecurringTransactionValidationHelper.IsWeekdayPeriod(SelectedRecurringPeriod);
     public bool ShowRecurringMonthlyInput => IsRecurringTransactionMode && SelectedRecurringPeriod == RecurringPeriod.Monthly;
     public bool ShowDateSelector => !IsRecurringTransactionMode;
     public bool ShowInstallmentEndDate => IsInstallments;
@@ -379,7 +370,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public bool HasMoreTags => OverflowTags.Count > 0;
     public bool IsProcessingSession => ProcessingTargets.Any();
-    public bool IsProcessingComplete => IsProcessingSession && _processingStates.Values.All(state => state != ProcessingState.Pending);
+    public bool IsProcessingComplete => IsProcessingSession && _processingStates.Values.All(state => state != ProcessingTransactionHelper.State.Pending);
     public bool CanSkipProcessing => IsProcessingSession && CurrentProcessingTarget is not null;
     public PopupMode PopupMode => _popupPurpose == TransactionPopupPurpose.Processing
         ? PopupMode.BackNext
@@ -425,7 +416,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
         var current = CurrentProcessingTarget!;
         _processingSnapshots[current] = CaptureState();
-        _processingStates[current] = ProcessingState.Processed;
+        _processingStates[current] = ProcessingTransactionHelper.State.Processed;
         MoveToNextPending();
         NotifyProcessingChanged();
         return TransactionPopupSubmissionResult.Success();
@@ -437,13 +428,14 @@ public partial class TransactionPopupVM : ObservableValidator
             return;
 
         _processingSnapshots[CurrentProcessingTarget] = CaptureState();
-        var previousIndex = Enumerable.Range(0, _currentProcessingIndex).LastOrDefault(index =>
-            _processingStates[ProcessingTargets.ElementAt(index)] == ProcessingState.Processed);
-        if (_currentProcessingIndex == 0 || _processingStates[ProcessingTargets.ElementAt(previousIndex)] != ProcessingState.Processed)
+        var targets = ProcessingTargets.ToList();
+        var previousIndex = ProcessingTransactionHelper.FindPreviousProcessedIndex(
+            targets.Select(target => _processingStates[target]).ToList(), _currentProcessingIndex);
+        if (previousIndex < 0)
             return;
 
-        var previous = ProcessingTargets.ElementAt(previousIndex);
-        _processingStates[previous] = ProcessingState.Pending;
+        var previous = targets[previousIndex];
+        _processingStates[previous] = ProcessingTransactionHelper.State.Pending;
         _currentProcessingIndex = previousIndex;
         LoadProcessingCurrent();
         NotifyProcessingChanged();
@@ -454,7 +446,7 @@ public partial class TransactionPopupVM : ObservableValidator
         if (!IsProcessingSession || CurrentProcessingTarget is null)
             return false;
 
-        _processingStates[CurrentProcessingTarget] = ProcessingState.Skipped;
+        _processingStates[CurrentProcessingTarget] = ProcessingTransactionHelper.State.Skipped;
         var hasNext = MoveToNextPending();
         NotifyProcessingChanged();
         return hasNext;
@@ -462,7 +454,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public async Task<TransactionPopupSubmissionResult> PersistProcessedItemsAsync()
     {
-        var processed = ProcessingTargets.Where(target => _processingStates[target] == ProcessingState.Processed).ToList();
+        var processed = ProcessingTargets.Where(target => _processingStates[target] == ProcessingTransactionHelper.State.Processed).ToList();
         foreach (var target in processed)
         {
             if (!_processingSnapshots.TryGetValue(target, out var snapshot))
@@ -795,31 +787,30 @@ public partial class TransactionPopupVM : ObservableValidator
     public void InitializeFromDraft(TransactionPopupDraft draft)
     {
         ReloadChoicesFromMainViewModel();
+        var state = AddTransactionHelper.CreateState(
+            new AddTransactionHelper.Input(
+                draft.IsExpense, draft.IsGoal, draft.Name, draft.AmountText, draft.AccountId,
+                draft.Date, draft.Note, draft.Category, draft.TagId, draft.GoalId, draft.IsIoU,
+                draft.ShouldAffectBalance, draft.IsExcludedFromBudget, draft.LockTransactionType),
+            Accounts, _orderedTags, Goals);
 
-        IsExpense = draft.IsExpense;
-        IsGoal = draft.IsGoal;
-        AmountText = draft.AmountText;
-        NameText = draft.Name;
-        NoteText = draft.Note;
-        IsIoU = draft.IsIoU;
-        ShouldAffectBalance = draft.ShouldAffectBalance;
-        IsExcludedFromBudget = draft.IsExcludedFromBudget;
-        SelectedDate = draft.Date.Date;
-        SelectedExpenseCategory = draft.Category ?? ExpenseCategory.Needs;
-        SelectedAccount = draft.AccountId is null
-            ? Accounts.FirstOrDefault()
-            : Accounts.FirstOrDefault(source => source.Id == draft.AccountId.Value) ??
-              Accounts.FirstOrDefault();
-        SelectedTag = draft.TagId is null
-            ? _orderedTags.FirstOrDefault()
-            : _orderedTags.FirstOrDefault(tag => tag.Id == draft.TagId.Value) ?? _orderedTags.FirstOrDefault();
-        SelectedGoal = draft.GoalId is null
-            ? Goals.FirstOrDefault()
-            : Goals.FirstOrDefault(goal => goal.Id == draft.GoalId.Value) ?? Goals.FirstOrDefault();
+        IsExpense = state.Input.IsExpense;
+        IsGoal = state.Input.IsGoal;
+        AmountText = state.Input.Amount;
+        NameText = state.Input.Name;
+        NoteText = state.Input.Note;
+        IsIoU = state.Input.IsIoU;
+        ShouldAffectBalance = state.Input.ShouldAffectBalance;
+        IsExcludedFromBudget = state.Input.IsExcludedFromBudget;
+        SelectedDate = state.Input.Date.Date;
+        SelectedExpenseCategory = state.Input.Category ?? ExpenseCategory.Needs;
+        SelectedAccount = state.SelectedAccount;
+        SelectedTag = state.SelectedTag;
+        SelectedGoal = state.SelectedGoal;
         IsMoreTagsOpen = false;
         if (IsGoal)
             SyncGoalUpdateName();
-        _isTransactionTypeLocked = draft.LockTransactionType;
+        _isTransactionTypeLocked = state.Input.LockTransactionType;
         OnPropertyChanged(nameof(CanChangeTransactionType));
     }
 
@@ -827,14 +818,17 @@ public partial class TransactionPopupVM : ObservableValidator
     {
         ArgumentNullException.ThrowIfNull(transaction);
 
-        SetTransactionState(transaction);
-        var loaded = LoadedTransaction;
+        ReloadChoicesFromMainViewModel();
+        var state = ViewTransactionHelper.CreateState(transaction, Accounts, Goals, RepaymentAccounts);
+        LoadedTransaction = state.LoadedTransaction;
+        PendingTransaction = state.PendingTransaction;
+        _isTransactionStateInitialized = true;
+        var loaded = state.LoadedTransaction;
         SetPopupPurpose(TransactionPopupPurpose.ViewTransaction);
 
-        ReloadChoicesFromMainViewModel();
-        IsExpense = loaded.Type == TransactionType.Expense;
-        IsGoal = loaded.GoalId is not null;
-        IsRepayment = loaded.RepaymentAccountId is not null;
+        IsExpense = state.IsExpense;
+        IsGoal = state.IsGoal;
+        IsRepayment = state.IsRepayment;
         NameText = loaded.Name;
         AmountText = loaded.Amount;
         NoteText = loaded.Notes;
@@ -844,10 +838,10 @@ public partial class TransactionPopupVM : ObservableValidator
         IsIoU = loaded.IsIoU;
         ShouldAffectBalance = loaded.ShouldAffectBalance;
         IsExcludedFromBudget = loaded.IsExcludedFromBudget;
-        SelectedAccount = Accounts.FirstOrDefault(account => account.Id == loaded.SourceAccountId) ?? loaded.Account;
-        SelectedTag = loaded.Tag;
-        SelectedGoal = Goals.FirstOrDefault(goal => goal.Id == loaded.GoalId);
-        SelectedRepaymentAccount = RepaymentAccounts.FirstOrDefault(account => account.Id == loaded.RepaymentAccountId);
+        SelectedAccount = state.SelectedAccount;
+        SelectedTag = state.SelectedTag;
+        SelectedGoal = state.SelectedGoal;
+        SelectedRepaymentAccount = state.SelectedRepaymentAccount;
         PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
         ViewedTransaction = loaded;
         _isTransactionTypeLocked = true;
@@ -916,38 +910,20 @@ public partial class TransactionPopupVM : ObservableValidator
     {
         if (ViewedTransaction is null || SelectedAccount is null || SelectedTag is null)
             throw new InvalidOperationException("The transaction edit is incomplete.");
-
-        return new TransactionEditInput(
-            NameText,
-            AmountText,
-            IsPinned,
-            NoteText,
-            SelectedDate,
-            SelectedExpenseCategory,
-            SelectedAccount.Id,
-            SelectedTag.Id,
-            IsIoU,
-            ShouldAffectBalance,
-            IsExcludedFromBudget);
+        SyncPendingTransactionFromForm();
+        var input = EditTransactionHelper.CreateInput(PendingTransaction);
+        return new TransactionEditInput(input.Name, input.Amount, input.IsPinned, input.Note, input.Date,
+            input.Category, input.AccountId, input.TagId, input.IsIoU, input.ShouldAffectBalance,
+            input.IsExcludedFromBudget);
     }
 
     public TransactionPopupDraft CreateViewedTransactionDraft()
     {
         var transaction = ViewedTransaction ?? throw new InvalidOperationException("No transaction is being viewed.");
-        return new TransactionPopupDraft(
-            transaction.Type == TransactionType.Expense,
-            transaction.Name,
-            transaction.Amount,
-            transaction.SourceAccountId,
-            transaction.OccurredOn,
-            transaction.Notes,
-            transaction.ExpenseCategory,
-            transaction.Tag?.Id,
-            transaction.GoalId is not null,
-            transaction.GoalId,
-            transaction.IsIoU,
-            transaction.IsExcludedFromBudget,
-            ShouldAffectBalance: transaction.ShouldAffectBalance);
+        var draft = EditTransactionHelper.CreateDraft(transaction);
+        return new TransactionPopupDraft(draft.IsExpense, draft.Name, draft.Amount, draft.AccountId,
+            draft.Date, draft.Note, draft.Category, draft.TagId, draft.IsGoal, draft.GoalId, draft.IsIoU,
+            draft.IsExcludedFromBudget, ShouldAffectBalance: draft.ShouldAffectBalance);
     }
 
     partial void OnIsExpenseChanged(bool value)
@@ -1229,8 +1205,10 @@ public partial class TransactionPopupVM : ObservableValidator
             if (!TryResolveRecurringSaveAmount(input, out var effectiveSaveAmount, out var recurringAmountMessage))
                 return TransactionPopupSubmissionResult.Failure(recurringAmountMessage);
 
-            if (!TryValidateSpendingAmountAgainstSource(input.IsExpense || input.IsRepayment, input.IsGoal, effectiveSaveAmount, account, out var spendingValidationMessage))
-                return TransactionPopupSubmissionResult.Failure(spendingValidationMessage);
+            var spendingValidation = TransactionValidationHelper.ValidateSpendingAmount(
+                input.IsExpense || input.IsRepayment, input.IsGoal, effectiveSaveAmount, account);
+            if (!spendingValidation.IsValid)
+                return TransactionPopupSubmissionResult.Failure(spendingValidation.ErrorMessage);
 
             var invalidationScope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
 
@@ -1697,7 +1675,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
             var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, DateTime.Today);
             foreach (var option in ExpenseCategories)
-                option.IsEnabled = GetCategoryState(snapshot, option.Value).Remaining > 0m;
+                option.IsEnabled = TransactionCalculationHelper.GetCategoryState(snapshot, option.Value).Remaining > 0m;
         }
         catch
         {
@@ -1715,21 +1693,18 @@ public partial class TransactionPopupVM : ObservableValidator
             return TransactionPopupSubmissionResult.Success();
 
         var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, expenseDate);
-        var categoryState = GetCategoryState(snapshot, category);
-
-        if (allocation.OverspendPolicy == OverspendPolicy.HardStop &&
-            BudgetAllocationCalculator.WouldHardStop(categoryState, amount))
-        {
-            return TransactionPopupSubmissionResult.Failure(
-                $"{GetExpenseCategoryLabel(category)} budget is exhausted for this allocation period.");
-        }
+        var categoryState = TransactionCalculationHelper.GetCategoryState(snapshot, category);
+        var validation = TransactionValidationHelper.ValidateCategoryBudget(
+            allocation.OverspendPolicy, categoryState, category, amount);
+        if (!validation.IsValid)
+            return TransactionPopupSubmissionResult.Failure(validation.ErrorMessage);
 
         if (allocation.OverspendPolicy == OverspendPolicy.SoftDebt)
         {
             var debtDelta = BudgetAllocationCalculator.CalculateSoftDebtDelta(categoryState.Remaining, amount);
             if (debtDelta > 0m)
             {
-                AddDebtDelta(allocation, category, debtDelta);
+                TransactionCalculationHelper.AddDebtDelta(allocation, category, debtDelta);
                 _appData.UpdateBudgetAllocation(allocation);
             }
         }
@@ -1754,63 +1729,10 @@ public partial class TransactionPopupVM : ObservableValidator
 
         return BudgetAllocationCalculator.CalculateSnapshot(
             allocation,
-            CalculateSpentByCategory(expenseLogs, currentPeriod),
-            CalculateSpentByCategory(expenseLogs, previousPeriod),
+            TransactionCalculationHelper.CalculateSpentByCategory(expenseLogs, currentPeriod),
+            TransactionCalculationHelper.CalculateSpentByCategory(expenseLogs, previousPeriod),
             allocationDate,
             _mainViewModel.BudgetPanel.TotalIncomeAmount);
-    }
-
-    private static IReadOnlyDictionary<ExpenseCategory, decimal> CalculateSpentByCategory(
-        IEnumerable<Transaction> expenseLogs,
-        BudgetAllocationPeriod period)
-    {
-        return expenseLogs
-            .Where(log => !log.IsForDeletion)
-            .Where(log => !log.IsExcludedFromBudget)
-            .Where(log => log.OccurredOn.Date >= period.Start && log.OccurredOn.Date <= period.End)
-            .Where(log => log.ExpenseCategory.HasValue)
-            .GroupBy(log => log.ExpenseCategory!.Value)
-            .ToDictionary(group => group.Key, group => group.Sum(log => log.Amount));
-    }
-
-    private static BudgetAllocationCategoryState GetCategoryState(
-        BudgetAllocationSnapshot snapshot,
-        ExpenseCategory category)
-    {
-        return category switch
-        {
-            ExpenseCategory.Wants => snapshot.Wants,
-            ExpenseCategory.Savings => snapshot.Invest,
-            _ => snapshot.Needs
-        };
-    }
-
-    private static void AddDebtDelta(BudgetAllocation allocation, ExpenseCategory category, decimal debtDelta)
-    {
-        switch (category)
-        {
-            case ExpenseCategory.Wants:
-                allocation.WantsDebt += debtDelta;
-                break;
-
-            case ExpenseCategory.Savings:
-                allocation.InvestDebt += debtDelta;
-                break;
-
-            default:
-                allocation.NeedsDebt += debtDelta;
-                break;
-        }
-    }
-
-    private static string GetExpenseCategoryLabel(ExpenseCategory category)
-    {
-        return category switch
-        {
-            ExpenseCategory.Wants => "Wants",
-            ExpenseCategory.Savings => "Invest",
-            _ => "Needs"
-        };
     }
 
     private void SetAllExpenseCategoriesEnabled(bool isEnabled)
@@ -2099,128 +2021,6 @@ public partial class TransactionPopupVM : ObservableValidator
                 null));
     }
 
-    private static bool TryValidateSpendingAmountAgainstSource(
-        bool isExpense,
-        bool isGoal,
-        decimal amount,
-        AccountVM source,
-        out string validationMessage)
-    {
-        if (amount <= 0m)
-        {
-            validationMessage = "Please enter a valid amount greater than zero.";
-            return false;
-        }
-
-        if (!isExpense && !isGoal)
-        {
-            validationMessage = string.Empty;
-            return true;
-        }
-
-        if (!TryValidateMaximumSpending(source.MaximumSpending, source.AccountType, source.SpentAmount, source.MoneyOut, amount, out validationMessage))
-            return false;
-
-        return TryValidateSpendingCapacity(source.AccountType, source.Balance, source.AccountLimit, source.SpentAmount, amount, out validationMessage);
-    }
-
-    private static bool TryValidateSpendingAmountAgainstSource(
-        bool isExpense,
-        bool isGoal,
-        decimal amount,
-        Account source,
-        out string validationMessage)
-    {
-        if (amount <= 0m)
-        {
-            validationMessage = "Please enter a valid amount greater than zero.";
-            return false;
-        }
-
-        if (!isExpense && !isGoal)
-        {
-            validationMessage = string.Empty;
-            return true;
-        }
-
-        var persistedMoneyOut = GetPersistedMoneyOut(source);
-        if (!TryValidateMaximumSpending(source.MaximumSpending, source.AccountType, source.SpentAmount, persistedMoneyOut, amount, out validationMessage))
-            return false;
-
-        return TryValidateSpendingCapacity(source.AccountType, source.Balance, source.AccountLimit, source.SpentAmount, amount, out validationMessage);
-    }
-
-    private static decimal GetPersistedMoneyOut(Account source)
-    {
-        var moneyOutProperty = source.GetType().GetProperty("MoneyOut");
-        if (moneyOutProperty is not null)
-        {
-            var rawValue = moneyOutProperty.GetValue(source);
-            if (rawValue is decimal moneyOut)
-                return moneyOut;
-        }
-
-        return source.SpentAmount;
-    }
-
-    private static bool TryValidateMaximumSpending(
-        decimal maximumSpending,
-        AccountType sourceType,
-        decimal spentAmount,
-        decimal moneyOut,
-        decimal amount,
-        out string validationMessage)
-    {
-        if (maximumSpending <= 0m)
-        {
-            validationMessage = string.Empty;
-            return true;
-        }
-
-        var projectedSpending = sourceType == AccountType.Credit
-            ? spentAmount + amount
-            : moneyOut + amount;
-
-        if (projectedSpending <= maximumSpending)
-        {
-            validationMessage = string.Empty;
-            return true;
-        }
-
-        validationMessage = "Amount exceeds this source's maximum spending limit.";
-        return false;
-    }
-
-    private static bool TryValidateSpendingCapacity(
-        AccountType sourceType,
-        decimal balance,
-        decimal accountLimit,
-        decimal spentAmount,
-        decimal amount,
-        out string validationMessage)
-    {
-        if (sourceType == AccountType.Credit)
-        {
-            if (spentAmount + amount <= accountLimit)
-            {
-                validationMessage = string.Empty;
-                return true;
-            }
-
-            validationMessage = "Amount exceeds this source's account limit.";
-            return false;
-        }
-
-        if (amount <= balance)
-        {
-            validationMessage = string.Empty;
-            return true;
-        }
-
-        validationMessage = "Amount exceeds this source's available balance.";
-        return false;
-    }
-
     private static void ApplyExpenseToAccount(Account account, decimal amount)
     {
         if (account.AccountType == AccountType.Credit)
@@ -2323,7 +2123,9 @@ public partial class TransactionPopupVM : ObservableValidator
         try
         {
             var allocation = _appData.GetBudgetAllocationAsync().GetAwaiter().GetResult();
-            return GetCategoryState(BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate).GetAwaiter().GetResult(), SelectedExpenseCategory).Spent;
+            return TransactionCalculationHelper.GetCategoryState(
+                BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate).GetAwaiter().GetResult(),
+                SelectedExpenseCategory).Spent;
         }
         catch { return 0m; }
     }
@@ -2642,14 +2444,8 @@ public partial class TransactionPopupVM : ObservableValidator
 
     private bool IsInstallmentInputValid()
     {
-        return !IsInstallments
-               || TryResolveInstallmentCount(
-                   SelectedRecurringPeriod,
-                   RecurringTimeText,
-                   InstallmentEndDate,
-                   StartDate,
-                   out _,
-                   out _);
+        return !IsInstallments || RecurringTransactionValidationHelper.ValidateInstallments(
+            SelectedRecurringPeriod, RecurringTimeText, InstallmentEndDate, StartDate).IsValid;
     }
 
     private void RefreshAccounts()
@@ -2679,54 +2475,35 @@ public partial class TransactionPopupVM : ObservableValidator
     public static ValidationResult? ValidateNameText(string value, ValidationContext validationContext)
     {
         var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        if (viewModel.IsGoal)
-            return ValidationResult.Success;
-
-        var trimmedName = value?.Trim() ?? string.Empty;
-
-        if (trimmedName.Length == 0)
-            return new ValidationResult("Please enter a name.");
-
-        if (trimmedName.Length > MaxNameLength)
-            return new ValidationResult($"Name cannot exceed {MaxNameLength} characters.");
-
-        if (trimmedName.Any(char.IsControl))
-            return new ValidationResult("Name cannot contain control characters.");
-
-        return ValidationResult.Success;
+        return ToValidationResult(TransactionValidationHelper.ValidateName(value, viewModel.IsGoal));
     }
 
     public static ValidationResult? ValidateAmountText(decimal value, ValidationContext validationContext)
     {
         var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        if (viewModel._isRepaymentAmountInvalid)
-            return new ValidationResult("Invalid Repayment");
-
-        if (value <= 0m)
-            return new ValidationResult("Please enter a valid amount greater than zero.");
-
-        if (viewModel.SelectedAccount is null)
-            return ValidationResult.Success;
+        var basicValidation = TransactionValidationHelper.ValidateAmount(
+            value, viewModel._isRepaymentAmountInvalid,
+            viewModel.IsExpense || viewModel.IsRepayment, viewModel.IsGoal, null);
+        if (!basicValidation.IsValid || viewModel.SelectedAccount is null)
+            return ToValidationResult(basicValidation);
 
         var amountToValidate = value;
         if (viewModel.IsInstallments)
         {
-            if (!TryResolveInstallmentCount(
-                viewModel.SelectedRecurringPeriod,
-                viewModel.RecurringTimeText,
-                viewModel.InstallmentEndDate,
-                viewModel.StartDate,
-                out var installmentCount,
-                out _))
-            {
+            var installmentValidation = RecurringTransactionValidationHelper.ValidateInstallments(
+                viewModel.SelectedRecurringPeriod, viewModel.RecurringTimeText,
+                viewModel.InstallmentEndDate, viewModel.StartDate);
+            if (!installmentValidation.IsValid)
                 return ValidationResult.Success;
-            }
-
-            amountToValidate = CalculateInstallmentAmount(value, installmentCount);
+            amountToValidate = TransactionCalculationHelper.CalculateInstallmentAmount(
+                value, installmentValidation.OccurrenceCount);
         }
 
-        if (!TryValidateSpendingAmountAgainstSource(viewModel.IsExpense || viewModel.IsRepayment, viewModel.IsGoal, amountToValidate, viewModel.SelectedAccount, out var validationMessage))
-            return new ValidationResult(validationMessage);
+        var amountValidation = TransactionValidationHelper.ValidateAmount(
+            amountToValidate, viewModel._isRepaymentAmountInvalid,
+            viewModel.IsExpense || viewModel.IsRepayment, viewModel.IsGoal, viewModel.SelectedAccount);
+        if (!amountValidation.IsValid)
+            return ToValidationResult(amountValidation);
 
         if (!viewModel.TryValidateSpendingAmountAgainstTagLimit(amountToValidate, out var tagLimitValidationMessage))
             return new ValidationResult(tagLimitValidationMessage);
@@ -2754,11 +2531,10 @@ public partial class TransactionPopupVM : ObservableValidator
                 .Where(log => log.TagId == tag.Id || log.Tag?.Id == tag.Id)
                 .Sum(log => log.Amount);
 
-            if (currentTagSpending + amount <= tag.SpendingLimit.Value)
-                return true;
-
-            validationMessage = $"{tag.Name} spending limit exceeded.";
-            return false;
+            var result = TransactionValidationHelper.ValidateTagSpending(
+                IsExpense, IsRecurring, IsExcludedFromBudget, tag, currentTagSpending, amount);
+            validationMessage = result.ErrorMessage ?? string.Empty;
+            return result.IsValid;
         }
         catch
         {
@@ -2769,43 +2545,32 @@ public partial class TransactionPopupVM : ObservableValidator
     public static ValidationResult? ValidateSelectedAccount(AccountVM? value, ValidationContext validationContext)
     {
         _ = validationContext;
-        return value is null
-            ? new ValidationResult("Please choose a account.")
-            : ValidationResult.Success;
+        return ToValidationResult(TransactionValidationHelper.ValidateAccount(value));
     }
 
     public static ValidationResult? ValidateSelectedTag(TagVM? value, ValidationContext validationContext)
     {
         var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        if (!viewModel.IsExpense)
-            return ValidationResult.Success;
-
-        return value is null
-            ? new ValidationResult("Please choose a tag.")
-            : ValidationResult.Success;
+        return ToValidationResult(TransactionValidationHelper.ValidateTag(value, viewModel.IsExpense));
     }
 
     public static ValidationResult? ValidateSelectedGoal(SavingGoalVM? value, ValidationContext validationContext)
     {
         var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        if (!viewModel.IsGoal)
-            return ValidationResult.Success;
-
-        return value is null
-            ? new ValidationResult("Please choose a goal.")
-            : ValidationResult.Success;
+        return ToValidationResult(TransactionValidationHelper.ValidateGoal(value, viewModel.IsGoal));
     }
 
     public static ValidationResult? ValidateRecurringTimeText(string value, ValidationContext validationContext)
     {
         var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        if (!viewModel.IsRecurringTransactionMode || viewModel.SelectedRecurringPeriod == RecurringPeriod.None)
+        if (!viewModel.IsRecurringTransactionMode)
             return ValidationResult.Success;
-
-        return TryNormalizeRecurringTime(viewModel.SelectedRecurringPeriod, value?.Trim() ?? string.Empty, out _)
-            ? ValidationResult.Success
-            : new ValidationResult(GetRecurringTimeValidationMessage(viewModel.SelectedRecurringPeriod));
+        var result = RecurringTransactionValidationHelper.ValidateTime(viewModel.SelectedRecurringPeriod, value);
+        return result.IsValid ? ValidationResult.Success : new ValidationResult(result.ErrorMessage);
     }
+
+    private static ValidationResult? ToValidationResult(TransactionValidationHelper.Result result) =>
+        result.IsValid ? ValidationResult.Success : new ValidationResult(result.ErrorMessage);
 
     internal static IEnumerable<TagVM> ProjectNonSystemTags(IEnumerable<Tag> tags)
     {
@@ -2976,8 +2741,6 @@ public partial class TransactionPopupVM : ObservableValidator
             IsExcludedFromBudget || IsIoU || (!IsExpense && !IsGoal && !IsRepayment);
     }
 
-    private enum ProcessingState { Pending, Processed, Skipped }
-
     private IEnumerable<object> ProcessingTargets => _processingRepayments.Cast<object>()
         .Concat(_processingGoals).Concat(_processingRecurringTransactions);
 
@@ -2992,7 +2755,7 @@ public partial class TransactionPopupVM : ObservableValidator
         _processingSnapshots.Clear();
         _currentProcessingIndex = 0;
         foreach (var target in targets)
-            _processingStates[target] = ProcessingState.Pending;
+            _processingStates[target] = ProcessingTransactionHelper.State.Pending;
         ProcessingStepCount = targets.Count;
         CurrentProcessingStep = targets.Count == 0 ? 0 : 1;
     }
@@ -3000,17 +2763,14 @@ public partial class TransactionPopupVM : ObservableValidator
     private bool MoveToNextPending()
     {
         var targets = ProcessingTargets.ToList();
-        for (var index = _currentProcessingIndex + 1; index < targets.Count; index++)
-        {
-            if (_processingStates[targets[index]] != ProcessingState.Pending)
-                continue;
+        var index = ProcessingTransactionHelper.FindNextPendingIndex(
+            targets.Select(target => _processingStates[target]).ToList(), _currentProcessingIndex);
+        if (index < 0)
+            return false;
 
-            _currentProcessingIndex = index;
-            LoadProcessingCurrent();
-            return true;
-        }
-
-        return false;
+        _currentProcessingIndex = index;
+        LoadProcessingCurrent();
+        return true;
     }
 
     private void LoadProcessingCurrent()
@@ -3092,7 +2852,7 @@ public partial class TransactionPopupVM : ObservableValidator
 
     private void NotifyProcessingChanged()
     {
-        var navigableTargets = ProcessingTargets.Where(target => _processingStates[target] != ProcessingState.Skipped).ToList();
+        var navigableTargets = ProcessingTargets.Where(target => _processingStates[target] != ProcessingTransactionHelper.State.Skipped).ToList();
         ProcessingStepCount = navigableTargets.Count;
         CurrentProcessingStep = CurrentProcessingTarget is { } current
             ? Math.Max(1, navigableTargets.IndexOf(current) + 1)
@@ -3131,12 +2891,13 @@ public partial class TransactionPopupVM : ObservableValidator
 
     public void InitializeRecurringMode(bool isLocked)
     {
+        var state = AddRecurringTransactionHelper.CreateState(isLocked);
         SetPopupPurpose(TransactionPopupPurpose.AddRecurringTransaction);
-        _isTransactionTypeLocked = isLocked;
+        _isTransactionTypeLocked = state.IsTransactionTypeLocked;
         OnPropertyChanged(nameof(CanChangeTransactionType));
-        IsRecurringModeLocked = isLocked;
-        IsInstallments = false;
-        IsRecurring = true;
+        IsRecurringModeLocked = state.IsRecurringModeLocked;
+        IsInstallments = state.IsInstallments;
+        IsRecurring = state.IsRecurring;
     }
 
     public async Task<bool> InitializeFromRecurringTransactionAsync(int recurringTransactionId, CancellationToken cancellationToken = default)
@@ -3145,32 +2906,42 @@ public partial class TransactionPopupVM : ObservableValidator
         if (recurring is null)
             return false;
 
-        _editingRecurringTransactionId = recurring.Id;
+        var state = EditRecurringTransactionHelper.CreateState(
+            new EditRecurringTransactionHelper.Input(
+                recurring.Id, recurring.Type, recurring.Name, recurring.Amount, recurring.RecurringPeriod,
+                recurring.RecurringTime, recurring.SourceId, recurring.Category, recurring.TagId,
+                recurring.GoalId, recurring.IsExcludedFromBudget),
+            Accounts, _orderedTags, Goals);
+        _editingRecurringTransactionId = state.EditingRecurringTransactionId;
         SetPopupPurpose(TransactionPopupPurpose.EditRecurringTransaction);
         _isTransactionTypeLocked = true;
         OnPropertyChanged(nameof(CanChangeTransactionType));
         IsRecurringModeLocked = true;
         IsInstallments = false;
         IsRecurring = true;
-        IsExpense = recurring.Type == RecurringTransactionType.Expense;
-        IsGoal = recurring.Type == RecurringTransactionType.GoalUpdate;
-        NameText = recurring.Name;
-        AmountText = recurring.Amount;
-        SelectedExpenseCategory = recurring.Category ?? ExpenseCategory.Needs;
-        SelectedRecurringPeriod = recurring.RecurringPeriod;
-        RecurringTimeText = recurring.RecurringPeriod == RecurringPeriod.None
-            ? string.Empty
-            : recurring.RecurringTime.ToString(CultureInfo.InvariantCulture);
-        SelectedAccount = Accounts.FirstOrDefault(source => source.Id == recurring.SourceId) ?? Accounts.FirstOrDefault();
-        IsExcludedFromBudget = recurring.IsExcludedFromBudget;
-        SelectedTag = recurring.TagId is > 0 ? _orderedTags.FirstOrDefault(tag => tag.Id == recurring.TagId.Value) : _orderedTags.FirstOrDefault();
-        SelectedGoal = recurring.GoalId is > 0 ? Goals.FirstOrDefault(goal => goal.Id == recurring.GoalId.Value) : Goals.FirstOrDefault();
+        IsExpense = state.IsExpense;
+        IsGoal = state.IsGoal;
+        NameText = state.Name;
+        AmountText = state.Amount;
+        SelectedExpenseCategory = state.Category;
+        SelectedRecurringPeriod = state.RecurringPeriod;
+        RecurringTimeText = state.RecurringTimeText;
+        SelectedAccount = state.SelectedAccount;
+        IsExcludedFromBudget = state.IsExcludedFromBudget;
+        SelectedTag = state.SelectedTag;
+        SelectedGoal = state.SelectedGoal;
         return true;
     }
 
     public void InitializeFromRecurringDraft(RecurringDraftSnapshot draft)
     {
-        _editingRecurringTransactionId = draft.EditingRecurringTransactionId;
+        var state = EditRecurringTransactionHelper.CreateState(
+            new EditRecurringTransactionHelper.Input(
+                draft.EditingRecurringTransactionId, draft.Type, draft.Name, draft.Amount,
+                draft.RecurringPeriod, draft.RecurringTime, draft.AccountId, draft.Category,
+                draft.TagId, draft.GoalId, false),
+            Accounts, _orderedTags, Goals);
+        _editingRecurringTransactionId = state.EditingRecurringTransactionId;
         SetPopupPurpose(draft.EditingRecurringTransactionId is > 0
             ? TransactionPopupPurpose.EditRecurringTransaction
             : TransactionPopupPurpose.AddRecurringTransaction);
@@ -3179,55 +2950,23 @@ public partial class TransactionPopupVM : ObservableValidator
         IsRecurringModeLocked = true;
         IsInstallments = false;
         IsRecurring = true;
-        IsExpense = draft.Type == RecurringTransactionType.Expense;
-        IsGoal = draft.Type == RecurringTransactionType.GoalUpdate;
-        NameText = draft.Name;
-        AmountText = draft.Amount;
-        SelectedExpenseCategory = draft.Category ?? ExpenseCategory.Needs;
-        SelectedRecurringPeriod = draft.RecurringPeriod;
-        RecurringTimeText = draft.RecurringPeriod == RecurringPeriod.None
-            ? string.Empty
-            : draft.RecurringTime.ToString(CultureInfo.InvariantCulture);
-        SelectedAccount = Accounts.FirstOrDefault(source => source.Id == draft.AccountId) ?? Accounts.FirstOrDefault();
-        SelectedTag = draft.TagId is > 0 ? _orderedTags.FirstOrDefault(tag => tag.Id == draft.TagId.Value) : _orderedTags.FirstOrDefault();
-        SelectedGoal = draft.GoalId is > 0 ? Goals.FirstOrDefault(goal => goal.Id == draft.GoalId.Value) : Goals.FirstOrDefault();
+        IsExpense = state.IsExpense;
+        IsGoal = state.IsGoal;
+        NameText = state.Name;
+        AmountText = state.Amount;
+        SelectedExpenseCategory = state.Category;
+        SelectedRecurringPeriod = state.RecurringPeriod;
+        RecurringTimeText = state.RecurringTimeText;
+        SelectedAccount = state.SelectedAccount;
+        SelectedTag = state.SelectedTag;
+        SelectedGoal = state.SelectedGoal;
     }
 
-    internal static bool TryNormalizeRecurringTime(RecurringPeriod period, string text, out int recurringTime)
-    {
-        recurringTime = 0;
-        if (period == RecurringPeriod.None)
-            return true;
+    internal static bool TryNormalizeRecurringTime(RecurringPeriod period, string text, out int recurringTime) =>
+        RecurringTransactionValidationHelper.TryNormalizeTime(period, text, out recurringTime);
 
-        if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
-            return false;
-
-        var max = IsWeekdayRecurringPeriod(period) ? 7 : MonthlyDueDateHelper.MaxMonthlyDay;
-        if (parsed < 1 || parsed > max)
-            return false;
-
-        recurringTime = parsed;
-        return true;
-    }
-
-    private static bool IsWeekdayRecurringPeriod(RecurringPeriod period)
-    {
-        return period is RecurringPeriod.Weekly or RecurringPeriod.Biweekly;
-    }
-
-    private static string GetDefaultRecurringTimeText(RecurringPeriod period)
-    {
-        if (period == RecurringPeriod.None)
-            return string.Empty;
-
-        if (IsWeekdayRecurringPeriod(period))
-        {
-            var day = DateTime.Today.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)DateTime.Today.DayOfWeek;
-            return day.ToString(CultureInfo.InvariantCulture);
-        }
-
-        return MonthlyDueDateHelper.Normalize(DateTime.Today.Day)?.ToString(CultureInfo.InvariantCulture) ?? "1";
-    }
+    private static string GetDefaultRecurringTimeText(RecurringPeriod period) =>
+        RecurringTransactionValidationHelper.GetDefaultTimeText(period, DateTime.Today);
 
     private string BuildInstallmentSummaryText()
     {
@@ -3243,9 +2982,10 @@ public partial class TransactionPopupVM : ObservableValidator
                 out _))
             return string.Empty;
 
-        var installmentAmount = CalculateInstallmentAmount(AmountText, count);
+        var installmentAmount = TransactionCalculationHelper.CalculateInstallmentAmount(AmountText, count);
         var amountText = MoneyFormatUtility.ToFullText(installmentAmount, CultureInfo.CurrentCulture);
-        var recurrenceLabel = FormatRecurringScheduleLabel(SelectedRecurringPeriod, RecurringTimeText);
+        var recurrenceLabel = RecurringTransactionValidationHelper.FormatScheduleLabel(
+            SelectedRecurringPeriod, RecurringTimeText, CultureInfo.CurrentCulture);
         var verb = IsExpense ? "paid" : "earned";
         return $"The installment will be {amountText}, {verb} every {recurrenceLabel}";
     }
@@ -3270,13 +3010,8 @@ public partial class TransactionPopupVM : ObservableValidator
                 out validationMessage))
             return false;
 
-        amount = CalculateInstallmentAmount(input.Amount, count);
+        amount = TransactionCalculationHelper.CalculateInstallmentAmount(input.Amount, count);
         return true;
-    }
-
-    private static decimal CalculateInstallmentAmount(decimal totalAmount, int count)
-    {
-        return decimal.Round(totalAmount / count, 2, MidpointRounding.AwayFromZero);
     }
 
     private static string BuildInstallmentRecurringName(string name)
@@ -3292,121 +3027,15 @@ public partial class TransactionPopupVM : ObservableValidator
         out int count,
         out string validationMessage)
     {
-        count = 0;
-        validationMessage = string.Empty;
-
-        if (period == RecurringPeriod.None)
-        {
-            validationMessage = "Installments need a weekly, biweekly, or monthly recurrence.";
-            return false;
-        }
-
-        if (!TryNormalizeRecurringTime(period, recurringTimeText?.Trim() ?? string.Empty, out var recurringTime))
-        {
-            validationMessage = GetRecurringTimeValidationMessage(period);
-            return false;
-        }
-
-        today = today.Date;
-        endDate = endDate.Date;
-        if (endDate < today)
-        {
-            validationMessage = "Installment end date must be today or later.";
-            return false;
-        }
-
-        var occurrence = FindClosestOccurrence(today, period, recurringTime);
-        while (occurrence <= endDate)
-        {
-            count++;
-            occurrence = AddOccurrence(occurrence, period);
-        }
-
-        if (count > 0)
-            return true;
-
-        validationMessage = "Installment end date must include at least one recurrence.";
-        return false;
+        var result = RecurringTransactionValidationHelper.ValidateInstallments(
+            period, recurringTimeText, endDate, today);
+        count = result.OccurrenceCount;
+        validationMessage = result.ErrorMessage ?? string.Empty;
+        return result.IsValid;
     }
 
-    private static DateTime FindClosestOccurrence(DateTime today, RecurringPeriod period, int recurringTime)
-    {
-        if (period == RecurringPeriod.Monthly)
-        {
-            var candidate = new DateTime(today.Year, today.Month, recurringTime);
-            var previous = candidate <= today ? candidate : candidate.AddMonths(-1);
-            var next = candidate >= today ? candidate : candidate.AddMonths(1);
-            return IsCloserToToday(next, previous, today) ? next : previous;
-        }
-
-        var previousDate = today;
-        while (GetIsoDayOfWeek(previousDate.DayOfWeek) != recurringTime)
-            previousDate = previousDate.AddDays(-1);
-
-        var nextDate = today;
-        while (GetIsoDayOfWeek(nextDate.DayOfWeek) != recurringTime)
-            nextDate = nextDate.AddDays(1);
-
-        return IsCloserToToday(nextDate, previousDate, today) ? nextDate : previousDate;
-    }
-
-    private static bool IsCloserToToday(DateTime candidate, DateTime comparison, DateTime today)
-    {
-        return Math.Abs((candidate.Date - today.Date).TotalDays)
-               < Math.Abs((comparison.Date - today.Date).TotalDays);
-    }
-
-    private static DateTime AddOccurrence(DateTime occurrence, RecurringPeriod period)
-    {
-        return period switch
-        {
-            RecurringPeriod.Weekly => occurrence.AddDays(7),
-            RecurringPeriod.Biweekly => occurrence.AddDays(14),
-            RecurringPeriod.Monthly => occurrence.AddMonths(1),
-            _ => occurrence
-        };
-    }
-
-    private static string FormatRecurringScheduleLabel(RecurringPeriod period, string recurringTimeText)
-    {
-        if (!TryNormalizeRecurringTime(period, recurringTimeText?.Trim() ?? string.Empty, out var recurringTime))
-            return string.Empty;
-
-        if (period == RecurringPeriod.Monthly)
-            return FormatOrdinal(recurringTime);
-
-        var option = recurringTime is >= 1 and <= 7
-            ? CultureInfo.CurrentCulture.DateTimeFormat.DayNames[recurringTime % 7]
-            : string.Empty;
-        return option;
-    }
-
-    private static string FormatOrdinal(int value)
-    {
-        var suffix = (value % 100) is 11 or 12 or 13
-            ? "th"
-            : (value % 10) switch
-            {
-                1 => "st",
-                2 => "nd",
-                3 => "rd",
-                _ => "th"
-            };
-
-        return value.ToString(CultureInfo.InvariantCulture) + suffix;
-    }
-
-    private static int GetIsoDayOfWeek(DayOfWeek dayOfWeek)
-    {
-        return dayOfWeek == DayOfWeek.Sunday ? 7 : (int)dayOfWeek;
-    }
-
-    private static string GetRecurringTimeValidationMessage(RecurringPeriod period)
-    {
-        return IsWeekdayRecurringPeriod(period)
-            ? "Recurring weekday must be between Monday and Sunday."
-            : "Recurring day must be between 1 and 28.";
-    }
+    private static string GetRecurringTimeValidationMessage(RecurringPeriod period) =>
+        RecurringTransactionValidationHelper.GetTimeValidationMessage(period);
 
     public sealed record RecurringTimeOption(string Label, string Value);
 
