@@ -25,7 +25,7 @@ public sealed class TransactionPopupVMModeTests
     {
         RunInSta(() =>
         {
-            var (vm, appData) = CreateVm();
+            var (vm, appData) = CreateProductionVm(TransactionPopupRequest.Add());
             appData.ClearReceivedCalls();
 
             vm.InitializeAsync().GetAwaiter().GetResult();
@@ -38,7 +38,10 @@ public sealed class TransactionPopupVMModeTests
             Assert.Same(pending, vm.PendingTransaction);
             Assert.Equal(loaded, pending);
             Assert.Equal(0, pending.Id);
-            Assert.Empty(appData.ReceivedCalls());
+            var callsAfterFirstInitialization = appData.ReceivedCalls().Count();
+            Assert.True(callsAfterFirstInitialization > 0);
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            Assert.Equal(callsAfterFirstInitialization, appData.ReceivedCalls().Count());
         });
     }
 
@@ -47,10 +50,8 @@ public sealed class TransactionPopupVMModeTests
     {
         RunInSta(() =>
         {
-            var (vm, _) = CreateVm();
+            var (vm, _) = CreateProductionVm(TransactionPopupRequest.View(CreateTransaction()));
             var transaction = CreateTransaction();
-
-            vm.InitializeView(transaction);
             vm.InitializeAsync().GetAwaiter().GetResult();
 
             Assert.Equal(42, vm.LoadedTransaction.Id);
@@ -90,8 +91,7 @@ public sealed class TransactionPopupVMModeTests
     {
         RunInSta(() =>
         {
-            var (vm, appData) = CreateVm();
-            vm.InitializeView(CreateTransaction());
+            var (vm, appData) = CreateProductionVm(TransactionPopupRequest.View(CreateTransaction()));
             vm.InitializeAsync().GetAwaiter().GetResult();
             var loaded = vm.LoadedTransaction;
             var pending = vm.PendingTransaction;
@@ -390,6 +390,30 @@ public sealed class TransactionPopupVMModeTests
         appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
         appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new BudgetAllocation()));
         return (TransactionPopupVMFactory.Create(CreateMainViewModel(accounts), appData), appData);
+    }
+
+    private static (TransactionPopupVM ViewModel, IAppDataService AppData) CreateProductionVm(
+        TransactionPopupRequest request)
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns(
+            [new Account
+            {
+                Id = 1,
+                Name = "Checking",
+                AccountType = AccountType.Checking,
+                Balance = 500m,
+                IsEnabled = true
+            }]);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(
+            [new Tag { Id = 1, Name = "General", HexCode = "#22C55E" }]);
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(new BudgetAllocation());
+
+        var viewModel = new TransactionPopupVM(appData, new WeakReferenceMessenger());
+        viewModel.Configure(request);
+        return (viewModel, appData);
     }
 
     private static AccountVM CreateCheckingAccount() => new()

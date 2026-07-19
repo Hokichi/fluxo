@@ -52,7 +52,11 @@ public partial class TransactionPopup : BasePopup
                 return;
 
             _isInitialized = true;
-            await _viewModel.InitializeAsync();
+            if (!await _viewModel.InitializeAsync())
+            {
+                Close();
+                return;
+            }
             await _viewModel.EnsureTagsLoadedAsync();
             if (_viewModel.IsHistoryOpen)
                 await _viewModel.LoadHistoryAsync();
@@ -66,6 +70,7 @@ public partial class TransactionPopup : BasePopup
 
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
         Unloaded += (_, _) => _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        Closed += (_, _) => _viewModel.Dispose();
         TagsDockPanel.SizeChanged += (_, _) => RecalculateTagLayout();
         PreviewMouseDown += OnPopupPreviewMouseDown;
     }

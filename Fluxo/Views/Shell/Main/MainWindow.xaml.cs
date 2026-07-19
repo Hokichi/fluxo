@@ -86,6 +86,7 @@ public partial class MainWindow : Window, IPopupHost
     private readonly IServiceProvider _serviceProvider;
     private readonly FloatingNotificationOverlayWindow _floatingNotificationOverlay;
     private readonly IMessenger _messenger;
+    private readonly TransactionPopupAddTagHost _addTagHost;
     private readonly IAppUpdateService _appUpdateService;
     private readonly IAppUpdateInteractionService _appUpdateInteractionService;
     private readonly PopupOverlayHandoffState _popupOverlayHandoffState = new();
@@ -149,6 +150,9 @@ public partial class MainWindow : Window, IPopupHost
         _serviceProvider = serviceProvider;
         _floatingNotificationOverlay = floatingNotificationOverlay;
         _messenger = messenger;
+        _addTagHost = new TransactionPopupAddTagHost(
+            () => serviceProvider.GetRequiredService<SettingsTagsTabVM>(), dialogService, messenger,
+            () => Application.Current.Windows.OfType<TransactionPopup>().FirstOrDefault(popup => popup.IsActive) as Window ?? this);
         _appUpdateService = appUpdateService;
         _appUpdateInteractionService = appUpdateInteractionService;
         _logMemoryManager = new LogMemoryManager(_dataOperationRunner, _mainVM.ReloadCurrentDataAsync);
@@ -161,8 +165,6 @@ public partial class MainWindow : Window, IPopupHost
             static (recipient, message) => _ = recipient.OpenNotificationProcessingAsync(message.Value.Category, message.Value.EntityIds));
         _messenger.Register<MainWindow, TransactionSplitRequestedMessage>(this,
             static (recipient, message) => recipient.OpenTransactionSplitPopup(message.Value));
-        _messenger.Register<MainWindow, TransactionPopupAddTagRequestedMessage>(this,
-            static (recipient, _) => recipient.OpenTransactionPopupTagDialog());
 
         HeaderSearchResultsList.ItemsSource = _headerSearchResults;
         HistoryItemsControl.ItemsSource = _logMemoryManager.HistoryEntries;
@@ -348,6 +350,7 @@ public partial class MainWindow : Window, IPopupHost
             _mainVM.PropertyChanged -= OnMainViewModelPropertyChanged;
             WeakReferenceMessenger.Default.Unregister<NavigateToLedgerRequestedMessage>(this);
             _messenger.Unregister<OpenHistoryDrawerMessage>(this);
+            _addTagHost.Dispose();
             Activated -= OnWindowActivated;
             Deactivated -= OnWindowDeactivated;
             StateChanged -= OnWindowStateChanged;
@@ -1966,16 +1969,6 @@ public partial class MainWindow : Window, IPopupHost
         var owner = (Window?)Application.Current.Windows.OfType<TransactionPopup>()
             .FirstOrDefault(popup => popup.IsViewingTransaction(transactionId)) ?? this;
         _dialogService.ShowTransactionSplit(popupViewModel, owner);
-    }
-
-    private void OpenTransactionPopupTagDialog()
-    {
-        var owner = Application.Current.Windows.OfType<TransactionPopup>().FirstOrDefault(popup => popup.IsActive);
-        if (owner is null)
-            return;
-
-        using var scope = _serviceProvider.CreateScope();
-        _dialogService.ShowAddTag(scope.ServiceProvider.GetRequiredService<SettingsTagsTabVM>(), owner);
     }
 
     private void PublishDashboardViewMode()

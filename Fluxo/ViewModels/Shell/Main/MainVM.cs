@@ -25,7 +25,9 @@ public partial class MainVM : ObservableRecipient
         DashboardVM dashboard,
         Main.DaySpinnerVM daySpinner,
         Main.LedgerVM? ledger = null,
-        IUiLockPasswordProtector? passwordProtector = null)
+        IUiLockPasswordProtector? passwordProtector = null,
+        IMessenger? messenger = null)
+        : base(messenger ?? WeakReferenceMessenger.Default)
     {
         _dataOperationRunner = dataOperationRunner;
         Dashboard = dashboard;
@@ -35,10 +37,12 @@ public partial class MainVM : ObservableRecipient
         Dashboard.PropertyChanged += OnDashboardPropertyChanged;
         AppLock.PropertyChanged += OnAppLockPropertyChanged;
 
-        WeakReferenceMessenger.Default.Register<MainVM, UsernameChangedMessage>(this,
+        Messenger.Register<MainVM, UsernameChangedMessage>(this,
             static (recipient, message) => recipient.Username = message.Value);
-        WeakReferenceMessenger.Default.Register<MainVM, TransactionDetailUpdatedMessage>(this,
+        Messenger.Register<MainVM, TransactionDetailUpdatedMessage>(this,
             static (recipient, message) => recipient.HandleTransactionDetailUpdatedMessage(message));
+        Messenger.Register<MainVM, DashboardDataInvalidatedMessage>(this,
+            static (recipient, message) => recipient.HandleDashboardDataInvalidatedMessage(message));
     }
 
     public DashboardVM Dashboard { get; }
@@ -143,6 +147,18 @@ public partial class MainVM : ObservableRecipient
 
         _ = ReloadCurrentDataAsync(
             reloadNotifications: !message.Value.SuppressNotificationInvalidation);
+    }
+
+    private void HandleDashboardDataInvalidatedMessage(DashboardDataInvalidatedMessage message)
+    {
+        if (!message.Value.HasFlag(DashboardDataInvalidationScope.Budget) &&
+            !message.Value.HasFlag(DashboardDataInvalidationScope.SavingGoals) &&
+            !message.Value.HasFlag(DashboardDataInvalidationScope.All))
+            return;
+
+        _ = ReloadCurrentDataAsync(
+            reloadNotifications: message.Value.HasFlag(DashboardDataInvalidationScope.Notifications) ||
+                                  message.Value.HasFlag(DashboardDataInvalidationScope.All));
     }
 
     private void OnDashboardPropertyChanged(object? sender, PropertyChangedEventArgs e)

@@ -9,8 +9,10 @@ using Fluxo.Core.Enums;
 using Fluxo.Resources.Infrastructure;
 using Fluxo.Services.Dialogs;
 using Fluxo.Services.Logging;
+using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
+using Microsoft.Extensions.DependencyInjection;
 using QuickSetupWizardLoadingOutcome = Fluxo.ViewModels.Shell.QuickSetupWizard.QuickSetupWizardLoadingOutcome;
 using QuickSetupWizardVM = Fluxo.ViewModels.Shell.QuickSetupWizard.QuickSetupWizardVM;
 
@@ -22,6 +24,7 @@ public partial class QuickSetupWizard : BasePopup
 
     private readonly IDialogService _dialogService;
     private readonly QuickSetupWizardVM _viewModel;
+    private readonly TransactionPopupAddTagHost _addTagHost;
     private bool _allowClose;
     private bool _isAnimating;
     private bool _isHandlingClose;
@@ -30,14 +33,21 @@ public partial class QuickSetupWizard : BasePopup
     private int _heldAllocationDelta;
     private BudgetAllocationSegment _heldAllocationSegment;
 
-    public QuickSetupWizard(QuickSetupWizardVM viewModel, IDialogService dialogService)
+    public QuickSetupWizard(QuickSetupWizardVM viewModel, IDialogService dialogService, IServiceProvider serviceProvider, IMessenger messenger)
     {
         InitializeComponent();
         _dialogService = dialogService;
         _viewModel = viewModel;
+        _addTagHost = new TransactionPopupAddTagHost(
+            () => serviceProvider.GetRequiredService<SettingsTagsTabVM>(), dialogService, messenger, () => this);
         DataContext = viewModel;
         Loaded += OnLoadedAsync;
         Closing += OnClosingAsync;
+        Closed += (_, _) =>
+        {
+            _addTagHost.Dispose();
+            _viewModel.MiddlePage.RecurringTransactions.Dispose();
+        };
         PreviewMouseLeftButtonDown += OnPreviewMouseLeftButtonDown;
         _allocationHoldDelayTimer.Tick += OnAllocationHoldDelayTick;
         _allocationRepeatTimer.Tick += OnAllocationRepeatTick;

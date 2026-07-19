@@ -13,7 +13,7 @@ using Fluxo.ViewModels.Popups.Helpers;
 
 namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
 
-public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
+public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject, IDisposable
 {
     private const string DefaultTagColor = "#75B798";
 
@@ -26,6 +26,7 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
     private int _nextTemporaryId = -1;
     private int _nextDraftTagId = -1;
     private bool _isLoaded;
+    private bool _isDisposed;
 
     [ObservableProperty] private bool _isStep3Active;
 
@@ -40,6 +41,15 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject
     }
 
     public ObservableCollection<QuickSetupWizardRecurringTransactionItemVM> RecurringTransactions { get; } = [];
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+            return;
+
+        _isDisposed = true;
+        _messenger.Unregister<RecurringDraftSaveRequestedMessage>(this);
+    }
 
     public void SetAccounts(QuickSetupWizardAccountsVM accounts)
     {

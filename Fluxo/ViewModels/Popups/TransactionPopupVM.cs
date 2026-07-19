@@ -25,7 +25,7 @@ using System.Globalization;
 
 namespace Fluxo.ViewModels.Popups;
 
-public partial class TransactionPopupVM : ObservableValidator
+public partial class TransactionPopupVM : ObservableValidator, IDisposable
 {
     private const int DefaultVisibleTagSlots = 4;
     private const int NoAccountId = -1;
@@ -62,6 +62,7 @@ public partial class TransactionPopupVM : ObservableValidator
     private bool _isInitialized;
     private TransactionPopupRequest _request = TransactionPopupRequest.Add();
     private bool _useRecurringDraftMessages;
+    private bool _isDisposed;
 
     [ObservableProperty]
     [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateAmountText))]
@@ -568,15 +569,17 @@ public partial class TransactionPopupVM : ObservableValidator
         NotifyFormStateChanged();
     }
 
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    public async Task<bool> InitializeAsync(CancellationToken cancellationToken = default)
     {
         if (_isInitialized)
-            return;
+            return true;
 
         await ReloadChoicesAsync(cancellationToken);
-        await ApplyRequestAsync(cancellationToken);
+        if (!await ApplyRequestAsync(cancellationToken))
+            return false;
         EnsureTransactionState();
         _isInitialized = true;
+        return true;
     }
 
     public void RequestSplit()
@@ -588,7 +591,7 @@ public partial class TransactionPopupVM : ObservableValidator
     public void RequestAddTag() =>
         _messenger.Send(new TransactionPopupAddTagRequestedMessage(ViewedTransaction?.Id ?? 0));
 
-    private async Task ApplyRequestAsync(CancellationToken cancellationToken)
+    private async Task<bool> ApplyRequestAsync(CancellationToken cancellationToken)
     {
         switch (_request.Kind)
         {
@@ -600,7 +603,8 @@ public partial class TransactionPopupVM : ObservableValidator
                 InitializeRecurringMode(_request.LockRecurringMode);
                 break;
             case TransactionPopupRequestKind.EditRecurringTransaction when _request.RecurringTransactionId is { } id:
-                await InitializeFromRecurringTransactionAsync(id, cancellationToken);
+                if (!await InitializeFromRecurringTransactionAsync(id, cancellationToken))
+                    return false;
                 break;
             case TransactionPopupRequestKind.ViewTransaction when _request.Transaction is { } transaction:
                 InitializeView(transaction);
@@ -615,12 +619,15 @@ public partial class TransactionPopupVM : ObservableValidator
                 InitializeRepayment(_request.Account);
                 break;
             case TransactionPopupRequestKind.RepaymentProcessing:
+                if (_request.Accounts is not { Count: > 0 }) return false;
                 InitializeRepaymentProcessing(_request.Accounts ?? []);
                 break;
             case TransactionPopupRequestKind.GoalProcessing:
+                if (_request.Goals is not { Count: > 0 }) return false;
                 InitializeGoalProcessing(_request.Goals ?? []);
                 break;
             case TransactionPopupRequestKind.RecurringProcessing:
+                if (_request.RecurringTransactions is not { Count: > 0 }) return false;
                 InitializeRecurringProcessing(_request.RecurringTransactions ?? []);
                 break;
             case TransactionPopupRequestKind.RecurringDraft:
@@ -629,7 +636,20 @@ public partial class TransactionPopupVM : ObservableValidator
                 else
                     InitializeRecurringMode(isLocked: true);
                 break;
+            default:
+                return false;
         }
+
+        return true;
+    }
+
+    public void Dispose()
+    {
+        if (_isDisposed)
+            return;
+
+        _isDisposed = true;
+        _messenger.Unregister<TransactionPopupRefreshRequestedMessage>(this);
     }
 
     private async Task<bool> RefreshViewedTransactionAsync()

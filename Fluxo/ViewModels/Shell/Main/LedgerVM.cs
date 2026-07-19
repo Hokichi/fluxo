@@ -24,7 +24,9 @@ namespace Fluxo.ViewModels.Shell.Main;
 public partial class LedgerVM : ObservableRecipient,
     IRecipient<LedgerDateRangeRequestedMessage>,
     IRecipient<LedgerAllTimeRequestedMessage>,
-    IRecipient<LedgerSearchTextChangedMessage>
+    IRecipient<LedgerSearchTextChangedMessage>,
+    IRecipient<TransactionDetailUpdatedMessage>,
+    IRecipient<DashboardDataInvalidatedMessage>
 {
     private readonly IDataOperationRunner _dataOperationRunner;
     private readonly ITransactionService _transactionService;
@@ -208,6 +210,20 @@ public partial class LedgerVM : ObservableRecipient,
     public void Receive(LedgerSearchTextChangedMessage message)
     {
         SearchText = message.Value;
+    }
+
+    public void Receive(TransactionDetailUpdatedMessage message)
+    {
+        if (message.Value.HasChanges)
+            _ = LoadAsync();
+    }
+
+    public void Receive(DashboardDataInvalidatedMessage message)
+    {
+        if (message.Value.HasFlag(DashboardDataInvalidationScope.Budget) ||
+            message.Value.HasFlag(DashboardDataInvalidationScope.SavingGoals) ||
+            message.Value.HasFlag(DashboardDataInvalidationScope.All))
+            _ = LoadAsync();
     }
 
     [RelayCommand]
