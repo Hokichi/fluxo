@@ -579,6 +579,12 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (!await ApplyRequestAsync(cancellationToken))
             return false;
         EnsureTransactionState();
+        if (_popupPurpose == TransactionPopupPurpose.AddNewTransaction)
+        {
+            var message = _messenger.Send(new DashboardDailyDateRequestedMessage());
+            if (message.HasReceivedResponse && message.Response is { } date)
+                SelectedDate = date.Date;
+        }
         _isInitialized = true;
         return true;
     }

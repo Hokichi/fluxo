@@ -346,6 +346,27 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
+    public void InitializeAsync_add_mode_overrides_draft_date_with_dashboard_daily_date()
+    {
+        RunInSta(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var selectedDate = new DateTime(2026, 7, 20);
+            var recipient = new object();
+            messenger.Register<DashboardDailyDateRequestedMessage>(recipient,
+                (_, message) => message.Reply(selectedDate));
+            var (vm, _) = CreateVm(messenger: messenger);
+            vm.Configure(TransactionPopupRequest.Add(new TransactionPopupDraft(
+                true, string.Empty, 0m, null, new DateTime(2026, 7, 19), string.Empty, null, null)));
+
+            vm.InitializeAsync().GetAwaiter().GetResult();
+
+            Assert.Equal(selectedDate, vm.SelectedDate);
+            Assert.Equal(selectedDate, vm.PendingTransaction.OccurredOn);
+        });
+    }
+
+    [Fact]
     public void Form_synchronization_does_not_call_app_data()
     {
         RunInSta(() =>
@@ -382,14 +403,16 @@ public sealed class TransactionPopupVMModeTests
         };
     }
 
-    private static (TransactionPopupVM ViewModel, IAppDataService AppData) CreateVm(IReadOnlyList<AccountVM>? accounts = null)
+    private static (TransactionPopupVM ViewModel, IAppDataService AppData) CreateVm(
+        IReadOnlyList<AccountVM>? accounts = null,
+        IMessenger? messenger = null)
     {
         accounts ??= [CreateCheckingAccount()];
         var appData = Substitute.For<IAppDataService>();
         appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
         appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
         appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new BudgetAllocation()));
-        return (TransactionPopupVMFactory.Create(CreateMainViewModel(accounts), appData), appData);
+        return (TransactionPopupVMFactory.Create(CreateMainViewModel(accounts), appData, messenger: messenger), appData);
     }
 
     private static (TransactionPopupVM ViewModel, IAppDataService AppData) CreateProductionVm(

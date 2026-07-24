@@ -169,6 +169,13 @@ public partial class MainWindow : Window, IPopupHost
         _messenger.Register<MainWindow, TransactionSplitCloneRequestedMessage>(this,
             static (recipient, message) => recipient.Dispatcher.BeginInvoke(
                 new Action(() => recipient.OpenAddNewTransactionPopup(message.Value))));
+        _messenger.Register<MainWindow, DashboardDailyDateRequestedMessage>(this,
+            static (recipient, message) =>
+            {
+                if (recipient._activeMainPage == MainPage.Dashboard &&
+                    recipient._mainVM.Dashboard.ViewModeToggle.SelectedMainContentViewMode == MainContentViewMode.Daily)
+                    message.Reply(recipient._mainVM.DaySpinner.SelectedDay.Date);
+            });
 
         HeaderSearchResultsList.ItemsSource = _headerSearchResults;
         HistoryItemsControl.ItemsSource = _logMemoryManager.HistoryEntries;
