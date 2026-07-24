@@ -250,17 +250,6 @@
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanClone,
                                                                          Converter={StaticResource PopupBoolToVisibility}}" />
-                                        <c:BalloonButton
-                                            x:Name="PART_SplitButton"
-                                            Margin="8,0,0,0"
-                                            ButtonIcon="{StaticResource ArrowsOutLineVertical}"
-                                            ButtonText="Split"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
-                                            ShouldShowText="True"
-                                            Style="{StaticResource HeaderButtonStyle}"
-                                            Visibility="{TemplateBinding CanSplit,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>

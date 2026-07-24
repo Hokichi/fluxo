@@ -5,6 +5,7 @@
     xmlns:behaviors="clr-namespace:Fluxo.Resources.Behaviors;assembly=Fluxo.Resources"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:popups="clr-namespace:Fluxo.ViewModels.Popups"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     CanClone="{Binding CanCloneViewedTransaction, Mode=OneWay}"
@@ -13,7 +14,6 @@
     CanDiscard="{Binding CanDiscard, Mode=OneWay}"
     CanEdit="{Binding CanEditViewedTransaction, Mode=OneWay}"
     CanSkip="{Binding CanSkipProcessing, Mode=OneWay}"
-    CanSplit="{Binding CanSplitViewedTransaction, Mode=OneWay}"
     CurrentStep="{Binding CurrentProcessingStep, Mode=OneWay}"
     IsSaveAndCreateNewButtonEnabled="{Binding CanSave, Mode=OneWay}"
     IsSaveButtonEnabled="{Binding CanSave, Mode=OneWay}"
@@ -822,6 +822,7 @@
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                                IsEnabled="{Binding CanSelectSplitAccount, Mode=OneWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
                                 <ComboBox.GroupStyle>
                                     <GroupStyle HeaderTemplate="{StaticResource AccountComboGroupHeaderTemplate}" />
@@ -1060,6 +1061,7 @@
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                                IsEnabled="{Binding CanSelectSplitAccount, Mode=OneWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
                                 <ComboBox.GroupStyle>
                                     <GroupStyle HeaderTemplate="{StaticResource AccountComboGroupHeaderTemplate}" />
@@ -1158,6 +1160,7 @@
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+                                IsEnabled="{Binding CanSelectSplitAccount, Mode=OneWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
                                 <ComboBox.GroupStyle>
                                     <GroupStyle HeaderTemplate="{StaticResource AccountComboGroupHeaderTemplate}" />
@@ -1292,73 +1295,103 @@
             </StackPanel>
 
             <Grid
-                x:Name="HistoryPanel"
                 Grid.Row="0"
                 Grid.RowSpan="4"
                 Grid.Column="2"
                 Width="400"
-                Visibility="{Binding ShowHistoryPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding ShowSidePanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
+                <customControls:SegmentedToggleGroup
+                    Margin="0,0,0,12"
+                    SelectedValue="{Binding SelectedSidePanel, Mode=TwoWay}"
+                    Visibility="{Binding ShowSidePanelToggle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <customControls:SegmentedToggleOption Content="History" Value="{x:Static popups:TransactionPopupSidePanel.History}" />
+                    <customControls:SegmentedToggleOption Content="Split" Value="{x:Static popups:TransactionPopupSidePanel.Split}" />
+                </customControls:SegmentedToggleGroup>
 
-                <customControls:CollapsingCard Grid.Row="0" HeaderText="Pinned">
-                    <Grid>
+                <Grid Grid.Row="1" Visibility="{Binding ShowHistoryPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="16" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <customControls:CollapsingCard Grid.Row="0" HeaderText="Pinned">
                         <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ListBox
-                                behaviors:ScrollOnDemandBehavior.HasMoreItems="{Binding PinnedHistory.HasMoreItems, Mode=OneWay}"
-                                behaviors:ScrollOnDemandBehavior.IsEnabled="True"
-                                behaviors:ScrollOnDemandBehavior.IsLoading="False"
-                                behaviors:ScrollOnDemandBehavior.LoadMoreCommand="{Binding PinnedHistory.LoadMoreCommand, Mode=OneWay}"
-                                ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
-                                ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
-                                ItemsSource="{Binding PinnedHistory.Items, Mode=OneWay}"
-                                PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
-                                SelectedItem="{Binding SelectedPinnedHistoryItem, Mode=TwoWay}"
-                                Style="{StaticResource TransactionHistoryListBoxStyle}" />
+                            <ListBox ItemsSource="{Binding PinnedHistory.Items, Mode=OneWay}" ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}" ItemTemplate="{StaticResource TransactionHistoryItemTemplate}" SelectedItem="{Binding SelectedPinnedHistoryItem, Mode=TwoWay}" PreviewMouseWheel="OnHistoryListPreviewMouseWheel" Style="{StaticResource TransactionHistoryListBoxStyle}" />
                         </customControls:FadingScrollViewer>
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontFamily="{DynamicResource Regular}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
-                            Text="No pinned items"
-                            Visibility="{Binding PinnedHistory.IsEmpty, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
-                    </Grid>
-                </customControls:CollapsingCard>
+                    </customControls:CollapsingCard>
+                    <customControls:CollapsingCard Grid.Row="2" HeaderText="History">
+                        <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ListBox ItemsSource="{Binding TransactionHistory.Items, Mode=OneWay}" ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}" ItemTemplate="{StaticResource TransactionHistoryItemTemplate}" SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}" PreviewMouseWheel="OnHistoryListPreviewMouseWheel" Style="{StaticResource TransactionHistoryListBoxStyle}" />
+                        </customControls:FadingScrollViewer>
+                    </customControls:CollapsingCard>
+                </Grid>
 
-                <customControls:CollapsingCard Grid.Row="2" HeaderText="History">
-                    <customControls:FadingScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Hidden">
-                        <ListBox
-                            behaviors:ScrollOnDemandBehavior.HasMoreItems="{Binding TransactionHistory.HasMoreItems, Mode=OneWay}"
-                            behaviors:ScrollOnDemandBehavior.IsEnabled="True"
-                            behaviors:ScrollOnDemandBehavior.IsLoading="False"
-                            behaviors:ScrollOnDemandBehavior.LoadMoreCommand="{Binding TransactionHistory.LoadMoreCommand, Mode=OneWay}"
-                            ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
-                            ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
-                            ItemsSource="{Binding TransactionHistory.Items, Mode=OneWay}"
-                            PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
-                            SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}"
-                            Style="{StaticResource TransactionHistoryListBoxStyle}" />
+                <StackPanel Grid.Row="1" Visibility="{Binding ShowSplitPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <customControls:BalloonButton ButtonIcon="{StaticResource AngleLeft}" ButtonText="Return to top" Command="{Binding ReturnToSplitRootCommand, Mode=OneWay}" IsEnabled="{Binding CanReturnToSplitRoot, Mode=OneWay}" />
+                    <ProgressBar Margin="0,12,0,8" Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}" Value="{Binding SplitAmount, Mode=OneWay}">
+                        <ProgressBar.Style><Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar"><Style.Triggers><DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True"><Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" /></DataTrigger></Style.Triggers></Style></ProgressBar.Style>
+                    </ProgressBar>
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <Button Margin="0,0,8,0" Command="{Binding SplitEquallyCommand, Mode=OneWay}" Content="Split Equally" />
+                        <Button Command="{Binding ResetSplitCommand, Mode=OneWay}" Content="Reset" />
+                    </StackPanel>
+                    <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding SplitTransactions, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Border Padding="10" Margin="0,0,0,6" MouseLeftButtonUp="OnSplitNodeClick">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid>
+                                                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                                <TextBlock FontFamily="{DynamicResource Bold}" Text="{Binding Name, Mode=OneWay}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Grid.Column="1" Margin="8,0" FontFamily="{DynamicResource Bold}" Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                                <customControls:BalloonButton Grid.Column="2" Icon="{StaticResource Delete}" Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}" CommandParameter="{Binding}" />
+                                                <TextBlock Grid.Row="1" Margin="0,5,0,0" Foreground="{DynamicResource Brush.Text.Muted}" Text="{Binding Tag.Name, Mode=OneWay}" />
+                                                <Path Grid.Row="1" Grid.Column="2" Width="13" Height="13" Data="{StaticResource CreditCardMinusSolid}" Fill="{DynamicResource Brush.Info}" Visibility="{Binding IsIoU, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                            </Grid>
+                                        </Border>
+                                        <ItemsControl Margin="24,0,0,0" ItemsSource="{Binding ChildTransactions, Mode=OneWay}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Padding="10" Margin="0,0,0,6" MouseLeftButtonUp="OnSplitNodeClick">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <Grid><Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><TextBlock FontFamily="{DynamicResource Bold}" Text="{Binding Name, Mode=OneWay}" /><TextBlock Grid.Column="1" Margin="8,0" FontFamily="{DynamicResource Bold}" Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" /><customControls:BalloonButton Grid.Column="2" Icon="{StaticResource Delete}" Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}" CommandParameter="{Binding}" /><TextBlock Grid.Row="1" Margin="0,5,0,0" Foreground="{DynamicResource Brush.Text.Muted}" Text="{Binding Tag.Name, Mode=OneWay}" /><Path Grid.Row="1" Grid.Column="2" Width="13" Height="13" Data="{StaticResource CreditCardMinusSolid}" Fill="{DynamicResource Brush.Info}" Visibility="{Binding IsIoU, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" /></Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <ProgressBar Maximum="{Binding Amount, Mode=OneWay}" Value="{Binding ChildAmountTotal, Mode=OneWay}">
+                                            <ProgressBar.Style><Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar"><Style.Triggers><DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True"><Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" /></DataTrigger></Style.Triggers></Style></ProgressBar.Style>
+                                        </ProgressBar>
+                                        <Button Margin="0,6,0,12" Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}" CommandParameter="{Binding}" Content="Add Split" IsEnabled="{Binding CanAddChildTransaction, Mode=OneWay}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </customControls:FadingScrollViewer>
-                </customControls:CollapsingCard>
+                    <Button Command="{Binding AddSplitCommand, Mode=OneWay}" Content="Add Split" IsEnabled="{Binding CanAddSplitAtRoot, Mode=OneWay}" />
+                </StackPanel>
             </Grid>
-
-            <customControls:CollapsingCard
-                Grid.Row="0"
-                Grid.RowSpan="4"
-                Grid.Column="2"
-                Width="400"
-                MaxHeight="480"
-                HeaderText="Sub-transactions"
-                Visibility="{Binding ShowChildTransactionsPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemTemplate="{StaticResource ChildTransactionItemTemplate}" ItemsSource="{Binding ChildTransactions, Mode=OneWay}" />
-                </customControls:FadingScrollViewer>
-            </customControls:CollapsingCard>
 
             <Border
                 Grid.RowSpan="10"

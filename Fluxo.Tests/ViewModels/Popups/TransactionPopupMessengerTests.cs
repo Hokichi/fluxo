@@ -65,44 +65,6 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public async Task SplitRequest_PublishesEntityIdWithoutWorkflowViewModel()
-    {
-        var messenger = new WeakReferenceMessenger();
-        var account = CreateAccount();
-        var vm = new TransactionPopupVM(CreateAppData(account), messenger);
-        vm.Configure(TransactionPopupRequest.View(CreateTransactionVm(account, "Expense")));
-        await vm.InitializeAsync();
-        int? requestedId = null;
-        var recipient = new object();
-        messenger.Register<TransactionSplitRequestedMessage>(recipient,
-            (_, message) => requestedId = message.Value);
-
-        vm.RequestSplit();
-
-        Assert.Equal(42, requestedId);
-    }
-
-    [Fact]
-    public async Task SplitCloneRequest_PublishesNeutralDraft()
-    {
-        var messenger = new WeakReferenceMessenger();
-        var account = CreateAccount();
-        var split = new TransactionSplitVM(CreateTransactionVm(account, "Expense"), CreateAppData(account), messenger);
-        await split.InitializeAsync();
-        TransactionPopupDraft? requestedDraft = null;
-        var recipient = new object();
-        messenger.Register<TransactionSplitCloneRequestedMessage>(recipient,
-            (_, message) => requestedDraft = message.Value);
-
-        split.RequestClone();
-
-        Assert.True(requestedDraft.HasValue);
-        Assert.Equal("Expense", requestedDraft.Value.Name);
-        Assert.Equal(10m, requestedDraft.Value.AmountText);
-        Assert.Equal(account.Id, requestedDraft.Value.AccountId);
-    }
-
-    [Fact]
     public async Task PopupRequestAndRecurringMessage_UseNeutralContracts()
     {
         var messenger = new WeakReferenceMessenger();

@@ -2762,7 +2762,6 @@ public sealed class TransactionPopupVMValidationTests
             Assert.Equal("Transaction Detail", vm.PopupTitle);
             Assert.True(vm.CanEditViewedTransaction);
             Assert.True(vm.CanCloneViewedTransaction);
-            Assert.True(vm.CanSplitViewedTransaction);
             Assert.Equal("Salary", vm.NameText);
         });
     }

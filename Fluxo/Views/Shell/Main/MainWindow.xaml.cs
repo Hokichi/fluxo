@@ -164,11 +164,6 @@ public partial class MainWindow : Window, IPopupHost
             static (recipient, _) => recipient.OpenHistoryDrawer());
         _messenger.Register<MainWindow, NotificationProcessingRequestedMessage>(this,
             static (recipient, message) => _ = recipient.OpenNotificationProcessingAsync(message.Value.Category, message.Value.EntityIds));
-        _messenger.Register<MainWindow, TransactionSplitRequestedMessage>(this,
-            static (recipient, message) => recipient.OpenTransactionSplitPopup(message.Value));
-        _messenger.Register<MainWindow, TransactionSplitCloneRequestedMessage>(this,
-            static (recipient, message) => recipient.Dispatcher.BeginInvoke(
-                new Action(() => recipient.OpenAddNewTransactionPopup(message.Value))));
         _messenger.Register<MainWindow, DashboardDailyDateRequestedMessage>(this,
             static (recipient, message) =>
             {
@@ -361,7 +356,6 @@ public partial class MainWindow : Window, IPopupHost
             _mainVM.PropertyChanged -= OnMainViewModelPropertyChanged;
             WeakReferenceMessenger.Default.Unregister<NavigateToLedgerRequestedMessage>(this);
             _messenger.Unregister<OpenHistoryDrawerMessage>(this);
-            _messenger.Unregister<TransactionSplitCloneRequestedMessage>(this);
             _addTagHost.Dispose();
             Activated -= OnWindowActivated;
             Deactivated -= OnWindowDeactivated;
@@ -1965,22 +1959,6 @@ public partial class MainWindow : Window, IPopupHost
             Kind = TransactionPopupRequestKind.EditTransaction,
             Transaction = targetTransaction
         }, this);
-    }
-
-    public async void OpenTransactionSplitPopup(int transactionId)
-    {
-        using var scope = _serviceProvider.CreateScope();
-        var appData = scope.ServiceProvider.GetRequiredService<IAppDataService>();
-        var targetTransaction = await TransactionDetailTargetResolver.ResolveAsync(transactionId, appData);
-        if (targetTransaction is null)
-            return;
-
-        var popupViewModel = ActivatorUtilities.CreateInstance<TransactionSplitVM>(scope.ServiceProvider, targetTransaction);
-        await popupViewModel.InitializeAsync();
-        await popupViewModel.BeginSplitModeAsync();
-        var owner = (Window?)Application.Current.Windows.OfType<TransactionPopup>()
-            .FirstOrDefault(popup => popup.IsViewingTransaction(transactionId)) ?? this;
-        _dialogService.ShowTransactionSplit(popupViewModel, owner);
     }
 
     private void PublishDashboardViewMode()

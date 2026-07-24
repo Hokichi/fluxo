@@ -94,13 +94,6 @@ public sealed class DialogService : IDialogService
         return ShowDialog(popup, owner);
     }
 
-    public bool? ShowTransactionSplit(TransactionSplitVM viewModel, Window? owner = null)
-    {
-        using var scope = _serviceProvider.CreateScope();
-        var popup = ActivatorUtilities.CreateInstance<TransactionSplitPopup>(scope.ServiceProvider, viewModel);
-        return ShowDialog(popup, owner);
-    }
-
     public bool? ShowAccountDetail(AccountDetailVM viewModel, Window? owner = null)
     {
         return ShowDialog(new AccountDetailPopup(viewModel, this), owner);

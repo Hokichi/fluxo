@@ -64,10 +64,6 @@ public class BasePopup : Window, IPopupHost
         DependencyProperty.Register(nameof(CanClone), typeof(bool), typeof(BasePopup),
             new PropertyMetadata(false));
 
-    public static readonly DependencyProperty CanSplitProperty =
-        DependencyProperty.Register(nameof(CanSplit), typeof(bool), typeof(BasePopup),
-            new PropertyMetadata(false));
-
     public static readonly DependencyProperty CurrentStepProperty =
         DependencyProperty.Register(nameof(CurrentStep), typeof(int), typeof(BasePopup),
             new PropertyMetadata(1, OnStepChanged));
@@ -202,12 +198,6 @@ public class BasePopup : Window, IPopupHost
         set => SetValue(CanCloneProperty, value);
     }
 
-    public bool CanSplit
-    {
-        get => (bool)GetValue(CanSplitProperty);
-        set => SetValue(CanSplitProperty, value);
-    }
-
     public int CurrentStep
     {
         get => (int)GetValue(CurrentStepProperty);
@@ -265,7 +255,6 @@ public class BasePopup : Window, IPopupHost
         WireButton("PART_EditButton", _ => OnEditButtonClick());
         WireButton("PART_DeleteButton", _ => OnDeleteButtonClick());
         WireButton("PART_CloneButton", _ => OnCloneButtonClick());
-        WireButton("PART_SplitButton", _ => OnSplitButtonClick());
 
         _contentRoot = GetTemplateChild("PART_ContentRoot") as FrameworkElement;
         _popupOverlay = GetTemplateChild("PART_PopupOverlay") as UIElement;
@@ -311,10 +300,6 @@ public class BasePopup : Window, IPopupHost
     }
 
     protected virtual void OnCloneButtonClick()
-    {
-    }
-
-    protected virtual void OnSplitButtonClick()
     {
     }
 

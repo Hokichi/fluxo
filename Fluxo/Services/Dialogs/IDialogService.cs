@@ -30,8 +30,6 @@ public interface IDialogService
 
     bool? ShowAddNewTransaction(TransactionPopupRequest request, Window? owner = null);
 
-    bool? ShowTransactionSplit(TransactionSplitVM viewModel, Window? owner = null);
-
     bool? ShowAccountDetail(AccountDetailVM viewModel, Window? owner = null);
 
     bool? ShowTransferFunds(TransferFundsVM viewModel, Window? owner = null);

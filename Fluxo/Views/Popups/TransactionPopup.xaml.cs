@@ -151,11 +151,6 @@ public partial class TransactionPopup : BasePopup
         FocusPrimaryInput();
     }
 
-    protected override void OnSplitButtonClick()
-    {
-        _viewModel.RequestSplit();
-    }
-
     protected override async void OnDeleteButtonClick()
     {
         if (_viewModel.ViewedTransaction is null ||
@@ -482,6 +477,16 @@ public partial class TransactionPopup : BasePopup
 
         var wheelSteps = e.Delta / (double)Mouse.MouseWheelDeltaForOneLine;
         scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - wheelSteps * 48d);
+        e.Handled = true;
+    }
+
+    private void OnSplitNodeClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is not FrameworkElement { DataContext: TransactionVM transaction })
+            return;
+
+        _viewModel.SelectSplitTransaction(transaction);
+        SyncNoteDocumentFromViewModel();
         e.Handled = true;
     }
 

@@ -56,6 +56,10 @@ public class BalloonControl : ButtonBase
         DependencyProperty.Register(nameof(ButtonIcon), typeof(object), typeof(BalloonControl),
             new PropertyMetadata(null, OnPresentationPropertyChanged));
 
+    public static readonly DependencyProperty IconProperty =
+        DependencyProperty.Register(nameof(Icon), typeof(object), typeof(BalloonControl),
+            new PropertyMetadata(null, OnPresentationPropertyChanged));
+
     // --- ButtonText ---
     public static readonly DependencyProperty ButtonTextProperty =
         DependencyProperty.Register(nameof(ButtonText), typeof(string), typeof(BalloonControl),
@@ -141,6 +145,12 @@ public class BalloonControl : ButtonBase
     {
         get => GetValue(ButtonIconProperty);
         set => SetValue(ButtonIconProperty, value);
+    }
+
+    public object? Icon
+    {
+        get => GetValue(IconProperty);
+        set => SetValue(IconProperty, value);
     }
 
     public string? ButtonText
@@ -276,7 +286,7 @@ public class BalloonControl : ButtonBase
 
     protected virtual Brush ResolveHoveredBackground() => HoveredBackground;
 
-    protected virtual object? ResolveButtonIcon() => ButtonIcon;
+    protected virtual object? ResolveButtonIcon() => Icon ?? ButtonIcon;
 
     protected virtual string? ResolveButtonText() => ButtonText;
 
