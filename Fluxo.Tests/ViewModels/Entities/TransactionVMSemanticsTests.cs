@@ -80,4 +80,22 @@ public sealed class TransactionVMSemanticsTests
         Assert.Null(pending.ParentTransactionId);
         Assert.False(pending.IsForDeletion);
     }
+
+    [Fact]
+    public void Child_total_tracks_direct_child_amount_changes()
+    {
+        var parent = new TransactionVM { Amount = 10m };
+        var child = new TransactionVM { Amount = 4m };
+
+        parent.ChildTransactions.Add(child);
+
+        Assert.Equal(4m, parent.ChildAmountTotal);
+        Assert.False(parent.HasChildAmountOverflow);
+
+        child.Amount = 11m;
+
+        Assert.Equal(11m, parent.ChildAmountTotal);
+        Assert.True(parent.HasChildAmountOverflow);
+        Assert.False(parent.CanAddChildTransaction);
+    }
 }

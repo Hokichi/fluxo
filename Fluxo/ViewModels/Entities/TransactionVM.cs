@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Fluxo.Core.Enums;
 
@@ -5,6 +8,13 @@ namespace Fluxo.ViewModels.Entities;
 
 public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
 {
+    private readonly HashSet<TransactionVM> _subscribedChildren = [];
+
+    public TransactionVM()
+    {
+        ChildTransactions.CollectionChanged += OnChildTransactionsCollectionChanged;
+    }
+
     [ObservableProperty] private int _id;
     [ObservableProperty] private TransactionType _type;
     [ObservableProperty] private int _sourceAccountId;
@@ -24,6 +34,57 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
     [ObservableProperty] private bool _isIoU;
     [ObservableProperty] private bool _shouldAffectBalance;
     [ObservableProperty] private bool _isExcludedFromBudget;
+
+    public ObservableCollection<TransactionVM> ChildTransactions { get; } = [];
+    public decimal ChildAmountTotal => ChildTransactions.Sum(child => child.Amount);
+    public bool HasChildAmountOverflow => ChildAmountTotal > Amount;
+    public bool CanAddChildTransaction => !HasChildAmountOverflow;
+    public bool IsLeaf => ChildTransactions.Count == 0;
+
+    partial void OnAmountChanged(decimal value) => NotifyChildStateChanged();
+
+    private void OnChildTransactionsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems is not null)
+            foreach (TransactionVM child in e.OldItems)
+                UnsubscribeChild(child);
+
+        if (e.NewItems is not null)
+            foreach (TransactionVM child in e.NewItems)
+                SubscribeChild(child);
+
+        if (e.Action == NotifyCollectionChangedAction.Reset)
+            foreach (var child in _subscribedChildren.ToList())
+                UnsubscribeChild(child);
+
+        NotifyChildStateChanged();
+    }
+
+    private void SubscribeChild(TransactionVM child)
+    {
+        if (_subscribedChildren.Add(child))
+            child.PropertyChanged += OnChildPropertyChanged;
+    }
+
+    private void UnsubscribeChild(TransactionVM child)
+    {
+        if (_subscribedChildren.Remove(child))
+            child.PropertyChanged -= OnChildPropertyChanged;
+    }
+
+    private void OnChildPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(Amount) or null)
+            NotifyChildStateChanged();
+    }
+
+    private void NotifyChildStateChanged()
+    {
+        OnPropertyChanged(nameof(ChildAmountTotal));
+        OnPropertyChanged(nameof(HasChildAmountOverflow));
+        OnPropertyChanged(nameof(CanAddChildTransaction));
+        OnPropertyChanged(nameof(IsLeaf));
+    }
 
     public bool Equals(TransactionVM? other)
     {
