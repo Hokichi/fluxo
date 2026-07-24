@@ -1093,7 +1093,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_ResetAfterSave_RestoresAllNonSystemTags()
+    public void SaveAsync_ResetAfterSave_RetainsCurrentValuesAndClearsEntryFields()
     {
         RunInSta(() =>
         {
@@ -1108,14 +1108,26 @@ public sealed class TransactionPopupVMValidationTests
             var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
             vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
             vm.SelectedTag = vm.VisibleTags.Concat(vm.OverflowTags).Single(tag => tag.Id == 1);
+            vm.SelectedDate = new DateTime(2026, 7, 24);
+            vm.SelectedExpenseCategory = ExpenseCategory.Wants;
+            vm.IsPinned = true;
+            vm.IsExcludedFromBudget = true;
             vm.NameText = "Groceries";
             vm.AmountText = 10m;
+            vm.NoteText = "Weekly shop";
 
             var result = vm.SaveAsync(resetAfterSave: true).GetAwaiter().GetResult();
 
             Assert.True(result.IsSuccess, result.ErrorMessage);
-            Assert.Equal([2, 1], vm.VisibleTags.Concat(vm.OverflowTags).Select(tag => tag.Id));
-            Assert.Equal(2, vm.SelectedTag?.Id);
+            Assert.Empty(vm.NameText);
+            Assert.Equal(0m, vm.AmountText);
+            Assert.Empty(vm.NoteText);
+            Assert.Same(source, vm.SelectedAccount);
+            Assert.Equal(1, vm.SelectedTag?.Id);
+            Assert.Equal(new DateTime(2026, 7, 24), vm.SelectedDate);
+            Assert.Equal(ExpenseCategory.Wants, vm.SelectedExpenseCategory);
+            Assert.True(vm.IsPinned);
+            Assert.True(vm.IsExcludedFromBudget);
         });
     }
 

@@ -1328,11 +1328,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                     return draftSaveResult;
 
                 if (resetAfterSave)
-                {
-                    await ReloadChoicesAsync(CancellationToken.None);
-                    await EnsureTagsLoadedAsync();
-                    ResetForm(true);
-                }
+                    ResetAfterSaveAndCreateNew();
 
                 var isEdit = input.EditingRecurringTransactionId is > 0;
                 FloatingNotificationPublisher.Success(
@@ -1459,11 +1455,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 _messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
 
             if (resetAfterSave)
-            {
-                await ReloadChoicesAsync(CancellationToken.None);
-                await EnsureTagsLoadedAsync();
-                ResetForm(true);
-            }
+                ResetAfterSaveAndCreateNew();
 
             var savedType = input.IsGoal ? "Goal contribution" : input.IsExpense ? "Expense" : "Income";
             FloatingNotificationPublisher.Success(
@@ -1586,6 +1578,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         SelectedRepaymentAccount = RepaymentAccounts.FirstOrDefault();
         IsMoreTagsOpen = false;
         ClearTransactionNameSuggestions();
+    }
+
+    private void ResetAfterSaveAndCreateNew()
+    {
+        AmountText = 0m;
+        NameText = string.Empty;
+        NoteText = string.Empty;
     }
 
     public void SetVisibleTagSlots(int visibleTagSlots)
