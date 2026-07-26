@@ -1380,7 +1380,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="AccountAddButtonStyle" TargetType="Button">
+    <Style x:Key="DashedButtonStyle" TargetType="Button">
         <Setter Property="Width" Value="60" />
         <Setter Property="Height" Value="60" />
         <Setter Property="Background" Value="Transparent" />

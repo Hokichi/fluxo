@@ -111,7 +111,7 @@
                     VerticalAlignment="Top"
                     Click="OnAddAccountButtonClick"
                     Content="Add"
-                    Style="{StaticResource AccountAddButtonStyle}" />
+                    Style="{StaticResource DashedButtonStyle}" />
 
                 <Border
                     Grid.Column="1"
