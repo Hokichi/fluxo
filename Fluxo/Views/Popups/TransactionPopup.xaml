@@ -1309,66 +1309,66 @@
                     SelectedValue="{Binding SelectedSidePanel, Mode=TwoWay}"
                     Visibility="{Binding ShowSidePanelToggle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <customControls:SegmentedToggleOption Content="History" Value="{x:Static popups:TransactionPopupSidePanel.History}" />
+                    <customControls:SegmentedToggleOption Content="Pinned" Value="{x:Static popups:TransactionPopupSidePanel.Pinned}" />
                     <customControls:SegmentedToggleOption Content="Split" Value="{x:Static popups:TransactionPopupSidePanel.Split}" />
                 </customControls:SegmentedToggleGroup>
 
-                <Grid Grid.Row="1" Visibility="{Binding ShowHistoryPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="16" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Primary}"
-                                Text="Pinned" />
-                            <customControls:FadingScrollViewer
-                                Grid.Row="1"
-                                Margin="0,12,0,0"
-                                VerticalScrollBarVisibility="Auto">
-                                <ListBox
-                                    ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
-                                    ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
-                                    ItemsSource="{Binding PinnedHistory.Items, Mode=OneWay}"
-                                    PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
-                                    SelectedItem="{Binding SelectedPinnedHistoryItem, Mode=TwoWay}"
-                                    Style="{StaticResource TransactionHistoryListBoxStyle}" />
-                            </customControls:FadingScrollViewer>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Row="2" Style="{StaticResource CardBorderStyle}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Primary}"
-                                Text="History" />
-                            <customControls:FadingScrollViewer
-                                Grid.Row="1"
-                                Margin="0,12,0,0"
-                                VerticalScrollBarVisibility="Auto">
-                                <ListBox
-                                    ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
-                                    ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
-                                    ItemsSource="{Binding TransactionHistory.Items, Mode=OneWay}"
-                                    PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
-                                    SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}"
-                                    Style="{StaticResource TransactionHistoryListBoxStyle}" />
-                            </customControls:FadingScrollViewer>
-                        </Grid>
-                    </Border>
-                </Grid>
+                <Border
+                    Grid.Row="1"
+                    Style="{StaticResource CardBorderStyle}"
+                    Visibility="{Binding ShowHistoryPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            FontFamily="{StaticResource Bold}"
+                            FontSize="13"
+                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Text="History" />
+                        <customControls:FadingScrollViewer
+                            Grid.Row="1"
+                            Margin="0,12,0,0"
+                            VerticalScrollBarVisibility="Auto">
+                            <ListBox
+                                ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
+                                ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
+                                ItemsSource="{Binding TransactionHistory.Items, Mode=OneWay}"
+                                PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
+                                SelectedItem="{Binding SelectedHistoryItem, Mode=TwoWay}"
+                                Style="{StaticResource TransactionHistoryListBoxStyle}" />
+                        </customControls:FadingScrollViewer>
+                    </Grid>
+                </Border>
+                <Border
+                    Grid.Row="1"
+                    Style="{StaticResource CardBorderStyle}"
+                    Visibility="{Binding ShowPinnedPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            FontFamily="{StaticResource Bold}"
+                            FontSize="13"
+                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Text="Pinned" />
+                        <customControls:FadingScrollViewer
+                            Grid.Row="1"
+                            Margin="0,12,0,0"
+                            VerticalScrollBarVisibility="Auto">
+                            <ListBox
+                                ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
+                                ItemTemplate="{StaticResource TransactionHistoryItemTemplate}"
+                                ItemsSource="{Binding PinnedHistory.Items, Mode=OneWay}"
+                                PreviewMouseWheel="OnHistoryListPreviewMouseWheel"
+                                SelectedItem="{Binding SelectedPinnedHistoryItem, Mode=TwoWay}"
+                                Style="{StaticResource TransactionHistoryListBoxStyle}" />
+                        </customControls:FadingScrollViewer>
+                    </Grid>
+                </Border>
 
                 <StackPanel Grid.Row="1" Visibility="{Binding ShowSplitPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <customControls:BalloonButton
