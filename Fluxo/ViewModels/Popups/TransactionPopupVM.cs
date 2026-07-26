@@ -2398,12 +2398,12 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         NotifyFormStateChanged();
     }
 
-    private bool IsCurrentInputValid()
+    private bool IsCurrentInputValid(bool validateTag = true)
     {
         return IsValidationSuccess(ValidateNameText(NameText, CreateValidationContext()))
                && IsValidationSuccess(ValidateAmountText(AmountText, CreateValidationContext()))
                && IsValidationSuccess(ValidateSelectedAccount(SelectedAccount, CreateValidationContext()))
-               && IsValidationSuccess(ValidateSelectedTag(SelectedTag, CreateValidationContext()))
+               && (!validateTag || IsValidationSuccess(ValidateSelectedTag(SelectedTag, CreateValidationContext())))
                && IsValidationSuccess(ValidateSelectedGoal(SelectedGoal, CreateValidationContext()))
                && IsValidationSuccess(ValidateRecurringTimeText(RecurringTimeText, CreateValidationContext()))
                && IsInstallmentInputValid();

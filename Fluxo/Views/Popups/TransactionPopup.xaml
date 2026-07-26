@@ -1353,14 +1353,13 @@
                         IsEnabled="{Binding CanReturnToSplitRoot, Mode=OneWay}"
                         ShouldShowText="True" />
                     <Grid Margin="0,12,0,8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
                         <ProgressBar
+                            Grid.Row="0"
                             Height="12"
-                            Margin="0,0,8,0"
                             Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}"
                             Value="{Binding SplitAmount, Mode=OneWay}">
                             <ProgressBar.Style>
@@ -1373,25 +1372,29 @@
                                 </Style>
                             </ProgressBar.Style>
                         </ProgressBar>
-                        <customControls:BalloonButton
-                            Grid.Column="1"
-                            Margin="0,0,8,0"
-                            ButtonIcon="{StaticResource CallSplit}"
-                            ButtonText="Split Equally"
-                            Command="{Binding SplitEquallyCommand, Mode=OneWay}"
-                            CornerRadius="8"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                            ShouldExpand="True" />
-                        <customControls:BalloonButton
-                            Grid.Column="2"
-                            ButtonIcon="{StaticResource RegularUndo}"
-                            ButtonText="Reset"
-                            Command="{Binding ResetSplitCommand, Mode=OneWay}"
-                            CornerRadius="8"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                            ShouldExpand="True" />
+                        <StackPanel
+                            Grid.Row="1"
+                            Margin="0,8,0,0"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <customControls:BalloonButton
+                                Margin="0,0,8,0"
+                                ButtonIcon="{StaticResource CallSplit}"
+                                ButtonText="Split Equally"
+                                Command="{Binding SplitEquallyCommand, Mode=OneWay}"
+                                CornerRadius="8"
+                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                ShouldShowText="True" />
+                            <customControls:BalloonButton
+                                ButtonIcon="{StaticResource RegularUndo}"
+                                ButtonText="Reset"
+                                Command="{Binding ResetSplitCommand, Mode=OneWay}"
+                                CornerRadius="8"
+                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                ShouldShowText="True" />
+                        </StackPanel>
                     </Grid>
                     <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
                         <Grid>
@@ -1401,15 +1404,20 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="34" />
+                                <ColumnDefinition Width="34" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Border
                                 Grid.RowSpan="2"
+                                Grid.Column="0"
                                 Width="1.5"
                                 Margin="0,0,0,14"
                                 HorizontalAlignment="Center"
                                 Background="{DynamicResource Brush.Background.Hover}" />
-                            <ItemsControl Grid.ColumnSpan="2" ItemsSource="{Binding SplitTransactions, Mode=OneWay}">
+                            <ItemsControl
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                ItemsSource="{Binding SplitTransactions, Mode=OneWay}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel>
@@ -1474,6 +1482,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <Border
                                                     Grid.RowSpan="3"
+                                                    Grid.Column="0"
                                                     Width="1.5"
                                                     Margin="0,0,0,14"
                                                     HorizontalAlignment="Center"
@@ -1482,14 +1491,13 @@
                                                     Grid.Column="1"
                                                     Margin="0,0,0,6"
                                                     Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
                                                     <ProgressBar
+                                                        Grid.Row="0"
                                                         Height="12"
-                                                        Margin="0,0,8,0"
                                                         Maximum="{Binding Amount, Mode=OneWay}"
                                                         Value="{Binding ChildAmountTotal, Mode=OneWay}">
                                                         <ProgressBar.Style>
@@ -1502,31 +1510,33 @@
                                                             </Style>
                                                         </ProgressBar.Style>
                                                     </ProgressBar>
-                                                    <customControls:BalloonButton
-                                                        Grid.Column="1"
-                                                        Margin="0,0,8,0"
-                                                        ButtonIcon="{StaticResource CallSplit}"
-                                                        ButtonText="Split Equally"
-                                                        Command="{Binding DataContext.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
-                                                        CommandParameter="{Binding}"
-                                                        CornerRadius="8"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                                        ShouldExpand="True" />
-                                                    <customControls:BalloonButton
-                                                        Grid.Column="2"
-                                                        ButtonIcon="{StaticResource RegularUndo}"
-                                                        ButtonText="Reset"
-                                                        Command="{Binding DataContext.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
-                                                        CommandParameter="{Binding}"
-                                                        CornerRadius="8"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                                        ShouldExpand="True" />
+                                                    <StackPanel
+                                                        Grid.Row="1"
+                                                        Margin="0,8,0,0"
+                                                        HorizontalAlignment="Right"
+                                                        Orientation="Horizontal">
+                                                        <customControls:BalloonButton
+                                                            Margin="0,0,8,0"
+                                                            ButtonIcon="{StaticResource CallSplit}"
+                                                            ButtonText="Split Equally"
+                                                            Command="{Binding DataContext.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
+                                                            CommandParameter="{Binding}"
+                                                            CornerRadius="8"
+                                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}" />
+                                                        <customControls:BalloonButton
+                                                            ButtonIcon="{StaticResource RegularUndo}"
+                                                            ButtonText="Reset"
+                                                            Command="{Binding DataContext.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
+                                                            CommandParameter="{Binding}"
+                                                            CornerRadius="8"
+                                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}" />
+                                                    </StackPanel>
                                                 </Grid>
                                                 <ItemsControl
                                                     Grid.Row="1"
-                                                    Grid.ColumnSpan="2"
+                                                    Grid.Column="1"
                                                     ItemsSource="{Binding ChildTransactions, Mode=OneWay}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
@@ -1584,6 +1594,7 @@
                                                 </ItemsControl>
                                                 <customControls:BalloonButton
                                                     Grid.Row="2"
+                                                    Grid.Column="1"
                                                     HorizontalAlignment="Center"
                                                     ButtonIcon="{StaticResource PlusSolid}"
                                                     Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
@@ -1599,6 +1610,7 @@
                             </ItemsControl>
                             <customControls:BalloonButton
                                 Grid.Row="1"
+                                Grid.Column="1"
                                 HorizontalAlignment="Center"
                                 ButtonIcon="{StaticResource PlusSolid}"
                                 Command="{Binding AddSplitCommand, Mode=OneWay}"

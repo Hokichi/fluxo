@@ -89,7 +89,7 @@ public partial class TransactionPopupVM
 
         var amount = GetSplitParentAmount(parent);
         var childTotal = parent?.ChildAmountTotal ?? SplitTransactions.Sum(child => child.Amount);
-        return CanSave && childTotal <= amount;
+        return !IsSaving && IsCurrentInputValid(validateTag: false) && childTotal <= amount;
     }
 
     public bool CanSplitEqually(TransactionVM? parent) => GetSplitChildren(parent).Count > 1;

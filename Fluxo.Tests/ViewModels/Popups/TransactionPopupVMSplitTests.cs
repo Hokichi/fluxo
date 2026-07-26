@@ -109,6 +109,17 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void Add_split_does_not_require_a_tag()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.IsExpense = true;
+        viewModel.SelectedTag = null;
+
+        Assert.True(viewModel.CanAddSplit(null));
+        Assert.True(viewModel.AddSplitCommand.CanExecute(null));
+    }
+
+    [Fact]
     public void Split_equally_requires_at_least_two_children_for_the_target_level()
     {
         var viewModel = CreateViewModel();
