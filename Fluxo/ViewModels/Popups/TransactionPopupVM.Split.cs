@@ -10,6 +10,7 @@ namespace Fluxo.ViewModels.Popups;
 public enum TransactionPopupSidePanel
 {
     History,
+    Pinned,
     Split
 }
 
@@ -22,19 +23,20 @@ public partial class TransactionPopupVM
     public ObservableCollection<TransactionVM> SplitTransactions { get; } = [];
     public bool IsSplitRootSelected => SelectedSplitTransaction is null;
     public bool CanReturnToSplitRoot => !IsSplitRootSelected;
-    public bool CanSplitSelectedTransaction => SelectedSplitChildren.Count > 0;
     public bool CanSelectSplitAccount => SelectedSplitTransaction is null;
     public bool IsSelectedSplitLeaf => SelectedSplitTransaction?.IsLeaf ?? SplitTransactions.Count == 0;
     public bool CanAddSplitAtRoot => CanAddSplit(null);
     public bool ShowSidePanelToggle => _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.EditTransaction;
     public bool IsHistoryPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.History;
+    public bool IsPinnedPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.Pinned;
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
+    public string ReturnToSplitRootText => $"Return to {PendingTransaction?.Name ?? NameText}";
     public decimal SplitAmount => SplitTransactions.Sum(child => child.Amount);
     public bool HasSplitAmountOverflow => GetSplitParentAmount(null) < SplitTransactions.Sum(child => child.Amount);
     public bool HasSplitTransactions => SplitTransactions.Count > 0;
 
-    private IList<TransactionVM> SelectedSplitChildren =>
-        SelectedSplitTransaction?.ChildTransactions ?? SplitTransactions;
+    private IList<TransactionVM> GetSplitChildren(TransactionVM? parent) =>
+        parent?.ChildTransactions ?? SplitTransactions;
 
     [RelayCommand(CanExecute = nameof(CanReturnToSplitRoot))]
     public void ReturnToSplitRoot() => SelectSplitTransaction(null);
@@ -87,17 +89,19 @@ public partial class TransactionPopupVM
 
         var amount = GetSplitParentAmount(parent);
         var childTotal = parent?.ChildAmountTotal ?? SplitTransactions.Sum(child => child.Amount);
-        return childTotal <= amount;
+        return CanSave && childTotal <= amount;
     }
 
-    [RelayCommand(CanExecute = nameof(CanSplitSelectedTransaction))]
-    public void SplitEqually()
+    public bool CanSplitEqually(TransactionVM? parent) => GetSplitChildren(parent).Count > 1;
+
+    [RelayCommand(CanExecute = nameof(CanSplitEqually))]
+    public void SplitEqually(TransactionVM? parent = null)
     {
-        var children = SelectedSplitChildren;
-        if (children.Count == 0)
+        var children = GetSplitChildren(parent);
+        if (children.Count <= 1)
             return;
 
-        var amount = GetSplitParentAmount(SelectedSplitTransaction);
+        var amount = GetSplitParentAmount(parent);
         var share = decimal.Round(amount / children.Count, 0, MidpointRounding.AwayFromZero);
         for (var index = 0; index < children.Count - 1; index++)
             children[index].Amount = share;
@@ -106,10 +110,12 @@ public partial class TransactionPopupVM
         NotifySplitStateChanged();
     }
 
-    [RelayCommand(CanExecute = nameof(CanSplitSelectedTransaction))]
-    public void ResetSplit()
+    public bool CanResetSplit(TransactionVM? parent) => GetSplitChildren(parent).Count > 0;
+
+    [RelayCommand(CanExecute = nameof(CanResetSplit))]
+    public void ResetSplit(TransactionVM? parent = null)
     {
-        foreach (var child in SelectedSplitChildren)
+        foreach (var child in GetSplitChildren(parent))
             child.Amount = 0m;
 
         NotifySplitStateChanged();
@@ -131,6 +137,7 @@ public partial class TransactionPopupVM
     partial void OnSelectedSidePanelChanged(TransactionPopupSidePanel value)
     {
         OnPropertyChanged(nameof(ShowHistoryPanel));
+        OnPropertyChanged(nameof(ShowPinnedPanel));
         OnPropertyChanged(nameof(ShowSplitPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
     }
@@ -179,7 +186,7 @@ public partial class TransactionPopupVM
         }
     }
 
-    private decimal GetSplitParentAmount(TransactionVM? parent) => parent?.Amount ?? PendingTransaction.Amount;
+    private decimal GetSplitParentAmount(TransactionVM? parent) => parent?.Amount ?? PendingTransaction?.Amount ?? AmountText;
 
     public async Task LoadSplitTransactionsAsync(int parentTransactionId, CancellationToken cancellationToken)
     {
@@ -356,7 +363,6 @@ public partial class TransactionPopupVM
     {
         OnPropertyChanged(nameof(IsSplitRootSelected));
         OnPropertyChanged(nameof(CanReturnToSplitRoot));
-        OnPropertyChanged(nameof(CanSplitSelectedTransaction));
         OnPropertyChanged(nameof(CanSelectSplitAccount));
         OnPropertyChanged(nameof(IsSelectedSplitLeaf));
         OnPropertyChanged(nameof(CanEditCategory));
@@ -367,7 +373,9 @@ public partial class TransactionPopupVM
         OnPropertyChanged(nameof(SplitAmount));
         OnPropertyChanged(nameof(ShowSidePanelToggle));
         OnPropertyChanged(nameof(IsHistoryPanelSelected));
+        OnPropertyChanged(nameof(IsPinnedPanelSelected));
         OnPropertyChanged(nameof(IsSplitPanelSelected));
+        OnPropertyChanged(nameof(ReturnToSplitRootText));
         OnPropertyChanged(nameof(ShowCategoryImpact));
         OnPropertyChanged(nameof(ShowAccountImpact));
         OnPropertyChanged(nameof(CanAddSplit));

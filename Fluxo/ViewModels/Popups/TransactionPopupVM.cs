@@ -282,8 +282,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool CanToggleRecurring => !IsRecurringModeLocked && !IsRepayment;
     public bool CanUseHistory => true;
     public bool ShowHistoryPanel => ShowSidePanelToggle && IsHistoryPanelSelected && IsHistoryOpen;
+    public bool ShowPinnedPanel => ShowSidePanelToggle && IsPinnedPanelSelected && IsHistoryOpen;
     public bool ShowSplitPanel => IsSplitPanelSelected;
-    public bool ShowSidePanel => ShowHistoryPanel || ShowSplitPanel;
+    public bool ShowSidePanel => ShowHistoryPanel || ShowPinnedPanel || ShowSplitPanel;
     public bool CanEditTransactionName => !IsGoal && !IsRepayment;
     public bool CanEditCategory => IsExpense && !IsRepayment && IsSelectedSplitLeaf;
     public bool CanEditTags => !IsGoal && !IsRepayment && IsSelectedSplitLeaf;
@@ -2166,6 +2167,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 SyncPendingTransactionFromForm();
             else
                 SyncCurrentSplitTransaction();
+            NotifySplitStateChanged();
         }
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(HasChanges));

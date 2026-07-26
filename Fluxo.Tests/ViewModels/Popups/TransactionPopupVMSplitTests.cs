@@ -96,11 +96,154 @@ public sealed class TransactionPopupVMSplitTests
         Assert.Contains(nameof(TransactionPopupVM.ShowSplitPanel), changedProperties);
     }
 
+    [Fact]
+    public void Add_split_requires_full_form_validation()
+    {
+        var viewModel = CreateViewModel();
+        Assert.True(viewModel.AddSplitCommand.CanExecute(null));
+
+        viewModel.NameText = string.Empty;
+
+        Assert.False(viewModel.AddSplitCommand.CanExecute(null));
+        Assert.False(viewModel.CanAddSplit(null));
+    }
+
+    [Fact]
+    public void Split_equally_requires_at_least_two_children_for_the_target_level()
+    {
+        var viewModel = CreateViewModel();
+        Assert.False(viewModel.SplitEquallyCommand.CanExecute(null));
+
+        viewModel.AddSplit(null);
+        viewModel.ReturnToSplitRoot();
+        Assert.False(viewModel.SplitEquallyCommand.CanExecute(null));
+        Assert.True(viewModel.ResetSplitCommand.CanExecute(null));
+
+        viewModel.AddSplit(null);
+        viewModel.ReturnToSplitRoot();
+        Assert.True(viewModel.SplitEquallyCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public void Nested_split_commands_use_their_parent_parameter()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var parent = Assert.Single(viewModel.SplitTransactions);
+        viewModel.AmountText = 100m;
+
+        viewModel.AddSplit(parent);
+        viewModel.AmountText = 25m;
+        viewModel.SelectSplitTransaction(parent);
+        Assert.False(viewModel.SplitEquallyCommand.CanExecute(parent));
+        Assert.True(viewModel.ResetSplitCommand.CanExecute(parent));
+
+        viewModel.AddSplit(parent);
+        viewModel.SelectSplitTransaction(parent);
+        Assert.True(viewModel.SplitEquallyCommand.CanExecute(parent));
+    }
+
+    [Fact]
+    public void Typing_child_amount_updates_root_total_immediately()
+    {
+        var viewModel = CreateViewModel();
+        var changed = new List<string?>();
+        viewModel.PropertyChanged += (_, args) => changed.Add(args.PropertyName);
+        viewModel.AddSplit(null);
+
+        viewModel.AmountText = 40m;
+
+        Assert.Equal(40m, viewModel.SplitAmount);
+        Assert.Contains(nameof(TransactionPopupVM.SplitAmount), changed);
+    }
+
+    [Fact]
+    public void Typing_grandchild_amount_updates_parent_total_immediately()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var parent = Assert.Single(viewModel.SplitTransactions);
+        viewModel.AmountText = 100m;
+        viewModel.AddSplit(parent);
+
+        viewModel.AmountText = 25m;
+
+        Assert.Equal(25m, parent.ChildAmountTotal);
+    }
+
+    [Fact]
+    public void Removing_grandchild_loads_its_parent()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var parent = Assert.Single(viewModel.SplitTransactions);
+        viewModel.AmountText = 100m;
+        viewModel.AddSplit(parent);
+        var grandchild = Assert.Single(parent.ChildTransactions);
+
+        viewModel.DeleteSplit(grandchild);
+
+        Assert.Same(parent, viewModel.SelectedSplitTransaction);
+        Assert.Equal(parent.Name, viewModel.NameText);
+    }
+
+    [Fact]
+    public void Removing_root_child_loads_root()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var child = Assert.Single(viewModel.SplitTransactions);
+
+        viewModel.DeleteSplit(child);
+
+        Assert.Null(viewModel.SelectedSplitTransaction);
+        Assert.Equal("Root", viewModel.NameText);
+    }
+
+    [Fact]
+    public void Side_panel_tabs_are_mutually_exclusive()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.SelectedSidePanel = TransactionPopupSidePanel.Pinned;
+        Assert.True(viewModel.ShowPinnedPanel);
+        Assert.False(viewModel.ShowHistoryPanel);
+        Assert.False(viewModel.ShowSplitPanel);
+
+        viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
+        Assert.False(viewModel.ShowPinnedPanel);
+        Assert.False(viewModel.ShowHistoryPanel);
+        Assert.True(viewModel.ShowSplitPanel);
+    }
+
+    [Fact]
+    public void Return_label_uses_root_transaction_name()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.NameText = "Groceries";
+
+        Assert.Equal("Return to Groceries", viewModel.ReturnToSplitRootText);
+    }
+
     private static TransactionPopupVM CreateViewModel()
     {
         var appData = Substitute.For<IAppDataService>();
+        var account = new AccountVM
+        {
+            Id = 1,
+            Name = "Checking",
+            AccountType = AccountType.Checking,
+            Balance = 10_000m,
+            IsEnabled = true,
+            IsDefault = true
+        };
+        var tag = new TagVM { Id = 1, Name = "General", HexCode = "#22C55E" };
         var viewModel = new TransactionPopupVM(appData, new WeakReferenceMessenger());
-        viewModel.ConfigureCatalogs([], [], []);
+        viewModel.ConfigureCatalogs([account], [tag], []);
+        viewModel.NameText = "Root";
+        viewModel.AmountText = 100m;
+        viewModel.SelectedAccount = account;
+        viewModel.SelectedTag = tag;
         return viewModel;
     }
 }
