@@ -494,7 +494,8 @@
                 </Grid>
                 <Grid
                     Grid.Row="1"
-                    Grid.ColumnSpan="3"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
                     Margin="0,0,0,12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -506,12 +507,14 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Border
-                        Grid.RowSpan="3"
+                        Grid.Row="1"
+                        Grid.RowSpan="2"
                         Grid.Column="0"
                         Width="1.5"
                         Margin="0,0,0,14"
                         HorizontalAlignment="Center"
-                        Background="{DynamicResource Brush.Background.Hover}" />
+                        Background="{DynamicResource Brush.Background.Hover}"
+                        Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                     <Grid
                         Grid.Column="1"
                         Margin="0,0,0,6"
@@ -568,7 +571,6 @@
                     </Grid>
                     <ItemsControl
                         Grid.Row="1"
-                        Grid.Column="1"
                         Grid.ColumnSpan="2"
                         MinHeight="14"
                         ItemTemplate="{StaticResource SplitChildNodeTemplate}"
