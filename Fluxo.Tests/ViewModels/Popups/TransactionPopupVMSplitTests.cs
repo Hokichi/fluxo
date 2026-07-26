@@ -111,6 +111,30 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void Invalid_root_disables_root_add_split()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.NameText = string.Empty;
+
+        Assert.False(viewModel.CanAddSplit(null));
+        Assert.False(viewModel.AddSplitCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public void Invalid_stored_root_disables_root_add_split_after_selecting_child()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var child = Assert.Single(viewModel.SplitTransactions);
+        viewModel.AmountText = 100m;
+        viewModel.ReturnToSplitRoot();
+        viewModel.NameText = string.Empty;
+        viewModel.SelectSplitTransaction(child);
+
+        Assert.False(viewModel.CanAddSplit(null));
+    }
+
+    [Fact]
     public void Add_split_does_not_require_a_tag()
     {
         var viewModel = CreateViewModel();

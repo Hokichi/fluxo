@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
+using Fluxo.Helpers.Transaction;
 using Fluxo.ViewModels.Entities;
 
 namespace Fluxo.ViewModels.Popups;
@@ -87,6 +88,8 @@ public partial class TransactionPopupVM
     {
         if (parent is not null && !SplitTransactions.Contains(parent))
             return false;
+        if (parent is null && !IsRootSplitInputValid())
+            return false;
 
         var amount = GetSplitParentAmount(parent);
         var childTotal = parent?.ChildAmountTotal ?? SplitTransactions.Sum(child => child.Amount);
@@ -94,6 +97,21 @@ public partial class TransactionPopupVM
         return !IsSaving &&
                (selectedChild is null || !GetSplitChildren(parent).Contains(selectedChild) || IsCurrentInputValid(validateTag: false)) &&
                childTotal <= amount;
+    }
+
+    private bool IsRootSplitInputValid()
+    {
+        if (!_isTransactionStateInitialized)
+            return IsCurrentInputValid(validateTag: false);
+
+        return TransactionValidationHelper.ValidateName(PendingTransaction.Name, PendingTransaction.GoalId is not null).IsValid &&
+               TransactionValidationHelper.ValidateAmount(
+                   PendingTransaction.Amount,
+                   isRepaymentAmountInvalid: false,
+                   isExpense: PendingTransaction.Type == TransactionType.Expense,
+                   isGoal: PendingTransaction.GoalId is not null,
+                   source: null).IsValid &&
+               PendingTransaction.SourceAccountId > 0;
     }
 
     public bool CanSplitEqually(TransactionVM? parent) => GetSplitChildren(parent).Count > 1;
