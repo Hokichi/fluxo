@@ -172,11 +172,32 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <customControls:CollapsingCard HeaderText="Saving Goals">
-        <customControls:CollapsingCard.SubheaderArea>
-            <StackPanel
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
+    <Border Style="{StaticResource CardBorderStyle}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="12" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource Bold}"
+                    FontSize="13"
+                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Text="Saving Goals" />
+
+                <StackPanel
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
                 <customControls:BalloonButton
                     ButtonIcon="{StaticResource Pen}"
                     ButtonText="Edit Goal"
@@ -212,16 +233,11 @@
                     ShouldExpand="True"
                     Style="{StaticResource SavingGoalActionBalloonButtonStyle}"
                     ToolTip="Add Saving Goal" />
-            </StackPanel>
-        </customControls:CollapsingCard.SubheaderArea>
-
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+                </StackPanel>
+            </Grid>
 
             <TextBlock
+                Grid.Row="2"
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Medium}"
                 FontSize="11"
@@ -231,7 +247,7 @@
                 TextWrapping="Wrap"
                 Visibility="{Binding HasSavingGoals, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
 
-            <Grid Visibility="{Binding HasSavingGoals, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid Grid.Row="2" Visibility="{Binding HasSavingGoals, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid
                     x:Name="CarouselViewport"
                     VerticalAlignment="Center"
@@ -246,7 +262,7 @@
             </Grid>
 
             <Grid
-                Grid.Row="1"
+                Grid.Row="3"
                 Margin="0,8,0,0"
                 HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -292,7 +308,7 @@
                     Visibility="{Binding HasMultipleSavingGoals, Converter={StaticResource BoolToVisibilityConverter}}" />
             </Grid>
         </Grid>
-    </customControls:CollapsingCard>
+    </Border>
 </UserControl>
 
 
