@@ -83,6 +83,19 @@ public sealed class TransactionPopupVMSplitTests
         Assert.False(viewModel.CanReturnToSplitRoot);
     }
 
+    [Fact]
+    public void Selecting_split_notifies_side_panel_visibility()
+    {
+        var viewModel = CreateViewModel();
+        var changedProperties = new List<string?>();
+        viewModel.PropertyChanged += (_, eventArgs) => changedProperties.Add(eventArgs.PropertyName);
+
+        viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
+
+        Assert.Contains(nameof(TransactionPopupVM.ShowHistoryPanel), changedProperties);
+        Assert.Contains(nameof(TransactionPopupVM.ShowSplitPanel), changedProperties);
+    }
+
     private static TransactionPopupVM CreateViewModel()
     {
         var appData = Substitute.For<IAppDataService>();

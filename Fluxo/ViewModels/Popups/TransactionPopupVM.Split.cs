@@ -128,6 +128,13 @@ public partial class TransactionPopupVM
 
     partial void OnSelectedSplitTransactionChanged(TransactionVM? value) => NotifySplitStateChanged();
 
+    partial void OnSelectedSidePanelChanged(TransactionPopupSidePanel value)
+    {
+        OnPropertyChanged(nameof(ShowHistoryPanel));
+        OnPropertyChanged(nameof(ShowSplitPanel));
+        OnPropertyChanged(nameof(ShowSidePanel));
+    }
+
     private void SyncCurrentSplitTransaction()
     {
         if (SelectedSplitTransaction is null)
