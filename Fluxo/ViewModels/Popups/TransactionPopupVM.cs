@@ -225,7 +225,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         new("Sunday", "7")
     ];
 
-    public bool CanSave => !IsSaving && IsCurrentInputValid();
+    public bool CanSave => !IsSaving && IsCurrentInputValid() && !HasUnbalancedSplitAmounts();
     public bool HasChanges => _isChangeTrackingInitialized && !LoadedTransaction.Equals(PendingTransaction);
     public bool HasTransactionNameSuggestions => TransactionNameSuggestions.Count > 0;
     public bool IsRecurringTransactionMode => IsRecurring || IsInstallments;

@@ -97,15 +97,17 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
-    public void Add_split_requires_full_form_validation()
+    public void Invalid_selected_child_disables_only_its_parent_add()
     {
         var viewModel = CreateViewModel();
-        Assert.True(viewModel.AddSplitCommand.CanExecute(null));
-
+        viewModel.AddSplit(null);
+        var parent = Assert.Single(viewModel.SplitTransactions);
+        viewModel.AmountText = 100m;
+        viewModel.AddSplit(parent);
         viewModel.NameText = string.Empty;
 
-        Assert.False(viewModel.AddSplitCommand.CanExecute(null));
-        Assert.False(viewModel.CanAddSplit(null));
+        Assert.False(viewModel.CanAddSplit(parent));
+        Assert.True(viewModel.CanAddSplit(null));
     }
 
     [Fact]
@@ -180,6 +182,35 @@ public sealed class TransactionPopupVMSplitTests
         viewModel.AmountText = 25m;
 
         Assert.Equal(25m, parent.ChildAmountTotal);
+    }
+
+    [Fact]
+    public void Can_save_requires_root_children_to_match_root_amount()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        viewModel.AmountText = 50m;
+
+        Assert.False(viewModel.CanSave);
+
+        viewModel.AmountText = 100m;
+        Assert.True(viewModel.CanSave);
+    }
+
+    [Fact]
+    public void Can_save_requires_nested_children_to_match_parent_amount()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var parent = Assert.Single(viewModel.SplitTransactions);
+        viewModel.AmountText = 100m;
+        viewModel.AddSplit(parent);
+        viewModel.AmountText = 50m;
+
+        Assert.False(viewModel.CanSave);
+
+        viewModel.AmountText = 100m;
+        Assert.True(viewModel.CanSave);
     }
 
     [Fact]

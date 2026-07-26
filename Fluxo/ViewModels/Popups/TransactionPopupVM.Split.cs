@@ -32,6 +32,7 @@ public partial class TransactionPopupVM
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
     public string ReturnToSplitRootText => $"Return to {PendingTransaction?.Name ?? NameText}";
     public decimal SplitAmount => SplitTransactions.Sum(child => child.Amount);
+    public decimal SplitAmountRemaining => GetSplitParentAmount(null) - SplitAmount;
     public bool HasSplitAmountOverflow => GetSplitParentAmount(null) < SplitTransactions.Sum(child => child.Amount);
     public bool HasSplitTransactions => SplitTransactions.Count > 0;
 
@@ -89,7 +90,10 @@ public partial class TransactionPopupVM
 
         var amount = GetSplitParentAmount(parent);
         var childTotal = parent?.ChildAmountTotal ?? SplitTransactions.Sum(child => child.Amount);
-        return !IsSaving && IsCurrentInputValid(validateTag: false) && childTotal <= amount;
+        var selectedChild = SelectedSplitTransaction;
+        return !IsSaving &&
+               (selectedChild is null || !GetSplitChildren(parent).Contains(selectedChild) || IsCurrentInputValid(validateTag: false)) &&
+               childTotal <= amount;
     }
 
     public bool CanSplitEqually(TransactionVM? parent) => GetSplitChildren(parent).Count > 1;
@@ -225,6 +229,8 @@ public partial class TransactionPopupVM
             return TransactionPopupSubmissionResult.Success();
         if (HasSplitOverflow())
             return TransactionPopupSubmissionResult.Failure("Split amounts cannot exceed their parent amount.");
+        if (HasUnbalancedSplitAmounts())
+            return TransactionPopupSubmissionResult.Failure("Split amounts must equal their parent amount.");
 
         var account = await _appData.GetAccountByIdAsync(PendingTransaction.SourceAccountId);
         if (account is null)
@@ -341,6 +347,14 @@ public partial class TransactionPopupVM
     private bool HasSplitOverflow() =>
         HasSplitAmountOverflow || SplitTransactions.Any(child => child.HasChildAmountOverflow);
 
+    private bool HasUnbalancedSplitAmounts() =>
+        SplitTransactions.Count > 0 &&
+        (SplitAmount != GetSplitParentAmount(null) || SplitTransactions.Any(HasUnbalancedSplitDescendants));
+
+    private static bool HasUnbalancedSplitDescendants(TransactionVM parent) =>
+        parent.ChildTransactions.Count > 0 &&
+        (parent.ChildAmountTotal != parent.Amount || parent.ChildTransactions.Any(HasUnbalancedSplitDescendants));
+
     private static TransactionVM CreateSplitTransactionViewModel(Transaction transaction) => new()
     {
         Id = transaction.Id,
@@ -371,6 +385,8 @@ public partial class TransactionPopupVM
         OnPropertyChanged(nameof(HasSplitAmountOverflow));
         OnPropertyChanged(nameof(HasSplitTransactions));
         OnPropertyChanged(nameof(SplitAmount));
+        OnPropertyChanged(nameof(SplitAmountRemaining));
+        OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(ShowSidePanelToggle));
         OnPropertyChanged(nameof(IsHistoryPanelSelected));
         OnPropertyChanged(nameof(IsPinnedPanelSelected));

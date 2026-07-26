@@ -37,6 +37,7 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
 
     public ObservableCollection<TransactionVM> ChildTransactions { get; } = [];
     public decimal ChildAmountTotal => ChildTransactions.Sum(child => child.Amount);
+    public decimal ChildAmountRemaining => Amount - ChildAmountTotal;
     public bool HasChildAmountOverflow => ChildAmountTotal > Amount;
     public bool CanAddChildTransaction => !HasChildAmountOverflow;
     public bool IsLeaf => ChildTransactions.Count == 0;
@@ -81,6 +82,7 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
     private void NotifyChildStateChanged()
     {
         OnPropertyChanged(nameof(ChildAmountTotal));
+        OnPropertyChanged(nameof(ChildAmountRemaining));
         OnPropertyChanged(nameof(HasChildAmountOverflow));
         OnPropertyChanged(nameof(CanAddChildTransaction));
         OnPropertyChanged(nameof(IsLeaf));
