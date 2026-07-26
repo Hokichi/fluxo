@@ -494,8 +494,7 @@
                 </Grid>
                 <Grid
                     Grid.Row="1"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
+                    Grid.ColumnSpan="3"
                     Margin="0,0,0,12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -569,6 +568,7 @@
                     </Grid>
                     <ItemsControl
                         Grid.Row="1"
+                        Grid.Column="1"
                         Grid.ColumnSpan="2"
                         MinHeight="14"
                         ItemTemplate="{StaticResource SplitChildNodeTemplate}"
