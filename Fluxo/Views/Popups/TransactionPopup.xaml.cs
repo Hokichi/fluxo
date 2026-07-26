@@ -485,8 +485,8 @@ public partial class TransactionPopup : BasePopup
         if (sender is not FrameworkElement { DataContext: TransactionVM transaction })
             return;
 
-        _viewModel.SelectSplitTransaction(transaction);
-        SyncNoteDocumentFromViewModel();
+        if (_viewModel.SelectSplitTransaction(transaction))
+            SyncNoteDocumentFromViewModel();
         e.Handled = true;
     }
 

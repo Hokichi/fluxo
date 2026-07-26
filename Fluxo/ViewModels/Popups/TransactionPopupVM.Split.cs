@@ -143,8 +143,11 @@ public partial class TransactionPopupVM
         NotifySplitStateChanged();
     }
 
-    public void SelectSplitTransaction(TransactionVM? transaction)
+    public bool SelectSplitTransaction(TransactionVM? transaction)
     {
+        if (ReferenceEquals(SelectedSplitTransaction, transaction))
+            return false;
+
         EnsureTransactionState();
         SyncCurrentSplitTransaction();
         SelectedSplitTransaction = transaction;
@@ -152,6 +155,7 @@ public partial class TransactionPopupVM
         var source = transaction ?? PendingTransaction;
         LoadSplitTransactionIntoForm(source);
         NotifySplitStateChanged();
+        return true;
     }
 
     partial void OnSelectedSplitTransactionChanged(TransactionVM? value) => NotifySplitStateChanged();

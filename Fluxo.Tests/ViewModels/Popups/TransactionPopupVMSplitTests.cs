@@ -291,6 +291,22 @@ public sealed class TransactionPopupVMSplitTests
         Assert.Equal("Return to Groceries", viewModel.ReturnToSplitRootText);
     }
 
+    [Fact]
+    public void Selecting_current_split_is_a_noop()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.AddSplit(null);
+        var child = Assert.Single(viewModel.SplitTransactions);
+        var changedProperties = new List<string?>();
+        viewModel.PropertyChanged += (_, args) => changedProperties.Add(args.PropertyName);
+
+        var changed = viewModel.SelectSplitTransaction(child);
+
+        Assert.False(changed);
+        Assert.Empty(changedProperties);
+        Assert.Same(child, viewModel.SelectedSplitTransaction);
+    }
+
     private static TransactionPopupVM CreateViewModel()
     {
         var appData = Substitute.For<IAppDataService>();
