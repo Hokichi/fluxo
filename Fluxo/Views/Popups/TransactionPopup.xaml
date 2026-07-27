@@ -5,6 +5,7 @@
     xmlns:behaviors="clr-namespace:Fluxo.Resources.Behaviors;assembly=Fluxo.Resources"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:popups="clr-namespace:Fluxo.ViewModels.Popups"
@@ -1319,9 +1320,9 @@
                     Margin="0,0,0,12"
                     SelectedValue="{Binding SelectedSidePanel, Mode=TwoWay}"
                     Visibility="{Binding ShowSidePanelToggle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <customControls:SegmentedToggleOption Content="History" Value="{x:Static popups:TransactionPopupSidePanel.History}" />
-                    <customControls:SegmentedToggleOption Content="Pinned" Value="{x:Static popups:TransactionPopupSidePanel.Pinned}" />
-                    <customControls:SegmentedToggleOption Content="Split" Value="{x:Static popups:TransactionPopupSidePanel.Split}" />
+                    <customControls:SegmentedToggleOption Content="History" Value="{x:Static dataEnums:TransactionPopupSidePanel.History}" />
+                    <customControls:SegmentedToggleOption Content="Pinned" Value="{x:Static dataEnums:TransactionPopupSidePanel.Pinned}" />
+                    <customControls:SegmentedToggleOption Content="Split" Value="{x:Static dataEnums:TransactionPopupSidePanel.Split}" />
                 </customControls:SegmentedToggleGroup>
 
                 <customControls:FadingScrollViewer

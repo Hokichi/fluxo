@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:settings="clr-namespace:Fluxo.ViewModels.Popups.Settings">
     <UserControl.Resources>
         <ItemsPanelTemplate x:Key="SettingsTagsItemsPanelTemplate">
@@ -117,12 +118,12 @@
                 </Grid>
             </Border>
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding SpendingState}" Value="{x:Static settings:SettingsTagSpendingState.Warning}">
+                <DataTrigger Binding="{Binding SpendingState}" Value="{x:Static dataEnums:SettingsTagSpendingState.Warning}">
                     <Setter TargetName="SpendingProgress" Property="Foreground" Value="{StaticResource Brush.Warning}" />
                     <Setter TargetName="StatusBadge" Property="Background" Value="{StaticResource Brush.Warning.Dark}" />
                     <Setter TargetName="StatusText" Property="Foreground" Value="{StaticResource Brush.Warning}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding SpendingState}" Value="{x:Static settings:SettingsTagSpendingState.Danger}">
+                <DataTrigger Binding="{Binding SpendingState}" Value="{x:Static dataEnums:SettingsTagSpendingState.Danger}">
                     <Setter TargetName="SpendingProgress" Property="Foreground" Value="{StaticResource Brush.Danger}" />
                     <Setter TargetName="StatusBadge" Property="Background" Value="{StaticResource Brush.Danger.Dark}" />
                     <Setter TargetName="StatusText" Property="Foreground" Value="{StaticResource Brush.Danger}" />

@@ -14,7 +14,7 @@ using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
 using Fluxo.Views.Popups;
 using Microsoft.Extensions.DependencyInjection;
-using QuickSetupWizardLoadingOutcome = Fluxo.ViewModels.Shell.QuickSetupWizard.QuickSetupWizardLoadingOutcome;
+using QuickSetupWizardLoadingOutcome = Fluxo.Data.Enums.QuickSetupWizardLoadingOutcome;
 using QuickSetupWizardVM = Fluxo.ViewModels.Shell.QuickSetupWizard.QuickSetupWizardVM;
 
 namespace Fluxo.Views.Shell.Wizard;

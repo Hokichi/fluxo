@@ -22,7 +22,7 @@ public readonly record struct AddAccountResult(
         bool IsSuccess,
         bool ShouldClose,
         string? ErrorMessage,
-        AddAccountVM.AddAccountFailurePresentation FailurePresentation = AddAccountVM.AddAccountFailurePresentation.Dialog)
+        AddAccountFailurePresentation FailurePresentation = AddAccountFailurePresentation.Dialog)
     {
         public static AddAccountResult Success(bool shouldClose = false)
         {
@@ -31,7 +31,7 @@ public readonly record struct AddAccountResult(
 
         public static AddAccountResult Failure(
             string? errorMessage,
-            AddAccountVM.AddAccountFailurePresentation failurePresentation = AddAccountVM.AddAccountFailurePresentation.Dialog)
+            AddAccountFailurePresentation failurePresentation = AddAccountFailurePresentation.Dialog)
         {
             return new AddAccountResult(false, false, errorMessage, failurePresentation);
         }

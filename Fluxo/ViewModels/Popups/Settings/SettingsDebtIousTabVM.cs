@@ -12,12 +12,6 @@ using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups.Settings;
 
-public enum IoUKind
-{
-    Lend,
-    Debt
-}
-
 public sealed class IoUItemVM
 {
     public IoUKind Kind { get; init; }

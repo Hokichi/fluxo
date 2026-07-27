@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
+namespace Fluxo.Data.Enums;
 
 public enum QuickSetupWizardLoadingOutcome
 {

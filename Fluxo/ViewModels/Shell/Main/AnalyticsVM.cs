@@ -10,13 +10,6 @@ using Fluxo.Services.Ui;
 using Fluxo.DataModels.Shell.Main.Analytics;
 namespace Fluxo.ViewModels.Shell.Main;
 
-public enum AnalyticsTrendMode
-{
-    Expenses,
-    Incomes,
-    Both
-}
-
 public sealed partial class AnalyticsVM(
     IAnalyticsService analyticsService,
     IDialogService? dialogService = null,

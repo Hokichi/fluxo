@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:viewModels="clr-namespace:Fluxo.ViewModels.Popups.Settings">
 
@@ -45,8 +46,8 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     SelectedValue="{Binding SelectedBudgetManagementPage, Mode=TwoWay}">
-                    <customControls:SegmentedToggleOption Content="Allocation" Value="{x:Static viewModels:SettingsBudgetManagementPage.Allocation}" />
-                    <customControls:SegmentedToggleOption Content="Configuration" Value="{x:Static viewModels:SettingsBudgetManagementPage.Configuration}" />
+                    <customControls:SegmentedToggleOption Content="Allocation" Value="{x:Static dataEnums:SettingsBudgetManagementPage.Allocation}" />
+                    <customControls:SegmentedToggleOption Content="Configuration" Value="{x:Static dataEnums:SettingsBudgetManagementPage.Configuration}" />
                 </customControls:SegmentedToggleGroup>
             </Grid>
 

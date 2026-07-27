@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Popups.Settings;
+namespace Fluxo.Data.Enums;
 
 public enum SettingsBudgetManagementPage
 {

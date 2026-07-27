@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:main="clr-namespace:Fluxo.ViewModels.Shell.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -266,19 +267,19 @@
                             VerticalAlignment="Center">
                             <customControls:SegmentedToggleOption
                                 Command="{Binding SetTrendModeCommand}"
-                                CommandParameter="{x:Static main:AnalyticsTrendMode.Expenses}"
+                                CommandParameter="{x:Static dataEnums:AnalyticsTrendMode.Expenses}"
                                 Content="Expenses"
                                 IsSelected="{Binding IsExpenseTrendModeSelected, Mode=OneWay}"
                                 SelectOnClick="False" />
                             <customControls:SegmentedToggleOption
                                 Command="{Binding SetTrendModeCommand}"
-                                CommandParameter="{x:Static main:AnalyticsTrendMode.Incomes}"
+                                CommandParameter="{x:Static dataEnums:AnalyticsTrendMode.Incomes}"
                                 Content="Incomes"
                                 IsSelected="{Binding IsIncomeTrendModeSelected, Mode=OneWay}"
                                 SelectOnClick="False" />
                             <customControls:SegmentedToggleOption
                                 Command="{Binding SetTrendModeCommand}"
-                                CommandParameter="{x:Static main:AnalyticsTrendMode.Both}"
+                                CommandParameter="{x:Static dataEnums:AnalyticsTrendMode.Both}"
                                 Content="Both"
                                 IsSelected="{Binding IsBothTrendModeSelected, Mode=OneWay}"
                                 SelectOnClick="False" />

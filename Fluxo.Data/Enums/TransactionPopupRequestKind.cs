@@ -1,7 +1,4 @@
-using Fluxo.ViewModels.Entities;
-
-using Fluxo.DataModels.Popups.TransactionPopup;
-namespace Fluxo.ViewModels.Popups;
+namespace Fluxo.Data.Enums;
 
 public enum TransactionPopupRequestKind
 {

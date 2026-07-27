@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.ExceptionServices;
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
+using TransactionKind = Fluxo.Data.Enums.TransactionKind;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
@@ -3006,10 +3007,4 @@ public sealed class TransactionPopupVMValidationTests
             ExceptionDispatchInfo.Capture(failure).Throw();
     }
 
-    public enum TransactionKind
-    {
-        Expense,
-        Income,
-        Goal
-    }
 }

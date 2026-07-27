@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Popups;
+namespace Fluxo.Data.Enums;
 
 public enum NotificationChecklistItemActionType
 {

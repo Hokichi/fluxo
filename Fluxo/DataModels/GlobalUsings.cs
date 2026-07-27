@@ -1,3 +1,4 @@
+global using Fluxo.Data.Enums;
 global using TransactionPopupDraft = Fluxo.DataModels.Popups.TransactionPopup.TransactionPopupDraft;
 global using TransactionPopupRequest = Fluxo.DataModels.Popups.TransactionPopup.TransactionPopupRequest;
 global using TransactionPopupSubmissionResult = Fluxo.DataModels.Popups.TransactionPopup.TransactionPopupSubmissionResult;

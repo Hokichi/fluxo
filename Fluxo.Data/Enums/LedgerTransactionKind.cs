@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Shell.Main;
+namespace Fluxo.Data.Enums;
 
 public enum LedgerTransactionKind
 {

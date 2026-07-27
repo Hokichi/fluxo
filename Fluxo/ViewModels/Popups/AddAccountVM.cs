@@ -1042,14 +1042,4 @@ public partial class AddAccountVM : ObservableValidator
             : ValidationResult.Success;
     }
 
-    public enum AddAccountFailurePresentation
-    {
-        Dialog,
-        ToastWarning
-    }
-
-
-
-
-
 }

@@ -302,13 +302,6 @@ public partial class SettingsTagsTabVM : ObservableObject
     }
 }
 
-public enum SettingsTagSpendingState
-{
-    Success,
-    Warning,
-    Danger
-}
-
 public sealed class SettingsTagCardVM
 {
     public int Id { get; private init; }

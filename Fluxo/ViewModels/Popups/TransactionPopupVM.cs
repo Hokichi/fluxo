@@ -3009,16 +3009,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         RecurringTransactionValidationHelper.GetTimeValidationMessage(period);
 
 
-    private enum TransactionPopupPurpose
-    {
-        AddNewTransaction,
-        AddRecurringTransaction,
-        EditRecurringTransaction,
-        ViewTransaction,
-        EditTransaction,
-        Processing
-    }
-
     private void SetPopupPurpose(TransactionPopupPurpose purpose)
     {
         if (_popupPurpose == purpose)

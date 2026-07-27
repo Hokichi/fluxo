@@ -5,13 +5,6 @@ using Fluxo.ViewModels.Entities;
 
 namespace Fluxo.ViewModels.Popups;
 
-public enum TransactionPopupSidePanel
-{
-    History,
-    Pinned,
-    Split
-}
-
 public partial class TransactionPopupVM
 {
     [ObservableProperty] private TransactionPopupSidePanel _selectedSidePanel = TransactionPopupSidePanel.History;

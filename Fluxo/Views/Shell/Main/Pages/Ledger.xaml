@@ -5,6 +5,7 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:controls="clr-namespace:Fluxo.Views.Shell.Main.Controls"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:main="clr-namespace:Fluxo.ViewModels.Shell.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -542,7 +543,7 @@
                             <Style TargetType="TextBlock">
                                 <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Kind}" Value="{x:Static main:LedgerTransactionKind.Income}">
+                                    <DataTrigger Binding="{Binding Kind}" Value="{x:Static dataEnums:LedgerTransactionKind.Income}">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -806,7 +807,7 @@
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Kind}" Value="{x:Static main:LedgerTransactionKind.Income}">
+                                        <DataTrigger Binding="{Binding Kind}" Value="{x:Static dataEnums:LedgerTransactionKind.Income}">
                                             <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
                                         </DataTrigger>
                                     </Style.Triggers>
