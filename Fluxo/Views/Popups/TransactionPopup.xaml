@@ -5,8 +5,8 @@
     xmlns:behaviors="clr-namespace:Fluxo.Resources.Behaviors;assembly=Fluxo.Resources"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:popups="clr-namespace:Fluxo.ViewModels.Popups"
     CanClone="{Binding CanCloneViewedTransaction, Mode=OneWay}"
@@ -29,351 +29,348 @@
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionSplitTreeStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-        <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
-        </Style>
+            <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
+                <Setter Property="Margin" Value="0,0,0,8" />
+                <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+            </Style>
 
-        <Style x:Key="FieldHeaderGridStyle" TargetType="Grid">
-            <Setter Property="Margin" Value="0,0,0,8" />
-        </Style>
+            <Style x:Key="FieldHeaderGridStyle" TargetType="Grid">
+                <Setter Property="Margin" Value="0,0,0,8" />
+            </Style>
 
-        <Style x:Key="TransactionWarningTextStyle" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsWarning, Mode=OneWay}" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+            <Style x:Key="TransactionWarningTextStyle" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsWarning, Mode=OneWay}" Value="True">
+                        <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <Style x:Key="PopupFieldBorderStyle" TargetType="Border">
-            <Setter Property="Padding" Value="12,10" />
-            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="12" />
-        </Style>
+            <Style x:Key="PopupFieldBorderStyle" TargetType="Border">
+                <Setter Property="Padding" Value="12,10" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="12" />
+            </Style>
 
-        <Style x:Key="PopupTagListBoxStyle" TargetType="ListBox">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-        </Style>
+            <Style x:Key="PopupTagListBoxStyle" TargetType="ListBox">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+            </Style>
 
-        <Style x:Key="PopupTagListBoxItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <ContentPresenter />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style
-            x:Key="PopupOtherTagListBoxItemStyle"
-            BasedOn="{StaticResource PopupTagListBoxItemStyle}"
-            TargetType="ListBoxItem">
-            <Setter Property="Margin" Value="0,0,8,8" />
-        </Style>
-
-        <DataTemplate x:Key="PopupTagTemplate">
-            <RadioButton
-                Content="{Binding Name, Mode=OneWay}"
-                GroupName="AddNewTransactionTags"
-                IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
-                Style="{StaticResource PopupTagItemRadioStyle}" />
-        </DataTemplate>
-
-        <ItemsPanelTemplate x:Key="PopupVisibleTagsItemsPanelTemplate">
-            <StackPanel Orientation="Horizontal" />
-        </ItemsPanelTemplate>
-
-        <ItemsPanelTemplate x:Key="PopupOverflowTagsItemsPanelTemplate">
-            <WrapPanel />
-        </ItemsPanelTemplate>
-
-        <Style x:Key="TransactionNameSuggestionListBoxStyle" TargetType="ListBox">
-            <Setter Property="MinWidth" Value="260" />
-            <Setter Property="MaxHeight" Value="220" />
-            <Setter Property="Padding" Value="6" />
-            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        </Style>
-
-        <Style x:Key="TransactionNameSuggestionListBoxItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border
-                            x:Name="ItemBackground"
-                            Padding="8,6"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="8">
+            <Style x:Key="PopupTagListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Margin" Value="0,0,8,0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
                             <ContentPresenter />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-        <Style x:Key="TransactionHistoryListBoxStyle" TargetType="ListBox">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-        </Style>
+            <Style
+                x:Key="PopupOtherTagListBoxItemStyle"
+                BasedOn="{StaticResource PopupTagListBoxItemStyle}"
+                TargetType="ListBoxItem">
+                <Setter Property="Margin" Value="0,0,8,8" />
+            </Style>
 
-        <Style x:Key="TransactionHistoryListBoxItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border
-                            x:Name="ItemBackground"
-                            Padding="10,8"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{DynamicResource Brush.Border.Default}"
-                            BorderThickness="1"
-                            CornerRadius="8">
-                            <ContentPresenter />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="False">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+            <DataTemplate x:Key="PopupTagTemplate">
+                <RadioButton
+                    Content="{Binding Name, Mode=OneWay}"
+                    GroupName="AddNewTransactionTags"
+                    IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                    Style="{StaticResource PopupTagItemRadioStyle}" />
+            </DataTemplate>
 
-        <DataTemplate x:Key="TransactionHistoryItemTemplate">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Ellipse
-                    Width="8"
-                    Height="8"
-                    Margin="0,5,10,0"
-                    VerticalAlignment="Top"
-                    Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
-                <StackPanel Grid.Column="1">
-                    <TextBlock
-                        FontFamily="{DynamicResource Bold}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Name, Mode=OneWay}"
-                        TextTrimming="CharacterEllipsis" />
-                    <TextBlock
-                        Margin="0,3,0,0"
-                        FontFamily="{DynamicResource Regular}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding AccountName, Mode=OneWay}"
-                        TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-                <StackPanel Grid.Column="2" Margin="12,0,0,0">
-                    <TextBlock
-                        HorizontalAlignment="Right"
-                        FontFamily="{DynamicResource Bold}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
-                    <TextBlock
-                        Margin="0,3,0,0"
-                        HorizontalAlignment="Right"
-                        FontFamily="{DynamicResource Regular}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding Date, Converter={StaticResource DateTimeToRelativeDateConverter}, Mode=OneWay}" />
-                </StackPanel>
-            </Grid>
-        </DataTemplate>
+            <ItemsPanelTemplate x:Key="PopupVisibleTagsItemsPanelTemplate">
+                <StackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
 
-        <DataTemplate x:Key="ChildTransactionItemTemplate">
-            <Border
-                Margin="0,0,0,10"
-                Padding="16"
-                Background="{DynamicResource Brush.Background.Elevated}"
-                BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                BorderThickness="1"
-                CornerRadius="8">
+            <ItemsPanelTemplate x:Key="PopupOverflowTagsItemsPanelTemplate">
+                <WrapPanel />
+            </ItemsPanelTemplate>
+
+            <Style x:Key="TransactionNameSuggestionListBoxStyle" TargetType="ListBox">
+                <Setter Property="MinWidth" Value="260" />
+                <Setter Property="MaxHeight" Value="220" />
+                <Setter Property="Padding" Value="6" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            </Style>
+
+            <Style x:Key="TransactionNameSuggestionListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border
+                                x:Name="ItemBackground"
+                                Padding="8,6"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                                <ContentPresenter />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="TransactionHistoryListBoxStyle" TargetType="ListBox">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+            </Style>
+
+            <Style x:Key="TransactionHistoryListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Margin" Value="0,0,0,8" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border
+                                x:Name="ItemBackground"
+                                Padding="10,8"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{DynamicResource Brush.Border.Default}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <ContentPresenter />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="False">
+                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="TransactionHistoryItemTemplate">
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Ellipse
+                        Width="8"
+                        Height="8"
+                        Margin="0,5,10,0"
+                        VerticalAlignment="Top"
+                        Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
+                    <StackPanel Grid.Column="1">
                         <TextBlock
                             FontFamily="{DynamicResource Bold}"
-                            FontSize="12"
+                            FontSize="13"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis" />
                         <TextBlock
-                            Grid.Column="1"
-                            Margin="8,0,0,0"
+                            Margin="0,3,0,0"
+                            FontFamily="{DynamicResource Regular}"
+                            FontSize="11"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
+                            Text="{Binding AccountName, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Margin="12,0,0,0">
+                        <TextBlock
+                            HorizontalAlignment="Right"
                             FontFamily="{DynamicResource Bold}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Danger}"
-                            Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                    </Grid>
+                            FontSize="13"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
+                            Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
+                        <TextBlock
+                            Margin="0,3,0,0"
+                            HorizontalAlignment="Right"
+                            FontFamily="{DynamicResource Regular}"
+                            FontSize="11"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
+                            Text="{Binding Date, Converter={StaticResource DateTimeToRelativeDateConverter}, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
 
-                    <TextBlock
-                        Grid.Row="1"
-                        Margin="0,6,0,0"
-                        FontFamily="{DynamicResource Medium}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding OccurredOn, Mode=OneWay, StringFormat={}{0:MMM d, yyyy}}" />
+            <DataTemplate x:Key="ChildTransactionItemTemplate">
+                <Border
+                    Margin="0,0,0,10"
+                    Padding="16"
+                    Background="{DynamicResource Brush.Background.Elevated}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    <StackPanel
-                        Grid.Row="2"
-                        Margin="0,8,0,0"
-                        Orientation="Horizontal">
-                        <Border
-                            MaxWidth="96"
-                            Padding="8,2"
-                            Background="{Binding TagHexCode, Mode=OneWay}"
-                            CornerRadius="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
                             <TextBlock
                                 FontFamily="{DynamicResource Bold}"
-                                FontSize="10"
-                                Text="{Binding TagName, Mode=OneWay}"
-                                TextTrimming="CharacterEllipsis">
-                                <TextBlock.Foreground>
-                                    <Binding
-                                        Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
-                                        ConverterParameter="{StaticResource Brush.Text.Primary}"
-                                        Path="Background"
-                                        RelativeSource="{RelativeSource AncestorType=Border}" />
-                                </TextBlock.Foreground>
-                            </TextBlock>
-                        </Border>
+                                FontSize="12"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                Text="{Binding Name, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                FontFamily="{DynamicResource Bold}"
+                                FontSize="12"
+                                Foreground="{DynamicResource Brush.Danger}"
+                                Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                        </Grid>
+
                         <TextBlock
-                            Margin="8,2,0,0"
+                            Grid.Row="1"
+                            Margin="0,6,0,0"
                             FontFamily="{DynamicResource Medium}"
-                            FontSize="10"
+                            FontSize="11"
                             Foreground="{DynamicResource Brush.Text.Muted}"
-                            Text="{Binding CategoryLabel, Mode=OneWay}" />
+                            Text="{Binding OccurredOn, Mode=OneWay, StringFormat={}{0:MMM d, yyyy}}" />
+
+                        <StackPanel
+                            Grid.Row="2"
+                            Margin="0,8,0,0"
+                            Orientation="Horizontal">
+                            <Border
+                                MaxWidth="96"
+                                Padding="8,2"
+                                Background="{Binding TagHexCode, Mode=OneWay}"
+                                CornerRadius="8">
+                                <TextBlock
+                                    FontFamily="{DynamicResource Bold}"
+                                    FontSize="10"
+                                    Text="{Binding TagName, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis">
+                                    <TextBlock.Foreground>
+                                        <Binding
+                                            Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
+                                            ConverterParameter="{StaticResource Brush.Text.Primary}"
+                                            Path="Background"
+                                            RelativeSource="{RelativeSource AncestorType=Border}" />
+                                    </TextBlock.Foreground>
+                                </TextBlock>
+                            </Border>
+                            <TextBlock
+                                Margin="8,2,0,0"
+                                FontFamily="{DynamicResource Medium}"
+                                FontSize="10"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
+                                Text="{Binding CategoryLabel, Mode=OneWay}" />
+                        </StackPanel>
+                        <Path
+                            Grid.Row="2"
+                            Width="13"
+                            Height="13"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Data="{StaticResource CreditCardMinusSolid}"
+                            Fill="{DynamicResource Brush.Info}"
+                            Stretch="Uniform"
+                            ToolTip="Lend"
+                            Visibility="{Binding IsIoU, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+            <Style
+                x:Key="ExpenseCategoryComboBoxItemStyle"
+                BasedOn="{StaticResource FluxoComboBoxItemStyle}"
+                TargetType="ComboBoxItem">
+                <Setter Property="IsEnabled" Value="{Binding IsEnabled, Mode=OneWay}" />
+                <Setter Property="Opacity" Value="1" />
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.4" />
+                    </Trigger>
+                    <DataTrigger Binding="{Binding IsEnabled, Mode=OneWay}" Value="False">
+                        <Setter Property="Opacity" Value="0.45" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <DataTemplate x:Key="TransactionNameSuggestionTemplate">
+                <Grid Width="320" Margin="0,0,0,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock
+                            FontFamily="{DynamicResource Bold}"
+                            FontSize="13"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
+                            Text="{Binding Name, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            FontFamily="{DynamicResource Regular}"
+                            FontSize="11"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
+                            Text="{Binding AccountName, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
                     </StackPanel>
-                    <Path
-                        Grid.Row="2"
-                        Width="13"
-                        Height="13"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        Data="{StaticResource CreditCardMinusSolid}"
-                        Fill="{DynamicResource Brush.Info}"
-                        Stretch="Uniform"
-                        ToolTip="Lend"
-                        Visibility="{Binding IsIoU, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                </Grid>
-            </Border>
-        </DataTemplate>
-
-        <Style
-            x:Key="ExpenseCategoryComboBoxItemStyle"
-            BasedOn="{StaticResource FluxoComboBoxItemStyle}"
-            TargetType="ComboBoxItem">
-            <Setter Property="IsEnabled" Value="{Binding IsEnabled, Mode=OneWay}" />
-            <Setter Property="Opacity" Value="1" />
-            <Style.Triggers>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.4" />
-                </Trigger>
-                <DataTrigger Binding="{Binding IsEnabled, Mode=OneWay}" Value="False">
-                    <Setter Property="Opacity" Value="0.45" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <DataTemplate x:Key="TransactionNameSuggestionTemplate">
-            <Grid Width="320" Margin="0,0,0,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel>
                     <TextBlock
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Center"
                         FontFamily="{DynamicResource Bold}"
-                        FontSize="13"
+                        FontSize="12"
                         Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Name, Mode=OneWay}"
-                        TextTrimming="CharacterEllipsis" />
-                    <TextBlock
-                        FontFamily="{DynamicResource Regular}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Brush.Text.Muted}"
-                        Text="{Binding AccountName, Mode=OneWay}"
-                        TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-                <TextBlock
-                    Grid.Column="1"
-                    Margin="12,0,0,0"
-                    VerticalAlignment="Center"
-                    FontFamily="{DynamicResource Bold}"
-                    FontSize="12"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
-            </Grid>
-        </DataTemplate>
+                        Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
+                </Grid>
+            </DataTemplate>
 
-        <DataTemplate x:Key="TransactionWarningTemplate">
-            <TextBlock
-                Style="{StaticResource TransactionWarningTextStyle}"
-                Text="{Binding Message, Mode=OneWay}"
-                />
-        </DataTemplate>
+            <DataTemplate x:Key="TransactionWarningTemplate">
+                <TextBlock Style="{StaticResource TransactionWarningTextStyle}" Text="{Binding Message, Mode=OneWay}" />
+            </DataTemplate>
 
         </ResourceDictionary>
     </customControls:BasePopup.Resources>
@@ -1264,8 +1261,8 @@
                     </Border>
                     <Border
                         Margin="0,8,0,0"
-                        HorizontalAlignment="Left"
                         Padding="8,4"
+                        HorizontalAlignment="Left"
                         Background="{StaticResource Brush.Background.Elevated}"
                         BorderBrush="{StaticResource Brush.Border.Subtle}"
                         BorderThickness="1"
@@ -1274,10 +1271,11 @@
                         Visibility="{Binding HasTransactionWarnings, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Border.ToolTip>
                             <ToolTip DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}, Mode=OneWay}">
-                                <Border Padding="10" Background="{StaticResource Brush.Background.Elevated}" CornerRadius="8">
-                                    <ItemsControl
-                                        ItemTemplate="{StaticResource TransactionWarningTemplate}"
-                                        ItemsSource="{Binding TransactionWarnings, Mode=OneWay}" />
+                                <Border
+                                    Padding="10"
+                                    Background="{StaticResource Brush.Background.Elevated}"
+                                    CornerRadius="8">
+                                    <ItemsControl ItemTemplate="{StaticResource TransactionWarningTemplate}" ItemsSource="{Binding TransactionWarnings, Mode=OneWay}" />
                                 </Border>
                             </ToolTip>
                         </Border.ToolTip>
@@ -1367,97 +1365,108 @@
                         Foreground="{StaticResource Brush.Text.Muted}"
                         Text="Transaction is invalid."
                         Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <StackPanel Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
-                        <Border Cursor="Hand">
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource CardBorderStyle}" TargetType="Border">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
+                    <customControls:FadingScrollViewer
+                        PreviewMouseWheel="OnSplitPanelPreviewMouseWheel"
+                        VerticalScrollBarVisibility="Auto"
+                        Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+                        <StackPanel>
+                            <Button
+                                Click="OnRootSplitCardClick"
+                                Command="{Binding SelectSplitCommand}"
+                                CommandParameter="{x:Null}"
+                                Style="{StaticResource SplitTransactionRootCardStyle}">
                                 <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock
-                                        FontFamily="{StaticResource Bold}"
-                                        Foreground="{StaticResource Brush.Text.Primary}"
-                                        Text="{Binding NameText, Mode=OneWay}"
-                                        TextTrimming="CharacterEllipsis" />
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Margin="12,0,0,0"
-                                        FontFamily="{StaticResource Bold}"
-                                        Foreground="{StaticResource Brush.Text.Primary}"
-                                        Text="{Binding AmountText, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            FontFamily="{StaticResource Bold}"
+                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Text="{Binding PendingTransaction.Name, Mode=OneWay}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="12,0,0,0"
+                                            FontFamily="{StaticResource Bold}"
+                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Text="{Binding PendingTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                    </Grid>
+                                    <ProgressBar
+                                        Grid.Row="1"
+                                        Height="12"
+                                        Margin="0,12,0,0"
+                                        Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}"
+                                        Style="{StaticResource RoundedProgressBarStyle}"
+                                        Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}" />
+                                    <Grid Grid.Row="2" Margin="0,8,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Medium}"
+                                            Foreground="{StaticResource Brush.Text.Primary}">
+                                            <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                            <Run Text=" left" />
+                                        </TextBlock>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <customControls:BalloonButton
+                                                Margin="0,0,8,0"
+                                                ButtonIcon="{StaticResource CallSplit}"
+                                                ButtonText="Split Equally"
+                                                Command="{Binding SplitEquallyCommand}"
+                                                CommandParameter="{x:Null}"
+                                                CornerRadius="8"
+                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                ShouldShowText="True" />
+                                            <customControls:BalloonButton
+                                                ButtonIcon="{StaticResource RegularUndo}"
+                                                ButtonText="Reset"
+                                                Command="{Binding ResetSplitCommand}"
+                                                CommandParameter="{x:Null}"
+                                                CornerRadius="8"
+                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                ShouldShowText="True" />
+                                        </StackPanel>
+                                    </Grid>
                                 </Grid>
-                                <ProgressBar
-                                    Grid.Row="1"
-                                    Height="12"
-                                    Margin="0,12,0,0"
-                                    Maximum="{Binding AmountText, Mode=OneWay}"
-                                    Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}"
-                                    Style="{StaticResource RoundedProgressBarStyle}" />
-                                <Grid Grid.Row="2" Margin="0,8,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        FontFamily="{StaticResource Medium}"
-                                        Foreground="{StaticResource Brush.Text.Primary}">
-                                        <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                        <Run Text=" left" />
-                                    </TextBlock>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                        <customControls:BalloonButton
-                                            Margin="0,0,8,0"
-                                            ButtonIcon="{StaticResource CallSplit}"
-                                            ButtonText="Split Equally"
-                                            CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            Command="{Binding SplitEquallyCommand}"
-                                            CommandParameter="{x:Null}"
-                                            ShouldShowText="True" />
-                                        <customControls:BalloonButton
-                                            ButtonIcon="{StaticResource RegularUndo}"
-                                            ButtonText="Reset"
-                                            CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                            Command="{Binding ResetSplitCommand}"
-                                            CommandParameter="{x:Null}"
-                                            ShouldShowText="True" />
-                                    </StackPanel>
-                                </Grid>
-                            </Grid>
-                        </Border>
-                        <TreeView
-                            Margin="0,8,0,0"
-                            ItemTemplate="{StaticResource SplitTransactionBranchTemplate}"
-                            ItemsSource="{Binding PendingTransaction.ChildTransactions, Mode=OneWay}"
-                            Style="{StaticResource SplitTransactionTreeViewStyle}" />
-                        <Button
-                            Margin="0,8,0,0"
-                            Width="Auto"
-                            HorizontalAlignment="Stretch"
-                            Command="{Binding AddSplitCommand, Mode=OneWay}"
-                            CommandParameter="{x:Null}"
-                            Content="Add a sub-transaction"
-                            Style="{StaticResource DashedButtonStyle}" />
-                    </StackPanel>
+                            </Button>
+                            <TreeView
+                                x:Name="SplitTransactionTree"
+                                Margin="0,8,0,0"
+                                ItemTemplate="{StaticResource SplitTransactionBranchTemplate}"
+                                ItemsSource="{Binding PendingTransaction.ChildTransactions, Mode=OneWay}"
+                                Style="{StaticResource SplitTransactionTreeViewStyle}" />
+                            <Button
+                                Width="Auto"
+                                Margin="0,8,0,0"
+                                HorizontalAlignment="Stretch"
+                                Command="{Binding AddSplitCommand, Mode=OneWay}"
+                                CommandParameter="{x:Null}"
+                                Content="Add a sub-transaction"
+                                Style="{StaticResource DashedButtonStyle}"
+                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                            <customControls:BalloonButton
+                                Margin="2,8,0,0"
+                                HorizontalAlignment="Left"
+                                ButtonIcon="{StaticResource PlusSolid}"
+                                ButtonText="+"
+                                Command="{Binding AddSplitCommand, Mode=OneWay}"
+                                CommandParameter="{x:Null}"
+                                ToolTip="Add a sub-transaction"
+                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </StackPanel>
+                    </customControls:FadingScrollViewer>
                 </Grid>
             </Grid>
 

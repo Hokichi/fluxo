@@ -46,6 +46,17 @@ public sealed class TransactionSplitHelperTests
         Assert.Throws<InvalidOperationException>(() => TransactionSplitHelper.AddChild(root, grandchild));
     }
 
+    [Theory]
+    [InlineData("", 100, false)]
+    [InlineData("Valid", 0, false)]
+    [InlineData("Valid", 100, true)]
+    public void IsValidParent_requires_a_name_and_positive_amount(string name, decimal amount, bool expected)
+    {
+        var parent = new TransactionVM { Name = name, Amount = amount };
+
+        Assert.Equal(expected, TransactionSplitHelper.IsValidParent(parent));
+    }
+
     [Fact]
     public void SplitEqually_assigns_final_remainder()
     {

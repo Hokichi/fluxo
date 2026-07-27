@@ -7,6 +7,9 @@ public static class TransactionSplitHelper
     public static bool CanAddChild(TransactionVM root, TransactionVM? parent) =>
         parent is null || root.ChildTransactions.Any(child => ReferenceEquals(child, parent));
 
+    public static bool IsValidParent(TransactionVM parent) =>
+        !string.IsNullOrWhiteSpace(parent.Name) && parent.Amount > 0m;
+
     public static TransactionVM AddChild(TransactionVM root, TransactionVM? parent)
     {
         ArgumentNullException.ThrowIfNull(root);

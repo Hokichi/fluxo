@@ -480,6 +480,32 @@ public partial class TransactionPopup : BasePopup
         e.Handled = true;
     }
 
+    private void OnSplitPanelPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (sender is not ScrollViewer scrollViewer)
+            return;
+
+        var wheelSteps = e.Delta / (double)Mouse.MouseWheelDeltaForOneLine;
+        scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - wheelSteps * 48d);
+        e.Handled = true;
+    }
+
+    private void OnRootSplitCardClick(object sender, RoutedEventArgs e)
+    {
+        ClearTreeSelection(SplitTransactionTree);
+    }
+
+    private static void ClearTreeSelection(DependencyObject parent)
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, index);
+            if (child is TreeViewItem item)
+                item.IsSelected = false;
+            ClearTreeSelection(child);
+        }
+    }
+
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(TransactionPopupVM.HasTransactionNameSuggestions) or

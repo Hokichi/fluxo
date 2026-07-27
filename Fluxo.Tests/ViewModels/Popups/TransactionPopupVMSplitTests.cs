@@ -32,6 +32,7 @@ public sealed class TransactionPopupVMSplitTests
         var vm = CreateVm();
         vm.AddSplitCommand.Execute(null);
         var child = vm.PendingTransaction.ChildTransactions.Single();
+        vm.AmountText = 100m;
         vm.AddSplitCommand.Execute(child);
         var grandchild = child.ChildTransactions.Single();
 
@@ -56,6 +57,37 @@ public sealed class TransactionPopupVMSplitTests
         vm.ResetSplitCommand.Execute(null);
 
         Assert.Equal(100m, vm.SplitAmountRemaining);
+    }
+
+    [Fact]
+    public void SplitEqually_does_not_overwrite_another_selected_child_with_stale_form_values()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        vm.AddSplitCommand.Execute(null);
+
+        vm.SplitEquallyCommand.Execute(null);
+        vm.SelectSplitCommand.Execute(vm.PendingTransaction.ChildTransactions[0]);
+
+        Assert.Equal([50m, 50m], vm.PendingTransaction.ChildTransactions.Select(child => child.Amount));
+    }
+
+    [Fact]
+    public void DeleteSplit_notifies_root_display_when_root_is_already_selected()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        var child = vm.PendingTransaction.ChildTransactions.Single();
+        vm.AmountText = 100m;
+        vm.SelectSplitCommand.Execute(null);
+        var changes = new List<string?>();
+        vm.PropertyChanged += (_, eventArgs) => changes.Add(eventArgs.PropertyName);
+
+        vm.DeleteSplitCommand.Execute(child);
+
+        Assert.Empty(vm.PendingTransaction.ChildTransactions);
+        Assert.Contains(nameof(vm.SplitAmountRemaining), changes);
+        Assert.Contains(nameof(vm.HasSplitTransactions), changes);
     }
 
     [Fact]

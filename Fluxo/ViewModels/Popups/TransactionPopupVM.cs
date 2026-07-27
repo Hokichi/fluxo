@@ -2186,18 +2186,24 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(SplitAmountRemaining));
         OnPropertyChanged(nameof(HasSplitAmountOverflow));
         OnPropertyChanged(nameof(HasSplitTransactions));
+        AddSplitCommand.NotifyCanExecuteChanged();
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanAddSplit))]
     public void AddSplit(TransactionVM? parent)
     {
         EnsureTransactionState();
         SyncCurrentSplitTransactionFromForm();
-        if (!TransactionSplitHelper.CanAddChild(PendingTransaction, parent))
+        if (!CanAddSplit(parent))
             return;
 
         SelectSplitTransaction(TransactionSplitHelper.AddChild(PendingTransaction, parent));
     }
+
+    private bool CanAddSplit(TransactionVM? parent) =>
+        _isTransactionStateInitialized &&
+        TransactionSplitHelper.CanAddChild(PendingTransaction, parent) &&
+        TransactionSplitHelper.IsValidParent(parent ?? PendingTransaction);
 
     [RelayCommand]
     public void DeleteSplit(TransactionVM node)
@@ -2207,6 +2213,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             return;
 
         SelectSplitTransaction(parent);
+        NotifySplitDisplayChanged();
+        OnPropertyChanged(nameof(HasChanges));
     }
 
     [RelayCommand]
@@ -2217,7 +2225,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         EnsureTransactionState();
         SyncCurrentSplitTransactionFromForm();
-        TransactionSplitHelper.SplitEqually(parent ?? PendingTransaction);
+        var splitParent = parent ?? PendingTransaction;
+        TransactionSplitHelper.SplitEqually(splitParent);
+        RefreshSelectedSplitTransactionForm(splitParent);
         NotifySplitDisplayChanged();
     }
 
@@ -2226,7 +2236,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         EnsureTransactionState();
         SyncCurrentSplitTransactionFromForm();
-        TransactionSplitHelper.Reset(parent ?? PendingTransaction);
+        var splitParent = parent ?? PendingTransaction;
+        TransactionSplitHelper.Reset(splitParent);
+        RefreshSelectedSplitTransactionForm(splitParent);
         NotifySplitDisplayChanged();
     }
 
@@ -2274,6 +2286,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             _isLoadingSplitTransaction = false;
         }
+    }
+
+    private void RefreshSelectedSplitTransactionForm(TransactionVM parent)
+    {
+        if (SelectedSplitTransaction is not null &&
+            parent.ChildTransactions.Any(child => ReferenceEquals(child, SelectedSplitTransaction)))
+            LoadSplitTransactionIntoForm(SelectedSplitTransaction);
     }
 
     private async Task<TransactionPopupSubmissionResult> PersistSplitTreeAsync(int rootTransactionId)
