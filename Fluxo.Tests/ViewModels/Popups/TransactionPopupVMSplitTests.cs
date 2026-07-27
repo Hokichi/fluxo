@@ -58,6 +58,27 @@ public sealed class TransactionPopupVMSplitTests
         Assert.Equal(100m, vm.SplitAmountRemaining);
     }
 
+    [Fact]
+    public void AddSplit_keeps_placeholder_hidden_when_root_is_valid()
+    {
+        var vm = CreateVm();
+
+        vm.AddSplitCommand.Execute(null);
+
+        Assert.False(vm.ShowInvalidSplitPlaceholder);
+    }
+
+    [Fact]
+    public void AddSplit_shows_placeholder_when_root_is_invalid()
+    {
+        var vm = CreateVm();
+        vm.NameText = string.Empty;
+
+        vm.AddSplitCommand.Execute(null);
+
+        Assert.True(vm.ShowInvalidSplitPlaceholder);
+    }
+
     private static TransactionPopupVM CreateVm()
     {
         var appData = Substitute.For<IAppDataService>();

@@ -297,7 +297,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool IsPinnedPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.Pinned;
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
     public bool ShowInvalidSplitPlaceholder =>
-        _popupPurpose == TransactionPopupPurpose.AddNewTransaction && !IsCurrentInputValid();
+        _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
+        !(_isTransactionStateInitialized ? IsRootSplitInputValid() : IsCurrentInputValid());
     public decimal SplitAmountRemaining => _isTransactionStateInitialized
         ? TransactionSplitHelper.GetRemainingAmount(PendingTransaction)
         : AmountText;
@@ -2684,6 +2685,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                && IsValidationSuccess(ValidateRecurringTimeText(RecurringTimeText, CreateValidationContext()))
                && IsInstallmentInputValid();
     }
+
+    private bool IsRootSplitInputValid() =>
+        TransactionValidationHelper.ValidateName(PendingTransaction.Name, false).IsValid &&
+        TransactionValidationHelper.ValidateAmount(PendingTransaction.Amount, false, false, false, null).IsValid;
 
     private ValidationContext CreateValidationContext()
     {
