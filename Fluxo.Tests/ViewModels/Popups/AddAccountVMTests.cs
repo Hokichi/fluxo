@@ -102,7 +102,7 @@ public sealed class AddAccountVMTests
         var sut = CreateSut(_ =>
         {
             saveWasCalled = true;
-            return Task.FromResult(AddAccountVM.AddAccountResult.Success());
+            return Task.FromResult(AddAccountResult.Success());
         });
 
         ConfigureValidCreditFields(sut);
@@ -115,7 +115,7 @@ public sealed class AddAccountVMTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Maximum spending cannot exceed the account limit.", result.ErrorMessage);
-        Assert.Equal(AddAccountVM.AddAccountFailurePresentation.ToastWarning, result.FailurePresentation);
+        Assert.Equal(AddAccountFailurePresentation.ToastWarning, result.FailurePresentation);
         Assert.False(saveWasCalled);
     }
 
@@ -126,7 +126,7 @@ public sealed class AddAccountVMTests
         var sut = CreateSut(_ =>
         {
             saveWasCalled = true;
-            return Task.FromResult(AddAccountVM.AddAccountResult.Success());
+            return Task.FromResult(AddAccountResult.Success());
         });
 
         sut.NameText = "Emergency Savings";
@@ -138,7 +138,7 @@ public sealed class AddAccountVMTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("APY cannot exceed 100%.", result.ErrorMessage);
-        Assert.Equal(AddAccountVM.AddAccountFailurePresentation.ToastWarning, result.FailurePresentation);
+        Assert.Equal(AddAccountFailurePresentation.ToastWarning, result.FailurePresentation);
         Assert.False(saveWasCalled);
     }
 
@@ -149,7 +149,7 @@ public sealed class AddAccountVMTests
         var sut = CreateSut(_ =>
         {
             saveWasCalled = true;
-            return Task.FromResult(AddAccountVM.AddAccountResult.Success());
+            return Task.FromResult(AddAccountResult.Success());
         });
 
         ConfigureValidCreditFields(sut);
@@ -159,7 +159,7 @@ public sealed class AddAccountVMTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Minimum payment cannot exceed 100%.", result.ErrorMessage);
-        Assert.Equal(AddAccountVM.AddAccountFailurePresentation.ToastWarning, result.FailurePresentation);
+        Assert.Equal(AddAccountFailurePresentation.ToastWarning, result.FailurePresentation);
         Assert.False(saveWasCalled);
     }
 
@@ -355,7 +355,7 @@ public sealed class AddAccountVMTests
     public void HasChanges_IgnoresDueDateDeductSourceMaximumSpendingAndSourceType()
     {
         var sut = CreateSut();
-        sut.DeductSources.Add(new AddAccountVM.DeductSourceOption(1, "Checking", AccountType.Checking));
+        sut.DeductSources.Add(new AddAccountDeductSourceOption(1, "Checking", AccountType.Checking));
         sut.BeginChangeTracking();
 
         sut.MonthlyDueDateText = "12";
@@ -389,11 +389,11 @@ public sealed class AddAccountVMTests
     [Fact]
     public async Task SaveAsync_WhenMaximumSpendingIsUnmodified_PersistsPlaceholderValue()
     {
-        AddAccountVM.AddAccountInput? savedInput = null;
+        AddAccountInput? savedInput = null;
         var sut = CreateSut(input =>
         {
             savedInput = input;
-            return Task.FromResult(AddAccountVM.AddAccountResult.Success());
+            return Task.FromResult(AddAccountResult.Success());
         });
         sut.NameText = "Checking";
         sut.SelectedAccountType = AccountType.Checking;
@@ -408,11 +408,11 @@ public sealed class AddAccountVMTests
     [Fact]
     public async Task SaveAsync_WhenMaximumSpendingIsModified_PersistsEditedValue()
     {
-        AddAccountVM.AddAccountInput? savedInput = null;
+        AddAccountInput? savedInput = null;
         var sut = CreateSut(input =>
         {
             savedInput = input;
-            return Task.FromResult(AddAccountVM.AddAccountResult.Success());
+            return Task.FromResult(AddAccountResult.Success());
         });
         sut.NameText = "Checking";
         sut.SelectedAccountType = AccountType.Checking;
@@ -427,7 +427,7 @@ public sealed class AddAccountVMTests
     }
 
     private static AddAccountVM CreateSut(
-        Func<AddAccountVM.AddAccountInput, Task<AddAccountVM.AddAccountResult>>? saveDraftAsync = null)
+        Func<AddAccountInput, Task<AddAccountResult>>? saveDraftAsync = null)
     {
         return new AddAccountVM(
             mainViewModel: null!,
@@ -444,7 +444,7 @@ public sealed class AddAccountVMTests
         sut.MaximumSpendingText = 100m;
         sut.MinimumPaymentText = 10m;
         sut.MonthlyDueDateText = "15";
-        sut.DeductSources.Add(new AddAccountVM.DeductSourceOption(1, "Checking", AccountType.Checking));
+        sut.DeductSources.Add(new AddAccountDeductSourceOption(1, "Checking", AccountType.Checking));
         sut.SelectedDeductSource = 1;
     }
 }
