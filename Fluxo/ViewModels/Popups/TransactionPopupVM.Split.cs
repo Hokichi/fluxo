@@ -21,7 +21,7 @@ public partial class TransactionPopupVM
     public bool IsHistoryPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.History;
     public bool IsPinnedPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.Pinned;
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
-    public string ReturnToSplitRootText => $"Return to {NameText}";
+    public bool ShowInvalidSplitPlaceholder => _popupPurpose == TransactionPopupPurpose.AddNewTransaction && !IsCurrentInputValid();
     public decimal SplitAmount => SplitTransactions.Sum(child => child.Amount);
     public decimal SplitAmountRemaining => AmountText;
     public bool HasSplitAmountOverflow => GetSplitParentAmount(null) < SplitTransactions.Sum(child => child.Amount);
@@ -29,7 +29,7 @@ public partial class TransactionPopupVM
 
     internal void NotifySplitDisplayChanged()
     {
-        OnPropertyChanged(nameof(ReturnToSplitRootText));
+        OnPropertyChanged(nameof(ShowInvalidSplitPlaceholder));
         OnPropertyChanged(nameof(SplitAmountRemaining));
     }
 

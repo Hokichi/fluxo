@@ -135,6 +135,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         ErrorsChanged += (_, e) =>
         {
             OnPropertyChanged(nameof(CanSave));
+            NotifyTransactionWarningsChanged();
 
             if (e.PropertyName == nameof(NameText))
                 OnPropertyChanged(nameof(NameValidationHint));
@@ -205,6 +206,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
     public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
     public IReadOnlyList<TransactionWarning> TransactionWarnings => BuildTransactionWarnings();
+    public int TransactionFeedbackCount => TransactionWarnings.Count;
+    public bool HasTransactionWarnings => TransactionFeedbackCount > 0;
 
     public IReadOnlyList<RecurringPeriod> RecurringPeriods { get; } =
     [
@@ -2153,7 +2156,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CategoryToBe));
         OnPropertyChanged(nameof(AccountCurrent));
         OnPropertyChanged(nameof(AccountToBe));
-        OnPropertyChanged(nameof(TransactionWarnings));
+        NotifyTransactionWarningsChanged();
         OnPropertyChanged(nameof(IsNeedsCategory));
         OnPropertyChanged(nameof(IsWantsCategory));
         OnPropertyChanged(nameof(IsInvestCategory));
@@ -2171,13 +2174,51 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         catch { return 0m; }
     }
 
-    private IReadOnlyList<TransactionWarning> BuildTransactionWarnings() => GetErrors()
-        .OfType<ValidationResult>()
-        .Select(result => result.ErrorMessage)
-        .Where(message => !string.IsNullOrWhiteSpace(message))
-        .Distinct(StringComparer.Ordinal)
-        .Select(message => new TransactionWarning(message!, false))
-        .ToArray();
+    private IReadOnlyList<TransactionWarning> BuildTransactionWarnings()
+    {
+        var context = CreateValidationContext();
+        var errors = new[]
+            {
+                ValidateNameText(NameText, context),
+                ValidateAmountText(AmountText, context),
+                ValidateSelectedAccount(SelectedAccount, context),
+                ValidateSelectedTag(SelectedTag, context),
+                ValidateSelectedGoal(SelectedGoal, context),
+                ValidateRecurringTimeText(RecurringTimeText, context)
+            }
+            .Append(IsRepayment && SelectedRepaymentAccount is null
+                ? new ValidationResult("Please choose a credit account.")
+                : ValidationResult.Success)
+            .Append(IsInstallments
+                ? ToInstallmentValidationResult()
+                : ValidationResult.Success)
+            .OfType<ValidationResult>()
+            .Select(result => result.ErrorMessage)
+            .Where(message => !string.IsNullOrWhiteSpace(message))
+            .Select(message => new TransactionWarning(message!, false));
+
+        return errors
+            .Append(string.IsNullOrWhiteSpace(AmountWarningHint)
+                ? null
+                : new TransactionWarning(AmountWarningHint, true))
+            .OfType<TransactionWarning>()
+            .DistinctBy(warning => warning.Message)
+            .ToArray();
+    }
+
+    private ValidationResult? ToInstallmentValidationResult()
+    {
+        var result = RecurringTransactionValidationHelper.ValidateInstallments(
+            SelectedRecurringPeriod, RecurringTimeText, InstallmentEndDate, StartDate);
+        return result.IsValid ? ValidationResult.Success : new ValidationResult(result.ErrorMessage);
+    }
+
+    private void NotifyTransactionWarningsChanged()
+    {
+        OnPropertyChanged(nameof(TransactionWarnings));
+        OnPropertyChanged(nameof(TransactionFeedbackCount));
+        OnPropertyChanged(nameof(HasTransactionWarnings));
+    }
 
     private void RefreshAmountWarning()
     {
@@ -2430,7 +2471,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(AmountValidationHint));
         OnPropertyChanged(nameof(AmountWarningHint));
         OnPropertyChanged(nameof(CanSave));
-        OnPropertyChanged(nameof(TransactionWarnings));
+        NotifyTransactionWarningsChanged();
         NotifyAmountPresentationChanged();
     }
 

@@ -34,21 +34,14 @@
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
 
-        <Style x:Key="FieldValidationHintStyle" TargetType="TextBlock">
-            <Setter Property="HorizontalAlignment" Value="Right" />
-            <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
-            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-        </Style>
-
-        <Style
-            x:Key="AmountFieldHintStyle"
-            BasedOn="{StaticResource FieldValidationHintStyle}"
-            TargetType="TextBlock">
+        <Style x:Key="TransactionWarningTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsAmountWarning, Mode=OneWay}" Value="True">
-                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                <DataTrigger Binding="{Binding IsWarning, Mode=OneWay}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -371,11 +364,9 @@
 
         <DataTemplate x:Key="TransactionWarningTemplate">
             <TextBlock
-                FontFamily="{StaticResource Medium}"
-                FontSize="12"
-                Foreground="{StaticResource Brush.Danger}"
+                Style="{StaticResource TransactionWarningTextStyle}"
                 Text="{Binding Message, Mode=OneWay}"
-                TextWrapping="Wrap" />
+                />
         </DataTemplate>
 
     </customControls:BasePopup.Resources>
@@ -549,7 +540,6 @@
                                     Margin="0"
                                     Style="{StaticResource SectionLabelStyle}"
                                     Text="Amount" />
-                                <TextBlock Style="{StaticResource AmountFieldHintStyle}" Text="{Binding AmountFieldHint, Mode=OneWay}" />
                             </Grid>
                             <customControls:MoneyTextBox
                                 x:Name="RepaymentAmountTextBox"
@@ -896,12 +886,6 @@
                                 </TextBlock>
                             </StackPanel>
 
-                            <ItemsControl
-                                Grid.Row="3"
-                                Grid.ColumnSpan="3"
-                                Margin="0,12,0,0"
-                                ItemTemplate="{StaticResource TransactionWarningTemplate}"
-                                ItemsSource="{Binding TransactionWarnings, Mode=OneWay}" />
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -927,10 +911,6 @@
                                     Margin="0"
                                     Style="{StaticResource SectionLabelStyle}"
                                     Text="Name" />
-                                <TextBlock
-                                    Grid.Column="0"
-                                    Style="{StaticResource FieldValidationHintStyle}"
-                                    Text="{Binding NameValidationHint, Mode=OneWay}" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -1024,7 +1004,6 @@
                                     Margin="0"
                                     Style="{StaticResource SectionLabelStyle}"
                                     Text="Amount" />
-                                <TextBlock Style="{StaticResource AmountFieldHintStyle}" Text="{Binding AmountFieldHint, Mode=OneWay}" />
                             </Grid>
                             <customControls:MoneyTextBox
                                 x:Name="IncomeAmountTextBox"
@@ -1105,7 +1084,6 @@
                                 Margin="0"
                                 Style="{StaticResource SectionLabelStyle}"
                                 Text="Amount" />
-                            <TextBlock Style="{StaticResource AmountFieldHintStyle}" Text="{Binding AmountFieldHint, Mode=OneWay}" />
                         </Grid>
                         <customControls:MoneyTextBox
                             x:Name="GoalAmountTextBox"
@@ -1277,6 +1255,41 @@
                             TextChanged="OnNoteTextChanged"
                             VerticalScrollBarVisibility="Auto" />
                     </Border>
+                    <Border
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Left"
+                        Padding="8,4"
+                        Background="{StaticResource Brush.Background.Elevated}"
+                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        BorderThickness="1"
+                        CornerRadius="0,0,8,8"
+                        ToolTipService.ShowDuration="60000"
+                        Visibility="{Binding HasTransactionWarnings, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <Border.ToolTip>
+                            <ToolTip DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}, Mode=OneWay}">
+                                <Border Padding="10" Background="{StaticResource Brush.Background.Elevated}" CornerRadius="8">
+                                    <ItemsControl
+                                        ItemTemplate="{StaticResource TransactionWarningTemplate}"
+                                        ItemsSource="{Binding TransactionWarnings, Mode=OneWay}" />
+                                </Border>
+                            </ToolTip>
+                        </Border.ToolTip>
+                        <StackPanel Orientation="Horizontal">
+                            <components:Icon
+                                Width="12"
+                                Height="12"
+                                Margin="0,0,6,0"
+                                VerticalAlignment="Center"
+                                Path="{StaticResource ExclamationTriangle}"
+                                Color="{StaticResource Brush.Danger}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontFamily="{StaticResource Medium}"
+                                FontSize="11"
+                                Foreground="{StaticResource Brush.Danger}"
+                                Text="{Binding TransactionFeedbackCount, Mode=OneWay}" />
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
@@ -1340,66 +1353,102 @@
                 </customControls:FadingScrollViewer>
 
                 <Grid Grid.Row="1" Visibility="{Binding ShowSplitPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <customControls:BalloonButton
-                        HorizontalAlignment="Left"
-                        ButtonIcon="{StaticResource AngleLeft}"
-                        ButtonText="{Binding ReturnToSplitRootText, Mode=OneWay}"
-                        CornerRadius="8"
-                        ShouldShowText="True" />
-                    <Grid Grid.Row="1" Margin="0,12,0,8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <ProgressBar
-                            Grid.Row="0"
-                            Height="12"
-                            Maximum="{Binding AmountText, Mode=OneWay}"
-                            Value="0"
-                            Style="{StaticResource RoundedProgressBarStyle}" />
-                        <Grid Grid.Row="1" Margin="0,8,0,0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Medium}"
+                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Text="Transaction is invalid."
+                        Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <StackPanel Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+                        <Border Cursor="Hand">
+                            <Border.Style>
+                                <Style BasedOn="{StaticResource CardBorderStyle}" TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        FontFamily="{StaticResource Bold}"
+                                        Foreground="{StaticResource Brush.Text.Primary}"
+                                        Text="{Binding NameText, Mode=OneWay}"
+                                        TextTrimming="CharacterEllipsis" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Margin="12,0,0,0"
+                                        FontFamily="{StaticResource Bold}"
+                                        Foreground="{StaticResource Brush.Text.Primary}"
+                                        Text="{Binding AmountText, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                </Grid>
+                                <ProgressBar
+                                    Grid.Row="1"
+                                    Height="12"
+                                    Margin="0,12,0,0"
+                                    Maximum="{Binding AmountText, Mode=OneWay}"
+                                    Value="0"
+                                    Style="{StaticResource RoundedProgressBarStyle}" />
+                                <Grid Grid.Row="2" Margin="0,8,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontFamily="{StaticResource Medium}"
+                                        Foreground="{StaticResource Brush.Text.Primary}">
+                                        <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                        <Run Text=" left of " />
+                                        <Run Text="{Binding AmountText, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                    </TextBlock>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <customControls:BalloonButton
+                                            Margin="0,0,8,0"
+                                            ButtonIcon="{StaticResource CallSplit}"
+                                            ButtonText="Split Equally"
+                                            CornerRadius="8"
+                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            ShouldShowText="True" />
+                                        <customControls:BalloonButton
+                                            ButtonIcon="{StaticResource RegularUndo}"
+                                            ButtonText="Reset"
+                                            CornerRadius="8"
+                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            ShouldShowText="True" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        <Grid Margin="0,8,0,0">
+                            <Button
+                                Width="Auto"
+                                HorizontalAlignment="Stretch"
+                                Content="Add a sub-transaction"
+                                Style="{StaticResource DashedButtonStyle}"
+                                Visibility="{Binding IsViewOnly, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <TextBlock
-                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Primary}">
-                                <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                <Run Text="left of" />
-                                <Run Text="{Binding AmountText, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                            </TextBlock>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <customControls:BalloonButton
-                                    Margin="0,0,8,0"
-                                    ButtonIcon="{StaticResource CallSplit}"
-                                    ButtonText="Split Equally"
-                                    CornerRadius="8"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                    ShouldShowText="True" />
-                                <customControls:BalloonButton
-                                    ButtonIcon="{StaticResource RegularUndo}"
-                                    ButtonText="Reset"
-                                    CornerRadius="8"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                    ShouldShowText="True" />
-                            </StackPanel>
+                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Text="No sub-transaction found"
+                                Visibility="{Binding IsViewOnly, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                         </Grid>
-                    </Grid>
-                    <Button
-                        Grid.Row="2"
-                        Width="Auto"
-                        HorizontalAlignment="Stretch"
-                        Content="Add a sub-transaction"
-                        Style="{StaticResource DashedButtonStyle}" />
+                    </StackPanel>
                 </Grid>
             </Grid>
 

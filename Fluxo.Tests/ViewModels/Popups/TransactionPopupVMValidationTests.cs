@@ -758,6 +758,47 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
+    public void TransactionWarnings_ContainsCurrentErrorAndDailyAllowanceWarning()
+    {
+        RunInSta(() =>
+        {
+            var selectedDate = new DateTime(2026, 7, 1);
+            var included = CreateTransaction("Lunch", 8m, sourceId: 1);
+            included.OccurredOn = selectedDate;
+            var allocation = new BudgetAllocation
+            {
+                AllocationLimit = 70m,
+                AllocationPeriod = AllocationPeriod.Weekly
+            };
+            var vm = CreateVm(
+                TransactionKind.Expense,
+                CreateCheckingSource(balance: 500m),
+                isRecurring: false,
+                amount: 3m,
+                appData: CreateAppData(allocation, [included]));
+            vm.SelectedDate = selectedDate;
+            vm.NameText = " ";
+
+            Assert.Contains(vm.TransactionWarnings, warning => warning.Message == "Please enter a name." && !warning.IsWarning);
+            Assert.Contains(vm.TransactionWarnings, warning => warning.Message == "Over Daily Allowance" && warning.IsWarning);
+            Assert.Equal(2, vm.TransactionFeedbackCount);
+        });
+    }
+
+    [Fact]
+    public void ShowInvalidSplitPlaceholder_IsAddModeOnly()
+    {
+        RunInSta(() =>
+        {
+            var vm = TransactionPopupVMFactory.Create(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]),
+                CreateAppData());
+
+            Assert.True(vm.ShowInvalidSplitPlaceholder);
+        });
+    }
+
+    [Fact]
     public void AmountWarning_ExcludedCandidate_HasNoWarning()
     {
         RunInSta(() =>
