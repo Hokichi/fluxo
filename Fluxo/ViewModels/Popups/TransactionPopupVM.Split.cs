@@ -1,9 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Fluxo.Core.Entities;
-using Fluxo.Core.Enums;
-using Fluxo.Helpers.Transaction;
 using Fluxo.ViewModels.Entities;
 
 namespace Fluxo.ViewModels.Popups;
@@ -17,148 +14,24 @@ public enum TransactionPopupSidePanel
 
 public partial class TransactionPopupVM
 {
-    private bool _isLoadingSplitTransaction;
-    [ObservableProperty] private TransactionVM? _selectedSplitTransaction;
     [ObservableProperty] private TransactionPopupSidePanel _selectedSidePanel = TransactionPopupSidePanel.History;
 
     public ObservableCollection<TransactionVM> SplitTransactions { get; } = [];
-    public bool IsSplitRootSelected => SelectedSplitTransaction is null;
-    public bool CanReturnToSplitRoot => !IsSplitRootSelected;
-    public bool CanSelectSplitAccount => SelectedSplitTransaction is null;
-    public bool IsSelectedSplitLeaf => SelectedSplitTransaction?.IsLeaf ?? SplitTransactions.Count == 0;
-    public bool CanAddSplitAtRoot => CanAddSplit(null);
     public bool ShowSidePanelToggle => _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.EditTransaction;
     public bool IsHistoryPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.History;
     public bool IsPinnedPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.Pinned;
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
-    public string ReturnToSplitRootText => $"Return to {PendingTransaction?.Name ?? NameText}";
+    public string ReturnToSplitRootText => $"Return to {NameText}";
     public decimal SplitAmount => SplitTransactions.Sum(child => child.Amount);
-    public decimal SplitAmountRemaining => GetSplitParentAmount(null) - SplitAmount;
+    public decimal SplitAmountRemaining => AmountText;
     public bool HasSplitAmountOverflow => GetSplitParentAmount(null) < SplitTransactions.Sum(child => child.Amount);
     public bool HasSplitTransactions => SplitTransactions.Count > 0;
 
-    private IList<TransactionVM> GetSplitChildren(TransactionVM? parent) =>
-        parent?.ChildTransactions ?? SplitTransactions;
-
-    [RelayCommand(CanExecute = nameof(CanReturnToSplitRoot))]
-    public void ReturnToSplitRoot() => SelectSplitTransaction(null);
-
-    [RelayCommand(CanExecute = nameof(CanAddSplit))]
-    public void AddSplit(TransactionVM? parent)
+    internal void NotifySplitDisplayChanged()
     {
-        EnsureTransactionState();
-        if (!CanAddSplit(parent))
-            return;
-
-        SyncCurrentSplitTransaction();
-        var source = parent ?? PendingTransaction;
-        var child = new TransactionVM
-        {
-            Type = PendingTransaction.Type,
-            SourceAccountId = PendingTransaction.SourceAccountId,
-            Account = PendingTransaction.Account,
-            Name = "New Sub-transaction",
-            OccurredOn = PendingTransaction.OccurredOn,
-            ExpenseCategory = source.ExpenseCategory,
-            Tag = source.Tag,
-            IsIoU = source.IsIoU,
-            ShouldAffectBalance = source.ShouldAffectBalance,
-            IsExcludedFromBudget = source.IsExcludedFromBudget
-        };
-
-        if (parent is null)
-        {
-            PendingTransaction.ExpenseCategory = null;
-            PendingTransaction.Tag = null;
-            SplitTransactions.Add(child);
-        }
-        else
-        {
-            parent.ExpenseCategory = null;
-            parent.Tag = null;
-            parent.ChildTransactions.Add(child);
-        }
-
-        SelectedSplitTransaction = child;
-        LoadSplitTransactionIntoForm(child);
-        NotifySplitStateChanged();
+        OnPropertyChanged(nameof(ReturnToSplitRootText));
+        OnPropertyChanged(nameof(SplitAmountRemaining));
     }
-
-    public bool CanAddSplit(TransactionVM? parent)
-    {
-        if (parent is not null && !SplitTransactions.Contains(parent))
-            return false;
-        if (parent is null && !IsRootSplitInputValid())
-            return false;
-
-        var amount = GetSplitParentAmount(parent);
-        var childTotal = parent?.ChildAmountTotal ?? SplitTransactions.Sum(child => child.Amount);
-        var selectedChild = SelectedSplitTransaction;
-        return !IsSaving &&
-               (selectedChild is null || !GetSplitChildren(parent).Contains(selectedChild) || IsCurrentInputValid(validateTag: false)) &&
-               childTotal <= amount;
-    }
-
-    private bool IsRootSplitInputValid()
-    {
-        if (!_isTransactionStateInitialized)
-            return IsCurrentInputValid(validateTag: false);
-
-        return TransactionValidationHelper.ValidateName(PendingTransaction.Name, PendingTransaction.GoalId is not null).IsValid &&
-               TransactionValidationHelper.ValidateAmount(
-                   PendingTransaction.Amount,
-                   isRepaymentAmountInvalid: false,
-                   isExpense: PendingTransaction.Type == TransactionType.Expense,
-                   isGoal: PendingTransaction.GoalId is not null,
-                   source: null).IsValid &&
-               PendingTransaction.SourceAccountId > 0;
-    }
-
-    public bool CanSplitEqually(TransactionVM? parent) => GetSplitChildren(parent).Count > 1;
-
-    [RelayCommand(CanExecute = nameof(CanSplitEqually))]
-    public void SplitEqually(TransactionVM? parent = null)
-    {
-        var children = GetSplitChildren(parent);
-        if (children.Count <= 1)
-            return;
-
-        var amount = GetSplitParentAmount(parent);
-        var share = decimal.Round(amount / children.Count, 0, MidpointRounding.AwayFromZero);
-        for (var index = 0; index < children.Count - 1; index++)
-            children[index].Amount = share;
-        children[^1].Amount = amount - share * (children.Count - 1);
-
-        NotifySplitStateChanged();
-    }
-
-    public bool CanResetSplit(TransactionVM? parent) => GetSplitChildren(parent).Count > 0;
-
-    [RelayCommand(CanExecute = nameof(CanResetSplit))]
-    public void ResetSplit(TransactionVM? parent = null)
-    {
-        foreach (var child in GetSplitChildren(parent))
-            child.Amount = 0m;
-
-        NotifySplitStateChanged();
-    }
-
-    public bool SelectSplitTransaction(TransactionVM? transaction)
-    {
-        if (ReferenceEquals(SelectedSplitTransaction, transaction))
-            return false;
-
-        EnsureTransactionState();
-        SyncCurrentSplitTransaction();
-        SelectedSplitTransaction = transaction;
-
-        var source = transaction ?? PendingTransaction;
-        LoadSplitTransactionIntoForm(source);
-        NotifySplitStateChanged();
-        return true;
-    }
-
-    partial void OnSelectedSplitTransactionChanged(TransactionVM? value) => NotifySplitStateChanged();
 
     partial void OnSelectedSidePanelChanged(TransactionPopupSidePanel value)
     {
@@ -166,50 +39,6 @@ public partial class TransactionPopupVM
         OnPropertyChanged(nameof(ShowPinnedPanel));
         OnPropertyChanged(nameof(ShowSplitPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
-    }
-
-    private void SyncCurrentSplitTransaction()
-    {
-        if (SelectedSplitTransaction is null)
-        {
-            SyncPendingTransactionFromForm();
-            return;
-        }
-
-        var target = SelectedSplitTransaction;
-        target.Name = NameText;
-        target.Amount = AmountText;
-        target.Notes = NoteText;
-        target.OccurredOn = SelectedDate.Date;
-        target.ExpenseCategory = SelectedExpenseCategory;
-        target.Tag = SelectedTag;
-        target.IsIoU = IsIoU;
-        target.ShouldAffectBalance = ShouldAffectBalance;
-        target.IsExcludedFromBudget = IsExcludedFromBudget;
-    }
-
-    private void LoadSplitTransactionIntoForm(TransactionVM transaction)
-    {
-        _isLoadingSplitTransaction = true;
-        try
-        {
-            IsExpense = transaction.Type != TransactionType.Income;
-            IsGoal = false;
-            IsRepayment = false;
-            NameText = transaction.Name;
-            AmountText = transaction.Amount;
-            NoteText = transaction.Notes;
-            SelectedDate = transaction.OccurredOn == default ? DateTime.Today : transaction.OccurredOn.Date;
-            SelectedExpenseCategory = transaction.ExpenseCategory ?? ExpenseCategory.Needs;
-            SelectedTag = transaction.Tag;
-            IsIoU = transaction.IsIoU;
-            ShouldAffectBalance = transaction.ShouldAffectBalance;
-            IsExcludedFromBudget = transaction.IsExcludedFromBudget;
-        }
-        finally
-        {
-            _isLoadingSplitTransaction = false;
-        }
     }
 
     private decimal GetSplitParentAmount(TransactionVM? parent) => parent?.Amount ?? PendingTransaction?.Amount ?? AmountText;
@@ -225,10 +54,7 @@ public partial class TransactionPopupVM
 
         SplitTransactions.Clear();
         if (!byParent.TryGetValue(parentTransactionId, out var children))
-        {
-            NotifySplitStateChanged();
             return;
-        }
 
         foreach (var child in children)
         {
@@ -242,7 +68,6 @@ public partial class TransactionPopupVM
             SplitTransactions.Add(childViewModel);
         }
 
-        NotifySplitStateChanged();
     }
 
     public async Task<TransactionPopupSubmissionResult> PersistSplitTreeAsync(int rootTransactionId)
@@ -293,28 +118,6 @@ public partial class TransactionPopupVM
     }
 
     private readonly HashSet<int> _removedSplitTransactionIds = [];
-
-    [RelayCommand]
-    public void DeleteSplit(TransactionVM transaction)
-    {
-        if (transaction.Id > 0)
-            _removedSplitTransactionIds.Add(transaction.Id);
-
-        foreach (var parent in SplitTransactions)
-        {
-            if (parent.ChildTransactions.Remove(transaction))
-            {
-                SelectSplitTransaction(parent);
-                NotifySplitStateChanged();
-                return;
-            }
-        }
-
-        if (SplitTransactions.Remove(transaction))
-            ReturnToSplitRoot();
-
-        NotifySplitStateChanged();
-    }
 
     private async Task<Transaction?> PersistSplitNodeAsync(
         TransactionVM node,
@@ -395,31 +198,4 @@ public partial class TransactionPopupVM
         IsExcludedFromBudget = transaction.IsExcludedFromBudget
     };
 
-    private void NotifySplitStateChanged()
-    {
-        OnPropertyChanged(nameof(IsSplitRootSelected));
-        OnPropertyChanged(nameof(CanReturnToSplitRoot));
-        OnPropertyChanged(nameof(CanSelectSplitAccount));
-        OnPropertyChanged(nameof(IsSelectedSplitLeaf));
-        OnPropertyChanged(nameof(CanEditCategory));
-        OnPropertyChanged(nameof(CanEditTags));
-        OnPropertyChanged(nameof(CanAddSplitAtRoot));
-        OnPropertyChanged(nameof(HasSplitAmountOverflow));
-        OnPropertyChanged(nameof(HasSplitTransactions));
-        OnPropertyChanged(nameof(SplitAmount));
-        OnPropertyChanged(nameof(SplitAmountRemaining));
-        OnPropertyChanged(nameof(CanSave));
-        OnPropertyChanged(nameof(ShowSidePanelToggle));
-        OnPropertyChanged(nameof(IsHistoryPanelSelected));
-        OnPropertyChanged(nameof(IsPinnedPanelSelected));
-        OnPropertyChanged(nameof(IsSplitPanelSelected));
-        OnPropertyChanged(nameof(ReturnToSplitRootText));
-        OnPropertyChanged(nameof(ShowCategoryImpact));
-        OnPropertyChanged(nameof(ShowAccountImpact));
-        OnPropertyChanged(nameof(CanAddSplit));
-        ReturnToSplitRootCommand.NotifyCanExecuteChanged();
-        AddSplitCommand.NotifyCanExecuteChanged();
-        SplitEquallyCommand.NotifyCanExecuteChanged();
-        ResetSplitCommand.NotifyCanExecuteChanged();
-    }
 }

@@ -830,7 +830,6 @@
                                 Grid.Row="1"
                                 Grid.Column="2"
                                 DisplayMemberPath="Name"
-                                IsEnabled="{Binding CanSelectSplitAccount, Mode=OneWay}"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
@@ -1059,7 +1058,6 @@
                             <ComboBox
                                 x:Name="IncomeAccountComboBox"
                                 DisplayMemberPath="Name"
-                                IsEnabled="{Binding CanSelectSplitAccount, Mode=OneWay}"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
@@ -1158,7 +1156,6 @@
                             <ComboBox
                                 x:Name="GoalAccountComboBox"
                                 DisplayMemberPath="Name"
-                                IsEnabled="{Binding CanSelectSplitAccount, Mode=OneWay}"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
