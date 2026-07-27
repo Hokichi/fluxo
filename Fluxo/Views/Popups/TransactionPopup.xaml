@@ -378,257 +378,6 @@
                 TextWrapping="Wrap" />
         </DataTemplate>
 
-        <Style x:Key="SplitNodeCardStyle" TargetType="Border">
-            <Setter Property="Padding" Value="10" />
-            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style
-            x:Key="SplitChildProgressBarStyle"
-            BasedOn="{StaticResource RoundedProgressBarStyle}"
-            TargetType="ProgressBar">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
-                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="SplitTreeStyle" TargetType="TreeView">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-        </Style>
-
-        <Style x:Key="SplitTreeViewItemStyle" TargetType="TreeViewItem">
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnSplitNodePreviewMouseLeftButtonDown" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TreeViewItem">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="34" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <Grid Grid.ColumnSpan="2" Margin="{TemplateBinding Padding}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="34" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Border
-                                        x:Name="SplitNodeUpperRail"
-                                        Grid.Row="0"
-                                        Width="1.5"
-                                        HorizontalAlignment="Center"
-                                        Background="{DynamicResource Brush.Background.Hover}" />
-                                    <customControls:BalloonButton
-                                        x:Name="SplitNodeRemoveButton"
-                                        Grid.Row="1"
-                                        Margin="0,2,0,2"
-                                        HorizontalAlignment="Center"
-                                        Panel.ZIndex="1"
-                                        ButtonIcon="{StaticResource Delete}"
-                                        ButtonSize="26"
-                                        Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
-                                        CommandParameter="{Binding}"
-                                        CornerRadius="8"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
-                                        IconSize="10"
-                                        ToolTip="Remove split" />
-                                    <Border
-                                        x:Name="SplitNodeLowerRail"
-                                        Grid.Row="2"
-                                        Width="1.5"
-                                        HorizontalAlignment="Center"
-                                        Background="{DynamicResource Brush.Background.Hover}" />
-                                </Grid>
-                                <ContentPresenter
-                                    x:Name="SplitNodeHeader"
-                                    Grid.Column="1"
-                                    HorizontalAlignment="Stretch"
-                                    ContentSource="Header" />
-                            </Grid>
-
-                            <Border
-                                x:Name="OuterSubtreeRail"
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Width="1.5"
-                                HorizontalAlignment="Center"
-                                Background="{DynamicResource Brush.Background.Hover}"
-                                Visibility="Collapsed" />
-
-                            <Grid
-                                x:Name="SplitExpandedGroup"
-                                Grid.Row="1"
-                                Grid.Column="1"
-                                Margin="0,0,0,12"
-                                Visibility="Collapsed">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="30" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="34" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Border
-                                    Grid.RowSpan="2"
-                                    Grid.Column="0"
-                                    Width="1.5"
-                                    HorizontalAlignment="Center"
-                                    Background="{DynamicResource Brush.Background.Hover}" />
-                                <Grid
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    Margin="0,6,0,6"
-                                    Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <ProgressBar
-                                        Height="12"
-                                        Maximum="{Binding Amount, Mode=OneWay}"
-                                        Style="{StaticResource SplitChildProgressBarStyle}"
-                                        Value="{Binding ChildAmountTotal, Mode=OneWay}" />
-                                    <Grid Grid.Row="1" Margin="0,8,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding ChildAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                            <TextBlock Text=" left of " />
-                                            <TextBlock Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <customControls:BalloonButton
-                                                Margin="0,0,8,0"
-                                                ButtonIcon="{StaticResource CallSplit}"
-                                                ButtonText="Split Equally"
-                                                Command="{Binding DataContext.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
-                                                CommandParameter="{Binding}"
-                                                CornerRadius="8"
-                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}" />
-                                            <customControls:BalloonButton
-                                                ButtonIcon="{StaticResource RegularUndo}"
-                                                ButtonText="Reset"
-                                                Command="{Binding DataContext.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
-                                                CommandParameter="{Binding}"
-                                                CornerRadius="8"
-                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}" />
-                                        </StackPanel>
-                                    </Grid>
-                                </Grid>
-                                <ItemsPresenter Grid.Row="1" Grid.ColumnSpan="2" />
-                                <Border
-                                    x:Name="InnerSplitAddUpperRail"
-                                    Grid.Row="2"
-                                    Grid.Column="0"
-                                    Width="1.5"
-                                    Margin="0,0,0,15"
-                                    HorizontalAlignment="Center"
-                                    Background="{DynamicResource Brush.Background.Hover}" />
-                                <customControls:BalloonButton
-                                    x:Name="InnerSplitAddButton"
-                                    Grid.Row="2"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Center"
-                                    ButtonIcon="{StaticResource PlusSolid}"
-                                    Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=customControls:BasePopup}, Mode=OneWay}"
-                                    CommandParameter="{Binding}"
-                                    CornerRadius="8"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
-                                    ToolTip="Add child split" />
-                            </Grid>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Tag" Value="Root" />
-                                    <Condition Property="IsExpanded" Value="True" />
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="OuterSubtreeRail" Property="Visibility" Value="Visible" />
-                                <Setter TargetName="SplitExpandedGroup" Property="Visibility" Value="Visible" />
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style
-            x:Key="SplitRootTreeViewItemStyle"
-            BasedOn="{StaticResource SplitTreeViewItemStyle}"
-            TargetType="TreeViewItem">
-            <Setter Property="Tag" Value="Root" />
-            <Setter Property="IsExpanded" Value="True" />
-        </Style>
-
-        <Style
-            x:Key="SplitGrandchildTreeViewItemStyle"
-            BasedOn="{StaticResource SplitTreeViewItemStyle}"
-            TargetType="TreeViewItem">
-            <Setter Property="Tag" Value="Grandchild" />
-            <Setter Property="IsExpanded" Value="False" />
-            <Setter Property="Padding" Value="0,6,0,0" />
-        </Style>
-
-        <HierarchicalDataTemplate
-            x:Key="SplitTreeNodeTemplate"
-            ItemContainerStyle="{StaticResource SplitGrandchildTreeViewItemStyle}"
-            ItemsSource="{Binding ChildTransactions, Mode=OneWay}">
-            <Border
-                x:Name="SplitNodeCard"
-                MouseLeftButtonUp="OnSplitNodeClick"
-                Style="{StaticResource SplitNodeCardStyle}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock
-                        FontFamily="{DynamicResource Bold}"
-                        Text="{Binding Name, Mode=OneWay}"
-                        TextTrimming="CharacterEllipsis" />
-                    <TextBlock
-                        Grid.Column="1"
-                        Margin="8,0,0,0"
-                        FontFamily="{DynamicResource Bold}"
-                        Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                </Grid>
-            </Border>
-        </HierarchicalDataTemplate>
-
     </customControls:BasePopup.Resources>
 
     <Border Padding="20,4,20,20">
@@ -1603,9 +1352,7 @@
                         HorizontalAlignment="Left"
                         ButtonIcon="{StaticResource AngleLeft}"
                         ButtonText="{Binding ReturnToSplitRootText, Mode=OneWay}"
-                        Command="{Binding ReturnToSplitRootCommand, Mode=OneWay}"
                         CornerRadius="8"
-                        IsEnabled="{Binding CanReturnToSplitRoot, Mode=OneWay}"
                         ShouldShowText="True" />
                     <Grid Grid.Row="1" Margin="0,12,0,8">
                         <Grid.RowDefinitions>
@@ -1615,18 +1362,9 @@
                         <ProgressBar
                             Grid.Row="0"
                             Height="12"
-                            Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}"
-                            Value="{Binding SplitAmount, Mode=OneWay}">
-                            <ProgressBar.Style>
-                                <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
-                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ProgressBar.Style>
-                        </ProgressBar>
+                            Maximum="{Binding AmountText, Mode=OneWay}"
+                            Value="0"
+                            Style="{StaticResource RoundedProgressBarStyle}" />
                         <Grid Grid.Row="1" Margin="0,8,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -1638,14 +1376,13 @@
                                 Foreground="{StaticResource Brush.Text.Primary}">
                                 <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                                 <Run Text="left of" />
-                                <Run Text="{Binding PendingTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                <Run Text="{Binding AmountText, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                             </TextBlock>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <customControls:BalloonButton
                                     Margin="0,0,8,0"
                                     ButtonIcon="{StaticResource CallSplit}"
                                     ButtonText="Split Equally"
-                                    Command="{Binding SplitEquallyCommand, Mode=OneWay}"
                                     CornerRadius="8"
                                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1653,7 +1390,6 @@
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource RegularUndo}"
                                     ButtonText="Reset"
-                                    Command="{Binding ResetSplitCommand, Mode=OneWay}"
                                     CornerRadius="8"
                                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1661,57 +1397,12 @@
                             </StackPanel>
                         </Grid>
                     </Grid>
-                    <customControls:FadingScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="30" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="34" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <TreeView
-                                x:Name="SplitTree"
-                                Grid.ColumnSpan="2"
-                                ItemContainerStyle="{StaticResource SplitRootTreeViewItemStyle}"
-                                ItemTemplate="{StaticResource SplitTreeNodeTemplate}"
-                                ItemsSource="{Binding SplitTransactions, Mode=OneWay}"
-                                Style="{StaticResource SplitTreeStyle}"
-                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <Border
-                                x:Name="OuterSplitAddUpperRail"
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                Width="1.5"
-                                Margin="0,0,0,15"
-                                HorizontalAlignment="Center"
-                                Background="{DynamicResource Brush.Background.Hover}"
-                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <customControls:BalloonButton
-                                x:Name="OuterSplitAddButton"
-                                Grid.Row="1"
-                                Grid.Column="0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                ButtonIcon="{StaticResource PlusSolid}"
-                                Command="{Binding AddSplitCommand, Mode=OneWay}"
-                                CornerRadius="8"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
-                                ToolTip="Add split"
-                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <Button
-                                Grid.RowSpan="2"
-                                Grid.ColumnSpan="2"
-                                Width="Auto"
-                                HorizontalAlignment="Stretch"
-                                Command="{Binding AddSplitCommand, Mode=OneWay}"
-                                Content="Add a sub-transaction"
-                                Style="{StaticResource DashedButtonStyle}"
-                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
-                        </Grid>
-                    </customControls:FadingScrollViewer>
+                    <Button
+                        Grid.Row="2"
+                        Width="Auto"
+                        HorizontalAlignment="Stretch"
+                        Content="Add a sub-transaction"
+                        Style="{StaticResource DashedButtonStyle}" />
                 </Grid>
             </Grid>
 

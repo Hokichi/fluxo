@@ -480,50 +480,6 @@ public partial class TransactionPopup : BasePopup
         e.Handled = true;
     }
 
-    private void OnSplitNodeClick(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is not FrameworkElement { DataContext: TransactionVM transaction })
-            return;
-
-        if (_viewModel.SelectSplitTransaction(transaction))
-            SyncNoteDocumentFromViewModel();
-        e.Handled = true;
-    }
-
-    private void OnSplitNodePreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (e.ClickCount != 2 ||
-            sender is not TreeViewItem item ||
-            e.OriginalSource is not DependencyObject source)
-            return;
-
-        var isCardClick = false;
-        for (var current = source; current is not null && current != item;
-             current = DependencyObjectTree.GetParent(current))
-        {
-            if (current is FrameworkElement { Name: "SplitNodeCard" })
-            {
-                isCardClick = true;
-                break;
-            }
-        }
-
-        if (!isCardClick)
-            return;
-
-        TryToggleSplitRoot(item);
-        e.Handled = true;
-    }
-
-    internal static bool TryToggleSplitRoot(TreeViewItem item)
-    {
-        if (ItemsControl.ItemsControlFromItemContainer(item) is not TreeView)
-            return false;
-
-        item.IsExpanded = !item.IsExpanded;
-        return true;
-    }
-
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(TransactionPopupVM.HasTransactionNameSuggestions) or
