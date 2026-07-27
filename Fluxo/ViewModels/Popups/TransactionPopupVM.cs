@@ -799,6 +799,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         RefreshActiveValidation(nameof(AmountText));
         RefreshAmountWarning();
+        _ = RefreshExpenseCategoryAvailabilityAsync();
         NotifyFormStateChanged();
     }
 
@@ -1446,6 +1447,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 return false;
 
             var transactions = (await _appData.GetTransactionsAsync(cancellationToken))
+                .Where(transaction => !transaction.IsForDeletion && !IsLoadedTransaction(transaction))
                 .Where(transaction => transaction.OccurredOn.Date == input.Date.Date);
 
             if (!input.IsExpense && !input.IsGoal)
@@ -1694,7 +1696,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 return;
             }
 
-            var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, DateTime.Today);
+            var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate);
             foreach (var option in ExpenseCategories)
                 option.IsEnabled = TransactionCalculationHelper.GetCategoryState(snapshot, option.Value).Remaining > 0m;
         }
@@ -1921,9 +1923,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         bool candidateIsGoalUpdate,
         IReadOnlySet<int> goalUpdateTagIds)
     {
-        if (log.IsForDeletion ||
-            log.SourceAccountId != input.AccountId ||
-            log.Type != TransactionType.Expense ||
+        if (log.SourceAccountId != input.AccountId ||
             !IsSameTransactionName(log.Name, candidateName) ||
             !IsSimilarAmount(log.Amount, input.Amount))
         {
@@ -1938,7 +1938,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         QuickTransactionInput input,
         string candidateName)
     {
-        return log.Type == TransactionType.Income && log.SourceAccountId == input.AccountId &&
+        return log.SourceAccountId == input.AccountId &&
                IsSameTransactionName(log.Name, candidateName) &&
                IsSimilarAmount(log.Amount, input.Amount);
     }
@@ -2068,6 +2068,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         string query)
     {
         return incomeLogs
+            .Where(log => !log.IsForDeletion)
             .Where(log => log.Type == TransactionType.Income && !string.IsNullOrWhiteSpace(log.Name))
             .Where(log => log.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(log => log.OccurredOn)
@@ -2251,7 +2252,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private string GetDailyAllowanceWarning()
     {
-        if (!IsExpense || IsRecurring || IsExcludedFromBudget || AmountText <= 0m)
+        if (!IsExpense || IsRecurringTransactionMode || IsExcludedFromBudget || AmountText <= 0m)
             return string.Empty;
 
         try
@@ -2259,6 +2260,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             var allocation = _appData.GetBudgetAllocationAsync().GetAwaiter().GetResult();
             var spent = BudgetEffectiveTransactionFilter
                 .Select(_appData.GetTransactionsAsync().GetAwaiter().GetResult())
+                .Where(transaction => !IsLoadedTransaction(transaction))
                 .Where(transaction => transaction.Type == TransactionType.Expense &&
                                       transaction.OccurredOn.Date == SelectedDate.Date)
                 .Sum(transaction => transaction.Amount);
@@ -2274,6 +2276,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             return string.Empty;
         }
     }
+
+    private bool IsLoadedTransaction(Transaction transaction) =>
+        _isTransactionStateInitialized &&
+        LoadedTransaction.Id > 0 &&
+        transaction.Id == LoadedTransaction.Id;
 
     private void EnsureTransactionState()
     {
@@ -2605,7 +2612,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         validationMessage = string.Empty;
 
-        if (!IsExpense || IsRecurring || IsExcludedFromBudget || SelectedTag is not { SpendingLimit: > 0m } tag)
+        if (!IsExpense || IsRecurringTransactionMode || IsExcludedFromBudget ||
+            SelectedTag is not { SpendingLimit: > 0m } tag)
             return true;
 
         try
@@ -2617,12 +2625,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 allocation.PeriodStart);
             var currentTagSpending = _appData.GetTransactionsAsync().GetAwaiter().GetResult()
                 .Where(log => log.Type == TransactionType.Expense && !log.IsForDeletion && !log.IsExcludedFromBudget)
+                .Where(log => !IsLoadedTransaction(log))
                 .Where(log => log.OccurredOn.Date >= currentPeriod.Start && log.OccurredOn.Date <= currentPeriod.End)
                 .Where(log => log.TagId == tag.Id || log.Tag?.Id == tag.Id)
                 .Sum(log => log.Amount);
 
             var result = TransactionValidationHelper.ValidateTagSpending(
-                IsExpense, IsRecurring, IsExcludedFromBudget, tag, currentTagSpending, amount);
+                IsExpense, IsRecurringTransactionMode, IsExcludedFromBudget, tag, currentTagSpending, amount);
             validationMessage = result.ErrorMessage ?? string.Empty;
             return result.IsValid;
         }
@@ -2641,7 +2650,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public static ValidationResult? ValidateSelectedTag(TagVM? value, ValidationContext validationContext)
     {
         var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        return ToValidationResult(TransactionValidationHelper.ValidateTag(value, viewModel.IsExpense));
+        return viewModel.IsGoal || viewModel.IsRepayment || value is not null
+            ? ValidationResult.Success
+            : new ValidationResult("Please choose a tag.");
     }
 
     public static ValidationResult? ValidateSelectedGoal(SavingGoalVM? value, ValidationContext validationContext)
