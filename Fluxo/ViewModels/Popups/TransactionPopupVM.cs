@@ -95,6 +95,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     [ObservableProperty] private bool _isHistoryOpen = true;
     [ObservableProperty] private AddNewTransactionHistoryItemVM? _selectedPinnedHistoryItem;
     [ObservableProperty] private AddNewTransactionHistoryItemVM? _selectedHistoryItem;
+    [ObservableProperty] private TransactionPopupSidePanel _selectedSidePanel = TransactionPopupSidePanel.History;
     [ObservableProperty] private RecurringPeriod _selectedRecurringPeriod = RecurringPeriod.Monthly;
 
     [ObservableProperty]
@@ -285,6 +286,14 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public string InstallmentSummaryText => BuildInstallmentSummaryText();
     public bool CanToggleRecurring => !IsRecurringModeLocked && !IsRepayment;
     public bool CanUseHistory => true;
+    public bool ShowSidePanelToggle => _popupPurpose is
+        TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.EditTransaction;
+    public bool IsHistoryPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.History;
+    public bool IsPinnedPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.Pinned;
+    public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
+    public bool ShowInvalidSplitPlaceholder =>
+        _popupPurpose == TransactionPopupPurpose.AddNewTransaction && !IsCurrentInputValid();
+    public decimal SplitAmountRemaining => AmountText;
     public bool ShowHistoryPanel => ShowSidePanelToggle && IsHistoryPanelSelected && IsHistoryOpen;
     public bool ShowPinnedPanel => ShowSidePanelToggle && IsPinnedPanelSelected && IsHistoryOpen;
     public bool ShowSplitPanel => IsSplitPanelSelected;
@@ -2161,6 +2170,20 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsNeedsCategory));
         OnPropertyChanged(nameof(IsWantsCategory));
         OnPropertyChanged(nameof(IsInvestCategory));
+    }
+
+    private void NotifySplitDisplayChanged()
+    {
+        OnPropertyChanged(nameof(ShowInvalidSplitPlaceholder));
+        OnPropertyChanged(nameof(SplitAmountRemaining));
+    }
+
+    partial void OnSelectedSidePanelChanged(TransactionPopupSidePanel value)
+    {
+        OnPropertyChanged(nameof(ShowHistoryPanel));
+        OnPropertyChanged(nameof(ShowPinnedPanel));
+        OnPropertyChanged(nameof(ShowSplitPanel));
+        OnPropertyChanged(nameof(ShowSidePanel));
     }
 
     private decimal GetCategoryCurrentAmount()
