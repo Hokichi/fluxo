@@ -7,7 +7,7 @@ using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Views.Shell;
 using Fluxo.Views.Shell.Main;
-using Fluxo.ViewModels.Popups.Helpers;
+using Fluxo.Helpers.Popups;
 
 namespace Fluxo.Views.Popups;
 

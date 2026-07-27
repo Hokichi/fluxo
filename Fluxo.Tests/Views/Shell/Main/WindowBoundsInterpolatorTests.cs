@@ -1,5 +1,5 @@
 using System.Windows;
-using Fluxo.Helper.MainWindow;
+using Fluxo.Helpers.MainWindow;
 using Xunit;
 
 namespace Fluxo.Tests.Views.Shell.Main;

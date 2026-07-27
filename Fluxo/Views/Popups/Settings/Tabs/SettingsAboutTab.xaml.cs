@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Popups.Settings;
-using Fluxo.Helper.Settings;
+using Fluxo.Helpers.Settings;
 using Fluxo.Views.Popups;
 using Fluxo.Views.Popups.Settings;
 

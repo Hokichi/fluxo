@@ -1,4 +1,4 @@
-namespace Fluxo.Helper.MainWindow;
+namespace Fluxo.Helpers.MainWindow;
 
 public enum MainWindowRestoreMode
 {

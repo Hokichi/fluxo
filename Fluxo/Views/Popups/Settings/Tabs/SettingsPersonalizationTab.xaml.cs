@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Threading;
 using Fluxo.ViewModels.Popups.Settings;
-using Fluxo.Helper.Settings;
+using Fluxo.Helpers.Settings;
 using Fluxo.Views.Popups.Settings;
 
 namespace Fluxo.Views.Popups.Settings.Tabs;

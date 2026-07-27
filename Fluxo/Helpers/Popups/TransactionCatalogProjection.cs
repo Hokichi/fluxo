@@ -1,7 +1,7 @@
 using Fluxo.Core.Entities;
 using Fluxo.ViewModels.Entities;
 
-namespace Fluxo.ViewModels.Popups.Helpers;
+namespace Fluxo.Helpers.Popups;
 
 internal static class TransactionCatalogProjection
 {

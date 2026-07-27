@@ -3,7 +3,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.ViewModels.Popups;
-using Fluxo.ViewModels.Popups.Helpers;
+using Fluxo.Helpers.Popups;
 using NSubstitute;
 using Xunit;
 

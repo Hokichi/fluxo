@@ -6,7 +6,7 @@ using System.Windows.Threading;
 using Fluxo.Resources.Infrastructure;
 using Fluxo.Services.Logging;
 
-namespace Fluxo.Helper.Behaviors;
+namespace Fluxo.Helpers.Behaviors;
 
 public static class ScrollOnDemandBehavior
 {

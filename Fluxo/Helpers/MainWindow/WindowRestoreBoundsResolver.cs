@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace Fluxo.Helper.MainWindow;
+namespace Fluxo.Helpers.MainWindow;
 
 public static class WindowRestoreBoundsResolver
 {

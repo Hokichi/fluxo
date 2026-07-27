@@ -2,7 +2,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.ViewModels.Entities;
 
-namespace Fluxo.Helper.MainWindow;
+namespace Fluxo.Helpers.MainWindow;
 
 internal static class TransactionDetailTargetResolver
 {
@@ -33,7 +33,7 @@ internal static class TransactionDetailTargetResolver
         return parentLog is null ? expenseLog : ToViewModel(parentLog);
     }
 
-    private static TransactionVM ToViewModel(Transaction transaction)
+    private static TransactionVM ToViewModel(Fluxo.Core.Entities.Transaction transaction)
     {
         return new TransactionVM
         {

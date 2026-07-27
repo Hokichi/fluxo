@@ -11,7 +11,7 @@ using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Entities;
-using Fluxo.ViewModels.Popups.Helpers;
+using Fluxo.Helpers.Popups;
 
 namespace Fluxo.ViewModels.Popups;
 

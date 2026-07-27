@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Popups.Helpers;
+namespace Fluxo.Helpers.Popups;
 
 public static class MonthlyDueDateHelper
 {

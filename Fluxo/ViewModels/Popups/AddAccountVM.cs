@@ -13,7 +13,7 @@ using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
-using Fluxo.ViewModels.Popups.Helpers;
+using Fluxo.Helpers.Popups;
 
 namespace Fluxo.ViewModels.Popups;
 

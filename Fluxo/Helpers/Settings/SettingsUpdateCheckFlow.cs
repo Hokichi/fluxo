@@ -7,7 +7,7 @@ using Fluxo.Services.Updates;
 using Fluxo.ViewModels.Popups.Settings;
 using Fluxo.Views.Popups.Settings;
 
-namespace Fluxo.Helper.Settings;
+namespace Fluxo.Helpers.Settings;
 
 public static class SettingsUpdateCheckFlow
 {

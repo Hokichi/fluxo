@@ -1,6 +1,6 @@
 using System.Globalization;
 using Fluxo.Core.Enums;
-using Fluxo.ViewModels.Popups.Helpers;
+using Fluxo.Helpers.Popups;
 
 namespace Fluxo.Helpers.Transaction;
 

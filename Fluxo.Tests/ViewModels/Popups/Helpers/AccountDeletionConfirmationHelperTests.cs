@@ -1,6 +1,6 @@
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.ViewModels.Popups.Helpers;
+using Fluxo.Helpers.Popups;
 using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups.Helpers;

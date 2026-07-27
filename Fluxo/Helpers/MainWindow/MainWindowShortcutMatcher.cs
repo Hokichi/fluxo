@@ -1,7 +1,7 @@
 using System.Windows.Input;
 using Fluxo.Core.Enums;
 
-namespace Fluxo.Helper.MainWindow;
+namespace Fluxo.Helpers.MainWindow;
 
 public static class MainWindowShortcutMatcher
 {

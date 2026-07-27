@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
-namespace Fluxo.Helper.Behaviors;
+namespace Fluxo.Helpers.Behaviors;
 
 public static class ScrollViewerAnimationBehavior
 {
