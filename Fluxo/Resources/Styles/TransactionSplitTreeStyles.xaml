@@ -135,8 +135,11 @@
                             Margin="0,12,0,0"
                             Maximum="{Binding Amount, Mode=OneWay}"
                             Style="{StaticResource RoundedProgressBarStyle}"
-                            Value="{Binding ChildAmountTotal, Mode=OneWay}" />
-                        <Grid Margin="0,8,0,0">
+                            Value="{Binding ChildAmountTotal, Mode=OneWay}"
+                            Visibility="{Binding HasChildTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <Grid
+                            Margin="0,8,0,0"
+                            Visibility="{Binding HasChildTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
