@@ -63,7 +63,7 @@ public partial class AddAccountPopup : BasePopup
         base.OnCloseButtonClick();
     }
 
-    private bool HandleSaveFailure(AddAccountVM.AddAccountResult result)
+    private bool HandleSaveFailure(AddAccountResult result)
     {
         if (result.IsSuccess)
             return false;

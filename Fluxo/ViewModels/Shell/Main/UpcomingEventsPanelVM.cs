@@ -11,6 +11,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 using Fluxo.Helpers.Popups;
 
+using Fluxo.DataModels.Shell.Main.UpcomingEventsPanel;
 namespace Fluxo.ViewModels.Shell.Main;
 
 public partial class UpcomingEventsPanelVM : ObservableRecipient, IRecipient<DashboardDataInvalidatedMessage>
@@ -188,8 +189,4 @@ public partial class UpcomingEventsPanelVM : ObservableRecipient, IRecipient<Das
         return amount.ToString("N0", CultureInfo.InvariantCulture);
     }
 
-    private sealed record UpcomingEventsSnapshot(
-        IReadOnlyList<RecurringTransaction> RecurringTransactions,
-        IReadOnlyList<SavingGoal> SavingGoals,
-        IReadOnlyList<Account> Accounts);
 }

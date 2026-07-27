@@ -1,13 +1,4 @@
 using Fluxo.Core.Enums;
 
+using Fluxo.DataModels.Popups.Settings.BudgetAllocationSnapshot;
 namespace Fluxo.ViewModels.Popups.Settings;
-
-public readonly record struct BudgetAllocationSnapshot(
-    int Needs,
-    int Wants,
-    int Invest,
-    decimal AllocationLimit,
-    AllocationPeriod AllocationPeriod,
-    int PeriodStart,
-    RolloverPolicy RolloverPolicy,
-    OverspendPolicy OverspendPolicy);

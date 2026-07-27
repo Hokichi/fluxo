@@ -8,6 +8,7 @@ using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
+using Fluxo.DataModels.Popups.AddSavingGoal;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class AddSavingGoalVM : ObservableObject
@@ -179,30 +180,6 @@ public partial class AddSavingGoalVM : ObservableObject
         OnPropertyChanged(nameof(HasChanges));
     }
 
-    public readonly record struct AddSavingGoalResult(bool IsSuccess, bool ShouldClose, string? ErrorMessage)
-    {
-        public static AddSavingGoalResult Success(bool shouldClose = false)
-        {
-            return new AddSavingGoalResult(true, shouldClose, null);
-        }
 
-        public static AddSavingGoalResult Failure(string? errorMessage)
-        {
-            return new AddSavingGoalResult(false, false, errorMessage);
-        }
-    }
 
-    public readonly record struct AddSavingGoalInput(
-        string Name,
-        decimal TargetAmount,
-        decimal CurrentAmount,
-        DateTime? EndDate);
-
-    private readonly record struct FormState(
-        string NameText,
-        decimal TargetAmountText,
-        decimal CurrentAmountText,
-        bool HasDefiniteEndDate,
-        DateTime? EndDate);
 }
-

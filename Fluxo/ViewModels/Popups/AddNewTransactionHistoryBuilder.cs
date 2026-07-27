@@ -1,6 +1,7 @@
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 
+using Fluxo.DataModels.Popups.AddNewTransactionHistoryBuilder;
 namespace Fluxo.ViewModels.Popups;
 
 public static class AddNewTransactionHistoryBuilder
@@ -186,28 +187,7 @@ public static class AddNewTransactionHistoryBuilder
             : $"{GoalUpdateTransactionSupport.GoalUpdateTagName}: {trimmedGoalName}";
     }
 
-    private sealed record ExpenseKey(
-        string Name,
-        decimal Amount,
-        int AccountId,
-        string Note,
-        ExpenseCategory Category,
-        int TagId);
 
-    private sealed record RepeatingExpenseKey(
-        string Name,
-        decimal Amount,
-        int AccountId,
-        int TagId);
 
-    private sealed record IncomeKey(
-        string Name,
-        decimal Amount,
-        int AccountId,
-        string Note);
 
-    private sealed record RepeatingIncomeKey(
-        string Name,
-        decimal Amount,
-        int AccountId);
 }

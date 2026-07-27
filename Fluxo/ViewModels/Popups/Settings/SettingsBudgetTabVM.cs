@@ -10,6 +10,8 @@ using Fluxo.Services.History;
 using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
+using BudgetAllocationSnapshot = Fluxo.DataModels.Popups.Settings.BudgetAllocationSnapshot.BudgetAllocationSnapshot;
+using Fluxo.DataModels.Popups.Settings.SettingsBudgetTab;
 namespace Fluxo.ViewModels.Popups.Settings;
 
 public partial class SettingsBudgetTabVM : ObservableObject
@@ -423,6 +425,4 @@ public partial class SettingsBudgetTabVM : ObservableObject
         allocation.LastRolloverPeriodStart = currentPeriod.Start;
     }
 
-    public sealed record PeriodStartOption(int Value, string Label);
 }
-

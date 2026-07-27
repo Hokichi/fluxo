@@ -13,6 +13,7 @@ using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Entities;
 using Fluxo.Helpers.Popups;
 
+using Fluxo.DataModels.Popups.AccountReconciliation;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class AccountReconciliationVM : ObservableObject
@@ -271,21 +272,5 @@ public partial class AccountReconciliationVM : ObservableObject
         OnPropertyChanged(nameof(CurrentAmount));
     }
 
-    public readonly record struct AccountReconciliationSaveResult(
-        bool IsSuccess,
-        string? ErrorMessage,
-        TransactionVM? CreatedTransaction)
-    {
-        public static AccountReconciliationSaveResult Success(TransactionVM? createdTransaction)
-        {
-            return new AccountReconciliationSaveResult(true, null, createdTransaction);
-        }
 
-        public static AccountReconciliationSaveResult Failure(string? errorMessage)
-        {
-            return new AccountReconciliationSaveResult(false, errorMessage, null);
-        }
-    }
-
-    private readonly record struct AccountReconciliationInput(decimal Amount, int AccountId);
 }

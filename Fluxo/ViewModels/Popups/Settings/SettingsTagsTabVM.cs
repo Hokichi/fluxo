@@ -13,11 +13,9 @@ using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 using System.Globalization;
 
+using Fluxo.DataModels.Popups.Settings.SettingsTagsTab;
 namespace Fluxo.ViewModels.Popups.Settings;
 
-public readonly record struct SettingsTagDialogRequest(
-    AddTagVM ViewModel,
-    Func<string, string, string, Task<SettingsOperationResult>> SaveTagAsync);
 
 public partial class SettingsTagsTabVM : ObservableObject
 {
@@ -372,4 +370,3 @@ public sealed class SettingsTagCardVM
     private static string FormatMoney(decimal value) =>
         value.ToString("N0", CultureInfo.InvariantCulture);
 }
-

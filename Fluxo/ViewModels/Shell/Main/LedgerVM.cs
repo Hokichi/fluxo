@@ -19,6 +19,7 @@ using Fluxo.Services.History;
 using Fluxo.Services.Ui;
 using Fluxo.ViewModels.Entities;
 
+using Fluxo.DataModels.Shell.Main.Ledger;
 namespace Fluxo.ViewModels.Shell.Main;
 
 public partial class LedgerVM : ObservableRecipient,
@@ -1300,21 +1301,7 @@ public partial class LedgerVM : ObservableRecipient,
         }
     }
 
-    private readonly record struct LedgerFilterSelectionSnapshot(
-        string Type,
-        string Account,
-        string Category,
-        string Tag)
-    {
-        public static LedgerFilterSelectionSnapshot Empty { get; } = new(string.Empty, string.Empty, string.Empty, string.Empty);
-    }
 
-    private readonly record struct BatchPreviewSnapshot(
-        int AccountId,
-        string AccountName,
-        int TagId,
-        string TagName,
-        string TagHexCode);
 }
 
 public sealed class LedgerGroupingModeDisplayConverter : IValueConverter

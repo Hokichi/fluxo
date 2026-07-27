@@ -88,7 +88,7 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
             _appData,
             saveDraftAsync: input => SaveDraftSourceAsync(input, null),
             loadDraftDeductSourcesAsync: editingId =>
-                Task.FromResult<IReadOnlyList<AddAccountVM.DeductSourceOption>>(
+                Task.FromResult<IReadOnlyList<AddAccountDeductSourceOption>>(
                     BuildDraftDeductSourceOptions(editingId)));
     }
 
@@ -105,7 +105,7 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
             _appData,
             saveDraftAsync: input => SaveDraftSourceAsync(input, source.Id),
             loadDraftDeductSourcesAsync: editingId =>
-                Task.FromResult<IReadOnlyList<AddAccountVM.DeductSourceOption>>(
+                Task.FromResult<IReadOnlyList<AddAccountDeductSourceOption>>(
                     BuildDraftDeductSourceOptions(editingId)))
         {
             EditingId = source.Id
@@ -314,15 +314,15 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
         _isLoaded = true;
     }
 
-    private Task<AddAccountVM.AddAccountResult> SaveDraftSourceAsync(
-        AddAccountVM.AddAccountInput input,
+    private Task<AddAccountResult> SaveDraftSourceAsync(
+        AddAccountInput input,
         int? editingId)
     {
         if (_draftSources.Values.Any(source =>
                 source.Id != (editingId ?? int.MinValue) &&
                 string.Equals(source.Name, input.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            return Task.FromResult(AddAccountVM.AddAccountResult.Failure(
+            return Task.FromResult(AddAccountResult.Failure(
                 $"A account named \"{input.Name}\" already exists."));
         }
 
@@ -357,16 +357,16 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
             _removedPersistedIds.Remove(id);
 
         RefreshProjectionAndPublish();
-        return Task.FromResult(AddAccountVM.AddAccountResult.Success(true));
+        return Task.FromResult(AddAccountResult.Success(true));
     }
 
-    private IReadOnlyList<AddAccountVM.DeductSourceOption> BuildDraftDeductSourceOptions(int? editingId)
+    private IReadOnlyList<AddAccountDeductSourceOption> BuildDraftDeductSourceOptions(int? editingId)
     {
         return _draftSources.Values
             .Where(source => source.Id != (editingId ?? 0))
             .Where(source => source.AccountType != AccountType.Credit)
             .OrderBy(source => source.Name)
-            .Select(source => new AddAccountVM.DeductSourceOption(source.Id, source.Name))
+            .Select(source => new AddAccountDeductSourceOption(source.Id, source.Name))
             .ToList();
     }
 
@@ -394,4 +394,3 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
         return true;
     }
 }
-

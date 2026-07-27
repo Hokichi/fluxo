@@ -7,6 +7,7 @@ using Fluxo.Core.Interfaces.Services;
 using Fluxo.Services.Dialogs;
 using Fluxo.Services.Ui;
 
+using Fluxo.DataModels.Shell.Main.Analytics;
 namespace Fluxo.ViewModels.Shell.Main;
 
 public enum AnalyticsTrendMode
@@ -32,15 +33,7 @@ public sealed partial class AnalyticsVM(
     private bool _isApplyingDateBounds;
     private IReadOnlyList<AnalyticsTrendPoint> _expenseTrendPoints = [];
     private IReadOnlyList<AnalyticsTrendPoint> _incomeTrendPoints = [];
-    private readonly record struct TrendBarSeed(
-        string Label,
-        decimal PrimaryValue,
-        bool IsPrimaryExpenseSeries,
-        bool IsPrimaryIncomeSeries,
-        decimal SecondaryValue,
-        bool HasSecondaryValue,
-        bool IsSecondaryExpenseSeries,
-        bool IsSecondaryIncomeSeries);
+
 
     [ObservableProperty] private DateTime _startDate = DateTime.Today.AddDays(-6);
     [ObservableProperty] private DateTime _endDate = DateTime.Today;
@@ -504,45 +497,4 @@ public sealed partial class AnalyticsVM(
     {
         CancelPendingRefreshDebounce();
     }
-}
-
-public sealed record AnalyticsGoalCardItem(
-    string Name,
-    decimal CurrentAmount,
-    decimal TargetAmount,
-    DateTime CreatedOn,
-    DateTime? SavingEndDate)
-{
-    public double ProgressPercent =>
-        TargetAmount <= 0m ? 0d : Math.Clamp((double)(CurrentAmount / TargetAmount * 100m), 0d, 100d);
-}
-
-public readonly record struct AnalyticsTrendPoint(string Label, decimal Value);
-
-public sealed record AnalyticsTrendBarItem(
-    string Label,
-    decimal Value,
-    double BarHeightRatio,
-    decimal SecondaryValue,
-    double SecondaryBarHeightRatio,
-    bool HasSecondaryBar,
-    bool IsHighlighted,
-    bool HideValueText,
-    bool RotateLabelVertical,
-    bool IsExpenseMode,
-    bool IsIncomeMode,
-    bool IsSecondaryExpenseMode,
-    bool IsSecondaryIncomeMode)
-{
-    public string ValueText => $"{Value:N0}";
-    public string SecondaryValueText => $"{SecondaryValue:N0}";
-}
-
-public sealed record AnalyticsTopTagCardItem(
-    string TagName,
-    string HexCode,
-    decimal Total,
-    double ProgressPercent)
-{
-    public string TotalText => $"${Total:N0}";
 }

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Fluxo.Core.DTO;
 using Fluxo.Core.Interfaces.Services;
 
+using Fluxo.DataModels.Shell.Main.Calendar;
 namespace Fluxo.ViewModels.Shell.Main;
 
 public sealed partial class CalendarVM : ObservableObject, IDisposable
@@ -278,47 +279,4 @@ public sealed partial class CalendarVM : ObservableObject, IDisposable
         _loadCts?.Cancel();
         _loadCts = null;
     }
-}
-
-public sealed record CalendarWeekRow(IReadOnlyList<CalendarDayItem> Days);
-
-public sealed record CalendarDayItem(
-    DateOnly Date,
-    string DayNumber,
-    bool IsSelected,
-    bool IsCurrentDay,
-    bool IsOutsideVisibleMonth);
-
-public sealed record CalendarExpenseListItem(
-    string Name,
-    decimal Amount,
-    string AccountName,
-    string? TagName)
-{
-    public string AmountText => $"{Amount:N0}";
-}
-
-public sealed record CalendarIncomeListItem(
-    string Name,
-    decimal Amount,
-    string AccountName)
-{
-    public string AmountText => $"{Amount:N0}";
-}
-
-public sealed record CalendarGoalDeadlineListItem(
-    string Name,
-    decimal CurrentAmount,
-    decimal TargetAmount)
-{
-    public string ProgressText => $"{CurrentAmount:N0} / {TargetAmount:N0}";
-}
-
-public sealed record CalendarRecurringTransactionListItem(
-    string Name,
-    decimal Amount,
-    string TypeText,
-    string SourceName)
-{
-    public string AmountText => $"{Amount:N0}";
 }

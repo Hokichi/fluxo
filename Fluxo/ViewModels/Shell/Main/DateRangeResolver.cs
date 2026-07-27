@@ -2,9 +2,9 @@ using Fluxo.Core.Budgeting;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 
+using Fluxo.DataModels.Shell.Main.DateRangeResolver;
 namespace Fluxo.ViewModels.Shell.Main;
 
-public sealed record DateRange(DateTime From, DateTime To);
 
 public static class DateRangeResolver
 {

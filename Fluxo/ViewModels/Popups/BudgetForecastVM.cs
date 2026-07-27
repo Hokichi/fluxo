@@ -7,6 +7,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 
+using Fluxo.DataModels.Popups.BudgetForecastVM;
 namespace Fluxo.ViewModels.Popups;
 
 public sealed partial class BudgetForecastVM : ObservableObject
@@ -509,5 +510,3 @@ public sealed partial class BudgetForecastRecurringRowVM : ObservableObject
     public RecurringPeriod RecurringPeriod { get; }
     public int RecurringTime { get; }
 }
-
-public sealed record BudgetForecastPurchaseResult(string Message, string BrushKey);

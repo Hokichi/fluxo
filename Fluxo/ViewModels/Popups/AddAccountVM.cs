@@ -15,6 +15,7 @@ using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 using Fluxo.Helpers.Popups;
 
+using Fluxo.DataModels.Popups.AddAccount;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class AddAccountVM : ObservableValidator
@@ -1047,65 +1048,8 @@ public partial class AddAccountVM : ObservableValidator
         ToastWarning
     }
 
-    public readonly record struct AddAccountResult(
-        bool IsSuccess,
-        bool ShouldClose,
-        string? ErrorMessage,
-        AddAccountFailurePresentation FailurePresentation = AddAccountFailurePresentation.Dialog)
-    {
-        public static AddAccountResult Success(bool shouldClose = false)
-        {
-            return new AddAccountResult(true, shouldClose, null);
-        }
 
-        public static AddAccountResult Failure(
-            string? errorMessage,
-            AddAccountFailurePresentation failurePresentation = AddAccountFailurePresentation.Dialog)
-        {
-            return new AddAccountResult(false, false, errorMessage, failurePresentation);
-        }
-    }
 
-    public readonly record struct AccountTypeOption(string Label, AccountType Value);
 
-    public readonly record struct AddAccountInput(
-        string Name,
-        AccountType AccountType,
-        decimal Balance,
-        decimal SpentAmount,
-        decimal AccountLimit,
-        decimal MaximumSpending,
-        decimal? MinimumPayment,
-        int? MonthlyDueDate,
-        int? DeductSource,
-        decimal? InterestRate,
-        bool PinnedOnUI,
-        bool IsEnabled,
-        bool IsDefault);
 
-    private readonly record struct FormState(
-        string NameText,
-        decimal PrimaryAmountText,
-        decimal SpentAmountText,
-        decimal AccountLimitText,
-        decimal MinimumPaymentText,
-        decimal ApyText,
-        bool PinnedOnUI,
-        bool IsEnabled,
-        bool IsDefault);
-
-    public readonly record struct DeductSourceOption(
-        int Id,
-        string Name,
-        AccountType AccountType = AccountType.Checking)
-    {
-        public string TypeDisplayName => AccountType switch
-        {
-            AccountType.Credit => "Credit",
-            AccountType.Checking => "Checking",
-            AccountType.Cash => "Cash",
-            AccountType.Saving => "Savings",
-            _ => "Account"
-        };
-    }
 }

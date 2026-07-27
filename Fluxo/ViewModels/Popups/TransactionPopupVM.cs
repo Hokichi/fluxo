@@ -23,6 +23,7 @@ using Fluxo.ViewModels.Shell;
 using Fluxo.ViewModels.Shell.Main;
 using System.Globalization;
 
+using Fluxo.DataModels.Popups.TransactionPopup;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class TransactionPopupVM : ObservableValidator, IDisposable
@@ -2712,59 +2713,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         CreatedOn = goal.CreatedOn
     };
 
-    public sealed record TransactionWarning(string Message, bool IsWarning);
 
-    public sealed record AddNewTransactionSuggestion(
-        string Name,
-        decimal Amount,
-        int AccountId,
-        string AccountName,
-        string Note,
-        ExpenseCategory? Category,
-        int? TagId,
-        DateTime? Date);
 
-    public readonly record struct TransactionEditInput(
-        string Name,
-        decimal Amount,
-        bool IsPinned,
-        string Note,
-        DateTime Date,
-        ExpenseCategory Category,
-        int AccountId,
-        int TagId,
-        bool IsIoU,
-        bool ShouldAffectBalance,
-        bool IsExcludedFromBudget);
 
-    private readonly record struct QuickTransactionInput(
-        bool IsExpense,
-        bool IsGoal,
-        bool IsRepayment,
-        bool IsRecurring,
-        bool IsInstallments,
-        bool IsPinned,
-        bool IsIoU,
-        bool ShouldAffectBalance,
-        bool IsExcludedFromBudget,
-        int? EditingRecurringTransactionId,
-        RecurringPeriod RecurringPeriod,
-        string Name,
-        decimal Amount,
-        int AccountId,
-        DateTime Date,
-        DateTime InstallmentEndDate,
-        string RecurringTimeText,
-        string Note,
-        ExpenseCategory? Category,
-        int? TagId,
-        int? GoalId,
-        int? RepaymentAccountId,
-        int? RelatedRecurringTransactionId)
-    {
-        public bool IsEffectivelyExcludedFromBudget =>
-            IsExcludedFromBudget || IsIoU || (!IsExpense && !IsGoal && !IsRepayment);
-    }
 
     private IEnumerable<object> ProcessingTargets => _processingRepayments.Cast<object>()
         .Concat(_processingGoals).Concat(_processingRecurringTransactions);
@@ -2906,28 +2857,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(ShowSidePanel));
     }
 
-    private readonly record struct FormState(
-        bool IsExpense,
-        bool IsGoal,
-        bool IsRepayment,
-        bool IsRecurring,
-        bool IsInstallments,
-        bool IsPinned,
-        bool IsIoU,
-        bool ShouldAffectBalance,
-        bool IsExcludedFromBudget,
-        RecurringPeriod SelectedRecurringPeriod,
-        string NameText,
-        decimal AmountText,
-        string RecurringTimeText,
-        string NoteText,
-        DateTime SelectedDate,
-        DateTime InstallmentEndDate,
-        ExpenseCategory SelectedExpenseCategory,
-        int SelectedAccountId,
-        int SelectedTagId,
-        int SelectedGoalId,
-        int SelectedRepaymentAccountId);
 
     private int? _editingRecurringTransactionId;
 
@@ -3079,7 +3008,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private static string GetRecurringTimeValidationMessage(RecurringPeriod period) =>
         RecurringTransactionValidationHelper.GetTimeValidationMessage(period);
 
-    public sealed record RecurringTimeOption(string Label, string Value);
 
     private enum TransactionPopupPurpose
     {

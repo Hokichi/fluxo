@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Globalization;
 
+using Fluxo.DataModels.Popups.AddTag;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class AddTagVM : ObservableObject
@@ -108,7 +109,4 @@ public partial class AddTagVM : ObservableObject
             ColorOptions.RemoveAt(ColorOptions.Count - 1);
     }
 
-    private readonly record struct FormState(string NameText, string SelectedColorHex, string SpendingLimitText, string OptionFingerprint);
 }
-
-public sealed record TagColorOptionVM(string Name, string HexCode);

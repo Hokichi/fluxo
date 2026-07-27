@@ -14,6 +14,7 @@ using Fluxo.Helpers.Popups;
 using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
+using Fluxo.DataModels.Popups.AccountDetail;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class AccountDetailVM : ObservableObject
@@ -693,76 +694,6 @@ public partial class AccountDetailVM : ObservableObject
         return true;
     }
 
-    public readonly record struct AccountDetailResult(bool IsSuccess, bool ShouldClose, string? ErrorMessage)
-    {
-        public static AccountDetailResult Success(bool shouldClose = false)
-        {
-            return new AccountDetailResult(true, shouldClose, null);
-        }
 
-        public static AccountDetailResult Failure(string? errorMessage)
-        {
-            return new AccountDetailResult(false, false, errorMessage);
-        }
-    }
 
-    private readonly record struct AccountDetailState(
-        string Name,
-        AccountType AccountType,
-        decimal PrimaryAmount,
-        decimal AccountLimit,
-        decimal MaximumSpending,
-        decimal? MinimumPayment,
-        decimal SpentAmount,
-        int? MonthlyDueDate,
-        int? DeductSource,
-        decimal? InterestRate,
-        bool IsEnabled,
-        bool PinnedOnUI)
-    {
-        public static AccountDetailState Empty => new(
-            string.Empty,
-            AccountType.Checking,
-            0m,
-            0m,
-            0m,
-            null,
-            0m,
-            null,
-            null,
-            null,
-            true,
-            true);
-    }
-
-    public readonly record struct DeductSourceOption(
-        int Id,
-        string Name,
-        AccountType AccountType = AccountType.Checking)
-    {
-        public string TypeDisplayName => AccountType switch
-        {
-            AccountType.Credit => "Credit",
-            AccountType.Checking => "Checking",
-            AccountType.Cash => "Cash",
-            AccountType.Saving => "Savings",
-            _ => "Account"
-        };
-    }
 }
-
-public sealed record AccountActivityItemVM(
-    DateTime Date,
-    string Title,
-    string Detail,
-    decimal Amount,
-    bool IsExpense)
-{
-    public string DirectionLabel => IsExpense ? "Expense" : "Income";
-}
-
-public sealed record AccountTrendItemVM(
-    DateTime Month,
-    string Label,
-    decimal IncomeAmount,
-    decimal ExpenseAmount);

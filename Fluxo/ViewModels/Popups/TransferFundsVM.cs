@@ -14,6 +14,7 @@ using Fluxo.Helpers.Popups;
 using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
+using Fluxo.DataModels.Popups.TransferFundsVM;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class TransferFundsVM : ObservableObject
@@ -212,22 +213,5 @@ public partial class TransferFundsVM : ObservableObject
         account.Balance += amount;
     }
 
-    public readonly record struct TransferFundsResult(bool IsSuccess, string? ErrorMessage)
-    {
-        public static TransferFundsResult Success()
-        {
-            return new TransferFundsResult(true, null);
-        }
 
-        public static TransferFundsResult Failure(string? errorMessage)
-        {
-            return new TransferFundsResult(false, errorMessage);
-        }
-    }
-
-    private readonly record struct TransferFundsInput(
-        decimal Amount,
-        int TargetAccountId,
-        DateTime Date,
-        string Note);
 }

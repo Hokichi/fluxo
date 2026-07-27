@@ -142,8 +142,8 @@ public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
         _isLoaded = true;
     }
 
-    private Task<AddSavingGoalVM.AddSavingGoalResult> SaveDraftGoalAsync(
-        AddSavingGoalVM.AddSavingGoalInput input,
+    private Task<AddSavingGoalResult> SaveDraftGoalAsync(
+        AddSavingGoalInput input,
         int? editingId)
     {
         var id = editingId ?? _nextTemporaryId--;
@@ -158,7 +158,7 @@ public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
             _removedPersistedIds.Remove(id);
 
         RefreshProjectionAndPublish();
-        return Task.FromResult(AddSavingGoalVM.AddSavingGoalResult.Success(true));
+        return Task.FromResult(AddSavingGoalResult.Success(true));
     }
 
     private void RefreshProjectionAndPublish()
@@ -173,4 +173,3 @@ public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
         PublishSnapshot();
     }
 }
-

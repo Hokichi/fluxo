@@ -457,7 +457,7 @@ public partial class TransactionPopup : BasePopup
         if (sender is not ListBox listBox)
             return;
 
-        if (listBox.SelectedItem is not TransactionPopupVM.AddNewTransactionSuggestion suggestion)
+        if (listBox.SelectedItem is not AddNewTransactionSuggestion suggestion)
             return;
 
         _viewModel.ApplyTransactionNameSuggestion(suggestion);
