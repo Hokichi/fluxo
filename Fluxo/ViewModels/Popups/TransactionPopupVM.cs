@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -9,8 +10,10 @@ using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
-using Fluxo.Helpers.Transaction;
+using Fluxo.DataModels.Popups.TransactionPopup;
 using Fluxo.Helpers.MainWindow;
+using Fluxo.Helpers.Popups;
+using Fluxo.Helpers.Transaction;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
@@ -18,12 +21,9 @@ using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
 using Fluxo.Services.Transactions;
 using Fluxo.ViewModels.Entities;
-using Fluxo.Helpers.Popups;
 using Fluxo.ViewModels.Shell;
 using Fluxo.ViewModels.Shell.Main;
-using System.Globalization;
 
-using Fluxo.DataModels.Popups.TransactionPopup;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class TransactionPopupVM : ObservableValidator, IDisposable
@@ -563,19 +563,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (!CanUseIoU)
             IsIoU = false;
 
-        OnPropertyChanged(nameof(ShowRecurringDayInput));
-        OnPropertyChanged(nameof(ShowRecurringNoneInput));
-        OnPropertyChanged(nameof(ShowRecurringWeekdayInput));
-        OnPropertyChanged(nameof(ShowRecurringMonthlyInput));
-        OnPropertyChanged(nameof(ShowDateSelector));
-        OnPropertyChanged(nameof(IsRecurringTransactionMode));
-        OnPropertyChanged(nameof(ShowInstallmentEndDate));
-        OnPropertyChanged(nameof(DateOrRecurrenceLabel));
-        OnPropertyChanged(nameof(InstallmentSummaryText));
-        OnPropertyChanged(nameof(CanPinTransaction));
-        OnPropertyChanged(nameof(CanUseIoU));
-        OnPropertyChanged(nameof(IsRegularMode));
-        OnPropertyChanged(nameof(TransactionModeDescription));
+        NotifyTransactionModeChanged();
         RefreshActiveValidation(nameof(AmountText));
         RefreshAmountWarning();
         NotifyFormStateChanged();
@@ -692,6 +680,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (!CanUseIoU)
             IsIoU = false;
 
+        NotifyTransactionModeChanged();
+        RefreshActiveValidation(nameof(AmountText));
+        NotifyFormStateChanged();
+    }
+
+    private void NotifyTransactionModeChanged()
+    {
         OnPropertyChanged(nameof(IsRecurringTransactionMode));
         OnPropertyChanged(nameof(ShowRecurringDayInput));
         OnPropertyChanged(nameof(ShowRecurringNoneInput));
@@ -705,9 +700,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CanUseIoU));
         OnPropertyChanged(nameof(IsRegularMode));
         OnPropertyChanged(nameof(TransactionModeDescription));
-        RefreshActiveValidation(nameof(AmountText));
-        OnPropertyChanged(nameof(IsRegularMode));
-        NotifyFormStateChanged();
     }
 
     partial void OnIsExcludedFromBudgetChanged(bool value)
@@ -817,7 +809,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (IsGoal)
         {
             SyncGoalUpdateName();
-            SyncGeneratedPendingTransaction();
+            SyncPendingTransactionFromForm();
         }
 
         ResetHistoryLists();
@@ -1043,20 +1035,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 IsExcludedFromBudget = false;
         }
 
-        OnPropertyChanged(nameof(IsIncome));
-        OnPropertyChanged(nameof(CanUseHistory));
-        OnPropertyChanged(nameof(CanEditTransactionName));
-        OnPropertyChanged(nameof(CanEditCategory));
-        NotifyLayoutStateChanged();
-        OnPropertyChanged(nameof(CanEditTags));
-        OnPropertyChanged(nameof(ShowNoteField));
-        OnPropertyChanged(nameof(ShowGoalField));
-        OnPropertyChanged(nameof(CanUseInstallments));
-        OnPropertyChanged(nameof(CanUseIoU));
-        OnPropertyChanged(nameof(InstallmentSummaryText));
-        OnPropertyChanged(nameof(IoUTooltip));
-        OnPropertyChanged(nameof(IsBudgetExcluded));
-        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
+        NotifyTransactionTypeChanged();
 
         if (!CanUseIoU)
             IsIoU = false;
@@ -1064,15 +1043,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (!value || IsGoal)
             IsMoreTagsOpen = false;
 
-        RefreshAccounts();
-        ClearNameValidation();
-        RefreshActiveValidation(nameof(AmountText));
-        RefreshAmountWarning();
-        _ = RefreshTransactionNameSuggestionsAsync();
-        ResetHistoryLists();
-        if (IsHistoryOpen)
-            _ = LoadHistoryAsync();
-        NotifyFormStateChanged();
+        RefreshTransactionTypeState(seedGeneratedBaseline: false);
     }
 
     partial void OnIsGoalChanged(bool value)
@@ -1087,20 +1058,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             NameText = string.Empty;
         }
 
-        OnPropertyChanged(nameof(IsIncome));
-        OnPropertyChanged(nameof(CanUseHistory));
-        OnPropertyChanged(nameof(CanEditTransactionName));
-        OnPropertyChanged(nameof(CanEditCategory));
-        NotifyLayoutStateChanged();
-        OnPropertyChanged(nameof(CanEditTags));
-        OnPropertyChanged(nameof(ShowNoteField));
-        OnPropertyChanged(nameof(ShowGoalField));
-        OnPropertyChanged(nameof(CanUseInstallments));
-        OnPropertyChanged(nameof(CanUseIoU));
-        OnPropertyChanged(nameof(InstallmentSummaryText));
-        OnPropertyChanged(nameof(IoUTooltip));
-        OnPropertyChanged(nameof(IsBudgetExcluded));
-        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
+        NotifyTransactionTypeChanged();
 
         if (value)
         {
@@ -1110,17 +1068,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             SyncGoalUpdateName();
         }
 
-        RefreshAccounts();
-        if (value)
-            SeedGeneratedAddBaseline();
-        ClearNameValidation();
-        RefreshActiveValidation(nameof(AmountText));
-        RefreshAmountWarning();
-        _ = RefreshTransactionNameSuggestionsAsync();
-        ResetHistoryLists();
-        if (IsHistoryOpen)
-            _ = LoadHistoryAsync();
-        NotifyFormStateChanged();
+        RefreshTransactionTypeState(seedGeneratedBaseline: value);
     }
 
     partial void OnIsRepaymentChanged(bool value)
@@ -1168,15 +1116,48 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(ShowTransactionModes));
     }
 
+    private void NotifyTransactionTypeChanged()
+    {
+        OnPropertyChanged(nameof(IsIncome));
+        OnPropertyChanged(nameof(CanUseHistory));
+        OnPropertyChanged(nameof(CanEditTransactionName));
+        OnPropertyChanged(nameof(CanEditCategory));
+        NotifyLayoutStateChanged();
+        OnPropertyChanged(nameof(CanEditTags));
+        OnPropertyChanged(nameof(ShowNoteField));
+        OnPropertyChanged(nameof(ShowGoalField));
+        OnPropertyChanged(nameof(CanUseInstallments));
+        OnPropertyChanged(nameof(CanUseIoU));
+        OnPropertyChanged(nameof(InstallmentSummaryText));
+        OnPropertyChanged(nameof(IoUTooltip));
+        OnPropertyChanged(nameof(IsBudgetExcluded));
+        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
+    }
+
+    private void RefreshTransactionTypeState(bool seedGeneratedBaseline)
+    {
+        RefreshAccounts();
+        if (seedGeneratedBaseline)
+            SeedGeneratedAddBaseline();
+        ClearNameValidation();
+        RefreshActiveValidation(nameof(AmountText));
+        RefreshAmountWarning();
+        _ = RefreshTransactionNameSuggestionsAsync();
+        ResetHistoryLists();
+        if (IsHistoryOpen)
+            _ = LoadHistoryAsync();
+        NotifyFormStateChanged();
+    }
+
     partial void OnSelectedRepaymentAccountChanged(AccountVM? oldValue, AccountVM? newValue)
     {
         _isRepaymentAmountInvalid = false;
         if (IsRepayment)
+        {
             LoadRepaymentAmount();
-        if (IsRepayment)
             SyncRepaymentName();
-        if (IsRepayment)
-            SyncGeneratedPendingTransaction();
+            SyncPendingTransactionFromForm();
+        }
         NotifyFormStateChanged();
     }
 
@@ -1265,17 +1246,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 if (!TryResolveRecurringSaveAmount(input, out var recurringAmount, out var recurringAmountValidationMessage))
                     return TransactionPopupSubmissionResult.Failure(recurringAmountValidationMessage);
 
-                var recurringType = input.IsGoal
-                    ? RecurringTransactionType.GoalUpdate
-                    : input.IsExpense
-                        ? RecurringTransactionType.Expense
-                        : RecurringTransactionType.Income;
-
-                var recurringName = input.IsGoal && input.GoalId is not null
-                    ? BuildGoalUpdateName((await _appData.GetSavingGoalByIdAsync(input.GoalId.Value))?.Name ?? string.Empty)
-                    : input.IsInstallments
-                        ? BuildInstallmentRecurringName(input.Name)
-                        : BuildExpenseName(input.Name, input.Note, input.IsExpense ? "Recurring Expense" : "Recurring Income");
+                var recurringType = GetRecurringTransactionType(input);
+                var recurringName = await BuildRecurringTransactionNameAsync(input);
 
                 var draftInput = new RecurringDraftSaveInput(
                     input.EditingRecurringTransactionId,
@@ -1370,16 +1342,12 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 persistedTransactionId = persistenceResult.TransactionId;
 
             }
-            else if (input.IsRecurring)
+            else
             {
                 if (!TryNormalizeRecurringTime(input.RecurringPeriod, input.RecurringTimeText, out var recurringTime))
                     return TransactionPopupSubmissionResult.Failure(GetRecurringTimeValidationMessage(input.RecurringPeriod));
 
-                var recurringType = input.IsGoal
-                    ? RecurringTransactionType.GoalUpdate
-                    : input.IsExpense
-                        ? RecurringTransactionType.Expense
-                        : RecurringTransactionType.Income;
+                var recurringType = GetRecurringTransactionType(input);
 
                 RecurringTransaction recurring;
                 if (input.EditingRecurringTransactionId is > 0)
@@ -1391,11 +1359,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                     recurring = new RecurringTransaction();
                 }
 
-                recurring.Name = input.IsGoal && input.GoalId is not null
-                    ? BuildGoalUpdateName((await _appData.GetSavingGoalByIdAsync(input.GoalId.Value))?.Name ?? string.Empty)
-                    : input.IsInstallments
-                        ? BuildInstallmentRecurringName(input.Name)
-                        : BuildExpenseName(input.Name, input.Note, input.IsExpense ? "Recurring Expense" : "Recurring Income");
+                recurring.Name = await BuildRecurringTransactionNameAsync(input);
                 recurring.Amount = effectiveSaveAmount;
                 recurring.RecurringPeriod = input.RecurringPeriod;
                 recurring.RecurringTime = recurringTime;
@@ -1594,7 +1558,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
             goalId = SelectedGoal.Id;
         }
-        else if (!IsGoal && !IsRepayment)
+        else if (!IsRepayment)
         {
             if (SelectedTag is null)
             {
@@ -1863,6 +1827,29 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             _isUpdatingTagCollections = false;
         }
+    }
+
+    private static RecurringTransactionType GetRecurringTransactionType(QuickTransactionInput input) =>
+        input.IsGoal
+            ? RecurringTransactionType.GoalUpdate
+            : input.IsExpense
+                ? RecurringTransactionType.Expense
+                : RecurringTransactionType.Income;
+
+    private async Task<string> BuildRecurringTransactionNameAsync(QuickTransactionInput input)
+    {
+        if (input.IsGoal && input.GoalId is not null)
+        {
+            var goal = await _appData.GetSavingGoalByIdAsync(input.GoalId.Value);
+            return BuildGoalUpdateName(goal?.Name ?? string.Empty);
+        }
+
+        return input.IsInstallments
+            ? BuildInstallmentRecurringName(input.Name)
+            : BuildExpenseName(
+                input.Name,
+                input.Note,
+                input.IsExpense ? "Recurring Expense" : "Recurring Income");
     }
 
     private static string BuildExpenseName(string name, string note, string fallbackName)
@@ -2311,11 +2298,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             return;
 
         SetTransactionState(CreateGeneratedAddTransaction());
-    }
-
-    private void SyncGeneratedPendingTransaction()
-    {
-        SyncPendingTransactionFromForm();
     }
 
     private void SyncPendingTransactionFromForm()
@@ -2798,10 +2780,15 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         else if (target is RecurringTransactionVM recurring)
         {
             _currentProcessingRecurringTransactionId = recurring.Id;
-            ResetForm(false); IsRecurring = false; IsExpense = recurring.Type != RecurringTransactionType.Income;
-            NameText = recurring.Name; AmountText = recurring.Amount; SelectedExpenseCategory = recurring.Category ?? ExpenseCategory.Needs;
+            ResetForm(false);
+            IsRecurring = false;
+            IsExpense = recurring.Type != RecurringTransactionType.Income;
+            NameText = recurring.Name;
+            AmountText = recurring.Amount;
+            SelectedExpenseCategory = recurring.Category ?? ExpenseCategory.Needs;
             SelectedAccount = Accounts.FirstOrDefault(account => account.Id == recurring.Source.Id);
-            SelectedTag = recurring.Tag; SelectedDate = DateTime.Today;
+            SelectedTag = recurring.Tag;
+            SelectedDate = DateTime.Today;
             IsExcludedFromBudget = recurring.IsExcludedFromBudget;
         }
 
@@ -2873,9 +2860,14 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         CurrentProcessingStep = CurrentProcessingTarget is { } current
             ? Math.Max(1, navigableTargets.IndexOf(current) + 1)
             : 0;
-        OnPropertyChanged(nameof(IsProcessingSession)); OnPropertyChanged(nameof(CurrentProcessingStep));
-        OnPropertyChanged(nameof(ProcessingStepCount)); OnPropertyChanged(nameof(CurrentProcessingRecurringTransactionId)); OnPropertyChanged(nameof(PopupMode));
-        OnPropertyChanged(nameof(CanSkipProcessing)); OnPropertyChanged(nameof(IsProcessingComplete)); OnPropertyChanged(nameof(PopupTitle));
+        OnPropertyChanged(nameof(IsProcessingSession));
+        OnPropertyChanged(nameof(CurrentProcessingStep));
+        OnPropertyChanged(nameof(ProcessingStepCount));
+        OnPropertyChanged(nameof(CurrentProcessingRecurringTransactionId));
+        OnPropertyChanged(nameof(PopupMode));
+        OnPropertyChanged(nameof(CanSkipProcessing));
+        OnPropertyChanged(nameof(IsProcessingComplete));
+        OnPropertyChanged(nameof(PopupTitle));
         OnPropertyChanged(nameof(ShowHistoryPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
     }
@@ -2906,24 +2898,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 recurring.RecurringTime, recurring.SourceId, recurring.Category, recurring.TagId,
                 recurring.GoalId, recurring.IsExcludedFromBudget),
             Accounts, _orderedTags, Goals);
-        _editingRecurringTransactionId = state.EditingRecurringTransactionId;
         SetPopupPurpose(TransactionPopupPurpose.EditRecurringTransaction);
-        _isTransactionTypeLocked = true;
-        OnPropertyChanged(nameof(CanChangeTransactionType));
-        IsRecurringModeLocked = true;
-        IsInstallments = false;
-        IsRecurring = true;
-        IsExpense = state.IsExpense;
-        IsGoal = state.IsGoal;
-        NameText = state.Name;
-        AmountText = state.Amount;
-        SelectedExpenseCategory = state.Category;
-        SelectedRecurringPeriod = state.RecurringPeriod;
-        RecurringTimeText = state.RecurringTimeText;
-        SelectedAccount = state.SelectedAccount;
+        ApplyRecurringState(state);
         IsExcludedFromBudget = state.IsExcludedFromBudget;
-        SelectedTag = state.SelectedTag;
-        SelectedGoal = state.SelectedGoal;
         return true;
     }
 
@@ -2935,10 +2912,15 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 draft.RecurringPeriod, draft.RecurringTime, draft.AccountId, draft.Category,
                 draft.TagId, draft.GoalId, false),
             Accounts, _orderedTags, Goals);
-        _editingRecurringTransactionId = state.EditingRecurringTransactionId;
         SetPopupPurpose(draft.EditingRecurringTransactionId is > 0
             ? TransactionPopupPurpose.EditRecurringTransaction
             : TransactionPopupPurpose.AddRecurringTransaction);
+        ApplyRecurringState(state);
+    }
+
+    private void ApplyRecurringState(EditRecurringTransactionHelper.State state)
+    {
+        _editingRecurringTransactionId = state.EditingRecurringTransactionId;
         _isTransactionTypeLocked = true;
         OnPropertyChanged(nameof(CanChangeTransactionType));
         IsRecurringModeLocked = true;
