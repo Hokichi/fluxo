@@ -171,12 +171,14 @@
                 ItemTemplate="{StaticResource SplitTransactionLeafTemplate}"
                 ItemsSource="{Binding ChildTransactions, Mode=OneWay}"
                 Style="{StaticResource SplitTransactionTreeViewStyle}" />
-            <customControls:BalloonButton
+            <Button
                 Margin="32,8,0,0"
-                ButtonText="+"
-                Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                Width="Auto"
+                HorizontalAlignment="Stretch"
+                Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                 CommandParameter="{Binding}"
-                ToolTip="Add sub-transaction" />
+                Content="Add a sub-transaction"
+                Style="{StaticResource DashedButtonStyle}" />
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

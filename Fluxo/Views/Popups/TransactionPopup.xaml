@@ -1449,12 +1449,14 @@
                             ItemTemplate="{StaticResource SplitTransactionBranchTemplate}"
                             ItemsSource="{Binding PendingTransaction.ChildTransactions, Mode=OneWay}"
                             Style="{StaticResource SplitTransactionTreeViewStyle}" />
-                        <customControls:BalloonButton
+                        <Button
                             Margin="0,8,0,0"
-                            ButtonText="+"
-                            Command="{Binding AddSplitCommand}"
+                            Width="Auto"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding AddSplitCommand, Mode=OneWay}"
                             CommandParameter="{x:Null}"
-                            ToolTip="Add sub-transaction" />
+                            Content="Add a sub-transaction"
+                            Style="{StaticResource DashedButtonStyle}" />
                     </StackPanel>
                 </Grid>
             </Grid>
