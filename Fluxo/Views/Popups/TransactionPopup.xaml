@@ -24,6 +24,11 @@
     mc:Ignorable="d">
 
     <customControls:BasePopup.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionSplitTreeStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
         <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
@@ -370,6 +375,7 @@
                 />
         </DataTemplate>
 
+        </ResourceDictionary>
     </customControls:BasePopup.Resources>
 
     <Border Padding="20,4,20,20">
@@ -1400,7 +1406,7 @@
                                     Height="12"
                                     Margin="0,12,0,0"
                                     Maximum="{Binding AmountText, Mode=OneWay}"
-                                    Value="0"
+                                    Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}"
                                     Style="{StaticResource RoundedProgressBarStyle}" />
                                 <Grid Grid.Row="2" Margin="0,8,0,0">
                                     <Grid.ColumnDefinitions>
@@ -1412,8 +1418,7 @@
                                         FontFamily="{StaticResource Medium}"
                                         Foreground="{StaticResource Brush.Text.Primary}">
                                         <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                        <Run Text=" left of " />
-                                        <Run Text="{Binding AmountText, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                        <Run Text=" left" />
                                     </TextBlock>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                                         <customControls:BalloonButton
@@ -1423,6 +1428,8 @@
                                             CornerRadius="8"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            Command="{Binding SplitEquallyCommand}"
+                                            CommandParameter="{x:Null}"
                                             ShouldShowText="True" />
                                         <customControls:BalloonButton
                                             ButtonIcon="{StaticResource RegularUndo}"
@@ -1430,25 +1437,24 @@
                                             CornerRadius="8"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            Command="{Binding ResetSplitCommand}"
+                                            CommandParameter="{x:Null}"
                                             ShouldShowText="True" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
                         </Border>
-                        <Grid Margin="0,8,0,0">
-                            <Button
-                                Width="Auto"
-                                HorizontalAlignment="Stretch"
-                                Content="Add a sub-transaction"
-                                Style="{StaticResource DashedButtonStyle}"
-                                Visibility="{Binding IsViewOnly, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
-                            <TextBlock
-                                HorizontalAlignment="Center"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Muted}"
-                                Text="No sub-transaction found"
-                                Visibility="{Binding IsViewOnly, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                        </Grid>
+                        <TreeView
+                            Margin="0,8,0,0"
+                            ItemTemplate="{StaticResource SplitTransactionBranchTemplate}"
+                            ItemsSource="{Binding PendingTransaction.ChildTransactions, Mode=OneWay}"
+                            Style="{StaticResource SplitTransactionTreeViewStyle}" />
+                        <customControls:BalloonButton
+                            Margin="0,8,0,0"
+                            ButtonText="+"
+                            Command="{Binding AddSplitCommand}"
+                            CommandParameter="{x:Null}"
+                            ToolTip="Add sub-transaction" />
                     </StackPanel>
                 </Grid>
             </Grid>
