@@ -6,49 +6,46 @@ public static class TransactionMappingHelper
 {
     public static TransactionVM CreateLoaded(TransactionVM source) => Copy(source);
 
-    public static TransactionVM CreatePending(TransactionVM source) => new()
+    public static TransactionVM CreatePending(TransactionVM source)
     {
-        Type = source.Type,
-        SourceAccountId = source.SourceAccountId,
-        GoalId = source.GoalId,
-        RepaymentAccountId = source.RepaymentAccountId,
-        Account = Copy(source.Account),
-        Name = source.Name,
-        Amount = source.Amount,
-        OccurredOn = source.OccurredOn,
-        Notes = source.Notes,
-        ExpenseCategory = source.ExpenseCategory,
-        Tag = source.Tag is null ? null : Copy(source.Tag),
-        IsPinned = source.IsPinned,
-        IsIoU = source.IsIoU,
-        ShouldAffectBalance = source.ShouldAffectBalance,
-        IsExcludedFromBudget = source.IsExcludedFromBudget
-    };
+        var pending = Copy(source);
+        pending.Id = 0;
+        pending.LoggedOn = default;
+        pending.ParentTransactionId = null;
+        pending.IsForDeletion = false;
+        return pending;
+    }
 
     public static TransactionVM CreatePending() => new();
 
-    private static TransactionVM Copy(TransactionVM source) => new()
+    private static TransactionVM Copy(TransactionVM source)
     {
-        Id = source.Id,
-        Type = source.Type,
-        SourceAccountId = source.SourceAccountId,
-        GoalId = source.GoalId,
-        RepaymentAccountId = source.RepaymentAccountId,
-        Account = Copy(source.Account),
-        Name = source.Name,
-        Amount = source.Amount,
-        OccurredOn = source.OccurredOn,
-        LoggedOn = source.LoggedOn,
-        Notes = source.Notes,
-        ExpenseCategory = source.ExpenseCategory,
-        Tag = source.Tag is null ? null : Copy(source.Tag),
-        ParentTransactionId = source.ParentTransactionId,
-        IsPinned = source.IsPinned,
-        IsForDeletion = source.IsForDeletion,
-        IsIoU = source.IsIoU,
-        ShouldAffectBalance = source.ShouldAffectBalance,
-        IsExcludedFromBudget = source.IsExcludedFromBudget
-    };
+        var copy = new TransactionVM
+        {
+            Id = source.Id,
+            Type = source.Type,
+            SourceAccountId = source.SourceAccountId,
+            GoalId = source.GoalId,
+            RepaymentAccountId = source.RepaymentAccountId,
+            Account = Copy(source.Account),
+            Name = source.Name,
+            Amount = source.Amount,
+            OccurredOn = source.OccurredOn,
+            LoggedOn = source.LoggedOn,
+            Notes = source.Notes,
+            ExpenseCategory = source.ExpenseCategory,
+            Tag = source.Tag is null ? null : Copy(source.Tag),
+            ParentTransactionId = source.ParentTransactionId,
+            IsPinned = source.IsPinned,
+            IsForDeletion = source.IsForDeletion,
+            IsIoU = source.IsIoU,
+            ShouldAffectBalance = source.ShouldAffectBalance,
+            IsExcludedFromBudget = source.IsExcludedFromBudget
+        };
+        foreach (var child in source.ChildTransactions)
+            copy.ChildTransactions.Add(Copy(child));
+        return copy;
+    }
 
     private static AccountVM Copy(AccountVM source) => new()
     {

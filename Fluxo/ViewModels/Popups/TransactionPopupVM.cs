@@ -14,6 +14,7 @@ using Fluxo.DataModels.Popups.TransactionPopup;
 using Fluxo.Helpers.MainWindow;
 using Fluxo.Helpers.Popups;
 using Fluxo.Helpers.Transaction;
+using Fluxo.Helpers.Transactions;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
@@ -64,6 +65,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private TransactionPopupRequest _request = TransactionPopupRequest.Add();
     private bool _useRecurringDraftMessages;
     private bool _isDisposed;
+    private bool _isLoadingSplitTransaction;
     public Guid AddTagOwnerToken { get; } = Guid.NewGuid();
 
     [ObservableProperty]
@@ -96,6 +98,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     [ObservableProperty] private AddNewTransactionHistoryItemVM? _selectedPinnedHistoryItem;
     [ObservableProperty] private AddNewTransactionHistoryItemVM? _selectedHistoryItem;
     [ObservableProperty] private TransactionPopupSidePanel _selectedSidePanel = TransactionPopupSidePanel.History;
+    [ObservableProperty] private TransactionVM? _selectedSplitTransaction;
     [ObservableProperty] private RecurringPeriod _selectedRecurringPeriod = RecurringPeriod.Monthly;
 
     [ObservableProperty]
@@ -231,7 +234,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     ];
 
     public bool CanSave => !IsSaving && IsCurrentInputValid();
-    public bool HasChanges => _isChangeTrackingInitialized && !LoadedTransaction.Equals(PendingTransaction);
+    public bool HasChanges => _isChangeTrackingInitialized &&
+                              (!LoadedTransaction.Equals(PendingTransaction) ||
+                               !TransactionSplitHelper.AreTreesEqual(LoadedTransaction, PendingTransaction));
     public bool HasTransactionNameSuggestions => TransactionNameSuggestions.Count > 0;
     public bool IsRecurringTransactionMode => IsRecurring || IsInstallments;
     public bool IsRegularMode
@@ -293,7 +298,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
     public bool ShowInvalidSplitPlaceholder =>
         _popupPurpose == TransactionPopupPurpose.AddNewTransaction && !IsCurrentInputValid();
-    public decimal SplitAmountRemaining => AmountText;
+    public decimal SplitAmountRemaining => _isTransactionStateInitialized
+        ? TransactionSplitHelper.GetRemainingAmount(PendingTransaction)
+        : AmountText;
+    public bool HasSplitAmountOverflow => _isTransactionStateInitialized && TransactionSplitHelper.HasOverflow(PendingTransaction);
+    public bool HasSplitTransactions => _isTransactionStateInitialized && PendingTransaction.ChildTransactions.Count > 0;
     public bool ShowHistoryPanel => ShowSidePanelToggle && IsHistoryPanelSelected && IsHistoryOpen;
     public bool ShowPinnedPanel => ShowSidePanelToggle && IsPinnedPanelSelected && IsHistoryOpen;
     public bool ShowSplitPanel => IsSplitPanelSelected;
@@ -992,7 +1001,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             PromoteTagToVisibleStart(selectedTag);
         else
             RefreshTagCollections();
-        PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
+        await LoadSplitTreeAsync(LoadedTransaction.Id);
         BeginChangeTracking();
     }
 
@@ -1231,6 +1240,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             return TransactionPopupSubmissionResult.Failure("A transaction is already being saved.");
 
         EnsureTransactionState();
+        SyncCurrentSplitTransactionFromForm();
+        if (HasSplitAmountOverflow)
+            return TransactionPopupSubmissionResult.Failure("Split amounts cannot exceed their parent amount.");
+        if (HasSplitTransactions && !TransactionSplitHelper.IsBalanced(PendingTransaction))
+            return TransactionPopupSubmissionResult.Failure("Split amounts must equal their parent amount.");
+        if (SelectedSplitTransaction is not null)
+            LoadSplitTransactionIntoForm(PendingTransaction);
 
         if (!TryBuildTransactionInput(out var input, out var validationMessage))
             return TransactionPopupSubmissionResult.Failure(validationMessage);
@@ -1341,6 +1357,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 if (!persistenceResult.IsSuccess)
                     return TransactionPopupSubmissionResult.Failure(persistenceResult.ErrorMessage);
                 persistedTransactionId = persistenceResult.TransactionId;
+                var splitResult = await PersistSplitTreeAsync(persistedTransactionId.Value);
+                if (!splitResult.IsSuccess)
+                    return splitResult;
 
             }
             else
@@ -2144,7 +2163,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private void NotifyFormStateChanged()
     {
-        SyncPendingTransactionFromForm();
+        SyncCurrentSplitTransactionFromForm();
         NotifySplitDisplayChanged();
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(HasChanges));
@@ -2164,7 +2183,229 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         OnPropertyChanged(nameof(ShowInvalidSplitPlaceholder));
         OnPropertyChanged(nameof(SplitAmountRemaining));
+        OnPropertyChanged(nameof(HasSplitAmountOverflow));
+        OnPropertyChanged(nameof(HasSplitTransactions));
     }
+
+    [RelayCommand]
+    public void AddSplit(TransactionVM? parent)
+    {
+        EnsureTransactionState();
+        SyncCurrentSplitTransactionFromForm();
+        if (!TransactionSplitHelper.CanAddChild(PendingTransaction, parent))
+            return;
+
+        SelectSplitTransaction(TransactionSplitHelper.AddChild(PendingTransaction, parent));
+    }
+
+    [RelayCommand]
+    public void DeleteSplit(TransactionVM node)
+    {
+        EnsureTransactionState();
+        if (!TransactionSplitHelper.Remove(PendingTransaction, node, out var parent))
+            return;
+
+        SelectSplitTransaction(parent);
+    }
+
+    [RelayCommand]
+    public void SelectSplit(TransactionVM? node) => SelectSplitTransaction(node);
+
+    [RelayCommand]
+    public void SplitEqually(TransactionVM? parent)
+    {
+        EnsureTransactionState();
+        SyncCurrentSplitTransactionFromForm();
+        TransactionSplitHelper.SplitEqually(parent ?? PendingTransaction);
+        NotifySplitDisplayChanged();
+    }
+
+    [RelayCommand]
+    public void ResetSplit(TransactionVM? parent)
+    {
+        EnsureTransactionState();
+        SyncCurrentSplitTransactionFromForm();
+        TransactionSplitHelper.Reset(parent ?? PendingTransaction);
+        NotifySplitDisplayChanged();
+    }
+
+    private void SelectSplitTransaction(TransactionVM? node)
+    {
+        EnsureTransactionState();
+        if (ReferenceEquals(SelectedSplitTransaction, node))
+            return;
+
+        SyncCurrentSplitTransactionFromForm();
+        SelectedSplitTransaction = node;
+        LoadSplitTransactionIntoForm(node ?? PendingTransaction);
+        NotifySplitDisplayChanged();
+        OnPropertyChanged(nameof(HasChanges));
+    }
+
+    private void SyncCurrentSplitTransactionFromForm()
+    {
+        if (_isLoadingSplitTransaction || !_isTransactionStateInitialized)
+            return;
+
+        SyncTransactionFromForm(SelectedSplitTransaction ?? PendingTransaction);
+    }
+
+    private void LoadSplitTransactionIntoForm(TransactionVM transaction)
+    {
+        _isLoadingSplitTransaction = true;
+        try
+        {
+            IsExpense = transaction.Type != TransactionType.Income;
+            IsGoal = false;
+            IsRepayment = false;
+            NameText = transaction.Name;
+            AmountText = transaction.Amount;
+            NoteText = transaction.Notes;
+            SelectedDate = transaction.OccurredOn == default ? DateTime.Today : transaction.OccurredOn.Date;
+            SelectedExpenseCategory = transaction.ExpenseCategory ?? ExpenseCategory.Needs;
+            SelectedAccount = transaction.Account;
+            SelectedTag = transaction.Tag;
+            IsIoU = transaction.IsIoU;
+            ShouldAffectBalance = transaction.ShouldAffectBalance;
+            IsExcludedFromBudget = transaction.IsExcludedFromBudget;
+        }
+        finally
+        {
+            _isLoadingSplitTransaction = false;
+        }
+    }
+
+    private async Task<TransactionPopupSubmissionResult> PersistSplitTreeAsync(int rootTransactionId)
+    {
+        var account = await _appData.GetAccountByIdAsync(PendingTransaction.SourceAccountId);
+        if (account is null)
+            return TransactionPopupSubmissionResult.Failure("Please select a valid account.");
+
+        var existing = (await _appData.GetTransactionsAsync(CancellationToken.None))
+            .Where(transaction => !transaction.IsForDeletion)
+            .ToDictionary(transaction => transaction.Id);
+        var existingRootChildIds = existing.Values
+            .Where(transaction => transaction.ParentTransactionId == rootTransactionId)
+            .Select(transaction => transaction.Id)
+            .ToHashSet();
+        var retainedIds = new HashSet<int>();
+
+        foreach (var child in PendingTransaction.ChildTransactions)
+        {
+            var childEntity = await PersistSplitNodeAsync(child, rootTransactionId, account, existing, retainedIds);
+            if (childEntity is null)
+                continue;
+
+            foreach (var grandchild in child.ChildTransactions)
+                await PersistSplitNodeAsync(grandchild, childEntity.Id, account, existing, retainedIds);
+        }
+
+        foreach (var transaction in existing.Values.Where(transaction =>
+                     transaction.ParentTransactionId is not null &&
+                     !retainedIds.Contains(transaction.Id) &&
+                     (transaction.ParentTransactionId == rootTransactionId ||
+                      existingRootChildIds.Contains(transaction.ParentTransactionId.Value))))
+        {
+            transaction.IsForDeletion = true;
+            _appData.UpdateTransaction(transaction);
+        }
+
+        await _appData.SaveChangesAsync();
+        return TransactionPopupSubmissionResult.Success();
+    }
+
+    private async Task<Transaction?> PersistSplitNodeAsync(
+        TransactionVM node,
+        int parentTransactionId,
+        Account account,
+        IReadOnlyDictionary<int, Transaction> existing,
+        ISet<int> retainedIds)
+    {
+        if (node.Amount <= 0m)
+            return null;
+
+        var tag = node.IsLeaf && node.Tag is { Id: > 0 }
+            ? await _appData.GetTagByIdAsync(node.Tag.Id)
+            : null;
+        var transaction = node.Id > 0 && existing.TryGetValue(node.Id, out var persisted)
+            ? persisted
+            : new Transaction();
+
+        transaction.Type = PendingTransaction.Type;
+        transaction.SourceAccountId = PendingTransaction.SourceAccountId;
+        transaction.Account = account;
+        transaction.Name = node.Name.Trim();
+        transaction.Amount = node.Amount;
+        transaction.OccurredOn = node.OccurredOn == default ? PendingTransaction.OccurredOn : node.OccurredOn;
+        transaction.Notes = node.Notes;
+        transaction.ExpenseCategory = node.IsLeaf ? node.ExpenseCategory : null;
+        transaction.Tag = tag;
+        transaction.TagId = tag?.Id;
+        transaction.ParentTransactionId = parentTransactionId;
+        transaction.IsIoU = node.IsIoU;
+        transaction.ShouldAffectBalance = node.ShouldAffectBalance;
+        transaction.IsExcludedFromBudget = node.IsExcludedFromBudget;
+        transaction.IsForDeletion = false;
+
+        if (transaction.Id > 0)
+            _appData.UpdateTransaction(transaction);
+        else
+        {
+            await _appData.AddTransactionAsync(transaction);
+            await _appData.SaveChangesAsync();
+        }
+
+        if (transaction.Id > 0)
+        {
+            node.Id = transaction.Id;
+            retainedIds.Add(transaction.Id);
+        }
+
+        return transaction;
+    }
+
+    private async Task LoadSplitTreeAsync(int rootTransactionId)
+    {
+        var byParent = (await _appData.GetTransactionsAsync(CancellationToken.None))
+            .Where(transaction => !transaction.IsForDeletion && transaction.ParentTransactionId is not null)
+            .GroupBy(transaction => transaction.ParentTransactionId!.Value)
+            .ToDictionary(group => group.Key, group => group.ToList());
+
+        LoadedTransaction.ChildTransactions.Clear();
+        if (byParent.TryGetValue(rootTransactionId, out var children))
+        {
+            foreach (var child in children)
+            {
+                var childViewModel = CreateSplitTransactionViewModel(child);
+                if (byParent.TryGetValue(child.Id, out var grandchildren))
+                    foreach (var grandchild in grandchildren)
+                        childViewModel.ChildTransactions.Add(CreateSplitTransactionViewModel(grandchild));
+                LoadedTransaction.ChildTransactions.Add(childViewModel);
+            }
+        }
+
+        PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
+        SelectedSplitTransaction = null;
+        NotifySplitDisplayChanged();
+    }
+
+    private static TransactionVM CreateSplitTransactionViewModel(Transaction transaction) => new()
+    {
+        Id = transaction.Id,
+        Type = transaction.Type,
+        SourceAccountId = transaction.SourceAccountId,
+        Account = transaction.Account is null ? new AccountVM() : new AccountVM { Id = transaction.Account.Id, Name = transaction.Account.Name },
+        Name = transaction.Name,
+        Amount = transaction.Amount,
+        OccurredOn = transaction.OccurredOn,
+        Notes = transaction.Notes,
+        ExpenseCategory = transaction.ExpenseCategory,
+        Tag = transaction.Tag is null ? null : new TagVM { Id = transaction.Tag.Id, Name = transaction.Tag.Name, HexCode = transaction.Tag.HexCode },
+        ParentTransactionId = transaction.ParentTransactionId,
+        IsIoU = transaction.IsIoU,
+        ShouldAffectBalance = transaction.ShouldAffectBalance,
+        IsExcludedFromBudget = transaction.IsExcludedFromBudget
+    };
 
     partial void OnSelectedSidePanelChanged(TransactionPopupSidePanel value)
     {
@@ -2312,21 +2553,26 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (!_isTransactionStateInitialized)
             return;
 
-        PendingTransaction.Type = IsExpense || IsGoal || IsRepayment ? TransactionType.Expense : TransactionType.Income;
-        PendingTransaction.SourceAccountId = SelectedAccount?.Id ?? 0;
-        PendingTransaction.GoalId = IsGoal ? SelectedGoal?.Id : null;
-        PendingTransaction.RepaymentAccountId = IsRepayment ? SelectedRepaymentAccount?.Id : null;
-        PendingTransaction.Account = SelectedAccount ?? new AccountVM();
-        PendingTransaction.Name = NameText;
-        PendingTransaction.Amount = AmountText;
-        PendingTransaction.OccurredOn = SelectedDate.Date;
-        PendingTransaction.Notes = NoteText;
-        PendingTransaction.ExpenseCategory = IsGoal ? ExpenseCategory.Savings : IsExpense ? SelectedExpenseCategory : null;
-        PendingTransaction.Tag = IsGoal || IsRepayment ? null : SelectedTag;
-        PendingTransaction.IsPinned = IsPinned;
-        PendingTransaction.IsIoU = IsIoU;
-        PendingTransaction.ShouldAffectBalance = ShouldAffectBalance;
-        PendingTransaction.IsExcludedFromBudget = IsBudgetExcluded;
+        SyncTransactionFromForm(PendingTransaction);
+    }
+
+    private void SyncTransactionFromForm(TransactionVM transaction)
+    {
+        transaction.Type = IsExpense || IsGoal || IsRepayment ? TransactionType.Expense : TransactionType.Income;
+        transaction.SourceAccountId = SelectedAccount?.Id ?? 0;
+        transaction.GoalId = IsGoal ? SelectedGoal?.Id : null;
+        transaction.RepaymentAccountId = IsRepayment ? SelectedRepaymentAccount?.Id : null;
+        transaction.Account = SelectedAccount ?? new AccountVM();
+        transaction.Name = NameText;
+        transaction.Amount = AmountText;
+        transaction.OccurredOn = SelectedDate.Date;
+        transaction.Notes = NoteText;
+        transaction.ExpenseCategory = IsGoal ? ExpenseCategory.Savings : IsExpense ? SelectedExpenseCategory : null;
+        transaction.Tag = IsGoal || IsRepayment ? null : SelectedTag;
+        transaction.IsPinned = IsPinned;
+        transaction.IsIoU = IsIoU;
+        transaction.ShouldAffectBalance = ShouldAffectBalance;
+        transaction.IsExcludedFromBudget = IsBudgetExcluded;
     }
 
     private bool IsGeneratedAddMode => _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
