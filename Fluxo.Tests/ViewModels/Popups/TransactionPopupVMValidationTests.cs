@@ -759,7 +759,29 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionWarnings_ContainsCurrentErrorAndDailyAllowanceWarning()
+    public void FieldFeedback_AssignsValidationErrorsToTheirFields()
+    {
+        RunInSta(() =>
+        {
+            var vm = CreateVm(
+                TransactionKind.Expense,
+                CreateCheckingSource(balance: 500m),
+                isRecurring: false,
+                amount: 0m);
+            vm.NameText = string.Empty;
+
+            Assert.True(vm.NameFeedback.HasErrors);
+            Assert.Contains(vm.NameFeedback.Warnings,
+                warning => warning.Message == "Please enter a name.");
+            Assert.True(vm.AmountFeedback.HasErrors);
+            Assert.Contains(vm.AmountFeedback.Warnings,
+                warning => warning.Message == "Please enter a valid amount greater than zero.");
+            Assert.False(vm.AccountFeedback.HasFeedback);
+        });
+    }
+
+    [Fact]
+    public void FieldFeedback_AssignsAmountWarningsWithoutErrors()
     {
         RunInSta(() =>
         {
@@ -778,11 +800,10 @@ public sealed class TransactionPopupVMValidationTests
                 amount: 3m,
                 appData: CreateAppData(allocation, [included]));
             vm.SelectedDate = selectedDate;
-            vm.NameText = " ";
 
-            Assert.Contains(vm.TransactionWarnings, warning => warning.Message == "Please enter a name." && !warning.IsWarning);
-            Assert.Contains(vm.TransactionWarnings, warning => warning.Message == "Over Daily Allowance" && warning.IsWarning);
-            Assert.Equal(2, vm.TransactionFeedbackCount);
+            Assert.True(vm.AmountFeedback.HasFeedback);
+            Assert.False(vm.AmountFeedback.HasErrors);
+            Assert.Contains(vm.AmountFeedback.Warnings, warning => warning.IsWarning);
         });
     }
 

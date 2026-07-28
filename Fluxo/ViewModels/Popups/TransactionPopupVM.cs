@@ -156,6 +156,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             nameof(AccountVM.TypeDisplayName));
 
         ResetForm(false);
+        RefreshFieldFeedback();
         _initialState = CaptureState();
     }
 
@@ -210,9 +211,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public decimal CategoryToBe => TransactionCalculationHelper.CalculateCategoryToBe(CategoryCurrent, AmountText, IsRepayment);
     public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
     public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
-    public IReadOnlyList<TransactionWarning> TransactionWarnings => BuildTransactionWarnings();
-    public int TransactionFeedbackCount => TransactionWarnings.Count;
-    public bool HasTransactionWarnings => TransactionFeedbackCount > 0;
+    public TransactionFieldFeedback NameFeedback { get; } = new();
+    public TransactionFieldFeedback AmountFeedback { get; } = new();
+    public TransactionFieldFeedback AccountFeedback { get; } = new();
+    public TransactionFieldFeedback TagFeedback { get; } = new();
+    public TransactionFieldFeedback GoalFeedback { get; } = new();
+    public TransactionFieldFeedback RecurrenceFeedback { get; } = new();
+    public TransactionFieldFeedback CreditAccountFeedback { get; } = new();
 
     public IReadOnlyList<RecurringPeriod> RecurringPeriods { get; } =
     [
@@ -233,7 +238,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         new("Sunday", "7")
     ];
 
-    public bool CanSave => !IsSaving && IsCurrentInputValid();
+    public bool CanSave => !IsSaving && !HasSplitAmountOverflow && IsCurrentInputValid();
     public bool HasChanges => _isChangeTrackingInitialized &&
                               (!LoadedTransaction.Equals(PendingTransaction) ||
                                !TransactionSplitHelper.AreTreesEqual(LoadedTransaction, PendingTransaction));
@@ -294,8 +299,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public string InstallmentSummaryText => BuildInstallmentSummaryText();
     public bool CanToggleRecurring => !IsRecurringModeLocked && !IsRepayment;
     public bool CanUseHistory => true;
-    public bool ShowSidePanelToggle => _popupPurpose is
-        TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.EditTransaction;
+    public bool ShowSidePanelToggle => _popupPurpose == TransactionPopupPurpose.AddNewTransaction;
     public bool IsHistoryPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.History;
     public bool IsPinnedPanelSelected => SelectedSidePanel == TransactionPopupSidePanel.Pinned;
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
@@ -303,8 +307,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
         !(_isTransactionStateInitialized ? IsRootSplitInputValid() : IsCurrentInputValid());
     public decimal SplitAmountRemaining => _isTransactionStateInitialized
-        ? TransactionSplitHelper.GetRemainingAmount(PendingTransaction)
+        ? PendingTransaction.HasChildAmountOverflow
+            ? PendingTransaction.ChildAmountOverflow
+            : TransactionSplitHelper.GetRemainingAmount(PendingTransaction)
         : AmountText;
+    public string SplitAmountStatus => HasSplitAmountOverflow ? "overflowing" : "left";
     public bool HasSplitAmountOverflow => _isTransactionStateInitialized && TransactionSplitHelper.HasOverflow(PendingTransaction);
     public bool HasSplitTransactions => _isTransactionStateInitialized && PendingTransaction.ChildTransactions.Count > 0;
     public bool IsSplitRootOrChild => HasSplitTransactions &&
@@ -312,8 +319,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool ShowHistoryPanel => ShowSidePanelToggle && IsHistoryPanelSelected && IsHistoryOpen;
     public bool ShowPinnedPanel => ShowSidePanelToggle && IsPinnedPanelSelected && IsHistoryOpen;
     public bool ShowSplitPanel => IsSplitPanelSelected && (!IsViewOnly || HasSplitTransactions);
-    public bool ShowSidePanel => ShowHistoryPanel || ShowPinnedPanel || ShowSplitPanel;
-    public bool CanModifySplitTree => !IsViewOnly;
+    public bool ShowSidePanel => !IsProcessingSession && (ShowHistoryPanel || ShowPinnedPanel || ShowSplitPanel);
+    public bool CanUseSplit => IsExpense && !IsProcessingSession;
+    public bool CanModifySplitTree => !IsViewOnly && CanUseSplit;
     public bool ShowRootSplitAddAction => CanModifySplitTree && !HasSplitTransactions;
     public bool ShowRootSplitPlusAction => CanModifySplitTree && HasSplitTransactions;
     public bool CanEditAccount => SelectedSplitTransaction is null;
@@ -321,7 +329,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool CanEditTransactionName => !IsGoal && !IsRepayment;
     public bool CanEditCategory => IsExpense && !IsRepayment && !IsSplitRootOrChild;
     public bool CanEditTags => !IsGoal && !IsRepayment && !IsSplitRootOrChild;
-    public bool CanChangeTransactionType => !_isTransactionTypeLocked;
+    public bool CanChangeTransactionType => !_isTransactionTypeLocked && !IsProcessingSession;
     public bool CanEditViewedTransaction => IsViewOnly && ViewedTransaction?.Tag?.IsSystemTag != true;
     public bool CanCloneViewedTransaction => CanEditViewedTransaction;
     public bool CanDeleteViewedTransaction => IsViewOnly;
@@ -415,12 +423,15 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
             if (value)
             {
-                var resetExclusion = IsGoal || IsRepayment;
+                var resetGoalOrRepayment = IsGoal || IsRepayment;
                 IsGoal = false;
                 IsExpense = false;
                 IsRepayment = false;
-                if (resetExclusion)
+                if (resetGoalOrRepayment)
+                {
                     IsExcludedFromBudget = false;
+                    AmountText = 0m;
+                }
             }
             else if (IsIncome)
             {
@@ -1057,7 +1068,14 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             IsGoal = false;
             IsRepayment = false;
             if (resetExclusion)
+            {
                 IsExcludedFromBudget = false;
+                AmountText = 0m;
+            }
+        }
+        else if (SelectedSidePanel == TransactionPopupSidePanel.Split)
+        {
+            SelectedSidePanel = TransactionPopupSidePanel.History;
         }
 
         NotifyTransactionTypeChanged();
@@ -1157,6 +1175,14 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IoUTooltip));
         OnPropertyChanged(nameof(IsBudgetExcluded));
         OnPropertyChanged(nameof(CanToggleBudgetExclusion));
+        OnPropertyChanged(nameof(CanUseSplit));
+        OnPropertyChanged(nameof(CanModifySplitTree));
+        OnPropertyChanged(nameof(ShowSplitPanel));
+        OnPropertyChanged(nameof(ShowSidePanel));
+        AddSplitCommand.NotifyCanExecuteChanged();
+        DeleteSplitCommand.NotifyCanExecuteChanged();
+        SplitEquallyCommand.NotifyCanExecuteChanged();
+        ResetSplitCommand.NotifyCanExecuteChanged();
     }
 
     private void RefreshTransactionTypeState(bool seedGeneratedBaseline)
@@ -2198,6 +2224,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         OnPropertyChanged(nameof(ShowInvalidSplitPlaceholder));
         OnPropertyChanged(nameof(SplitAmountRemaining));
+        OnPropertyChanged(nameof(SplitAmountStatus));
         OnPropertyChanged(nameof(HasSplitAmountOverflow));
         OnPropertyChanged(nameof(HasSplitTransactions));
         OnPropertyChanged(nameof(IsSplitRootOrChild));
@@ -2215,6 +2242,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CanEditAccount));
         OnPropertyChanged(nameof(CanEditDate));
         AddSplitCommand.NotifyCanExecuteChanged();
+        DeleteSplitCommand.NotifyCanExecuteChanged();
         SplitEquallyCommand.NotifyCanExecuteChanged();
         ResetSplitCommand.NotifyCanExecuteChanged();
     }
@@ -2233,11 +2261,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     }
 
     private bool CanAddSplit(TransactionVM? parent) =>
-        _isTransactionStateInitialized &&
+        _isTransactionStateInitialized && CanModifySplitTree &&
         TransactionSplitHelper.CanAddChild(PendingTransaction, parent) &&
         TransactionSplitHelper.IsValidParent(parent ?? PendingTransaction);
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanModifySplitTree))]
     public void DeleteSplit(TransactionVM node)
     {
         EnsureTransactionState();
@@ -2265,7 +2293,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     }
 
     private bool CanSplitEqually(TransactionVM? parent) =>
-        _isTransactionStateInitialized && (parent ?? PendingTransaction).ChildTransactions.Count >= 2;
+        _isTransactionStateInitialized && CanModifySplitTree &&
+        (parent ?? PendingTransaction).ChildTransactions.Count >= 2;
 
     [RelayCommand(CanExecute = nameof(CanResetSplit))]
     public void ResetSplit(TransactionVM? parent)
@@ -2279,7 +2308,24 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     }
 
     private bool CanResetSplit(TransactionVM? parent) =>
-        _isTransactionStateInitialized && (parent ?? PendingTransaction).ChildTransactions.Count > 0;
+        _isTransactionStateInitialized && CanModifySplitTree &&
+        (parent ?? PendingTransaction).ChildTransactions.Count > 0;
+
+    public void ClearSplitTransactions()
+    {
+        EnsureTransactionState();
+        if (!HasSplitTransactions)
+            return;
+
+        SyncCurrentSplitTransactionFromForm();
+        PendingTransaction.ChildTransactions.Clear();
+        SelectedSplitTransaction = null;
+        if (SelectedSidePanel == TransactionPopupSidePanel.Split)
+            SelectedSidePanel = TransactionPopupSidePanel.History;
+        LoadSplitTransactionIntoForm(PendingTransaction);
+        NotifySplitDisplayChanged();
+        OnPropertyChanged(nameof(HasChanges));
+    }
 
     private void SelectSplitTransaction(TransactionVM? node)
     {
@@ -2508,38 +2554,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         catch { return 0m; }
     }
 
-    private IReadOnlyList<TransactionWarning> BuildTransactionWarnings()
-    {
-        var context = CreateValidationContext();
-        var errors = new[]
-            {
-                ValidateNameText(NameText, context),
-                ValidateAmountText(AmountText, context),
-                ValidateSelectedAccount(SelectedAccount, context),
-                ValidateSelectedTag(SelectedTag, context),
-                ValidateSelectedGoal(SelectedGoal, context),
-                ValidateRecurringTimeText(RecurringTimeText, context)
-            }
-            .Append(IsRepayment && SelectedRepaymentAccount is null
-                ? new ValidationResult("Please choose a credit account.")
-                : ValidationResult.Success)
-            .Append(IsInstallments
-                ? ToInstallmentValidationResult()
-                : ValidationResult.Success)
-            .OfType<ValidationResult>()
-            .Select(result => result.ErrorMessage)
-            .Where(message => !string.IsNullOrWhiteSpace(message))
-            .Select(message => new TransactionWarning(message!, false));
-
-        return errors
-            .Append(string.IsNullOrWhiteSpace(AmountWarningHint)
-                ? null
-                : new TransactionWarning(AmountWarningHint, true))
-            .OfType<TransactionWarning>()
-            .DistinctBy(warning => warning.Message)
-            .ToArray();
-    }
-
     private ValidationResult? ToInstallmentValidationResult()
     {
         var result = RecurringTransactionValidationHelper.ValidateInstallments(
@@ -2549,9 +2563,32 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private void NotifyTransactionWarningsChanged()
     {
-        OnPropertyChanged(nameof(TransactionWarnings));
-        OnPropertyChanged(nameof(TransactionFeedbackCount));
-        OnPropertyChanged(nameof(HasTransactionWarnings));
+        RefreshFieldFeedback();
+    }
+
+    private void RefreshFieldFeedback()
+    {
+        var context = CreateValidationContext();
+        NameFeedback.Update(ToFeedback(ValidateNameText(NameText, context)));
+        AmountFeedback.Update(ToFeedback(ValidateAmountText(AmountText, context))
+            .Append(string.IsNullOrWhiteSpace(AmountWarningHint)
+                ? null
+                : new TransactionWarning(AmountWarningHint, true))
+            .OfType<TransactionWarning>());
+        AccountFeedback.Update(ToFeedback(ValidateSelectedAccount(SelectedAccount, context)));
+        TagFeedback.Update(ToFeedback(ValidateSelectedTag(SelectedTag, context)));
+        GoalFeedback.Update(ToFeedback(ValidateSelectedGoal(SelectedGoal, context)));
+        RecurrenceFeedback.Update(ToFeedback(ValidateRecurringTimeText(RecurringTimeText, context))
+            .Concat(ToFeedback(IsInstallments ? ToInstallmentValidationResult() : ValidationResult.Success)));
+        CreditAccountFeedback.Update(IsRepayment && SelectedRepaymentAccount is null
+            ? [new TransactionWarning("Please choose a credit account.", false)]
+            : []);
+    }
+
+    private static IEnumerable<TransactionWarning> ToFeedback(ValidationResult? result)
+    {
+        if (!string.IsNullOrWhiteSpace(result?.ErrorMessage))
+            yield return new TransactionWarning(result.ErrorMessage, false);
     }
 
     private void RefreshAmountWarning()
@@ -2619,6 +2656,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         LoadedTransaction = TransactionMappingHelper.CreateLoaded(source);
         PendingTransaction = TransactionMappingHelper.CreatePending(LoadedTransaction);
         _isTransactionStateInitialized = true;
+        OnPropertyChanged(nameof(PendingTransaction));
     }
 
     private void SeedGeneratedAddBaseline()
@@ -2657,6 +2695,24 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         transaction.IsIoU = IsIoU;
         transaction.ShouldAffectBalance = ShouldAffectBalance;
         transaction.IsExcludedFromBudget = IsBudgetExcluded;
+        if (ReferenceEquals(transaction, PendingTransaction))
+            SyncSplitDescendantContext();
+    }
+
+    private void SyncSplitDescendantContext()
+    {
+        foreach (var child in PendingTransaction.ChildTransactions)
+        {
+            child.SourceAccountId = PendingTransaction.SourceAccountId;
+            child.Account = PendingTransaction.Account;
+            child.OccurredOn = PendingTransaction.OccurredOn;
+            foreach (var grandchild in child.ChildTransactions)
+            {
+                grandchild.SourceAccountId = PendingTransaction.SourceAccountId;
+                grandchild.Account = PendingTransaction.Account;
+                grandchild.OccurredOn = PendingTransaction.OccurredOn;
+            }
+        }
     }
 
     private bool IsGeneratedAddMode => _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
@@ -2766,7 +2822,21 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                && (!validateTag || IsValidationSuccess(ValidateSelectedTag(SelectedTag, CreateValidationContext())))
                && IsValidationSuccess(ValidateSelectedGoal(SelectedGoal, CreateValidationContext()))
                && IsValidationSuccess(ValidateRecurringTimeText(RecurringTimeText, CreateValidationContext()))
-               && IsInstallmentInputValid();
+               && IsInstallmentInputValid()
+               && (!HasSplitTransactions || IsSplitTreeValid(PendingTransaction));
+    }
+
+    private bool IsSplitTreeValid(TransactionVM transaction)
+    {
+        if (!TransactionValidationHelper.ValidateName(transaction.Name, IsGoal).IsValid ||
+            !TransactionValidationHelper.ValidateAmount(transaction.Amount, false, false, false, null).IsValid)
+            return false;
+
+        if (transaction.ChildTransactions.Count == 0 && IsExpense && !IsRepayment &&
+            transaction.Tag is null)
+            return false;
+
+        return transaction.ChildTransactions.All(IsSplitTreeValid);
     }
 
     private bool IsRootSplitInputValid() =>
@@ -3233,7 +3303,16 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsProcessingComplete));
         OnPropertyChanged(nameof(PopupTitle));
         OnPropertyChanged(nameof(ShowHistoryPanel));
+        OnPropertyChanged(nameof(ShowPinnedPanel));
+        OnPropertyChanged(nameof(ShowSplitPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
+        OnPropertyChanged(nameof(CanChangeTransactionType));
+        OnPropertyChanged(nameof(CanUseSplit));
+        OnPropertyChanged(nameof(CanModifySplitTree));
+        AddSplitCommand.NotifyCanExecuteChanged();
+        DeleteSplitCommand.NotifyCanExecuteChanged();
+        SplitEquallyCommand.NotifyCanExecuteChanged();
+        ResetSplitCommand.NotifyCanExecuteChanged();
     }
 
 
@@ -3394,11 +3473,17 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CanDiscard));
         OnPropertyChanged(nameof(PopupMode));
         OnPropertyChanged(nameof(ShowSidePanelToggle));
+        OnPropertyChanged(nameof(CanChangeTransactionType));
+        OnPropertyChanged(nameof(CanUseSplit));
         OnPropertyChanged(nameof(CanModifySplitTree));
         OnPropertyChanged(nameof(ShowRootSplitAddAction));
         OnPropertyChanged(nameof(ShowRootSplitPlusAction));
         AddSplitCommand.NotifyCanExecuteChanged();
+        DeleteSplitCommand.NotifyCanExecuteChanged();
+        SplitEquallyCommand.NotifyCanExecuteChanged();
+        ResetSplitCommand.NotifyCanExecuteChanged();
         OnPropertyChanged(nameof(ShowHistoryPanel));
+        OnPropertyChanged(nameof(ShowPinnedPanel));
         OnPropertyChanged(nameof(ShowSplitPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
         OnPropertyChanged(nameof(CanEditTags));

@@ -253,6 +253,29 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
+    public void Edit_mode_shows_split_without_history_pinned_or_toggle()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeView(CreateTransaction());
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            Assert.False(vm.ShowSidePanelToggle);
+            Assert.True(vm.ShowSplitPanel);
+            Assert.False(vm.ShowHistoryPanel);
+            Assert.False(vm.ShowPinnedPanel);
+            Assert.True(vm.CanEditTransactionName);
+
+            vm.NameText = "Lunch";
+            vm.AmountText = 20m;
+
+            Assert.Equal("Lunch", vm.PendingTransaction.Name);
+            Assert.Equal(20m, vm.PendingTransaction.Amount);
+        });
+    }
+
+    [Fact]
     public void View_mode_keeps_pending_equal_when_the_loaded_goal_is_not_available()
     {
         RunInSta(() =>

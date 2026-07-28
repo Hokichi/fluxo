@@ -1,7 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Resources.Components;
+using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Styles;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Views.Popups;
@@ -54,6 +58,100 @@ public sealed class TransactionPopupSplitLayoutTests
         });
     }
 
+    [Fact]
+    public void InvalidName_shows_hover_feedback_icon_without_affecting_layout()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger())
+            {
+                NameText = "Lunch"
+            };
+            viewModel.NameText = string.Empty;
+            var popup = new TransactionPopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+
+            var feedback = FindControls<ContentControl>(popup).Single(control =>
+                ReferenceEquals(control.Content, viewModel.NameFeedback));
+
+            Assert.NotNull(feedback.ContentTemplate);
+
+            var feedbackHost = Assert.IsType<Grid>(feedback.ContentTemplate.LoadContent());
+            feedbackHost.DataContext = viewModel.NameFeedback;
+            feedbackHost.Measure(new Size(100, 100));
+            feedbackHost.Arrange(new Rect(0, 0, 100, 100));
+            feedbackHost.UpdateLayout();
+            Assert.Equal(10, feedbackHost.DesiredSize.Width);
+            Assert.Equal(10, feedbackHost.DesiredSize.Height);
+
+            var feedbackIcon = FindVisualControls<Icon>(feedbackHost).Single(icon =>
+                Equals(icon.Path, popup.FindResource("ExclamationTriangle")));
+            var feedbackPopup = FindControls<Popup>(feedbackHost).Single(candidate =>
+                ReferenceEquals(candidate.PlacementTarget, feedbackIcon));
+
+            Assert.Equal(popup.FindResource("Brush.Danger"), feedbackIcon.Color);
+            Assert.Equal("IsMouseOver", feedbackPopup.GetBindingExpression(Popup.IsOpenProperty)!.ParentBinding.Path.Path);
+        });
+    }
+
+    [Fact]
+    public void Split_option_is_disabled_for_income()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger())
+            {
+                IsExpense = false
+            };
+            var popup = new TransactionPopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+
+            var split = FindControls<SegmentedToggleOption>(popup)
+                .Single(option => Equals(option.Content, "Split"));
+
+            Assert.False(split.IsEnabled);
+        });
+    }
+
+    [Fact]
+    public void Root_split_card_tracks_name_after_goal_update_returns_to_expense()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger())
+            {
+                NameText = "Original",
+                AmountText = 100m
+            };
+            viewModel.AddSplitCommand.Execute(null);
+            viewModel.SelectSplitCommand.Execute(null);
+            var popup = new TransactionPopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+
+            var rootCard = FindButtons(popup).Single(button =>
+                ReferenceEquals(button.Style, popup.FindResource("SplitTransactionRootCardStyle")));
+            var rootName = FindControls<TextBlock>(Assert.IsType<Grid>(rootCard.Content)).Single(textBlock =>
+                textBlock.GetBindingExpression(TextBlock.TextProperty)?.ParentBinding.Path.Path == "PendingTransaction.Name");
+
+            viewModel.IsGoal = true;
+            viewModel.IsExpense = true;
+            viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
+            viewModel.NameText = "Current";
+            popup.UpdateLayout();
+
+            Assert.Equal("Current", rootName.Text);
+        });
+    }
+
     private static IEnumerable<Button> FindButtons(DependencyObject root)
     {
         foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
@@ -62,6 +160,31 @@ public sealed class TransactionPopupSplitLayoutTests
                 yield return button;
 
             foreach (var descendant in FindButtons(child))
+                yield return descendant;
+        }
+    }
+
+    private static IEnumerable<T> FindControls<T>(DependencyObject root) where T : DependencyObject
+    {
+        foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
+        {
+            if (child is T control)
+                yield return control;
+
+            foreach (var descendant in FindControls<T>(child))
+                yield return descendant;
+        }
+    }
+
+    private static IEnumerable<T> FindVisualControls<T>(DependencyObject root) where T : DependencyObject
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(root); index++)
+        {
+            var child = VisualTreeHelper.GetChild(root, index);
+            if (child is T control)
+                yield return control;
+
+            foreach (var descendant in FindVisualControls<T>(child))
                 yield return descendant;
         }
     }

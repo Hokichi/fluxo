@@ -38,8 +38,11 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
     public ObservableCollection<TransactionVM> ChildTransactions { get; } = [];
     public decimal ChildAmountTotal => ChildTransactions.Sum(child => child.Amount);
     public decimal ChildAmountRemaining => Amount - ChildAmountTotal;
+    public decimal ChildAmountOverflow => Math.Max(0m, ChildAmountTotal - Amount);
+    public decimal ChildAmountDisplay => HasChildAmountOverflow ? ChildAmountOverflow : ChildAmountRemaining;
+    public string ChildAmountStatus => HasChildAmountOverflow ? "overflowing" : "left";
     public bool HasChildAmountOverflow => ChildAmountTotal > Amount;
-    public bool CanAddChildTransaction => !HasChildAmountOverflow;
+    public bool CanAddChildTransaction => Amount > 0m && !HasChildAmountOverflow;
     public bool IsLeaf => ChildTransactions.Count == 0;
 
     partial void OnAmountChanged(decimal value) => NotifyChildStateChanged();
@@ -83,6 +86,9 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
     {
         OnPropertyChanged(nameof(ChildAmountTotal));
         OnPropertyChanged(nameof(ChildAmountRemaining));
+        OnPropertyChanged(nameof(ChildAmountOverflow));
+        OnPropertyChanged(nameof(ChildAmountDisplay));
+        OnPropertyChanged(nameof(ChildAmountStatus));
         OnPropertyChanged(nameof(HasChildAmountOverflow));
         OnPropertyChanged(nameof(CanAddChildTransaction));
         OnPropertyChanged(nameof(IsLeaf));

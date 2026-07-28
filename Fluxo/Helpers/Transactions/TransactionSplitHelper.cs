@@ -4,8 +4,12 @@ namespace Fluxo.Helpers.Transactions;
 
 public static class TransactionSplitHelper
 {
-    public static bool CanAddChild(TransactionVM root, TransactionVM? parent) =>
-        parent is null || root.ChildTransactions.Any(child => ReferenceEquals(child, parent));
+    public static bool CanAddChild(TransactionVM root, TransactionVM? parent)
+    {
+        var parentNode = parent ?? root;
+        return (parent is null || root.ChildTransactions.Any(child => ReferenceEquals(child, parent))) &&
+               !parentNode.HasChildAmountOverflow;
+    }
 
     public static bool IsValidParent(TransactionVM parent) =>
         !string.IsNullOrWhiteSpace(parent.Name) && parent.Amount > 0m;

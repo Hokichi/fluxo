@@ -534,9 +534,6 @@
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
                         </Trigger>
-                        <Trigger Property="Validation.HasError" Value="True">
-                            <Setter Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
-                        </Trigger>
                         <Trigger Property="HasItems" Value="False">
                             <Setter TargetName="DropDownBorder" Property="MinHeight" Value="0" />
                         </Trigger>

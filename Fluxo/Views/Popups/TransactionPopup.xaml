@@ -372,6 +372,45 @@
                 <TextBlock Style="{StaticResource TransactionWarningTextStyle}" Text="{Binding Message, Mode=OneWay}" />
             </DataTemplate>
 
+            <DataTemplate x:Key="TransactionFieldFeedbackTemplate">
+                <Grid Width="10" Height="10">
+                    <components:Icon
+                        x:Name="FeedbackIcon"
+                        Width="10"
+                        Height="10"
+                        Path="{StaticResource ExclamationTriangle}"
+                        Visibility="{Binding HasFeedback, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <components:Icon.Style>
+                            <Style TargetType="components:Icon">
+                                <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasErrors, Mode=OneWay}" Value="False">
+                                        <Setter Property="Color" Value="{StaticResource Brush.Warning}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </components:Icon.Style>
+                    </components:Icon>
+                    <Popup
+                        AllowsTransparency="True"
+                        IsOpen="{Binding IsMouseOver, ElementName=FeedbackIcon, Mode=OneWay}"
+                        Placement="Bottom"
+                        PlacementTarget="{Binding ElementName=FeedbackIcon, Mode=OneWay}"
+                        PopupAnimation="Fade"
+                        StaysOpen="False">
+                        <Border
+                            Margin="0,6,0,0"
+                            Padding="10"
+                            Background="{StaticResource Brush.Background.Elevated}"
+                            BorderBrush="{StaticResource Brush.Border.Subtle}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <ItemsControl ItemTemplate="{StaticResource TransactionWarningTemplate}" ItemsSource="{Binding Warnings, Mode=OneWay}" />
+                        </Border>
+                    </Popup>
+                </Grid>
+            </DataTemplate>
+
         </ResourceDictionary>
     </customControls:BasePopup.Resources>
 
@@ -416,20 +455,28 @@
                     IsEnabled="{Binding CanChangeTransactionType, Mode=OneWay}">
                     <customControls:SegmentedToggleOption
                         x:Name="ExpenseRadioButton"
+                        Click="OnTransactionTypeClick"
                         Content="Expense"
-                        IsSelected="{Binding IsExpense, Mode=TwoWay}" />
+                        IsSelected="{Binding IsExpense, Mode=OneWay}"
+                        SelectOnClick="False" />
                     <customControls:SegmentedToggleOption
                         x:Name="IncomeRadioButton"
+                        Click="OnTransactionTypeClick"
                         Content="Income"
-                        IsSelected="{Binding IsIncome, Mode=TwoWay}" />
+                        IsSelected="{Binding IsIncome, Mode=OneWay}"
+                        SelectOnClick="False" />
                     <customControls:SegmentedToggleOption
                         x:Name="GoalRadioButton"
+                        Click="OnTransactionTypeClick"
                         Content="Goal Update"
-                        IsSelected="{Binding IsGoal, Mode=TwoWay}" />
+                        IsSelected="{Binding IsGoal, Mode=OneWay}"
+                        SelectOnClick="False" />
                     <customControls:SegmentedToggleOption
                         x:Name="RepaymentRadioButton"
+                        Click="OnTransactionTypeClick"
                         Content="Repayment"
-                        IsSelected="{Binding IsRepayment, Mode=TwoWay}" />
+                        IsSelected="{Binding IsRepayment, Mode=OneWay}"
+                        SelectOnClick="False" />
                 </customControls:SegmentedToggleGroup>
             </StackPanel>
 
@@ -447,10 +494,16 @@
                                 <ColumnDefinition Width="8" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock
-                                Margin="0"
-                                Style="{StaticResource SectionLabelStyle}"
-                                Text="Name" />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    Margin="0"
+                                    Style="{StaticResource SectionLabelStyle}"
+                                    Text="Name" />
+                                <ContentControl
+                                    Margin="8,0,0,0"
+                                    Content="{Binding NameFeedback, Mode=OneWay}"
+                                    ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                            </StackPanel>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -519,10 +572,16 @@
 
                             <StackPanel Grid.Column="0">
                                 <Grid Style="{StaticResource FieldHeaderGridStyle}">
-                                    <TextBlock
-                                        Margin="0"
-                                        Style="{StaticResource SectionLabelStyle}"
-                                        Text="Amount" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            Margin="0"
+                                            Style="{StaticResource SectionLabelStyle}"
+                                            Text="Amount" />
+                                        <ContentControl
+                                            Margin="8,0,0,0"
+                                            Content="{Binding AmountFeedback, Mode=OneWay}"
+                                            ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                                    </StackPanel>
                                 </Grid>
                                 <customControls:MoneyTextBox
                                     x:Name="ExpenseAmountTextBox"
@@ -543,10 +602,16 @@
 
                         <StackPanel Margin="0,16,0,0" Visibility="{Binding IsRepayment, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <Grid Style="{StaticResource FieldHeaderGridStyle}">
-                                <TextBlock
-                                    Margin="0"
-                                    Style="{StaticResource SectionLabelStyle}"
-                                    Text="Amount" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock
+                                        Margin="0"
+                                        Style="{StaticResource SectionLabelStyle}"
+                                        Text="Amount" />
+                                    <ContentControl
+                                        Margin="8,0,0,0"
+                                        Content="{Binding AmountFeedback, Mode=OneWay}"
+                                        ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                                </StackPanel>
                             </Grid>
                             <customControls:MoneyTextBox
                                 x:Name="RepaymentAmountTextBox"
@@ -676,7 +741,13 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Schedule" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Schedule" />
+                                        <ContentControl
+                                            Margin="8,0,0,0"
+                                            Content="{Binding RecurrenceFeedback, Mode=OneWay}"
+                                            ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                                    </StackPanel>
                                     <ComboBox
                                         DisplayMemberPath="Label"
                                         ItemsSource="{Binding WeekdayOptions, Mode=OneWay}"
@@ -754,17 +825,27 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock
+                            <StackPanel
                                 Grid.Row="0"
                                 Grid.Column="0"
-                                Style="{StaticResource SectionLabelStyle}"
-                                Text="{Binding CategoryFieldLabel, Mode=OneWay}"
-                                Visibility="{Binding ShowCategoryOrRepaymentField, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <TextBlock
+                                Orientation="Horizontal"
+                                Visibility="{Binding ShowCategoryOrRepaymentField, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding CategoryFieldLabel, Mode=OneWay}" />
+                                <ContentControl
+                                    Margin="8,0,0,0"
+                                    Content="{Binding CreditAccountFeedback, Mode=OneWay}"
+                                    ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                            </StackPanel>
+                            <StackPanel
                                 Grid.Row="0"
                                 Grid.Column="2"
-                                Style="{StaticResource SectionLabelStyle}"
-                                Text="Account" />
+                                Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Account" />
+                                <ContentControl
+                                    Margin="8,0,0,0"
+                                    Content="{Binding AccountFeedback, Mode=OneWay}"
+                                    ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                            </StackPanel>
 
                             <Grid
                                 Grid.Row="1"
@@ -1173,7 +1254,13 @@
                 Margin="0,16,0,0"
                 IsEnabled="{Binding CanEditTags, Mode=OneWay}"
                 Visibility="{Binding CanEditTags, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags" />
+                    <ContentControl
+                        Margin="8,0,0,0"
+                        Content="{Binding TagFeedback, Mode=OneWay}"
+                        ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                </StackPanel>
                 <DockPanel x:Name="TagsDockPanel" LastChildFill="False">
                     <Button
                         x:Name="AddTagButton"
@@ -1265,46 +1352,16 @@
                             TextChanged="OnNoteTextChanged"
                             VerticalScrollBarVisibility="Auto" />
                     </Border>
-                    <Border
-                        Margin="0,8,0,0"
-                        Padding="8,4"
-                        HorizontalAlignment="Left"
-                        Background="{StaticResource Brush.Background.Elevated}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
-                        BorderThickness="1"
-                        CornerRadius="0,0,8,8"
-                        ToolTipService.ShowDuration="60000"
-                        Visibility="{Binding HasTransactionWarnings, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <Border.ToolTip>
-                            <ToolTip DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}, Mode=OneWay}">
-                                <Border
-                                    Padding="10"
-                                    Background="{StaticResource Brush.Background.Elevated}"
-                                    CornerRadius="8">
-                                    <ItemsControl ItemTemplate="{StaticResource TransactionWarningTemplate}" ItemsSource="{Binding TransactionWarnings, Mode=OneWay}" />
-                                </Border>
-                            </ToolTip>
-                        </Border.ToolTip>
-                        <StackPanel Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
-                                Margin="0,0,6,0"
-                                VerticalAlignment="Center"
-                                Path="{StaticResource ExclamationTriangle}"
-                                Color="{StaticResource Brush.Danger}" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Medium}"
-                                FontSize="11"
-                                Foreground="{StaticResource Brush.Danger}"
-                                Text="{Binding TransactionFeedbackCount, Mode=OneWay}" />
-                        </StackPanel>
-                    </Border>
                 </StackPanel>
 
                 <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
-                    <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Goal" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Goal" />
+                        <ContentControl
+                            Margin="8,0,0,0"
+                            Content="{Binding GoalFeedback, Mode=OneWay}"
+                            ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                    </StackPanel>
                     <ComboBox
                         x:Name="SharedGoalComboBox"
                         VerticalAlignment="Top"
@@ -1319,7 +1376,7 @@
                 Grid.Row="0"
                 Grid.RowSpan="4"
                 Grid.Column="2"
-                Width="400"
+                Width="480"
                 Height="520"
                 Visibility="{Binding ShowSidePanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
@@ -1332,7 +1389,10 @@
                     Visibility="{Binding ShowSidePanelToggle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <customControls:SegmentedToggleOption Content="History" Value="{x:Static dataEnums:TransactionPopupSidePanel.History}" />
                     <customControls:SegmentedToggleOption Content="Pinned" Value="{x:Static dataEnums:TransactionPopupSidePanel.Pinned}" />
-                    <customControls:SegmentedToggleOption Content="Split" Value="{x:Static dataEnums:TransactionPopupSidePanel.Split}" />
+                    <customControls:SegmentedToggleOption
+                        Content="Split"
+                        IsEnabled="{Binding CanUseSplit, Mode=OneWay}"
+                        Value="{x:Static dataEnums:TransactionPopupSidePanel.Split}" />
                 </customControls:SegmentedToggleGroup>
 
                 <customControls:FadingScrollViewer
@@ -1409,9 +1469,18 @@
                                         Height="12"
                                         Margin="0,12,0,0"
                                         Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}"
-                                        Style="{StaticResource RoundedProgressBarStyle}"
                                         Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                        Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}" />
+                                        Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}">
+                                        <ProgressBar.Style>
+                                            <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ProgressBar.Style>
+                                    </ProgressBar>
                                     <Grid Grid.Row="2" Margin="0,8,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -1420,9 +1489,10 @@
                                         <TextBlock
                                             VerticalAlignment="Center"
                                             FontFamily="{StaticResource Medium}"
-                                            Foreground="{StaticResource Brush.Text.Primary}">
+                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                             <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                            <Run Text=" left" />
+                                            <Run Text="{Binding SplitAmountStatus, Mode=OneWay}" />
                                         </TextBlock>
                                         <StackPanel
                                             Grid.Column="1"
@@ -1466,15 +1536,25 @@
                                 Content="Add a sub-transaction"
                                 Style="{StaticResource DashedButtonStyle}"
                                 Visibility="{Binding ShowRootSplitAddAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <customControls:BalloonButton
-                                Margin="2,8,0,0"
+                            <StackPanel
+                                Width="32"
+                                Margin="1,-1,0,0"
                                 HorizontalAlignment="Left"
-                                ButtonIcon="{StaticResource PlusSolid}"
-                                ButtonText="+"
-                                Command="{Binding AddSplitCommand, Mode=OneWay}"
-                                CommandParameter="{x:Null}"
-                                ToolTip="Add a sub-transaction"
-                                Visibility="{Binding ShowRootSplitPlusAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                Visibility="{Binding ShowRootSplitPlusAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Border
+                                    Width="1"
+                                    Height="20"
+                                    HorizontalAlignment="Center"
+                                    Background="{StaticResource Brush.Border.Strong}" />
+                                <customControls:BalloonButton
+                                    Margin="2,4,0,0"
+                                    HorizontalAlignment="Left"
+                                    ButtonIcon="{StaticResource PlusSolid}"
+                                    ButtonText="+"
+                                    Command="{Binding AddSplitCommand, Mode=OneWay}"
+                                    CommandParameter="{x:Null}"
+                                    ToolTip="Add a sub-transaction" />
+                            </StackPanel>
                         </StackPanel>
                     </customControls:FadingScrollViewer>
                 </Grid>

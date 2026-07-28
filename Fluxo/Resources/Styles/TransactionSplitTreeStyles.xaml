@@ -50,6 +50,9 @@
             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" Value="True">
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
             </DataTrigger>
+            <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 
@@ -60,6 +63,9 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding SelectedSplitTransaction, Mode=OneWay}" Value="{x:Null}">
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -83,6 +89,7 @@
                     Background="{StaticResource Brush.Border.Strong}" />
                 <customControls:BalloonButton
                     Grid.Row="1"
+                    Margin="0,4"
                     ButtonIcon="{StaticResource Delete}"
                     ButtonText="Delete"
                     Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -109,12 +116,14 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
+                        Foreground="{StaticResource Brush.Text.Primary}"
                         Text="{Binding Name, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
                     <TextBlock
                         Grid.Column="1"
                         Margin="12,0,0,0"
                         FontFamily="{StaticResource Bold}"
+                        Foreground="{StaticResource Brush.Text.Primary}"
                         Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                 </Grid>
             </Button>
@@ -141,6 +150,7 @@
                         Background="{StaticResource Brush.Border.Strong}" />
                     <customControls:BalloonButton
                         Grid.Row="1"
+                        Margin="0,4"
                         ButtonIcon="{StaticResource Delete}"
                         ButtonText="Delete"
                         Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -169,29 +179,43 @@
                             </Grid.ColumnDefinitions>
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
+                                Foreground="{StaticResource Brush.Text.Primary}"
                                 Text="{Binding Name, Mode=OneWay}"
                                 TextTrimming="CharacterEllipsis" />
                             <TextBlock
                                 Grid.Column="1"
                                 Margin="12,0,0,0"
                                 FontFamily="{StaticResource Bold}"
+                                Foreground="{StaticResource Brush.Text.Primary}"
                                 Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                         </Grid>
                         <ProgressBar
                             Height="12"
                             Margin="0,12,0,0"
                             Maximum="{Binding Amount, Mode=OneWay}"
-                            Style="{StaticResource RoundedProgressBarStyle}"
                             Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}"
-                            Value="{Binding ChildAmountTotal, Mode=OneWay}" />
+                            Value="{Binding ChildAmountTotal, Mode=OneWay}">
+                            <ProgressBar.Style>
+                                <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ProgressBar.Style>
+                        </ProgressBar>
                         <Grid Margin="0,8,0,0" Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock VerticalAlignment="Center" FontFamily="{StaticResource Medium}">
-                                <Run Text="{Binding ChildAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                <Run Text=" left" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontFamily="{StaticResource Medium}"
+                                Foreground="{StaticResource Brush.Text.Primary}">
+                                <Run Text="{Binding ChildAmountDisplay, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                <Run Text="{Binding ChildAmountStatus, Mode=OneWay}" />
                             </TextBlock>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <customControls:BalloonButton
@@ -200,12 +224,18 @@
                                     ButtonText="Split Equally"
                                     Command="{Binding DataContext.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
+                                    CornerRadius="8"
+                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     ShouldShowText="True" />
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource RegularUndo}"
                                     ButtonText="Reset"
                                     Command="{Binding DataContext.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
+                                    CornerRadius="8"
+                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     ShouldShowText="True" />
                             </StackPanel>
                         </Grid>
@@ -221,22 +251,31 @@
                     Width="1"
                     HorizontalAlignment="Center"
                     Background="{StaticResource Brush.Border.Strong}" />
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" Margin="0,4,0,0">
                     <TreeView
                         Margin="-32,0,0,0"
                         ItemTemplate="{StaticResource SplitTransactionLeafTemplate}"
                         ItemsSource="{Binding ChildTransactions, Mode=OneWay}"
                         Style="{StaticResource SplitTransactionTreeViewStyle}" />
-                    <customControls:BalloonButton
-                        Margin="2,8,0,0"
-                        HorizontalAlignment="Left"
-                        ButtonIcon="{StaticResource PlusSolid}"
-                        ButtonText="+"
-                        Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
-                        CommandParameter="{Binding}"
-                        ToolTip="Add a sub-transaction"
-                        Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-
+                    <StackPanel
+                        Width="32"
+                        Margin="1,-1,0,0"
+                        HorizontalAlignment="Left">
+                        <Border
+                            Width="1"
+                            Height="20"
+                            HorizontalAlignment="Center"
+                            Background="{StaticResource Brush.Border.Strong}" />
+                        <customControls:BalloonButton
+                            Margin="2,4,0,0"
+                            HorizontalAlignment="Left"
+                            ButtonIcon="{StaticResource PlusSolid}"
+                            Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
+                            CommandParameter="{Binding}"
+                            IsEnabled="{Binding CanAddChildTransaction, Mode=OneWay}"
+                            ToolTip="Add a sub-transaction"
+                            Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </StackPanel>

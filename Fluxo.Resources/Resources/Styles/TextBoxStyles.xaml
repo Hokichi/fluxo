@@ -33,9 +33,6 @@
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                         </Trigger>
-                        <Trigger Property="Validation.HasError" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
-                        </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                         </Trigger>
@@ -77,9 +74,6 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="Validation.HasError" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
@@ -157,9 +151,6 @@
                         </MultiTrigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="Validation.HasError" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
@@ -244,9 +235,6 @@
                         </MultiTrigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="Validation.HasError" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />

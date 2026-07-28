@@ -114,4 +114,13 @@ public sealed class TransactionSplitHelperTests
 
         Assert.True(TransactionSplitHelper.IsBalanced(root));
     }
+
+    [Fact]
+    public void CanAddChild_rejects_an_overfilled_parent()
+    {
+        var root = new TransactionVM { Amount = 100m };
+        root.ChildTransactions.Add(new TransactionVM { Amount = 101m });
+
+        Assert.False(TransactionSplitHelper.CanAddChild(root, null));
+    }
 }

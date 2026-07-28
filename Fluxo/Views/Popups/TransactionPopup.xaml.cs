@@ -9,6 +9,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Infrastructure;
 using Fluxo.Resources.Styles;
 using Fluxo.Services.Notifications;
@@ -495,6 +496,33 @@ public partial class TransactionPopup : BasePopup
     private void OnRootSplitCardClick(object sender, RoutedEventArgs e)
     {
         TransactionSplitTreeStyles.SyncSelection(SplitTransactionTree, null);
+    }
+
+    private void OnTransactionTypeClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not SegmentedToggleOption option || option.IsSelected)
+            return;
+
+        if (_viewModel.IsExpense && _viewModel.HasSplitTransactions &&
+            FluxoMessageBox.Show(
+                this,
+                "Switching transaction type will remove all sub-transactions. Continue?",
+                "Change Transaction Type",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        if (_viewModel.IsExpense && _viewModel.HasSplitTransactions)
+            _viewModel.ClearSplitTransactions();
+
+        if (ReferenceEquals(option, ExpenseRadioButton))
+            _viewModel.IsExpense = true;
+        else if (ReferenceEquals(option, IncomeRadioButton))
+            _viewModel.IsIncome = true;
+        else if (ReferenceEquals(option, GoalRadioButton))
+            _viewModel.IsGoal = true;
+        else if (ReferenceEquals(option, RepaymentRadioButton))
+            _viewModel.IsRepayment = true;
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

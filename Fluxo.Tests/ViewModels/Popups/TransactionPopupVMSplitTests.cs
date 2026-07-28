@@ -60,6 +60,45 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void SplitOverflow_UsesPositiveOverflowAmountAndBlocksSave()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        var child = vm.PendingTransaction.ChildTransactions.Single();
+        vm.SelectSplitCommand.Execute(child);
+        vm.AmountText = 101m;
+        vm.SelectSplitCommand.Execute(null);
+
+        Assert.True(vm.HasSplitAmountOverflow);
+        Assert.Equal(1m, vm.SplitAmountRemaining);
+        Assert.False(vm.CanSave);
+    }
+
+    [Fact]
+    public void ZeroAmountSplitParent_DisablesAddingChild()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        var parent = vm.PendingTransaction.ChildTransactions.Single();
+
+        Assert.False(parent.CanAddChildTransaction);
+    }
+
+    [Fact]
+    public void InvalidGrandchild_BlocksSaveWhenRootIsSelected()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        var parent = vm.PendingTransaction.ChildTransactions.Single();
+        vm.AmountText = 100m;
+        vm.AddSplit(parent);
+        parent.ChildTransactions.Single().Name = string.Empty;
+        vm.SelectSplitCommand.Execute(null);
+
+        Assert.False(vm.CanSave);
+    }
+
+    [Fact]
     public void SplitEqually_does_not_overwrite_another_selected_child_with_stale_form_values()
     {
         var vm = CreateVm();
@@ -169,6 +208,57 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void ClearSplitTransactions_removes_tree_and_returns_to_history()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        vm.AddSplitCommand.Execute(null);
+        vm.SelectedSidePanel = TransactionPopupSidePanel.Split;
+
+        vm.ClearSplitTransactions();
+
+        Assert.Empty(vm.PendingTransaction.ChildTransactions);
+        Assert.Null(vm.SelectedSplitTransaction);
+        Assert.Equal(TransactionPopupSidePanel.History, vm.SelectedSidePanel);
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    public void Returning_from_goal_or_repayment_to_expense_or_income_clears_amount(
+        bool startsAsGoal,
+        bool returnsToExpense)
+    {
+        var vm = CreateVm();
+        if (startsAsGoal)
+            vm.IsGoal = true;
+        else
+            vm.IsRepayment = true;
+        vm.AmountText = 100m;
+
+        if (returnsToExpense)
+            vm.IsExpense = true;
+        else
+            vm.IsIncome = true;
+
+        Assert.Equal(0m, vm.AmountText);
+    }
+
+    [Fact]
+    public void Processing_hides_side_panel_and_disables_type_and_split_changes()
+    {
+        var vm = CreateVm();
+        vm.InitializeGoalProcessing([new SavingGoalVM { Id = 1, Name = "Goal" }]);
+
+        Assert.False(vm.ShowSidePanel);
+        Assert.False(vm.CanChangeTransactionType);
+        Assert.False(vm.CanUseSplit);
+        Assert.False(vm.CanModifySplitTree);
+    }
+
+    [Fact]
     public void SplitEqually_refreshes_root_child_total()
     {
         var vm = CreateVm();
@@ -179,6 +269,27 @@ public sealed class TransactionPopupVMSplitTests
         vm.SplitEquallyCommand.Execute(null);
 
         Assert.Equal(100m, vm.PendingTransaction.ChildAmountTotal);
+    }
+
+    [Fact]
+    public void Root_account_and_date_changes_update_all_split_descendants()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        var child = vm.PendingTransaction.ChildTransactions.Single();
+        vm.AmountText = 100m;
+        vm.AddSplitCommand.Execute(child);
+        var grandchild = child.ChildTransactions.Single();
+
+        vm.SelectSplitCommand.Execute(null);
+        vm.SelectedAccount = new AccountVM { Id = 2, Name = "Savings", AccountType = AccountType.Checking };
+        vm.SelectedDate = new DateTime(2026, 7, 28);
+
+        Assert.All(new[] { child, grandchild }, node =>
+        {
+            Assert.Equal(2, node.SourceAccountId);
+            Assert.Equal(new DateTime(2026, 7, 28), node.OccurredOn);
+        });
     }
 
     [Fact]
