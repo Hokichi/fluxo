@@ -27,6 +27,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionSplitTreeStyles.xaml" />
+                <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionBalanceUpdateStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
@@ -917,65 +918,59 @@
                                 </ComboBox.GroupStyle>
                             </ComboBox>
 
-                            <StackPanel
-                                Grid.Row="2"
-                                Grid.Column="0"
-                                Margin="0,12,24,0"
-                                Orientation="Horizontal"
-                                Visibility="{Binding ShowCategoryImpact, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBlock
-                                    FontFamily="{StaticResource Medium}"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
-                                    Text="{Binding CategoryCurrent, StringFormat=N0, Mode=OneWay}" />
-                                <components:Icon
-                                    Width="6"
-                                    Margin="16,0"
-                                    Path="{StaticResource AngleRight}"
-                                    Color="{StaticResource Brush.Text.Primary}" />
-                                <TextBlock FontFamily="{StaticResource Medium}" Text="{Binding CategoryToBe, StringFormat=N0, Mode=OneWay}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsIncome, Mode=OneWay}" Value="True">
-                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </StackPanel>
-
-                            <StackPanel
-                                Grid.Row="2"
-                                Grid.Column="2"
-                                Margin="0,12,24,0"
-                                Orientation="Horizontal"
-                                Visibility="{Binding ShowAccountImpact, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBlock
-                                    FontFamily="{StaticResource Medium}"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
-                                    Text="{Binding AccountCurrent, StringFormat=N0, Mode=OneWay}" />
-                                <components:Icon
-                                    Width="6"
-                                    Margin="16,0"
-                                    Path="{StaticResource AngleRight}"
-                                    Color="{StaticResource Brush.Text.Primary}" />
-                                <TextBlock FontFamily="{StaticResource Medium}" Text="{Binding AccountToBe, StringFormat=N0, Mode=OneWay}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsIncome, Mode=OneWay}" Value="True">
-                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </StackPanel>
-
                         </Grid>
+                    </Border>
+
+                    <Border
+                        x:Name="BalanceUpdateCard"
+                        Margin="0,16,0,0"
+                        Style="{StaticResource CardBorderStyle}"
+                        Visibility="{Binding ShowBalanceUpdate, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Balance Update" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    FontFamily="{DynamicResource Medium}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                    Text="{Binding BalanceUpdateAccountName, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <TextBlock
+                                        FontFamily="{DynamicResource Medium}"
+                                        Foreground="{DynamicResource Brush.Text.Primary}"
+                                        Text="{Binding BalanceUpdateAccountCurrent, Mode=OneWay, StringFormat={}{0:N0}}" />
+                                    <components:Icon
+                                        Width="6"
+                                        Margin="12,0"
+                                        Color="{DynamicResource Brush.Text.Primary}"
+                                        Path="{StaticResource AngleRight}" />
+                                    <TextBlock
+                                        FontFamily="{DynamicResource Medium}"
+                                        Foreground="{DynamicResource Brush.Text.Primary}"
+                                        Text="{Binding BalanceUpdateAccountToBe, Mode=OneWay, StringFormat={}{0:N0}}" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Margin="0,16,0,0">
+                                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Categories:" />
+                                <ListView
+                                    ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
+                                    ItemTemplate="{StaticResource BalanceUpdateItemTemplate}"
+                                    ItemsSource="{Binding CategoryBalanceUpdates, Mode=OneWay}"
+                                    Style="{StaticResource BalanceUpdateListViewStyle}" />
+                            </StackPanel>
+                            <StackPanel Margin="0,16,0,0">
+                                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags:" />
+                                <ListView
+                                    ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
+                                    ItemTemplate="{StaticResource BalanceUpdateItemTemplate}"
+                                    ItemsSource="{Binding TagBalanceUpdates, Mode=OneWay}"
+                                    Style="{StaticResource BalanceUpdateListViewStyle}" />
+                            </StackPanel>
+                        </StackPanel>
                     </Border>
                 </StackPanel>
 

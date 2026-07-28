@@ -66,6 +66,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private bool _useRecurringDraftMessages;
     private bool _isDisposed;
     private bool _isLoadingSplitTransaction;
+    private IReadOnlyDictionary<ExpenseCategory, decimal> _balanceUpdateCategoryCurrentAmounts = new Dictionary<ExpenseCategory, decimal>();
+    private IReadOnlyDictionary<int, decimal> _balanceUpdateTagCurrentAmounts = new Dictionary<int, decimal>();
     public Guid AddTagOwnerToken { get; } = Guid.NewGuid();
 
     [ObservableProperty]
@@ -621,6 +623,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             if (message.HasReceivedResponse && message.Response is { } date)
                 SelectedDate = date.Date;
         }
+        await LoadBalanceUpdateCurrentAmountsAsync(cancellationToken);
         _isInitialized = true;
         return true;
     }
@@ -2572,9 +2575,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
 
         var leaves = GetBalanceUpdateLeaves(PendingTransaction).ToArray();
-        var categoryCurrent = GetBalanceUpdateCategoryCurrentAmounts(leaves);
-        var tagCurrent = GetBalanceUpdateTagCurrentAmounts();
-
         ReplaceCollection(
             CategoryBalanceUpdates,
             leaves
@@ -2583,8 +2583,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 .OrderBy(group => group.Key)
                 .Select(group => new BalanceUpdateItem(
                     TransactionCalculationHelper.GetExpenseCategoryLabel(group.Key),
-                    categoryCurrent.GetValueOrDefault(group.Key),
-                    categoryCurrent.GetValueOrDefault(group.Key) + group.Sum(leaf => leaf.Amount))));
+                    _balanceUpdateCategoryCurrentAmounts.GetValueOrDefault(group.Key),
+                    _balanceUpdateCategoryCurrentAmounts.GetValueOrDefault(group.Key) + group.Sum(leaf => leaf.Amount))));
 
         ReplaceCollection(
             TagBalanceUpdates,
@@ -2594,7 +2594,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 .OrderBy(group => group.First().Tag!.Name, StringComparer.OrdinalIgnoreCase)
                 .Select(group =>
                 {
-                    var current = tagCurrent.GetValueOrDefault(group.Key);
+                    var current = _balanceUpdateTagCurrentAmounts.GetValueOrDefault(group.Key);
                     return new BalanceUpdateItem(group.First().Tag!.Name, current, current + group.Sum(leaf => leaf.Amount));
                 }));
     }
@@ -2625,14 +2625,17 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 yield return leaf;
     }
 
-    private IReadOnlyDictionary<ExpenseCategory, decimal> GetBalanceUpdateCategoryCurrentAmounts(
-        IEnumerable<TransactionVM> leaves)
+    private async Task LoadBalanceUpdateCurrentAmountsAsync(CancellationToken cancellationToken)
     {
+        if (!_isTransactionStateInitialized)
+            return;
+
+        var leaves = GetBalanceUpdateLeaves(PendingTransaction).ToArray();
         try
         {
-            var allocation = _appData.GetBudgetAllocationAsync().GetAwaiter().GetResult();
-            var snapshot = BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate).GetAwaiter().GetResult();
-            return leaves
+            var allocation = await _appData.GetBudgetAllocationAsync(cancellationToken);
+            var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate);
+            _balanceUpdateCategoryCurrentAmounts = leaves
                 .Where(leaf => leaf is { Type: TransactionType.Expense, IsExcludedFromBudget: false, ExpenseCategory: not null })
                 .Select(leaf => leaf.ExpenseCategory!.Value)
                 .Distinct()
@@ -2640,23 +2643,22 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
         catch
         {
-            return new Dictionary<ExpenseCategory, decimal>();
+            _balanceUpdateCategoryCurrentAmounts = new Dictionary<ExpenseCategory, decimal>();
         }
-    }
 
-    private IReadOnlyDictionary<int, decimal> GetBalanceUpdateTagCurrentAmounts()
-    {
         try
         {
-            return _appData.GetTransactionsAsync().GetAwaiter().GetResult()
+            _balanceUpdateTagCurrentAmounts = (await _appData.GetTransactionsAsync(cancellationToken))
                 .Where(transaction => !transaction.IsForDeletion && transaction.TagId.HasValue)
                 .GroupBy(transaction => transaction.TagId!.Value)
                 .ToDictionary(group => group.Key, group => group.Sum(transaction => transaction.Amount));
         }
         catch
         {
-            return new Dictionary<int, decimal>();
+            _balanceUpdateTagCurrentAmounts = new Dictionary<int, decimal>();
         }
+
+        RefreshBalanceUpdate();
     }
 
     private ValidationResult? ToInstallmentValidationResult()

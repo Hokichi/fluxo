@@ -152,6 +152,45 @@ public sealed class TransactionPopupSplitLayoutTests
         });
     }
 
+    [Fact]
+    public void BalanceUpdateCard_ShowsAtZeroAndHidesForInstallments()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var account = new Fluxo.ViewModels.Entities.AccountVM
+            {
+                Id = 1,
+                Name = "Checking",
+                Balance = 500m,
+                IsEnabled = true
+            };
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger())
+            {
+                SelectedAccount = account,
+                NameText = "Transaction",
+                AmountText = 10m
+            };
+            viewModel.AddSplitCommand.Execute(null);
+            viewModel.SelectSplitCommand.Execute(null);
+            viewModel.AmountText = 0m;
+
+            var popup = new TransactionPopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+
+            var card = FindControls<Border>(popup).Single(control => control.Name == "BalanceUpdateCard");
+            Assert.Equal(Visibility.Visible, card.Visibility);
+            Assert.Equal(2, FindControls<ListView>(card).Count());
+
+            viewModel.IsInstallments = true;
+            popup.UpdateLayout();
+
+            Assert.Equal(Visibility.Collapsed, card.Visibility);
+        });
+    }
+
     private static IEnumerable<Button> FindButtons(DependencyObject root)
     {
         foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())

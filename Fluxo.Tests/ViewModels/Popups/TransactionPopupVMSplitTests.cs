@@ -340,6 +340,16 @@ public sealed class TransactionPopupVMSplitTests
             ("Travel", 0m, 70m)
         ],
         vm.TagBalanceUpdates.Select(item => (item.Name, item.CurrentAmount, item.NewAmount)));
+
+        vm.SelectSplitCommand.Execute(needs);
+
+        Assert.Equal(400m, vm.BalanceUpdateAccountToBe);
+        Assert.Equal(
+        [
+            ("Needs", 0m, 30m),
+            ("Wants", 0m, 70m)
+        ],
+        vm.CategoryBalanceUpdates.Select(item => (item.Name, item.CurrentAmount, item.NewAmount)));
     }
 
     [Fact]

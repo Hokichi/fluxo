@@ -1,0 +1,51 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources">
+
+    <Style x:Key="BalanceUpdateListViewStyle" TargetType="ListView">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <Style x:Key="BalanceUpdateListViewItemStyle" TargetType="ListViewItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <DataTemplate x:Key="BalanceUpdateItemTemplate">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                FontFamily="{DynamicResource Medium}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
+                Text="{Binding Name, Mode=OneWay}"
+                TextTrimming="CharacterEllipsis" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <TextBlock
+                    FontFamily="{DynamicResource Medium}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
+                    Text="{Binding CurrentAmount, Mode=OneWay, StringFormat={}{0:N0}}" />
+                <components:Icon
+                    Width="6"
+                    Margin="12,0"
+                    Color="{DynamicResource Brush.Text.Primary}"
+                    Path="{StaticResource AngleRight}" />
+                <TextBlock
+                    FontFamily="{DynamicResource Medium}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
+                    Text="{Binding NewAmount, Mode=OneWay, StringFormat={}{0:N0}}" />
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>
