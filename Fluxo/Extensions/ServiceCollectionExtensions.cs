@@ -93,12 +93,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<UpcomingEventsPanelVM>();
         services.AddSingleton<FloatingNotificationListVM>();
         services.AddSingleton<LedgerVM>();
-        services.AddSingleton<DayOfWeekVM>();
-        services.AddTransient<TransactionVM>();
-        services.AddTransient<TagVM>();
-        services.AddTransient<SavingGoalVM>();
-        services.AddTransient<AccountVM>();
-        services.AddTransient<UserSettingsVM>();
         services.AddTransient<TransactionPopupVM>();
         services.AddTransient<AddAccountVM>();
         services.AddTransient<AddSavingGoalVM>();

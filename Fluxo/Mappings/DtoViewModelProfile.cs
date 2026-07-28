@@ -13,6 +13,5 @@ public sealed class DtoViewModelProfile : Profile
         CreateMap<SavingGoalDto, SavingGoalVM>().ReverseMap();
         CreateMap<AccountDto, AccountVM>().ReverseMap();
         CreateMap<RecurringTransactionDto, RecurringTransactionVM>().ReverseMap();
-        CreateMap<UserSettingsDto, UserSettingsVM>().ReverseMap();
     }
 }
