@@ -921,57 +921,6 @@
                         </Grid>
                     </Border>
 
-                    <Border
-                        x:Name="BalanceUpdateCard"
-                        Margin="0,16,0,0"
-                        Style="{StaticResource CardBorderStyle}"
-                        Visibility="{Binding ShowBalanceUpdate, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Balance Update" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    FontFamily="{DynamicResource Medium}"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                    Text="{Binding BalanceUpdateAccountName, Mode=OneWay}"
-                                    TextTrimming="CharacterEllipsis" />
-                                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                    <TextBlock
-                                        FontFamily="{DynamicResource Medium}"
-                                        Foreground="{DynamicResource Brush.Text.Primary}"
-                                        Text="{Binding BalanceUpdateAccountCurrent, Mode=OneWay, StringFormat={}{0:N0}}" />
-                                    <components:Icon
-                                        Width="6"
-                                        Margin="12,0"
-                                        Color="{DynamicResource Brush.Text.Primary}"
-                                        Path="{StaticResource AngleRight}" />
-                                    <TextBlock
-                                        FontFamily="{DynamicResource Medium}"
-                                        Foreground="{DynamicResource Brush.Text.Primary}"
-                                        Text="{Binding BalanceUpdateAccountToBe, Mode=OneWay, StringFormat={}{0:N0}}" />
-                                </StackPanel>
-                            </Grid>
-                            <StackPanel Margin="0,16,0,0">
-                                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Categories:" />
-                                <ListView
-                                    ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
-                                    ItemTemplate="{StaticResource BalanceUpdateItemTemplate}"
-                                    ItemsSource="{Binding CategoryBalanceUpdates, Mode=OneWay}"
-                                    Style="{StaticResource BalanceUpdateListViewStyle}" />
-                            </StackPanel>
-                            <StackPanel Margin="0,16,0,0">
-                                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags:" />
-                                <ListView
-                                    ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
-                                    ItemTemplate="{StaticResource BalanceUpdateItemTemplate}"
-                                    ItemsSource="{Binding TagBalanceUpdates, Mode=OneWay}"
-                                    Style="{StaticResource BalanceUpdateListViewStyle}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
                 </StackPanel>
 
                 <StackPanel Visibility="Collapsed">
@@ -1348,6 +1297,61 @@
                             VerticalScrollBarVisibility="Auto" />
                     </Border>
                 </StackPanel>
+
+                <Border
+                    x:Name="BalanceUpdateCard"
+                    Margin="0,16,0,0"
+                    Style="{StaticResource CardBorderStyle}"
+                    Visibility="{Binding ShowBalanceUpdate, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Balance Update" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock
+                                FontFamily="{DynamicResource Medium}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                Text="{Binding BalanceUpdateAccountName, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBlock
+                                    FontFamily="{DynamicResource Medium}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                    Text="{Binding BalanceUpdateAccountCurrent, Mode=OneWay, StringFormat={}{0:N0}}" />
+                                <components:Icon
+                                    Width="6"
+                                    Margin="12,0"
+                                    Color="{DynamicResource Brush.Text.Primary}"
+                                    Path="{StaticResource AngleRight}" />
+                                <TextBlock
+                                    FontFamily="{DynamicResource Medium}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                    Text="{Binding BalanceUpdateAccountToBe, Mode=OneWay, StringFormat={}{0:N0}}" />
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel
+                            x:Name="BalanceUpdateCategories"
+                            Margin="0,16,0,0"
+                            Visibility="{Binding ShowBalanceUpdateCategories, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Categories:" />
+                            <ListView
+                                ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
+                                ItemTemplate="{StaticResource BalanceUpdateItemTemplate}"
+                                ItemsSource="{Binding CategoryBalanceUpdates, Mode=OneWay}"
+                                Style="{StaticResource BalanceUpdateListViewStyle}" />
+                        </StackPanel>
+                        <StackPanel x:Name="BalanceUpdateTags" Margin="0,16,0,0">
+                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags:" />
+                            <ListView
+                                ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
+                                ItemTemplate="{StaticResource BalanceUpdateItemTemplate}"
+                                ItemsSource="{Binding TagBalanceUpdates, Mode=OneWay}"
+                                Style="{StaticResource BalanceUpdateListViewStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
 
                 <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <StackPanel Orientation="Horizontal">

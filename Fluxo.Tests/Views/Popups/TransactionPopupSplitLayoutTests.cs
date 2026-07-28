@@ -191,6 +191,37 @@ public sealed class TransactionPopupSplitLayoutTests
         });
     }
 
+    [Fact]
+    public void BalanceUpdateCard_IsBelowNoteAndHidesCategoriesForPostedIoU()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger());
+            var popup = new TransactionPopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+
+            var card = FindControls<Border>(popup).Single(control => control.Name == "BalanceUpdateCard");
+            var note = FindControls<TextBox>(popup).Single(control => control.Name == "NoteRichTextBox");
+            var noteSection = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(LogicalTreeHelper.GetParent(note)!));
+            var formSection = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(noteSection));
+
+            Assert.Same(formSection, LogicalTreeHelper.GetParent(card));
+            Assert.True(formSection.Children.IndexOf(noteSection) < formSection.Children.IndexOf(card));
+
+            viewModel.IsIoU = true;
+            viewModel.ShouldAffectBalance = true;
+            popup.UpdateLayout();
+
+            var categories = FindControls<TextBlock>(card).Single(control => control.Text == "Categories:");
+            var tags = FindControls<TextBlock>(card).Single(control => control.Text == "Tags:");
+            Assert.Equal(Visibility.Collapsed, LogicalTreeHelper.GetParent(categories)!.GetValue(UIElement.VisibilityProperty));
+            Assert.Equal(Visibility.Visible, LogicalTreeHelper.GetParent(tags)!.GetValue(UIElement.VisibilityProperty));
+        });
+    }
+
     private static IEnumerable<Button> FindButtons(DependencyObject root)
     {
         foreach (var child in LogicalTreeHelper.GetChildren(root).OfType<DependencyObject>())
