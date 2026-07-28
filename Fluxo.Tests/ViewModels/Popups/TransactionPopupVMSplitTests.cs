@@ -293,6 +293,56 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void BalanceUpdate_SummarizesTerminalLeaves()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+        vm.PendingTransaction.ChildTransactions.Clear();
+        var needs = new TransactionVM
+        {
+            Type = TransactionType.Expense,
+            Account = vm.PendingTransaction.Account,
+            Amount = 30m,
+            ExpenseCategory = ExpenseCategory.Needs,
+            Tag = new TagVM { Id = 1, Name = "Food" }
+        };
+        var parent = new TransactionVM
+        {
+            Type = TransactionType.Expense,
+            Account = vm.PendingTransaction.Account,
+            Amount = 70m
+        };
+        parent.ChildTransactions.Add(new TransactionVM
+        {
+            Type = TransactionType.Expense,
+            Account = vm.PendingTransaction.Account,
+            Amount = 70m,
+            ExpenseCategory = ExpenseCategory.Wants,
+            Tag = new TagVM { Id = 2, Name = "Travel" }
+        });
+        vm.PendingTransaction.ChildTransactions.Add(needs);
+        vm.PendingTransaction.ChildTransactions.Add(parent);
+
+        vm.SelectSplitCommand.Execute(null);
+
+        Assert.Equal(ExpenseCategory.Needs, needs.ExpenseCategory);
+        Assert.Equal(1, needs.Tag?.Id);
+        Assert.Equal(400m, vm.BalanceUpdateAccountToBe);
+        Assert.Equal(
+        [
+            ("Needs", 0m, 30m),
+            ("Wants", 0m, 70m)
+        ],
+        vm.CategoryBalanceUpdates.Select(item => (item.Name, item.CurrentAmount, item.NewAmount)));
+        Assert.Equal(
+        [
+            ("Food", 0m, 30m),
+            ("Travel", 0m, 70m)
+        ],
+        vm.TagBalanceUpdates.Select(item => (item.Name, item.CurrentAmount, item.NewAmount)));
+    }
+
+    [Fact]
     public async Task Edit_mode_allows_adding_a_grandchild()
     {
         var appData = Substitute.For<IAppDataService>();

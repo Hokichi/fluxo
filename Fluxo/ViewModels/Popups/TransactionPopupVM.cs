@@ -194,6 +194,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public ObservableCollection<SavingGoalVM> Goals { get; } = [];
     public ObservableCollection<TagVM> VisibleTags { get; } = [];
     public ObservableCollection<TagVM> OverflowTags { get; } = [];
+    public ObservableCollection<BalanceUpdateItem> CategoryBalanceUpdates { get; } = [];
+    public ObservableCollection<BalanceUpdateItem> TagBalanceUpdates { get; } = [];
     public ObservableCollection<AddNewTransactionSuggestion> TransactionNameSuggestions { get; } = [];
     public AddNewTransactionHistoryListVM PinnedHistory { get; } = new();
     public AddNewTransactionHistoryListVM TransactionHistory { get; } = new();
@@ -209,6 +211,12 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public decimal CategoryToBe => TransactionCalculationHelper.CalculateCategoryToBe(CategoryCurrent, AmountText, IsRepayment);
     public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
     public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
+    public bool ShowBalanceUpdate => _isTransactionStateInitialized && !IsViewOnly && !IsRecurringTransactionMode && !IsUnpostedIoUMode;
+    public string BalanceUpdateAccountName => _isTransactionStateInitialized ? PendingTransaction.Account.Name : string.Empty;
+    public decimal BalanceUpdateAccountCurrent => _isTransactionStateInitialized
+        ? TransactionCalculationHelper.GetAccountCurrent(PendingTransaction.Account)
+        : 0m;
+    public decimal BalanceUpdateAccountToBe => CalculateBalanceUpdateAccountToBe();
     public TransactionFieldFeedback NameFeedback { get; } = new();
     public TransactionFieldFeedback AmountFeedback { get; } = new();
     public TransactionFieldFeedback AccountFeedback { get; } = new();
@@ -2206,6 +2214,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CategoryToBe));
         OnPropertyChanged(nameof(AccountCurrent));
         OnPropertyChanged(nameof(AccountToBe));
+        RefreshBalanceUpdate();
         NotifyTransactionWarningsChanged();
         OnPropertyChanged(nameof(IsNeedsCategory));
         OnPropertyChanged(nameof(IsWantsCategory));
@@ -2227,6 +2236,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsInvestCategory));
         OnPropertyChanged(nameof(ShowCategoryImpact));
         OnPropertyChanged(nameof(ShowAccountImpact));
+        RefreshBalanceUpdate();
         OnPropertyChanged(nameof(ShowSplitPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
         OnPropertyChanged(nameof(ShowRootSplitAddAction));
@@ -2545,6 +2555,108 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 SelectedExpenseCategory).Spent;
         }
         catch { return 0m; }
+    }
+
+    private void RefreshBalanceUpdate()
+    {
+        OnPropertyChanged(nameof(ShowBalanceUpdate));
+        OnPropertyChanged(nameof(BalanceUpdateAccountName));
+        OnPropertyChanged(nameof(BalanceUpdateAccountCurrent));
+        OnPropertyChanged(nameof(BalanceUpdateAccountToBe));
+
+        if (!ShowBalanceUpdate)
+        {
+            ReplaceCollection(CategoryBalanceUpdates, []);
+            ReplaceCollection(TagBalanceUpdates, []);
+            return;
+        }
+
+        var leaves = GetBalanceUpdateLeaves(PendingTransaction).ToArray();
+        var categoryCurrent = GetBalanceUpdateCategoryCurrentAmounts(leaves);
+        var tagCurrent = GetBalanceUpdateTagCurrentAmounts();
+
+        ReplaceCollection(
+            CategoryBalanceUpdates,
+            leaves
+                .Where(leaf => leaf is { Type: TransactionType.Expense, IsExcludedFromBudget: false, ExpenseCategory: not null })
+                .GroupBy(leaf => leaf.ExpenseCategory!.Value)
+                .OrderBy(group => group.Key)
+                .Select(group => new BalanceUpdateItem(
+                    TransactionCalculationHelper.GetExpenseCategoryLabel(group.Key),
+                    categoryCurrent.GetValueOrDefault(group.Key),
+                    categoryCurrent.GetValueOrDefault(group.Key) + group.Sum(leaf => leaf.Amount))));
+
+        ReplaceCollection(
+            TagBalanceUpdates,
+            leaves
+                .Where(leaf => leaf.Tag is not null)
+                .GroupBy(leaf => leaf.Tag!.Id)
+                .OrderBy(group => group.First().Tag!.Name, StringComparer.OrdinalIgnoreCase)
+                .Select(group =>
+                {
+                    var current = tagCurrent.GetValueOrDefault(group.Key);
+                    return new BalanceUpdateItem(group.First().Tag!.Name, current, current + group.Sum(leaf => leaf.Amount));
+                }));
+    }
+
+    private decimal CalculateBalanceUpdateAccountToBe()
+    {
+        if (!ShowBalanceUpdate)
+            return 0m;
+
+        var account = PendingTransaction.Account;
+        return GetBalanceUpdateLeaves(PendingTransaction).Aggregate(
+            TransactionCalculationHelper.GetAccountCurrent(account),
+            (current, leaf) => current + (account.IsCredit
+                ? leaf.Type == TransactionType.Income ? -leaf.Amount : leaf.Amount
+                : leaf.Type == TransactionType.Income ? leaf.Amount : -leaf.Amount));
+    }
+
+    private static IEnumerable<TransactionVM> GetBalanceUpdateLeaves(TransactionVM transaction)
+    {
+        if (transaction.ChildTransactions.Count == 0)
+        {
+            yield return transaction;
+            yield break;
+        }
+
+        foreach (var child in transaction.ChildTransactions)
+            foreach (var leaf in GetBalanceUpdateLeaves(child))
+                yield return leaf;
+    }
+
+    private IReadOnlyDictionary<ExpenseCategory, decimal> GetBalanceUpdateCategoryCurrentAmounts(
+        IEnumerable<TransactionVM> leaves)
+    {
+        try
+        {
+            var allocation = _appData.GetBudgetAllocationAsync().GetAwaiter().GetResult();
+            var snapshot = BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate).GetAwaiter().GetResult();
+            return leaves
+                .Where(leaf => leaf is { Type: TransactionType.Expense, IsExcludedFromBudget: false, ExpenseCategory: not null })
+                .Select(leaf => leaf.ExpenseCategory!.Value)
+                .Distinct()
+                .ToDictionary(category => category, category => TransactionCalculationHelper.GetCategoryState(snapshot, category).Spent);
+        }
+        catch
+        {
+            return new Dictionary<ExpenseCategory, decimal>();
+        }
+    }
+
+    private IReadOnlyDictionary<int, decimal> GetBalanceUpdateTagCurrentAmounts()
+    {
+        try
+        {
+            return _appData.GetTransactionsAsync().GetAwaiter().GetResult()
+                .Where(transaction => !transaction.IsForDeletion && transaction.TagId.HasValue)
+                .GroupBy(transaction => transaction.TagId!.Value)
+                .ToDictionary(group => group.Key, group => group.Sum(transaction => transaction.Amount));
+        }
+        catch
+        {
+            return new Dictionary<int, decimal>();
+        }
     }
 
     private ValidationResult? ToInstallmentValidationResult()
