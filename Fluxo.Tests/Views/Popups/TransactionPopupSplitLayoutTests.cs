@@ -197,7 +197,19 @@ public sealed class TransactionPopupSplitLayoutTests
         RunOnStaThread(() =>
         {
             EnsureApplicationResources();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger());
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger())
+            {
+                NameText = "Transaction",
+                AmountText = 10m
+            };
+            viewModel.AddSplitCommand.Execute(null);
+            var root = viewModel.PendingTransaction;
+            var leaf = root.ChildTransactions.Single();
+            root.IsIoU = true;
+            root.ShouldAffectBalance = true;
+            leaf.IsIoU = false;
+            leaf.ShouldAffectBalance = false;
+            viewModel.SelectSplitCommand.Execute(leaf);
             var popup = new TransactionPopup(viewModel);
             popup.Measure(new Size(800, 600));
             popup.Arrange(new Rect(0, 0, 800, 600));
@@ -211,14 +223,12 @@ public sealed class TransactionPopupSplitLayoutTests
             Assert.Same(formSection, LogicalTreeHelper.GetParent(card));
             Assert.True(formSection.Children.IndexOf(noteSection) < formSection.Children.IndexOf(card));
 
-            viewModel.IsIoU = true;
-            viewModel.ShouldAffectBalance = true;
-            popup.UpdateLayout();
-
             var categories = FindControls<TextBlock>(card).Single(control => control.Text == "Categories:");
             var tags = FindControls<TextBlock>(card).Single(control => control.Text == "Tags:");
             Assert.Equal(Visibility.Collapsed, LogicalTreeHelper.GetParent(categories)!.GetValue(UIElement.VisibilityProperty));
             Assert.Equal(Visibility.Visible, LogicalTreeHelper.GetParent(tags)!.GetValue(UIElement.VisibilityProperty));
+            var item = new ListViewItem { Style = Assert.IsType<Style>(popup.FindResource("BalanceUpdateListViewItemStyle")) };
+            Assert.Equal(HorizontalAlignment.Stretch, item.HorizontalContentAlignment);
         });
     }
 

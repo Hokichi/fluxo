@@ -214,7 +214,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
     public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
     public bool ShowBalanceUpdate => _isTransactionStateInitialized && !IsViewOnly && !IsRecurringTransactionMode && !IsUnpostedIoUMode;
-    public bool ShowBalanceUpdateCategories => ShowBalanceUpdate && !IsPostedIoUMode;
+    public bool ShowBalanceUpdateCategories => ShowBalanceUpdate &&
+                                               !(PendingTransaction.IsIoU && PendingTransaction.ShouldAffectBalance);
     public string BalanceUpdateAccountName => _isTransactionStateInitialized ? PendingTransaction.Account.Name : string.Empty;
     public decimal BalanceUpdateAccountCurrent => _isTransactionStateInitialized
         ? TransactionCalculationHelper.GetAccountCurrent(PendingTransaction.Account)
