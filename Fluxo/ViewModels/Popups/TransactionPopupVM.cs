@@ -10,6 +10,7 @@ using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Messages;
 using Fluxo.DataModels.Popups.TransactionPopup;
 using Fluxo.Helpers.MainWindow;
 using Fluxo.Helpers.Popups;

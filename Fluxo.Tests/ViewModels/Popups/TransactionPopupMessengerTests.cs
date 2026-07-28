@@ -8,6 +8,7 @@ using Fluxo.Core.Interfaces;
 using Fluxo.Core.Interfaces.Repositories;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Messages;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Tests.TestDoubles;
 using Fluxo.ViewModels.Entities;

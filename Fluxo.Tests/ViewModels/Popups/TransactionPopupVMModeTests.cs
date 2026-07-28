@@ -7,6 +7,7 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces;
 using Fluxo.Core.Interfaces.Repositories;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Messages;
 using Fluxo.Services.Persistence;
 using Fluxo.Tests.TestDoubles;
 using Fluxo.ViewModels.Entities;

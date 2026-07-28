@@ -2,6 +2,7 @@ using System.Windows;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.Messaging;
+using Fluxo.DataModels.Messages;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Settings;
 using Microsoft.Extensions.DependencyInjection;

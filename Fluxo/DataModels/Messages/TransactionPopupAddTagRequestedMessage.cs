@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging.Messages;
 
-namespace Fluxo.ViewModels.Popups;
+namespace Fluxo.DataModels.Messages;
 
 public sealed class TransactionPopupAddTagRequestedMessage(int transactionId, Guid ownerToken)
     : ValueChangedMessage<int>(transactionId)
