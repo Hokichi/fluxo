@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
+namespace Fluxo.Helpers.Settings;
 
 public static class QuickSetupWizardLoadingCoordinator
 {

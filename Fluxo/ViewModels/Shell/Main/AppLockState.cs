@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Helpers.Settings;
 using Fluxo.Services.Ui;
 using Fluxo.ViewModels.Popups.Settings;
 using Fluxo.ViewModels.Shell;

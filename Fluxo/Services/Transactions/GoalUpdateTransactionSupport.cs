@@ -2,7 +2,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 
-namespace Fluxo.ViewModels.Popups;
+namespace Fluxo.Services.Transactions;
 
 public static class GoalUpdateTransactionSupport
 {

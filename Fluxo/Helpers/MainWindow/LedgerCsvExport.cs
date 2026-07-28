@@ -1,7 +1,8 @@
 using System.Globalization;
+using Fluxo.ViewModels.Shell.Main;
 using System.Text;
 
-namespace Fluxo.ViewModels.Shell.Main;
+namespace Fluxo.Helpers.MainWindow;
 
 public static class LedgerCsvExport
 {

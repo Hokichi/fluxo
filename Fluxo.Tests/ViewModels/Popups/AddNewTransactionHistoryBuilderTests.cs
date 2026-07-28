@@ -1,4 +1,6 @@
 using Fluxo.Core.Entities;
+using Fluxo.Helpers.Transaction;
+using Fluxo.Services.Transactions;
 using Fluxo.Core.Enums;
 using Fluxo.ViewModels.Popups;
 using Xunit;

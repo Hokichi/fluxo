@@ -1,4 +1,4 @@
-using Fluxo.ViewModels.Shell.QuickSetupWizard;
+using Fluxo.Helpers.Settings;
 using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Shell.StartupWizard;

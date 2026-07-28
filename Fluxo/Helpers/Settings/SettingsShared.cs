@@ -8,7 +8,7 @@ using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 
-namespace Fluxo.ViewModels.Popups.Settings;
+namespace Fluxo.Helpers.Settings;
 
 internal static class SettingsShared
 {

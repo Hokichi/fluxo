@@ -5,7 +5,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 
-namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
+namespace Fluxo.Helpers.Settings;
 
 internal static class QuickSetupWizardShared
 {

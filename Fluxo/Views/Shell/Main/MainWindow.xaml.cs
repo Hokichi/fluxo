@@ -36,7 +36,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Analytics = Fluxo.Views.Shell.Main.Pages.Analytics;
 using Calendar = Fluxo.Views.Shell.Main.Pages.Calendar;
 using Dashboard = Fluxo.Views.Shell.Main.Pages.Dashboard;
-using DateRangeResolver = Fluxo.ViewModels.Shell.Main.DateRangeResolver;
+using DateRangeResolver = Fluxo.Helpers.MainWindow.DateRangeResolver;
 using Ledger = Fluxo.Views.Shell.Main.Pages.Ledger;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 

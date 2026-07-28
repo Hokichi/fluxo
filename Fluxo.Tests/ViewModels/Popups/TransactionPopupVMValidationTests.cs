@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Fluxo.Services.Transactions;
 using System.Runtime.ExceptionServices;
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;

@@ -3,7 +3,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 
 using Fluxo.DataModels.Shell.Main.DateRangeResolver;
-namespace Fluxo.ViewModels.Shell.Main;
+namespace Fluxo.Helpers.MainWindow;
 
 
 public static class DateRangeResolver

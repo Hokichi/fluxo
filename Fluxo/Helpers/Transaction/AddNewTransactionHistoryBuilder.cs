@@ -1,13 +1,16 @@
 using Fluxo.Core.Entities;
+using Fluxo.Services.Transactions;
+using Fluxo.ViewModels.Popups;
 using Fluxo.Core.Enums;
+using TransactionEntity = Fluxo.Core.Entities.Transaction;
 
 using Fluxo.DataModels.Popups.AddNewTransactionHistoryBuilder;
-namespace Fluxo.ViewModels.Popups;
+namespace Fluxo.Helpers.Transaction;
 
 public static class AddNewTransactionHistoryBuilder
 {
     public static IReadOnlyList<AddNewTransactionHistoryItemVM> BuildPinnedExpenses(
-        IEnumerable<Transaction> expenseLogs,
+        IEnumerable<TransactionEntity> expenseLogs,
         int pageSize = int.MaxValue)
     {
         return ProjectExpenses(expenseLogs, isPinned: true)
@@ -26,7 +29,7 @@ public static class AddNewTransactionHistoryBuilder
     }
 
     public static IReadOnlyList<AddNewTransactionHistoryItemVM> BuildExpenseHistory(
-        IEnumerable<Transaction> expenseLogs,
+        IEnumerable<TransactionEntity> expenseLogs,
         int pageSize = int.MaxValue)
     {
         return ProjectExpenses(expenseLogs, isPinned: false)
@@ -43,7 +46,7 @@ public static class AddNewTransactionHistoryBuilder
     }
 
     public static IReadOnlyList<AddNewTransactionHistoryItemVM> BuildPinnedIncomes(
-        IEnumerable<Transaction> incomeLogs,
+        IEnumerable<TransactionEntity> incomeLogs,
         int pageSize = int.MaxValue)
     {
         return ProjectIncomes(incomeLogs, isPinned: true)
@@ -60,7 +63,7 @@ public static class AddNewTransactionHistoryBuilder
     }
 
     public static IReadOnlyList<AddNewTransactionHistoryItemVM> BuildIncomeHistory(
-        IEnumerable<Transaction> incomeLogs,
+        IEnumerable<TransactionEntity> incomeLogs,
         int pageSize = int.MaxValue)
     {
         return ProjectIncomes(incomeLogs, isPinned: false)
@@ -76,7 +79,7 @@ public static class AddNewTransactionHistoryBuilder
     }
 
     public static IReadOnlyList<AddNewTransactionHistoryItemVM> BuildGoalUpdateHistory(
-        IEnumerable<Transaction> expenseLogs,
+        IEnumerable<TransactionEntity> expenseLogs,
         string goalName,
         int pageSize = int.MaxValue)
     {
@@ -109,7 +112,7 @@ public static class AddNewTransactionHistoryBuilder
     }
 
     private static IEnumerable<AddNewTransactionHistoryItemVM> ProjectExpenses(
-        IEnumerable<Transaction> expenseLogs,
+        IEnumerable<TransactionEntity> expenseLogs,
         bool isPinned)
     {
         return expenseLogs
@@ -136,7 +139,7 @@ public static class AddNewTransactionHistoryBuilder
     }
 
     private static IEnumerable<AddNewTransactionHistoryItemVM> ProjectIncomes(
-        IEnumerable<Transaction> incomeLogs,
+        IEnumerable<TransactionEntity> incomeLogs,
         bool isPinned)
     {
         return incomeLogs
@@ -170,7 +173,7 @@ public static class AddNewTransactionHistoryBuilder
         return value.Trim().ToUpperInvariant();
     }
 
-    private static bool IsGoalUpdateLog(Transaction log)
+    private static bool IsGoalUpdateLog(TransactionEntity log)
     {
         var tagName = log.Tag?.Name;
         var expenseName = log.Name;

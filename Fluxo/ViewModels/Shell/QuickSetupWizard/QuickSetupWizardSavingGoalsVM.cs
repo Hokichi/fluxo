@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Fluxo.Helpers.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Entities;

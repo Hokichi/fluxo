@@ -1,4 +1,5 @@
 using System.Globalization;
+using Fluxo.Helpers.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Interfaces.Services;

@@ -1,7 +1,7 @@
 using System.Globalization;
 using Fluxo.Core.Enums;
 
-namespace Fluxo.ViewModels.Shell.Main;
+namespace Fluxo.Helpers.MainWindow;
 
 internal static class MainDataLoadingMessageFormatter
 {

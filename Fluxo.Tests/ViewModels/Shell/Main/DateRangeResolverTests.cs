@@ -1,4 +1,5 @@
 using Fluxo.Core.Enums;
+using Fluxo.Helpers.MainWindow;
 using Fluxo.Core.Entities;
 using Fluxo.ViewModels.Shell;
 using Fluxo.ViewModels.Shell.Main;

@@ -1,4 +1,4 @@
-namespace Fluxo.ViewModels.Shell;
+namespace Fluxo.Helpers.Settings;
 
 public static class AutoLockPreset
 {

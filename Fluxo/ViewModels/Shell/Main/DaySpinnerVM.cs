@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Fluxo.Helpers.MainWindow;
 using System.Globalization;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;

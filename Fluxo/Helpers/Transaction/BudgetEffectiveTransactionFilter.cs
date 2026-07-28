@@ -1,7 +1,8 @@
 using Fluxo.Core.Entities;
 using Fluxo.ViewModels.Entities;
+using TransactionEntity = Fluxo.Core.Entities.Transaction;
 
-namespace Fluxo.ViewModels.Shell.Main;
+namespace Fluxo.Helpers.Transaction;
 
 internal static class BudgetEffectiveTransactionFilter
 {
@@ -19,7 +20,7 @@ internal static class BudgetEffectiveTransactionFilter
         return included.Where(transaction => !parentIds.Contains(transaction.Id));
     }
 
-    internal static IEnumerable<Transaction> Select(IEnumerable<Transaction> transactions)
+    internal static IEnumerable<TransactionEntity> Select(IEnumerable<TransactionEntity> transactions)
     {
         var included = transactions
             .Where(transaction => !transaction.IsForDeletion && !transaction.IsExcludedFromBudget)

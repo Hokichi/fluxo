@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using Fluxo.Helpers.MainWindow;
+using Fluxo.Helpers.Transaction;
 using System.ComponentModel;
 using System.Windows.Data;
 using AutoMapper;
