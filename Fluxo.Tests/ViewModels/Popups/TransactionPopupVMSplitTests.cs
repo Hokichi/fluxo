@@ -151,6 +151,18 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void Non_expense_shows_split_unavailable_placeholder()
+    {
+        var vm = CreateVm();
+        vm.AddSplitCommand.Execute(null);
+
+        vm.IsExpense = false;
+
+        Assert.True(vm.ShowInvalidSplitPlaceholder);
+        Assert.False(vm.CanModifySplitTree);
+    }
+
+    [Fact]
     public void Split_root_and_parent_child_clear_classification_but_leaf_child_can_edit_it()
     {
         var vm = CreateVm();

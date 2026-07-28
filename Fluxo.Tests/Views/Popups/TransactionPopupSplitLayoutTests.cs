@@ -98,7 +98,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Split_option_is_disabled_for_income()
+    public void Split_option_is_enabled_for_income_and_side_panel_matches_form_height()
     {
         RunOnStaThread(() =>
         {
@@ -108,14 +108,18 @@ public sealed class TransactionPopupSplitLayoutTests
                 IsExpense = false
             };
             var popup = new TransactionPopup(viewModel);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.Measure(new Size(1300, 800));
+            popup.Arrange(new Rect(0, 0, 1300, 800));
             popup.UpdateLayout();
 
             var split = FindControls<SegmentedToggleOption>(popup)
                 .Single(option => Equals(option.Content, "Split"));
+            var sidePanel = FindControls<Grid>(popup).Single(grid => grid.Width == 480);
+            var popupGrid = Assert.IsType<Grid>(LogicalTreeHelper.GetParent(sidePanel));
 
-            Assert.False(split.IsEnabled);
+            Assert.True(split.IsEnabled);
+            Assert.Equal(popupGrid.ActualHeight, sidePanel.ActualHeight);
+            Assert.Equal(0, sidePanel.TranslatePoint(new Point(), popupGrid).Y);
         });
     }
 

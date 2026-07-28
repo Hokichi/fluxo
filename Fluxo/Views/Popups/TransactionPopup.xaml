@@ -1376,7 +1376,6 @@
                 Grid.RowSpan="4"
                 Grid.Column="2"
                 Width="480"
-                Height="520"
                 Visibility="{Binding ShowSidePanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -1390,7 +1389,6 @@
                     <customControls:SegmentedToggleOption Content="Pinned" Value="{x:Static dataEnums:TransactionPopupSidePanel.Pinned}" />
                     <customControls:SegmentedToggleOption
                         Content="Split"
-                        IsEnabled="{Binding CanUseSplit, Mode=OneWay}"
                         Value="{x:Static dataEnums:TransactionPopupSidePanel.Split}" />
                 </customControls:SegmentedToggleGroup>
 
@@ -1428,7 +1426,7 @@
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         Foreground="{StaticResource Brush.Text.Muted}"
-                        Text="Transaction is invalid."
+                        Text="Splitting not available"
                         Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <customControls:FadingScrollViewer
                         PreviewMouseWheel="OnSplitPanelPreviewMouseWheel"

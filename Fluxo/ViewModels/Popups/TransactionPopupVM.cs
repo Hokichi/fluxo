@@ -315,7 +315,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool IsSplitPanelSelected => !ShowSidePanelToggle || SelectedSidePanel == TransactionPopupSidePanel.Split;
     public bool ShowInvalidSplitPlaceholder =>
         _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
-        !(_isTransactionStateInitialized ? IsRootSplitInputValid() : IsCurrentInputValid());
+        (!IsExpense || !(_isTransactionStateInitialized ? IsRootSplitInputValid() : IsCurrentInputValid()));
     public decimal SplitAmountRemaining => _isTransactionStateInitialized
         ? PendingTransaction.HasChildAmountOverflow
             ? PendingTransaction.ChildAmountOverflow
