@@ -34,7 +34,7 @@ public sealed class MainVMUserSettingsTests
         Assert.True(mainViewModel.HasUiLockingPassword);
     }
 
-    private static MainVM CreateMainViewModel(IUnitOfWork unitOfWork)
+    internal static MainVM CreateMainViewModel(IUnitOfWork unitOfWork)
     {
         var messenger = new WeakReferenceMessenger();
         var mapper = Substitute.For<IMapper>();
@@ -88,7 +88,7 @@ public sealed class MainVMUserSettingsTests
         }
     }
 
-    private sealed class TestUserSettingsUnitOfWork(Dictionary<string, string> settingsByName) : IUnitOfWork
+    internal sealed class TestUserSettingsUnitOfWork(Dictionary<string, string> settingsByName) : IUnitOfWork
     {
         public ITransactionRepository Expenses => throw new NotSupportedException();
         public ITransactionRepository Transactions => throw new NotSupportedException();

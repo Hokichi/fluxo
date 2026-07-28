@@ -6,6 +6,8 @@ using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Helpers.MainWindow;
+using Fluxo.Helpers.Settings;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 
@@ -14,8 +16,12 @@ namespace Fluxo.ViewModels.Shell.Main;
 public partial class MainVM : ObservableRecipient
 {
     private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly AppLockHelper _appLockHelper;
     private bool _isInitialized;
 
+    [ObservableProperty] private bool _isAppAutoLocked;
+    [ObservableProperty] private int _appAutoLockedInterval = AutoLockPreset.DefaultIntervalSeconds;
+    [ObservableProperty] private bool _isAppLocked;
     [ObservableProperty] private string _username = "User";
 
     public bool IsInitialized => _isInitialized;
@@ -33,9 +39,8 @@ public partial class MainVM : ObservableRecipient
         Dashboard = dashboard;
         DaySpinner = daySpinner;
         Ledger = ledger;
-        AppLock = new AppLockState(passwordProtector);
+        _appLockHelper = new AppLockHelper(passwordProtector);
         Dashboard.PropertyChanged += OnDashboardPropertyChanged;
-        AppLock.PropertyChanged += OnAppLockPropertyChanged;
 
         Messenger.Register<MainVM, UsernameChangedMessage>(this,
             static (recipient, message) => recipient.Username = message.Value);
@@ -53,16 +58,11 @@ public partial class MainVM : ObservableRecipient
     public Main.UpcomingEventsPanelVM UpcomingEventsPanel => Dashboard.UpcomingEventsPanel;
     public Main.DaySpinnerVM DaySpinner { get; }
     public Main.LedgerVM? Ledger { get; }
-    public AppLockState AppLock { get; }
-
     public bool IsDashboardSpendingAmountGateLocked => Dashboard.IsDashboardSpendingAmountGateLocked;
     public bool IsSufficientFundsActionGateLocked => Dashboard.IsSufficientFundsActionGateLocked;
-    public bool IsAppAutoLocked => AppLock.IsAppAutoLocked;
-    public int AppAutoLockedInterval => AppLock.AppAutoLockedInterval;
-    public bool IsAppLocked => AppLock.IsAppLocked;
-    public bool HasUiLockingPassword => AppLock.HasUiLockingPassword;
+    public bool HasUiLockingPassword => _appLockHelper.HasUiLockingPassword;
     public bool IsAnyActionGateLocked => IsAppLocked || IsSufficientFundsActionGateLocked;
-    public string AppLockButtonText => AppLock.AppLockButtonText;
+    public string AppLockButtonText => IsAppLocked ? "Unlock fluxo" : "Lock fluxo";
 
     public ObservableCollection<AccountVM> Accounts => Dashboard.Accounts;
 
@@ -124,20 +124,26 @@ public partial class MainVM : ObservableRecipient
             Username = trimmed.Length > 0 ? trimmed : "User";
         }
 
-        AppLock.ApplySettings(settingsByName);
-        OnPropertyChanged(nameof(IsAppAutoLocked));
-        OnPropertyChanged(nameof(AppAutoLockedInterval));
+        (IsAppAutoLocked, AppAutoLockedInterval) = _appLockHelper.ApplySettings(settingsByName);
         OnPropertyChanged(nameof(HasUiLockingPassword));
     }
 
     public void LockUi()
     {
-        AppLock.LockUi();
+        if (!IsAppLocked)
+            IsAppLocked = true;
     }
 
     public bool TryUnlockUi(string? password)
     {
-        return AppLock.TryUnlockUi(password);
+        if (!IsAppLocked)
+            return true;
+
+        if (!_appLockHelper.CanUnlock(password))
+            return false;
+
+        IsAppLocked = false;
+        return true;
     }
 
     private void HandleTransactionDetailUpdatedMessage(TransactionDetailUpdatedMessage message)
@@ -174,27 +180,9 @@ public partial class MainVM : ObservableRecipient
         }
     }
 
-    private void OnAppLockPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    partial void OnIsAppLockedChanged(bool value)
     {
-        switch (e.PropertyName)
-        {
-            case nameof(AppLockState.IsAppAutoLocked):
-                OnPropertyChanged(nameof(IsAppAutoLocked));
-                break;
-            case nameof(AppLockState.AppAutoLockedInterval):
-                OnPropertyChanged(nameof(AppAutoLockedInterval));
-                break;
-            case nameof(AppLockState.IsAppLocked):
-                OnPropertyChanged(nameof(IsAppLocked));
-                OnPropertyChanged(nameof(IsAnyActionGateLocked));
-                OnPropertyChanged(nameof(AppLockButtonText));
-                break;
-            case nameof(AppLockState.AppLockButtonText):
-                OnPropertyChanged(nameof(AppLockButtonText));
-                break;
-            case nameof(AppLockState.HasUiLockingPassword):
-                OnPropertyChanged(nameof(HasUiLockingPassword));
-                break;
-        }
+        OnPropertyChanged(nameof(IsAnyActionGateLocked));
+        OnPropertyChanged(nameof(AppLockButtonText));
     }
 }
