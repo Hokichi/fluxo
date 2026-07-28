@@ -122,8 +122,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private AccountVM? _selectedAccount;
 
     [ObservableProperty]
-    [NotifyDataErrorInfo]
-    [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateSelectedTag))]
     private TagVM? _selectedTag;
 
     public TransactionPopupVM(IAppDataService appData, IMessenger messenger)
@@ -1622,14 +1620,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
         else if (!IsRepayment && !IsSplitRootOrChild)
         {
-            if (SelectedTag is null)
-            {
-                validationMessage = "Please choose a tag.";
-                return false;
-            }
-
             category = IsExpense ? SelectedExpenseCategory : null;
-            tagId = SelectedTag.Id;
+            tagId = SelectedTag?.Id;
         }
 
         if (SelectedAccount is null)
@@ -2256,6 +2248,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             return;
 
         var child = TransactionSplitHelper.AddChild(PendingTransaction, parent);
+        child.Tag = VisibleTags.FirstOrDefault();
         NormalizeSplitClassifications();
         SelectSplitTransaction(child);
     }
@@ -2576,7 +2569,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 : new TransactionWarning(AmountWarningHint, true))
             .OfType<TransactionWarning>());
         AccountFeedback.Update(ToFeedback(ValidateSelectedAccount(SelectedAccount, context)));
-        TagFeedback.Update(ToFeedback(ValidateSelectedTag(SelectedTag, context)));
         GoalFeedback.Update(ToFeedback(ValidateSelectedGoal(SelectedGoal, context)));
         RecurrenceFeedback.Update(ToFeedback(ValidateRecurringTimeText(RecurringTimeText, context))
             .Concat(ToFeedback(IsInstallments ? ToInstallmentValidationResult() : ValidationResult.Success)));
@@ -2814,12 +2806,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         NotifyFormStateChanged();
     }
 
-    private bool IsCurrentInputValid(bool validateTag = true)
+    private bool IsCurrentInputValid()
     {
         return IsValidationSuccess(ValidateNameText(NameText, CreateValidationContext()))
                && IsValidationSuccess(ValidateAmountText(AmountText, CreateValidationContext()))
                && IsValidationSuccess(ValidateSelectedAccount(SelectedAccount, CreateValidationContext()))
-               && (!validateTag || IsValidationSuccess(ValidateSelectedTag(SelectedTag, CreateValidationContext())))
                && IsValidationSuccess(ValidateSelectedGoal(SelectedGoal, CreateValidationContext()))
                && IsValidationSuccess(ValidateRecurringTimeText(RecurringTimeText, CreateValidationContext()))
                && IsInstallmentInputValid()
@@ -3068,14 +3059,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         _ = validationContext;
         return ToValidationResult(TransactionValidationHelper.ValidateAccount(value));
-    }
-
-    public static ValidationResult? ValidateSelectedTag(TagVM? value, ValidationContext validationContext)
-    {
-        var viewModel = (TransactionPopupVM)validationContext.ObjectInstance;
-        return viewModel.IsGoal || viewModel.IsRepayment || viewModel.IsSplitRootOrChild || value is not null
-            ? ValidationResult.Success
-            : new ValidationResult("Please choose a tag.");
     }
 
     public static ValidationResult? ValidateSelectedGoal(SavingGoalVM? value, ValidationContext validationContext)

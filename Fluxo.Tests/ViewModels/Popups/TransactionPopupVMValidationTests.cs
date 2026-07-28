@@ -1012,7 +1012,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SelectedTag_IsRequired_ForExpense()
+    public void SelectedTag_IsOptional_ForExpense()
     {
         RunInSta(() =>
         {
@@ -1021,8 +1021,31 @@ public sealed class TransactionPopupVMValidationTests
 
             var result = vm.SaveAsync(resetAfterSave: false).GetAwaiter().GetResult();
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Please choose a tag.", result.ErrorMessage);
+            Assert.True(result.IsSuccess);
+        });
+    }
+
+    [Fact]
+    public void AddSplit_AssignsFirstVisibleTagToNewLeaf()
+    {
+        RunInSta(() =>
+        {
+            var account = CreateCheckingSource(balance: 500m);
+            var appData = CreateAppData();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>(
+            [
+                new Tag { Id = 1, Name = "Alpha", HexCode = "#111111" },
+                new Tag { Id = 2, Name = "Bravo", HexCode = "#222222" }
+            ]));
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([account]), appData, [account]);
+
+            vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
+            vm.NameText = "Split";
+            vm.AmountText = 100m;
+            vm.AddSplit(null);
+
+            Assert.Equal(1, vm.PendingTransaction.ChildTransactions.Single().Tag?.Id);
+            Assert.Equal(1, vm.SelectedTag?.Id);
         });
     }
 
