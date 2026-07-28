@@ -1,4 +1,3 @@
-using System.Collections;
 using Fluxo.Helpers.MainWindow;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -81,19 +80,19 @@ public partial class LedgerVM : ObservableRecipient,
         _mapper = mapper;
         _dialogService = dialogService;
         _uiSettleAwaiter = uiSettleAwaiter;
-        TypeFilterPresentation = new LedgerFilterSelectionPresentation(
+        TypeFilterPresentation = new LedgerFilterSelectionPresentationVM(
             "Type",
             () => TypeFilterSelectionCount,
             () => TypeFilterSelectionToolTip);
-        AccountFilterPresentation = new LedgerFilterSelectionPresentation(
+        AccountFilterPresentation = new LedgerFilterSelectionPresentationVM(
             "Account",
             () => AccountFilterSelectionCount,
             () => AccountFilterSelectionToolTip);
-        CategoryFilterPresentation = new LedgerFilterSelectionPresentation(
+        CategoryFilterPresentation = new LedgerFilterSelectionPresentationVM(
             "Category",
             () => CategoryFilterSelectionCount,
             () => CategoryFilterSelectionToolTip);
-        TagFilterPresentation = new LedgerFilterSelectionPresentation(
+        TagFilterPresentation = new LedgerFilterSelectionPresentationVM(
             "Tag",
             () => TagFilterSelectionCount,
             () => TagFilterSelectionToolTip);
@@ -107,14 +106,14 @@ public partial class LedgerVM : ObservableRecipient,
 
     public ICollectionView TransactionsView { get; }
     public string EmptyStatePeriodText => BuildSelectedPeriodText();
-    public ObservableCollection<LedgerFilterOption<LedgerTransactionKind>> TypeFilters { get; } = [];
-    public ObservableCollection<LedgerFilterOption<int>> AccountFilters { get; } = [];
-    public ObservableCollection<LedgerFilterOption<LedgerCategoryFilter>> CategoryFilters { get; } = [];
-    public ObservableCollection<LedgerFilterOption<int>> TagFilters { get; } = [];
+    public ObservableCollection<LedgerFilterOptionVM<LedgerTransactionKind>> TypeFilters { get; } = [];
+    public ObservableCollection<LedgerFilterOptionVM<int>> AccountFilters { get; } = [];
+    public ObservableCollection<LedgerFilterOptionVM<LedgerCategoryFilter>> CategoryFilters { get; } = [];
+    public ObservableCollection<LedgerFilterOptionVM<int>> TagFilters { get; } = [];
     public ObservableCollection<TagVM> EditableTags { get; } = [];
-    public IReadOnlyList<LedgerFilterOption<int>> BatchAccountOptions =>
+    public IReadOnlyList<LedgerFilterOptionVM<int>> BatchAccountOptions =>
         AccountFilters.Where(option => !option.IsAll).ToList();
-    public IReadOnlyList<LedgerFilterOption<int>> BatchTagOptions =>
+    public IReadOnlyList<LedgerFilterOptionVM<int>> BatchTagOptions =>
         TagFilters.Where(option => !option.IsAll).ToList();
     public bool HasPendingFilterChanges => CaptureFilterSelectionSnapshot() != _appliedFilterSelection;
     public bool HasActiveFilters =>
@@ -123,10 +122,10 @@ public partial class LedgerVM : ObservableRecipient,
         AccountFilterSelectionCount > 0 ||
         CategoryFilterSelectionCount > 0 ||
         TagFilterSelectionCount > 0;
-    public LedgerFilterSelectionPresentation TypeFilterPresentation { get; }
-    public LedgerFilterSelectionPresentation AccountFilterPresentation { get; }
-    public LedgerFilterSelectionPresentation CategoryFilterPresentation { get; }
-    public LedgerFilterSelectionPresentation TagFilterPresentation { get; }
+    public LedgerFilterSelectionPresentationVM TypeFilterPresentation { get; }
+    public LedgerFilterSelectionPresentationVM AccountFilterPresentation { get; }
+    public LedgerFilterSelectionPresentationVM CategoryFilterPresentation { get; }
+    public LedgerFilterSelectionPresentationVM TagFilterPresentation { get; }
     public int TypeFilterSelectionCount => CountSpecificSelections(TypeFilters);
     public int AccountFilterSelectionCount => CountSpecificSelections(AccountFilters);
     public int CategoryFilterSelectionCount => CountSpecificSelections(CategoryFilters);
@@ -476,32 +475,32 @@ public partial class LedgerVM : ObservableRecipient,
 
         RebuildFilter(TypeFilters,
         [
-            new LedgerFilterOption<LedgerTransactionKind>("All", default, isAll: true, isChecked: true),
-            new LedgerFilterOption<LedgerTransactionKind>("Expenses", LedgerTransactionKind.Expense),
-            new LedgerFilterOption<LedgerTransactionKind>("Incomes", LedgerTransactionKind.Income)
+            new LedgerFilterOptionVM<LedgerTransactionKind>("All", default, isAll: true, isChecked: true),
+            new LedgerFilterOptionVM<LedgerTransactionKind>("Expenses", LedgerTransactionKind.Expense),
+            new LedgerFilterOptionVM<LedgerTransactionKind>("Incomes", LedgerTransactionKind.Income)
         ], preservedSelection.Type);
 
         RebuildFilter(AccountFilters,
-            new[] { new LedgerFilterOption<int>("All", default, isAll: true, isChecked: true) }
+            new[] { new LedgerFilterOptionVM<int>("All", default, isAll: true, isChecked: true) }
                 .Concat(accounts
                     .OrderBy(source => source.Name, StringComparer.OrdinalIgnoreCase)
-                    .Select(source => new LedgerFilterOption<int>(source.Name, source.Id)))
+                    .Select(source => new LedgerFilterOptionVM<int>(source.Name, source.Id)))
                 .ToList(), preservedSelection.Account);
 
         RebuildFilter(CategoryFilters,
         [
-            new LedgerFilterOption<LedgerCategoryFilter>("All", default, isAll: true, isChecked: true),
-            new LedgerFilterOption<LedgerCategoryFilter>("Needs", LedgerCategoryFilter.Needs),
-            new LedgerFilterOption<LedgerCategoryFilter>("Wants", LedgerCategoryFilter.Wants),
-            new LedgerFilterOption<LedgerCategoryFilter>("Invest", LedgerCategoryFilter.Invest),
-            new LedgerFilterOption<LedgerCategoryFilter>("Excluded", LedgerCategoryFilter.Excluded)
+            new LedgerFilterOptionVM<LedgerCategoryFilter>("All", default, isAll: true, isChecked: true),
+            new LedgerFilterOptionVM<LedgerCategoryFilter>("Needs", LedgerCategoryFilter.Needs),
+            new LedgerFilterOptionVM<LedgerCategoryFilter>("Wants", LedgerCategoryFilter.Wants),
+            new LedgerFilterOptionVM<LedgerCategoryFilter>("Invest", LedgerCategoryFilter.Invest),
+            new LedgerFilterOptionVM<LedgerCategoryFilter>("Excluded", LedgerCategoryFilter.Excluded)
         ], preservedSelection.Category);
 
         RebuildFilter(TagFilters,
-            new[] { new LedgerFilterOption<int>("All", default, isAll: true, isChecked: true) }
+            new[] { new LedgerFilterOptionVM<int>("All", default, isAll: true, isChecked: true) }
                 .Concat(tags
                     .OrderBy(tag => tag.Name, StringComparer.OrdinalIgnoreCase)
-                    .Select(tag => new LedgerFilterOption<int>(tag.Name, tag.Id)))
+                    .Select(tag => new LedgerFilterOptionVM<int>(tag.Name, tag.Id)))
                 .ToList(), preservedSelection.Tag);
 
         _appliedFilterSelection = CaptureFilterSelectionSnapshot();
@@ -525,8 +524,8 @@ public partial class LedgerVM : ObservableRecipient,
     }
 
     private void RebuildFilter<T>(
-        ObservableCollection<LedgerFilterOption<T>> target,
-        IReadOnlyList<LedgerFilterOption<T>> options,
+        ObservableCollection<LedgerFilterOptionVM<T>> target,
+        IReadOnlyList<LedgerFilterOptionVM<T>> options,
         string preservedSelection)
     {
         var selectedValues = string.IsNullOrWhiteSpace(preservedSelection)
@@ -547,21 +546,21 @@ public partial class LedgerVM : ObservableRecipient,
 
     private void OnFilterOptionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(LedgerFilterOption<int>.IsChecked) || _isSynchronizingFilters)
+        if (e.PropertyName != nameof(LedgerFilterOptionVM<int>.IsChecked) || _isSynchronizingFilters)
             return;
 
         switch (sender)
         {
-            case LedgerFilterOption<LedgerTransactionKind> type:
+            case LedgerFilterOptionVM<LedgerTransactionKind> type:
                 NormalizeFilterSelection(TypeFilters, type);
                 break;
-            case LedgerFilterOption<int> source when AccountFilters.Contains(source):
+            case LedgerFilterOptionVM<int> source when AccountFilters.Contains(source):
                 NormalizeFilterSelection(AccountFilters, source);
                 break;
-            case LedgerFilterOption<int> tag when TagFilters.Contains(tag):
+            case LedgerFilterOptionVM<int> tag when TagFilters.Contains(tag):
                 NormalizeFilterSelection(TagFilters, tag);
                 break;
-            case LedgerFilterOption<LedgerCategoryFilter> category:
+            case LedgerFilterOptionVM<LedgerCategoryFilter> category:
                 NormalizeFilterSelection(CategoryFilters, category);
                 break;
         }
@@ -721,8 +720,8 @@ public partial class LedgerVM : ObservableRecipient,
     }
 
     private void NormalizeFilterSelection<T>(
-        ObservableCollection<LedgerFilterOption<T>> options,
-        LedgerFilterOption<T> changedOption)
+        ObservableCollection<LedgerFilterOptionVM<T>> options,
+        LedgerFilterOptionVM<T> changedOption)
     {
         var allOption = options.First(option => option.IsAll);
         var specificOptions = options.Where(option => !option.IsAll).ToList();
@@ -757,7 +756,7 @@ public partial class LedgerVM : ObservableRecipient,
         }
     }
 
-    private void ResetFilter<T>(ObservableCollection<LedgerFilterOption<T>> options)
+    private void ResetFilter<T>(ObservableCollection<LedgerFilterOptionVM<T>> options)
     {
         _isSynchronizingFilters = true;
         try
@@ -775,7 +774,7 @@ public partial class LedgerVM : ObservableRecipient,
         RefreshFilterSelectionPresentation(options);
     }
 
-    private void ApplySpecificFilter<T>(ObservableCollection<LedgerFilterOption<T>> options, T value)
+    private void ApplySpecificFilter<T>(ObservableCollection<LedgerFilterOptionVM<T>> options, T value)
     {
         var selectedOption = options.FirstOrDefault(option =>
             !option.IsAll && EqualityComparer<T>.Default.Equals(option.Value, value));
@@ -799,12 +798,12 @@ public partial class LedgerVM : ObservableRecipient,
         RefreshFilterSelectionPresentation(options);
     }
 
-    private static int CountSpecificSelections<T>(IEnumerable<LedgerFilterOption<T>> options)
+    private static int CountSpecificSelections<T>(IEnumerable<LedgerFilterOptionVM<T>> options)
     {
         return options.Count(option => !option.IsAll && option.IsChecked);
     }
 
-    private static string? BuildSpecificSelectionToolTip<T>(IEnumerable<LedgerFilterOption<T>> options)
+    private static string? BuildSpecificSelectionToolTip<T>(IEnumerable<LedgerFilterOptionVM<T>> options)
     {
         var labels = options
             .Where(option => !option.IsAll && option.IsChecked)
@@ -820,20 +819,20 @@ public partial class LedgerVM : ObservableRecipient,
     {
         switch (filterSource)
         {
-            case LedgerFilterOption<LedgerTransactionKind>:
-            case ObservableCollection<LedgerFilterOption<LedgerTransactionKind>>:
+            case LedgerFilterOptionVM<LedgerTransactionKind>:
+            case ObservableCollection<LedgerFilterOptionVM<LedgerTransactionKind>>:
                 RefreshTypeFilterSelectionPresentation();
                 break;
-            case LedgerFilterOption<int> source when AccountFilters.Contains(source):
-            case ObservableCollection<LedgerFilterOption<int>> sourceCollection when ReferenceEquals(sourceCollection, AccountFilters):
+            case LedgerFilterOptionVM<int> source when AccountFilters.Contains(source):
+            case ObservableCollection<LedgerFilterOptionVM<int>> sourceCollection when ReferenceEquals(sourceCollection, AccountFilters):
                 RefreshAccountFilterSelectionPresentation();
                 break;
-            case LedgerFilterOption<int> tag when TagFilters.Contains(tag):
-            case ObservableCollection<LedgerFilterOption<int>> tagCollection when ReferenceEquals(tagCollection, TagFilters):
+            case LedgerFilterOptionVM<int> tag when TagFilters.Contains(tag):
+            case ObservableCollection<LedgerFilterOptionVM<int>> tagCollection when ReferenceEquals(tagCollection, TagFilters):
                 RefreshTagFilterSelectionPresentation();
                 break;
-            case LedgerFilterOption<LedgerCategoryFilter>:
-            case ObservableCollection<LedgerFilterOption<LedgerCategoryFilter>>:
+            case LedgerFilterOptionVM<LedgerCategoryFilter>:
+            case ObservableCollection<LedgerFilterOptionVM<LedgerCategoryFilter>>:
                 RefreshCategoryFilterSelectionPresentation();
                 break;
         }
@@ -884,7 +883,7 @@ public partial class LedgerVM : ObservableRecipient,
             CaptureFilterSelection(TagFilters));
     }
 
-    private static string CaptureFilterSelection<T>(IEnumerable<LedgerFilterOption<T>> options)
+    private static string CaptureFilterSelection<T>(IEnumerable<LedgerFilterOptionVM<T>> options)
     {
         return string.Join(
             "|",
@@ -931,7 +930,7 @@ public partial class LedgerVM : ObservableRecipient,
             transaction.SetVisibleChildTransactions(transaction.ChildTransactions.Where(MatchesTransactionFilters));
     }
 
-    private static bool MatchesFilter<T>(IEnumerable<LedgerFilterOption<T>> options, T value)
+    private static bool MatchesFilter<T>(IEnumerable<LedgerFilterOptionVM<T>> options, T value)
     {
         var selectedOptions = options.Where(option => option.IsChecked).ToList();
         return selectedOptions.Any(option => option.IsAll) ||
@@ -1261,81 +1260,4 @@ public partial class LedgerVM : ObservableRecipient,
         return date.ToString("MMMM d", CultureInfo.InvariantCulture);
     }
 
-    private sealed class LedgerTransactionComparer(
-        LedgerGroupingMode groupingMode,
-        LedgerAmountSortDirection sortDirection)
-        : IComparer
-    {
-        public int Compare(object? x, object? y)
-        {
-            if (ReferenceEquals(x, y))
-                return 0;
-            if (x is not LedgerTransactionItemVM left)
-                return -1;
-            if (y is not LedgerTransactionItemVM right)
-                return 1;
-
-            var groupComparison = CompareGroup(left, right);
-            if (groupComparison != 0)
-                return groupComparison;
-
-            var loggedOnComparison = left.LoggedOn.CompareTo(right.LoggedOn);
-            if (sortDirection == LedgerAmountSortDirection.Descending)
-                loggedOnComparison *= -1;
-            if (loggedOnComparison != 0)
-                return loggedOnComparison;
-
-            return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private int CompareGroup(LedgerTransactionItemVM left, LedgerTransactionItemVM right)
-        {
-            return groupingMode switch
-            {
-                LedgerGroupingMode.Date => right.OccurredOn.Date.CompareTo(left.OccurredOn.Date),
-                LedgerGroupingMode.Tags => string.Compare(left.TagGroupKey, right.TagGroupKey, StringComparison.OrdinalIgnoreCase),
-                LedgerGroupingMode.Accounts => string.Compare(left.AccountGroupKey, right.AccountGroupKey, StringComparison.OrdinalIgnoreCase),
-                LedgerGroupingMode.Types => 0,
-                LedgerGroupingMode.Category => 0,
-                _ => 0
-            };
-        }
-    }
-
-
-}
-
-public sealed class LedgerGroupingModeDisplayConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return value switch
-        {
-            LedgerGroupingMode.Accounts => "Accounts",
-            LedgerGroupingMode groupingMode => groupingMode.ToString(),
-            _ => string.Empty
-        };
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotSupportedException();
-    }
-}
-
-public sealed class LedgerFilterSelectionPresentation(
-    string label,
-    Func<int> selectionCountProvider,
-    Func<string?> selectionToolTipProvider)
-    : ObservableObject
-{
-    public string Label { get; } = label;
-    public int SelectionCount => selectionCountProvider();
-    public string? SelectionToolTip => selectionToolTipProvider();
-
-    public void Refresh()
-    {
-        OnPropertyChanged(nameof(SelectionCount));
-        OnPropertyChanged(nameof(SelectionToolTip));
-    }
 }

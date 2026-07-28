@@ -2,11 +2,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Fluxo.ViewModels.Shell.Main;
 
-public sealed partial class LedgerFilterOption<T> : ObservableObject
+public sealed partial class LedgerFilterOptionVM<T> : ObservableObject
 {
     [ObservableProperty] private bool _isChecked;
 
-    public LedgerFilterOption(string label, T? value, bool isAll = false, bool isChecked = false)
+    public LedgerFilterOptionVM(string label, T? value, bool isAll = false, bool isChecked = false)
     {
         Label = label;
         Value = value;

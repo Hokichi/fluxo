@@ -126,13 +126,13 @@ public partial class Ledger : UserControl
 
         switch (option)
         {
-            case LedgerFilterOption<LedgerTransactionKind> type:
+            case LedgerFilterOptionVM<LedgerTransactionKind> type:
                 type.IsChecked = !type.IsChecked;
                 break;
-            case LedgerFilterOption<int> integerOption:
+            case LedgerFilterOptionVM<int> integerOption:
                 integerOption.IsChecked = !integerOption.IsChecked;
                 break;
-            case LedgerFilterOption<LedgerCategoryFilter> category:
+            case LedgerFilterOptionVM<LedgerCategoryFilter> category:
                 category.IsChecked = !category.IsChecked;
                 break;
         }

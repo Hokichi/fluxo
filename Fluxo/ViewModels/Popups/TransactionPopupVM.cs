@@ -184,7 +184,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>> saveAsync) =>
         _saveRecurringDraftAsync = saveAsync;
 
-    public IReadOnlyList<ExpenseCategoryOption> ExpenseCategories { get; } =
+    public IReadOnlyList<ExpenseCategoryOptionVM> ExpenseCategories { get; } =
     [
         new("Needs", ExpenseCategory.Needs),
         new("Wants", ExpenseCategory.Wants),
@@ -3225,22 +3225,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             AccountType.Saving => source.Balance,
             _ => source.Balance
         };
-    }
-
-    public sealed partial class ExpenseCategoryOption : ObservableObject
-    {
-        public ExpenseCategoryOption(string label, ExpenseCategory value)
-        {
-            Label = label;
-            Value = value;
-        }
-
-        public string Label { get; }
-
-        public ExpenseCategory Value { get; }
-
-        [ObservableProperty]
-        private bool _isEnabled = true;
     }
 
     internal static SavingGoalVM ProjectSavingGoal(SavingGoal goal) => new()
