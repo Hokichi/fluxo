@@ -87,7 +87,8 @@
                     ButtonText="Delete"
                     Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     CommandParameter="{Binding}"
-                    ToolTip="Delete" />
+                    ToolTip="Delete"
+                    Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Border
                     Grid.Row="2"
                     Width="1"
@@ -144,7 +145,8 @@
                         ButtonText="Delete"
                         Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                         CommandParameter="{Binding}"
-                        ToolTip="Delete" />
+                        ToolTip="Delete"
+                        Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <Border
                         Grid.Row="2"
                         Width="1"
@@ -232,7 +234,8 @@
                         ButtonText="+"
                         Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                         CommandParameter="{Binding}"
-                        ToolTip="Add a sub-transaction" />
+                        ToolTip="Add a sub-transaction"
+                        Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                 </StackPanel>
             </Grid>

@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Resources.Styles;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Views.Popups;
 using NSubstitute;
@@ -12,14 +13,12 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class TransactionPopupSplitLayoutTests
 {
     [Fact]
-    public void SplitPanel_ShowsDashedAddSubTransactionButton()
+    public void SplitPanel_without_subtransactions_shows_root_dashed_add_button()
     {
         RunOnStaThread(() =>
         {
             EnsureApplicationResources();
             var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger());
-            viewModel.AddSplitCommand.Execute(null);
-            var child = Assert.Single(viewModel.PendingTransaction.ChildTransactions);
             var popup = new TransactionPopup(viewModel);
             popup.Measure(new Size(800, 600));
             popup.Arrange(new Rect(0, 0, 800, 600));
@@ -33,23 +32,25 @@ public sealed class TransactionPopupSplitLayoutTests
             Assert.Same(viewModel.AddSplitCommand, rootButton.Command);
             Assert.Null(rootButton.CommandParameter);
             Assert.Same(popup.FindResource("DashedButtonStyle"), rootButton.Style);
+        });
+    }
 
-            var branchTemplate = Assert.IsType<DataTemplate>(popup.FindResource("SplitTransactionBranchTemplate"));
-            var branch = Assert.IsAssignableFrom<FrameworkElement>(branchTemplate.LoadContent());
-            var host = new Window { Content = branch, DataContext = viewModel };
-            branch.DataContext = child;
-            host.Measure(new Size(800, 600));
-            host.Arrange(new Rect(0, 0, 800, 600));
-            host.UpdateLayout();
+    [Fact]
+    public void SplitTree_selection_syncs_to_the_loaded_transaction()
+    {
+        RunOnStaThread(() =>
+        {
+            var loaded = new object();
+            var tree = new TreeView();
+            var first = new TreeViewItem { DataContext = new object(), IsSelected = true };
+            var selected = new TreeViewItem { DataContext = loaded };
+            tree.Items.Add(first);
+            tree.Items.Add(selected);
 
-            var branchButton = FindButtons(branch).Single(candidate =>
-                Equals(candidate.Content, "Add a sub-transaction"));
+            TransactionSplitTreeStyles.SyncSelection(tree, loaded);
 
-            branchButton.GetBindingExpression(Button.CommandProperty)!.UpdateTarget();
-            branchButton.GetBindingExpression(Button.CommandParameterProperty)!.UpdateTarget();
-            Assert.Same(viewModel.AddSplitCommand, branchButton.Command);
-            Assert.Same(child, branchButton.CommandParameter);
-            Assert.Same(popup.FindResource("DashedButtonStyle"), branchButton.Style);
+            Assert.False(first.IsSelected);
+            Assert.True(selected.IsSelected);
         });
     }
 

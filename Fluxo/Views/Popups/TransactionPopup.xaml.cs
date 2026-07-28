@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Fluxo.Resources.Infrastructure;
+using Fluxo.Resources.Styles;
 using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
@@ -246,12 +247,13 @@ public partial class TransactionPopup : BasePopup
 
     protected override void OnCloseButtonClick()
     {
-        if (_viewModel.HasChanges)
+        if ((_viewModel.IsEditingViewedTransaction && _viewModel.HasPendingTransactionChanges) ||
+            (!_viewModel.IsEditingViewedTransaction && _viewModel.HasChanges))
         {
             var confirmation = FluxoMessageBox.Show(
                 this,
                 "Close without saving your changes?",
-                "Add New Transaction",
+                _viewModel.PopupTitle,
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
 
@@ -492,18 +494,7 @@ public partial class TransactionPopup : BasePopup
 
     private void OnRootSplitCardClick(object sender, RoutedEventArgs e)
     {
-        ClearTreeSelection(SplitTransactionTree);
-    }
-
-    private static void ClearTreeSelection(DependencyObject parent)
-    {
-        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, index);
-            if (child is TreeViewItem item)
-                item.IsSelected = false;
-            ClearTreeSelection(child);
-        }
+        TransactionSplitTreeStyles.SyncSelection(SplitTransactionTree, null);
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -520,6 +511,11 @@ public partial class TransactionPopup : BasePopup
             SyncNoteDocumentFromViewModel();
             FocusPrimaryInput();
         }
+
+        if (e.PropertyName is nameof(TransactionPopupVM.SelectedSplitTransaction) or
+            nameof(TransactionPopupVM.SelectedSidePanel))
+            Dispatcher.BeginInvoke(() => TransactionSplitTreeStyles.SyncSelection(
+                SplitTransactionTree, _viewModel.SelectedSplitTransaction), DispatcherPriority.Loaded);
     }
 
     private void OnMoreTagsButtonChecked(object sender, RoutedEventArgs e) => TryOpenMoreTagsPopup();

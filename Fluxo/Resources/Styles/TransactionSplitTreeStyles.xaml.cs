@@ -7,6 +7,21 @@ namespace Fluxo.Resources.Styles;
 
 public partial class TransactionSplitTreeStyles : ResourceDictionary
 {
+    public static void SyncSelection(TreeView tree, object? selectedItem)
+    {
+        foreach (var candidate in tree.Items)
+            if (candidate is TreeViewItem directItem)
+                directItem.IsSelected = false;
+
+        ClearTreeSelection(tree);
+        if (selectedItem is null)
+            return;
+
+        var item = FindTreeViewItem(tree, selectedItem);
+        if (item is not null)
+            item.IsSelected = true;
+    }
+
     private void OnSplitCardClick(object sender, RoutedEventArgs e)
     {
         TreeViewItem? item = null;
@@ -47,5 +62,30 @@ public partial class TransactionSplitTreeStyles : ResourceDictionary
                 item.IsSelected = false;
             ClearTreeSelection(child);
         }
+    }
+
+    private static TreeViewItem? FindTreeViewItem(TreeView tree, object selectedItem)
+    {
+        foreach (var candidate in tree.Items)
+            if (candidate is TreeViewItem item && ReferenceEquals(item.DataContext, selectedItem))
+                return item;
+
+        return FindTreeViewItem((DependencyObject)tree, selectedItem);
+    }
+
+    private static TreeViewItem? FindTreeViewItem(DependencyObject parent, object selectedItem)
+    {
+        for (var index = 0; index < VisualTreeHelper.GetChildrenCount(parent); index++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, index);
+            if (child is TreeViewItem item && ReferenceEquals(item.DataContext, selectedItem))
+                return item;
+
+            var match = FindTreeViewItem(child, selectedItem);
+            if (match is not null)
+                return match;
+        }
+
+        return null;
     }
 }

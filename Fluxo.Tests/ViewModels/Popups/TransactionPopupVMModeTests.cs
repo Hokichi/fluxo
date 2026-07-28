@@ -67,6 +67,24 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
+    public void Discarding_viewed_transaction_notifies_split_tree_is_read_only()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeView(CreateTransaction());
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+            var changes = new List<string?>();
+            vm.PropertyChanged += (_, eventArgs) => changes.Add(eventArgs.PropertyName);
+
+            vm.DiscardEditingViewedTransaction();
+
+            Assert.True(vm.IsViewOnly);
+            Assert.Contains(nameof(vm.CanModifySplitTree), changes);
+        });
+    }
+
+    [Fact]
     public void View_mapping_is_isolated_from_the_supplied_entity()
     {
         RunInSta(() =>
@@ -206,6 +224,31 @@ public sealed class TransactionPopupVMModeTests
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
 
             Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+        });
+    }
+
+    [Fact]
+    public void View_edit_mode_without_form_changes_has_no_pending_transaction_changes()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeView(CreateTransaction());
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            Assert.False(vm.HasPendingTransactionChanges);
+        });
+    }
+
+    [Fact]
+    public void View_without_subtransactions_hides_side_panel()
+    {
+        RunInSta(() =>
+        {
+            var (vm, _) = CreateVm();
+            vm.InitializeView(CreateTransaction());
+
+            Assert.False(vm.ShowSidePanel);
         });
     }
 

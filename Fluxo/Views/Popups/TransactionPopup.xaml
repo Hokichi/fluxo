@@ -534,7 +534,10 @@
 
                             <StackPanel Grid.Column="2" IsEnabled="{Binding ShowDateSelector, Mode=OneWay}">
                                 <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Date" />
-                                <components:DateSelector x:Name="ExpenseTransactionDateSelector" SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
+                                <components:DateSelector
+                                    x:Name="ExpenseTransactionDateSelector"
+                                    IsEnabled="{Binding CanEditDate, Mode=OneWay}"
+                                    SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
                             </StackPanel>
                         </Grid>
 
@@ -824,6 +827,7 @@
                                 Grid.Row="1"
                                 Grid.Column="2"
                                 DisplayMemberPath="Name"
+                                IsEnabled="{Binding CanEditAccount, Mode=OneWay}"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
@@ -1041,6 +1045,7 @@
                             <ComboBox
                                 x:Name="IncomeAccountComboBox"
                                 DisplayMemberPath="Name"
+                                IsEnabled="{Binding CanEditAccount, Mode=OneWay}"
                                 ItemsSource="{Binding AccountsView, Mode=OneWay}"
                                 SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                                 Style="{StaticResource FluxoComboBoxStyle}">
@@ -1054,6 +1059,7 @@
                             <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel, Mode=OneWay}" />
                             <components:DateSelector
                                 x:Name="IncomeTransactionDateSelector"
+                                IsEnabled="{Binding CanEditDate, Mode=OneWay}"
                                 SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
                                 Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
@@ -1404,6 +1410,7 @@
                                         Margin="0,12,0,0"
                                         Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}"
                                         Style="{StaticResource RoundedProgressBarStyle}"
+                                        Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                         Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}" />
                                     <Grid Grid.Row="2" Margin="0,8,0,0">
                                         <Grid.ColumnDefinitions>
@@ -1417,7 +1424,10 @@
                                             <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                                             <Run Text=" left" />
                                         </TextBlock>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            Orientation="Horizontal"
+                                            Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                             <customControls:BalloonButton
                                                 Margin="0,0,8,0"
                                                 ButtonIcon="{StaticResource CallSplit}"
@@ -1455,7 +1465,7 @@
                                 CommandParameter="{x:Null}"
                                 Content="Add a sub-transaction"
                                 Style="{StaticResource DashedButtonStyle}"
-                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                                Visibility="{Binding ShowRootSplitAddAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                             <customControls:BalloonButton
                                 Margin="2,8,0,0"
                                 HorizontalAlignment="Left"
@@ -1464,7 +1474,7 @@
                                 Command="{Binding AddSplitCommand, Mode=OneWay}"
                                 CommandParameter="{x:Null}"
                                 ToolTip="Add a sub-transaction"
-                                Visibility="{Binding HasSplitTransactions, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                Visibility="{Binding ShowRootSplitPlusAction, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                         </StackPanel>
                     </customControls:FadingScrollViewer>
                 </Grid>
