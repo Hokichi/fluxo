@@ -59,7 +59,6 @@ public partial class App : Application
     private bool _isTrayLeftClickPending;
     private bool _isForcedShutdownRequested;
     private bool _isPrimaryActivationPending;
-    private bool _launchInTrayMode;
     private ISingleInstanceCoordinator? _singleInstanceCoordinator;
 
     public App()
@@ -103,7 +102,6 @@ public partial class App : Application
 
         base.OnStartup(e);
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
-        _launchInTrayMode = IsTrayLaunchMode(e.Args);
 
         try
         {
@@ -177,32 +175,22 @@ public partial class App : Application
             MainWindow = mainWindow;
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             EnsureTrayIconInitialized();
+            var closeBehavior = await GetCloseBehaviorAsync();
             var shouldForegroundOnStartup = _isPrimaryActivationPending;
+            var shouldHideToTrayOnStartup = ShouldHideMainWindowAtStartup(
+                e.Args,
+                closeBehavior,
+                shouldForegroundOnStartup);
 
-            if (_launchInTrayMode)
+            if (shouldForegroundOnStartup)
             {
-                if (shouldForegroundOnStartup)
-                {
-                    _isPrimaryActivationPending = false;
-                    RestoreMainWindowFromTray();
-                }
-                else
-                {
-                    HideMainWindowToTray(mainWindow);
-                }
+                _isPrimaryActivationPending = false;
+                RestoreMainWindowFromTray();
             }
+            else if (shouldHideToTrayOnStartup)
+                HideMainWindowToTray(mainWindow);
             else
-            {
-                if (shouldForegroundOnStartup)
-                {
-                    _isPrimaryActivationPending = false;
-                    RestoreMainWindowFromTray();
-                }
-                else
-                {
-                    mainWindow.Show();
-                }
-            }
+                mainWindow.Show();
 
             LogStartupStage("main window", StartupStageState.Completed);
         }
@@ -334,22 +322,25 @@ public partial class App : Application
 
     private async Task<bool> IsCloseBehaviorMinimizeToTrayAsync()
     {
+        return await GetCloseBehaviorAsync() == AppCloseBehavior.MinimizeToTray;
+    }
+
+    private async Task<AppCloseBehavior> GetCloseBehaviorAsync()
+    {
         try
         {
-            var closeBehavior = await _dataOperationRunner.RunAsync("resolve app close behavior", async (scope, ct) =>
+            return await _dataOperationRunner.RunAsync("resolve app close behavior", async (scope, ct) =>
             {
                 var setting = await scope.UnitOfWork.UserSettings.GetByNameAsync(UserSettingNames.CloseBehavior, ct);
                 return UserSettingValueParser.ParseCloseBehavior(setting?.Value, AppCloseBehavior.Exit);
             });
-
-            return closeBehavior == AppCloseBehavior.MinimizeToTray;
         }
         catch (Exception exception)
         {
             FluxoLogManager.LogWarning(
                 exception,
                 "Unable to resolve close behavior from user settings. Falling back to default exit behavior.");
-            return false;
+            return AppCloseBehavior.Exit;
         }
     }
 
@@ -368,14 +359,14 @@ public partial class App : Application
         return AppContext.BaseDirectory;
     }
 
-    private static bool IsTrayLaunchMode(string[] args)
+    internal static bool ShouldHideMainWindowAtStartup(
+        string[] args,
+        AppCloseBehavior closeBehavior,
+        bool isPrimaryActivationPending)
     {
-        if (args.Length == 0)
-            return false;
-
-        return args.Any(arg =>
-            string.Equals(arg, StartupTrayArgument, StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(arg, RestartTrayArgument, StringComparison.OrdinalIgnoreCase));
+        return !isPrimaryActivationPending &&
+               args.Any(arg => string.Equals(arg, StartupTrayArgument, StringComparison.OrdinalIgnoreCase)) &&
+               closeBehavior == AppCloseBehavior.MinimizeToTray;
     }
 
     private async Task SyncRunAtStartupRegistrationAsync()
