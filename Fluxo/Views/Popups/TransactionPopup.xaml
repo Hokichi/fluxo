@@ -12,15 +12,10 @@
     CanClone="{Binding CanCloneViewedTransaction, Mode=OneWay}"
     CanDelete="{Binding CanDeleteViewedTransaction, Mode=OneWay}"
     CanEdit="{Binding CanEditViewedTransaction, Mode=OneWay}"
-    CanFinish="{Binding CanPersist, Mode=OneWay}"
-    CanGoNext="{Binding CanGoNext, Mode=OneWay}"
-    CanSkip="{Binding CanSkipProcessing, Mode=OneWay}"
     CanToggleBulk="{Binding CanToggleBulk, Mode=OneWay}"
-    CurrentStep="{Binding CurrentProcessingStep, Mode=OneWay}"
     IsSaveButtonEnabled="{Binding CanPersist, Mode=OneWay}"
     Mode="{Binding PopupMode, Mode=OneWay}"
     PopupTitle="{Binding PopupTitle, Mode=OneWay}"
-    StepCount="{Binding ProcessingStepCount, Mode=OneWay}"
     mc:Ignorable="d">
 
     <customControls:BasePopup.Resources>
@@ -473,7 +468,7 @@
                         <Style TargetType="ColumnDefinition">
                             <Setter Property="Width" Value="220" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ShowNavigationPanel, Mode=OneWay}" Value="False">
+                                <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
                                     <Setter Property="Width" Value="0" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -485,7 +480,7 @@
                         <Style TargetType="ColumnDefinition">
                             <Setter Property="Width" Value="20" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ShowNavigationPanel, Mode=OneWay}" Value="False">
+                                <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
                                     <Setter Property="Width" Value="0" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -518,14 +513,14 @@
                 Grid.RowSpan="4"
                 Grid.Column="0"
                 Margin="0,8,0,0"
-                Visibility="{Binding ShowNavigationPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding IsBulkMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Button
                     Width="220"
                     Margin="0,0,0,8"
                     Command="{Binding AddQueuedTransactionCommand, Mode=OneWay}"
                     Content="Add transaction"
                     Style="{StaticResource DashedButtonStyle}"
-                    Visibility="{Binding IsBulkInsertMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding CanToggleBulk, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ListBox
                     ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
                     ItemTemplate="{StaticResource TransactionQueueItemTemplate}"
@@ -540,7 +535,7 @@
                 Width="1"
                 HorizontalAlignment="Center"
                 Background="{DynamicResource Brush.Border.Subtle}"
-                Visibility="{Binding ShowNavigationPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                Visibility="{Binding IsBulkMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <Border
                 Grid.RowSpan="4"

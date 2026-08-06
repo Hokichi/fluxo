@@ -41,7 +41,7 @@ public partial class TransactionPopup : BasePopup
 
         _viewModel = viewModel;
         DataContext = viewModel;
-        BulkInsertChecked += (_, _) => _viewModel.IsBulkInsertMode = true;
+        BulkInsertChecked += (_, _) => _viewModel.IsBulkMode = true;
         BulkInsertUnchecked += OnBulkInsertUnchecked;
         _moreTagsHoverCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
         _moreTagsHoverCloseTimer.Tick += (_, _) =>
@@ -87,7 +87,10 @@ public partial class TransactionPopup : BasePopup
 
     protected override async void OnSaveButtonClick()
     {
-        if (_viewModel.IsBulkInsertMode)
+        if (_viewModel.IsProcessingSession && !await ShouldSaveQueuedTransactionsAsync())
+            return;
+
+        if (_viewModel.IsBulkMode || _viewModel.IsProcessingSession)
         {
             await FinishQueuedTransactionsAsync();
             return;
@@ -180,7 +183,7 @@ public partial class TransactionPopup : BasePopup
 
     private void OnBulkInsertUnchecked(object? sender, BulkInsertUncheckedEventArgs e)
     {
-        _viewModel.IsBulkInsertMode = false;
+        _viewModel.IsBulkMode = false;
         e.ShouldSwitchToSaveOnly = true;
     }
 
@@ -326,13 +329,23 @@ public partial class TransactionPopup : BasePopup
         }
     }
 
-    protected override async void OnNextButtonClick() => await SaveAndAdvanceAsync();
-
-    protected override async void OnFinishButtonClick() => await FinishQueuedTransactionsAsync();
-
     private async Task FinishQueuedTransactionsAsync()
     {
         var result = await _viewModel.FinishQueuedTransactionsAsync();
+        if (result.RequiresConfirmation)
+        {
+            var saveAnyway = FluxoMessageBox.Show(
+                this,
+                result.ErrorMessage ?? "This expense exceeds the account's maximum spending limit. Save anyway?",
+                "Transaction",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) == MessageBoxResult.Yes;
+            if (!saveAnyway)
+                return;
+
+            result = await _viewModel.FinishQueuedTransactionsAsync(allowMaximumSpendingOverflow: true);
+        }
+
         if (result.IsSuccess)
         {
             Close();
@@ -345,67 +358,16 @@ public partial class TransactionPopup : BasePopup
             "Transaction", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
-    protected override void OnBackButtonClick()
+    private async Task<bool> ShouldSaveQueuedTransactionsAsync()
     {
-        _viewModel.NavigatePreviousProcessing();
-        SyncNoteDocumentFromViewModel();
-        FocusPrimaryInput();
-    }
-
-    protected override void OnSkipButtonClick()
-    {
-        if (!_viewModel.SkipCurrentProcessing())
-            Close();
-        else
+        foreach (var transaction in _viewModel.QueuedTransactions.ToList())
         {
-            SyncNoteDocumentFromViewModel();
-            if (_viewModel.IsViewOnly)
-                ConfigureViewModeFocus();
-            else
-                FocusPrimaryInput();
-        }
-    }
-
-    protected override void OnClosing(CancelEventArgs e)
-    {
-        base.OnClosing(e);
-    }
-
-    private async Task SaveAndAdvanceAsync()
-    {
-        if (!await ShouldSaveCurrentTransactionAsync())
-            return;
-
-        var result = await TrySaveCurrentAndAdvanceWithMaximumSpendingConfirmationAsync();
-        if (result is not { } resultValue)
-            return;
-        if (!resultValue.IsSuccess)
-        {
-            ShowValidationMessage(resultValue.ErrorMessage);
-            return;
+            _viewModel.SelectedQueuedTransaction = transaction;
+            if (!await ShouldSaveCurrentTransactionAsync())
+                return false;
         }
 
-        if (!_viewModel.IsProcessingSession || _viewModel.IsProcessingComplete)
-            Close();
-    }
-
-    private async Task<TransactionPopupSubmissionResult?>
-        TrySaveCurrentAndAdvanceWithMaximumSpendingConfirmationAsync()
-    {
-        var result = await _viewModel.SaveCurrentAndAdvanceAsync();
-        if (!result.RequiresConfirmation)
-            return result;
-
-        var saveAnyway = FluxoMessageBox.Show(
-            this,
-            result.ErrorMessage ?? "This expense exceeds the account's maximum spending limit. Save anyway?",
-            "Transaction",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning) == MessageBoxResult.Yes;
-        if (!saveAnyway)
-            return null;
-
-        return await _viewModel.SaveCurrentAndAdvanceAsync(allowMaximumSpendingOverflow: true);
+        return true;
     }
 
     private void SyncNoteDocumentFromViewModel()

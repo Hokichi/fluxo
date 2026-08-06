@@ -56,9 +56,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private readonly List<AccountVM> _processingRepayments = [];
     private readonly List<SavingGoalVM> _processingGoals = [];
     private readonly List<RecurringTransactionVM> _processingRecurringTransactions = [];
-    private readonly Dictionary<object, ProcessingTransactionHelper.State> _processingStates = [];
-    private readonly Dictionary<object, FormState> _processingSnapshots = [];
-    private readonly Dictionary<object, int> _processingTransactionIds = [];
     private readonly Dictionary<TransactionVM, FormState> _queuedTransactionStates =
         new(ReferenceEqualityComparer.Instance);
     private bool _isLoadingQueuedTransaction;
@@ -106,7 +103,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     [ObservableProperty] private TransactionPopupSidePanel _selectedSidePanel = TransactionPopupSidePanel.History;
     [ObservableProperty] private TransactionVM? _selectedSplitTransaction;
     private TransactionVM? _selectedQueuedTransaction;
-    [ObservableProperty] private bool _isBulkInsertMode;
+    [ObservableProperty] private bool _isBulkMode;
     [ObservableProperty] private RecurringPeriod _selectedRecurringPeriod = RecurringPeriod.Monthly;
 
     [ObservableProperty]
@@ -270,7 +267,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     ];
 
     public bool CanPersist => !IsSaving && IsCurrentInputValid() &&
-                              (!ShowNavigationPanel || QueuedTransactions.All(transaction => transaction.IsValid));
+                              (!IsBulkMode || QueuedTransactions.All(transaction => transaction.IsValid));
     public bool HasChanges => _isChangeTrackingInitialized &&
                               (!LoadedTransaction.Equals(PendingTransaction) ||
                                !TransactionSplitHelper.AreTreesEqual(LoadedTransaction, PendingTransaction));
@@ -473,22 +470,14 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     public bool HasMoreTags => OverflowTags.Count > 0;
     public bool IsProcessingSession => ProcessingTargets.Any();
-    public bool IsProcessingComplete => IsProcessingSession && _processingStates.Values.All(state => state != ProcessingTransactionHelper.State.Pending);
-    public bool CanSkipProcessing => IsProcessingSession && SelectedQueuedTransaction is not null;
-    public bool ShowNavigationPanel => PopupMode == PopupMode.Navigate;
-    public bool ShowRightFormDivider => ShowNavigationPanel || ShowSidePanel;
-    public bool CanGoNext => ShowNavigationPanel && SelectedQueuedTransaction is not null &&
-                             GetQueuedTransactionIndex(SelectedQueuedTransaction) < QueuedTransactions.Count - 1;
-    public PopupMode PopupMode => _popupPurpose == TransactionPopupPurpose.Processing
-        ? PopupMode.Navigate
-        : IsViewOnly ? PopupMode.Functional
+    public bool ShowRightFormDivider => IsBulkMode || ShowSidePanel;
+    public PopupMode PopupMode => IsViewOnly ? PopupMode.Functional
         : _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.AddRecurringTransaction
+            or TransactionPopupPurpose.Processing
             ? PopupMode.Persist
             : PopupMode.Modify;
-    public int CurrentProcessingStep { get; private set; } = 1;
-    public int ProcessingStepCount { get; private set; }
     public int? CurrentProcessingRecurringTransactionId => _currentProcessingRecurringTransactionId;
-    private IEnumerable<TransactionVM> TransactionsToPersist => ShowNavigationPanel
+    private IEnumerable<TransactionVM> TransactionsToPersist => IsBulkMode
         ? QueuedTransactions
         : _isTransactionStateInitialized ? [PendingTransaction] : [];
 
@@ -504,7 +493,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         _queuedTransactionStates.Remove(transaction);
     }
 
-    partial void OnIsBulkInsertModeChanged(bool value)
+    partial void OnIsBulkModeChanged(bool value)
     {
         if (value)
         {
@@ -525,10 +514,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
 
         RevalidateTransactions();
-        OnPropertyChanged(nameof(PopupMode));
-        OnPropertyChanged(nameof(ShowNavigationPanel));
         OnPropertyChanged(nameof(ShowRightFormDivider));
-        OnPropertyChanged(nameof(CanGoNext));
     }
 
     private void OnSelectedQueuedTransactionChanged(TransactionVM? oldValue, TransactionVM? newValue)
@@ -560,19 +546,18 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             _isLoadingQueuedTransaction = false;
         }
-        if (IsBulkInsertMode)
+        if (IsBulkMode && !IsProcessingSession)
             SetPopupPurpose(TransactionPopupPurpose.AddNewTransaction);
         OnPropertyChanged(nameof(PendingTransaction));
         if (!_isLoadingQueuedTransaction)
             RevalidateTransactions();
-        OnPropertyChanged(nameof(CanGoNext));
         NotifyProcessingChanged();
     }
 
     [RelayCommand]
     public void AddQueuedTransaction()
     {
-        if (!IsBulkInsertMode)
+        if (!IsBulkMode || !CanToggleBulk)
             return;
 
         var account = Accounts.FirstOrDefault(account => account.IsDefault) ?? Accounts.FirstOrDefault();
@@ -590,17 +575,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             DateTime.Today, DateTime.Today, DateTime.Today, ExpenseCategory.Needs, account?.Id ?? NoAccountId,
             NoTagId, NoSavingGoalId, NoAccountId);
         SelectedQueuedTransaction = transaction;
-    }
-
-    public TransactionPopupSubmissionResult AdvanceQueuedTransaction()
-    {
-        if (!CanGoNext || SelectedQueuedTransaction is null)
-            return TransactionPopupSubmissionResult.Success();
-
-        SyncPendingTransactionFromForm();
-        _queuedTransactionStates[SelectedQueuedTransaction] = CaptureState();
-        SelectedQueuedTransaction = QueuedTransactions[GetQueuedTransactionIndex(SelectedQueuedTransaction) + 1];
-        return TransactionPopupSubmissionResult.Success();
     }
 
     private void RevalidateTransactions()
@@ -649,7 +623,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     public void InitializeRepaymentProcessing(IReadOnlyList<AccountVM> accounts)
     {
-        InitializeProcessing(accounts);
+        InitializeProcessing();
         _processingRepayments.AddRange(accounts);
         SetPopupPurpose(TransactionPopupPurpose.Processing);
         InitializeProcessingQueue();
@@ -658,7 +632,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     public void InitializeGoalProcessing(IReadOnlyList<SavingGoalVM> goals)
     {
-        InitializeProcessing(goals);
+        InitializeProcessing();
         _processingGoals.AddRange(goals);
         SetPopupPurpose(TransactionPopupPurpose.Processing);
         InitializeProcessingQueue();
@@ -667,70 +641,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     public void InitializeRecurringProcessing(IReadOnlyList<RecurringTransactionVM> recurringTransactions)
     {
-        InitializeProcessing(recurringTransactions);
+        InitializeProcessing();
         _processingRecurringTransactions.AddRange(recurringTransactions);
         SetPopupPurpose(TransactionPopupPurpose.Processing);
         InitializeProcessingQueue();
         NotifyProcessingChanged();
-    }
-
-    public async Task<TransactionPopupSubmissionResult> SaveCurrentAndAdvanceAsync(
-        bool allowMaximumSpendingOverflow = false)
-    {
-        if (ShowNavigationPanel)
-            return AdvanceQueuedTransaction();
-
-        if (!IsProcessingSession)
-            return await SaveAsync(false, allowMaximumSpendingOverflow);
-
-        if (!TryBuildTransactionInput(out _, out var validationMessage))
-            return TransactionPopupSubmissionResult.Failure(validationMessage);
-
-        var current = CurrentProcessingTarget!;
-        _processingSnapshots[current] = CaptureState();
-        var result = await SaveAsync(false, allowMaximumSpendingOverflow);
-        if (!result.IsSuccess)
-            return result;
-        if (result.TransactionId is > 0)
-            _processingTransactionIds[current] = result.TransactionId.Value;
-        _processingStates[current] = ProcessingTransactionHelper.State.Processed;
-        MoveToNextPending();
-        NotifyProcessingChanged();
-        return TransactionPopupSubmissionResult.Success();
-    }
-
-    public void NavigatePreviousProcessing()
-    {
-        if (!ShowNavigationPanel || SelectedQueuedTransaction is null)
-            return;
-
-        var index = GetQueuedTransactionIndex(SelectedQueuedTransaction);
-        if (index <= 0)
-            return;
-
-        SelectedQueuedTransaction = QueuedTransactions[index - 1];
-    }
-
-    public bool SkipCurrentProcessing()
-    {
-        if (!IsProcessingSession || SelectedQueuedTransaction is null)
-            return false;
-
-        var index = GetQueuedTransactionIndex(SelectedQueuedTransaction);
-        var target = CurrentProcessingTarget;
-        RemoveQueuedTransaction(SelectedQueuedTransaction);
-        if (target is AccountVM repayment)
-            _processingRepayments.Remove(repayment);
-        else if (target is SavingGoalVM goal)
-            _processingGoals.Remove(goal);
-        else if (target is RecurringTransactionVM recurring)
-            _processingRecurringTransactions.Remove(recurring);
-        if (target is not null)
-            _processingStates.Remove(target);
-        SelectedQueuedTransaction = QueuedTransactions.ElementAtOrDefault(Math.Min(index, QueuedTransactions.Count - 1));
-        var hasNext = SelectedQueuedTransaction is not null;
-        NotifyProcessingChanged();
-        return hasNext;
     }
 
     public async Task<TransactionPopupSubmissionResult> PersistProcessedItemsAsync()
@@ -746,10 +661,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             SelectedQueuedTransaction = transaction;
             SyncPendingTransactionFromForm();
             var result = await SaveAsync(false, allowMaximumSpendingOverflow);
-            if (result.IsSuccess)
-            {
-                RemoveQueuedTransaction(transaction);
-            }
+            if (!result.IsSuccess)
+                return result;
+
+            RemoveQueuedTransaction(transaction);
         }
 
         if (QueuedTransactions.Count == 0)
@@ -3446,19 +3361,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private object? CurrentProcessingTarget => ProcessingTargets.ElementAtOrDefault(_currentProcessingIndex);
 
-    private void InitializeProcessing<T>(IReadOnlyList<T> targets) where T : class
+    private void InitializeProcessing()
     {
+        IsBulkMode = true;
         _processingRepayments.Clear();
         _processingGoals.Clear();
         _processingRecurringTransactions.Clear();
-        _processingStates.Clear();
-        _processingSnapshots.Clear();
-        _processingTransactionIds.Clear();
         _currentProcessingIndex = 0;
-        foreach (var target in targets)
-            _processingStates[target] = ProcessingTransactionHelper.State.Pending;
-        ProcessingStepCount = targets.Count;
-        CurrentProcessingStep = targets.Count == 0 ? 0 : 1;
     }
 
     private void InitializeProcessingQueue()
@@ -3480,32 +3389,12 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         RevalidateTransactions();
     }
 
-    private bool MoveToNextPending()
-    {
-        var targets = ProcessingTargets.ToList();
-        var index = ProcessingTransactionHelper.FindNextPendingIndex(
-            targets.Select(target => _processingStates[target]).ToList(), _currentProcessingIndex);
-        if (index < 0)
-            return false;
-
-        _currentProcessingIndex = index;
-        LoadProcessingCurrent();
-        return true;
-    }
-
     private void LoadProcessingCurrent()
     {
         if (CurrentProcessingTarget is not { } target)
             return;
 
         _currentProcessingRecurringTransactionId = null;
-        if (_processingSnapshots.TryGetValue(target, out var snapshot))
-        {
-            LoadProcessingTarget(target, snapshot);
-            RestoreProcessingTransactionState(target);
-            return;
-        }
-
         if (target is AccountVM account)
             InitializeRepayment(account);
         else if (target is SavingGoalVM goal)
@@ -3531,7 +3420,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
 
         SetPopupPurpose(TransactionPopupPurpose.Processing);
-        RestoreProcessingTransactionState(target);
+        RestoreProcessingTransactionState();
     }
 
     private void LoadProcessingTarget(object? target, FormState snapshot)
@@ -3564,12 +3453,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         SetPopupPurpose(TransactionPopupPurpose.Processing);
     }
 
-    private void RestoreProcessingTransactionState(object target)
+    private void RestoreProcessingTransactionState()
     {
         EnsureTransactionState();
         SyncPendingTransactionFromForm();
         var loaded = TransactionMappingHelper.CreateLoaded(PendingTransaction);
-        loaded.Id = _processingTransactionIds.GetValueOrDefault(target);
         LoadedTransaction = loaded;
         PendingTransaction.Id = 0;
         PendingTransaction.LoggedOn = default;
@@ -3585,29 +3473,18 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         _processingRepayments.Clear();
         _processingGoals.Clear();
         _processingRecurringTransactions.Clear();
-        _processingStates.Clear();
-        _processingSnapshots.Clear();
-        _processingTransactionIds.Clear();
+        IsBulkMode = false;
         _currentProcessingIndex = 0;
         _currentProcessingRecurringTransactionId = null;
-        ProcessingStepCount = 0;
-        CurrentProcessingStep = 0;
         SetPopupPurpose(TransactionPopupPurpose.AddNewTransaction);
         NotifyProcessingChanged();
     }
 
     private void NotifyProcessingChanged()
     {
-        ProcessingStepCount = QueuedTransactions.Count;
-        CurrentProcessingStep = SelectedQueuedTransaction is null ? 0 : GetQueuedTransactionIndex(SelectedQueuedTransaction) + 1;
         OnPropertyChanged(nameof(IsProcessingSession));
-        OnPropertyChanged(nameof(CurrentProcessingStep));
-        OnPropertyChanged(nameof(ProcessingStepCount));
         OnPropertyChanged(nameof(CurrentProcessingRecurringTransactionId));
         OnPropertyChanged(nameof(PopupMode));
-        OnPropertyChanged(nameof(CanSkipProcessing));
-        OnPropertyChanged(nameof(IsProcessingComplete));
-        OnPropertyChanged(nameof(CanGoNext));
         OnPropertyChanged(nameof(CanPersist));
         OnPropertyChanged(nameof(PopupTitle));
         OnPropertyChanged(nameof(ShowHistoryPanel));

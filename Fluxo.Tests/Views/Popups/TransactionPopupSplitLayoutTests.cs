@@ -17,6 +17,26 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class TransactionPopupSplitLayoutTests
 {
     [Fact]
+    public void BulkInsert_shows_queue_panel()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger());
+            viewModel.IsBulkMode = true;
+            var popup = new TransactionPopup(viewModel);
+            popup.Measure(new Size(1300, 800));
+            popup.Arrange(new Rect(0, 0, 1300, 800));
+            popup.UpdateLayout();
+
+            var queue = FindControls<ListBox>(popup).Single(list => ReferenceEquals(list.ItemsSource, viewModel.QueuedTransactions));
+            var queuePanel = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(queue));
+
+            Assert.Equal(Visibility.Visible, queuePanel.Visibility);
+        });
+    }
+
+    [Fact]
     public void SplitPanel_without_subtransactions_shows_root_dashed_add_button()
     {
         RunOnStaThread(() =>

@@ -140,9 +140,8 @@ public sealed class TransactionPopupVMPersistenceTests
                 }
             ]);
 
-            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
-            Assert.Empty(added);
+            Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
+            Assert.Equal(2, added.Count);
             appData.DidNotReceive().UpdateTransaction(firstPersisted);
         });
     }
@@ -467,11 +466,8 @@ public sealed class TransactionPopupVMPersistenceTests
                 vm.InitializeRecurringProcessing([first, second]);
                 scopes.Clear();
 
-                Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-                vm.NavigatePreviousProcessing();
-                vm.NameText = "First edited";
-                Assert.Equal("First edited", vm.NameText);
-                Assert.Empty(added);
+                Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
+                Assert.Equal(2, added.Count);
                 appData.DidNotReceive().UpdateTransaction(firstPersisted);
             }
             finally
@@ -547,14 +543,10 @@ public sealed class TransactionPopupVMPersistenceTests
             ]);
 
             vm.AmountText = 10m;
-            var firstResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-            Assert.True(firstResult.IsSuccess, firstResult.ErrorMessage);
+            vm.SelectedQueuedTransaction = vm.QueuedTransactions[1];
             vm.AmountText = 20m;
-            var secondResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-            Assert.True(secondResult.IsSuccess, secondResult.ErrorMessage);
-            vm.NavigatePreviousProcessing();
+            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
             vm.AmountText = 15m;
-            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
             Assert.Empty(added);
             Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
 
@@ -606,18 +598,10 @@ public sealed class TransactionPopupVMPersistenceTests
                 [checkingVm, creditOneVm, creditTwoVm]);
             vm.InitializeRepaymentProcessing([creditOneVm, creditTwoVm]);
 
-            var firstResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-            Assert.True(firstResult.IsSuccess, firstResult.ErrorMessage);
-            var secondResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-            Assert.True(secondResult.IsSuccess, secondResult.ErrorMessage);
-            vm.NavigatePreviousProcessing();
+            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
             vm.AmountText = 50m;
-            var editResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-            Assert.True(editResult.IsSuccess, editResult.ErrorMessage);
             Assert.Empty(added);
-            vm.NavigatePreviousProcessing();
             Assert.Equal(50m, vm.AmountText);
-            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
             Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
 
             Assert.Equal(4, added.Count);

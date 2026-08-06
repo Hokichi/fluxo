@@ -58,17 +58,38 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void BulkInsert_UsesPersistMode()
+    public void BulkMode_UsesPersistMode()
     {
         RunInSta(() =>
         {
             var vm = TransactionPopupVMFactory.Create(
                 CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
-            vm.IsBulkInsertMode = true;
+            vm.IsBulkMode = true;
 
             Assert.Equal(PopupMode.Persist, vm.PopupMode);
-            Assert.False(vm.ShowNavigationPanel);
+            Assert.True(vm.IsBulkMode);
+        });
+    }
+
+    [Fact]
+    public void BulkMode_queue_selection_loads_selected_transaction()
+    {
+        RunInSta(() =>
+        {
+            var vm = TransactionPopupVMFactory.Create(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            vm.NameText = "First";
+            vm.AmountText = 10m;
+            vm.IsBulkMode = true;
+            vm.AddQueuedTransactionCommand.Execute(null);
+            vm.NameText = "Second";
+            vm.AmountText = 20m;
+
+            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
+
+            Assert.Equal("First", vm.NameText);
+            Assert.Equal(10m, vm.AmountText);
         });
     }
 
@@ -2779,7 +2800,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingNext_QueuesAndBackRestoresEdits()
+    public void ProcessingQueue_selection_restores_selected_transaction_edits()
     {
         RunInSta(() =>
         {
@@ -2798,46 +2819,22 @@ public sealed class TransactionPopupVMValidationTests
             };
             vm.InitializeRecurringProcessing([first, second]);
 
-            Assert.Equal(PopupMode.Navigate, vm.PopupMode);
+            Assert.Equal(PopupMode.Persist, vm.PopupMode);
+            Assert.True(vm.IsBulkMode);
             Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
             Assert.Equal("Payment Processing", vm.PopupTitle);
+            vm.AddQueuedTransactionCommand.Execute(null);
+            Assert.Equal(2, vm.QueuedTransactions.Count);
             vm.NameText = "First edited";
             vm.AmountText = 12m;
-
-            var result = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            vm.SelectedQueuedTransaction = vm.QueuedTransactions[1];
             Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
             vm.NameText = "Second edited";
-            vm.NavigatePreviousProcessing();
+            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
 
-            Assert.True(result.IsSuccess);
             Assert.Equal(first.Id, vm.CurrentProcessingRecurringTransactionId);
             Assert.Equal("First edited", vm.NameText);
             Assert.Equal(12m, vm.AmountText);
-            appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>());
-        });
-    }
-
-    [Fact]
-    public void ProcessingSkip_RemovesTransactionFromQueue()
-    {
-        RunInSta(() =>
-        {
-            var source = CreateCheckingSource(balance: 500m);
-            var appData = CreateAppData();
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
-            var tag = new TagVM { Id = 1, Name = "General" };
-            vm.InitializeRecurringProcessing(
-            [
-                new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
-                new RecurringTransactionVM { Id = 2, Name = "Second", Amount = 20m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag }
-            ]);
-
-            Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
-            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
-            Assert.True(vm.SkipCurrentProcessing());
-            Assert.Single(vm.QueuedTransactions);
-            Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
             appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>());
         });
     }
