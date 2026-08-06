@@ -12,19 +12,26 @@ namespace Fluxo.ViewModels.Popups;
 public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposable
 {
     private readonly IMessenger _messenger;
+    private readonly TransactionPopupMessageToken _messageToken;
     private AccountVM? _defaultAccount;
     private TransactionVM? _selectedQueuedTransaction;
 
     public TransactionBulkQueueVM(IMessenger messenger)
+        : this(messenger, TransactionPopupMessageToken.Default)
+    {
+    }
+
+    public TransactionBulkQueueVM(IMessenger messenger, TransactionPopupMessageToken messageToken)
     {
         _messenger = messenger;
-        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueResetMessage>(
-            this, static (recipient, message) => recipient.Reset(message));
-        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueSelectRequestedMessage>(
-            this, static (recipient, message) =>
+        _messageToken = messageToken;
+        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueResetMessage, TransactionPopupMessageToken>(
+            this, messageToken, static (recipient, message) => recipient.Reset(message));
+        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueSelectRequestedMessage, TransactionPopupMessageToken>(
+            this, messageToken, static (recipient, message) =>
                 recipient.SelectedQueuedTransaction = message.Value);
-        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueRemoveRequestedMessage>(
-            this, static (recipient, message) => recipient.Remove(message.Value));
+        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueRemoveRequestedMessage, TransactionPopupMessageToken>(
+            this, messageToken, static (recipient, message) => recipient.Remove(message.Value));
     }
 
     public ObservableCollection<TransactionVM> QueuedTransactions { get; } = [];
@@ -36,12 +43,15 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
         get => _selectedQueuedTransaction;
         set
         {
-            if (!SetProperty(ref _selectedQueuedTransaction, value))
+            if (ReferenceEquals(_selectedQueuedTransaction, value))
                 return;
 
+            OnPropertyChanging();
+            _selectedQueuedTransaction = value;
+            OnPropertyChanged();
             PublishState();
             if (value is not null)
-                _messenger.Send(new TransactionLoadRequestedMessage(value));
+                _messenger.Send(new TransactionLoadRequestedMessage(value), _messageToken);
         }
     }
 
@@ -60,6 +70,18 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
         };
         Add(transaction);
         SelectedQueuedTransaction = transaction;
+    }
+
+    [RelayCommand]
+    private void ActivateQueuedTransaction(TransactionVM? transaction)
+    {
+        if (transaction is null)
+            return;
+
+        if (ReferenceEquals(SelectedQueuedTransaction, transaction))
+            _messenger.Send(new TransactionLoadRequestedMessage(transaction), _messageToken);
+        else
+            SelectedQueuedTransaction = transaction;
     }
 
     private void Reset(TransactionBulkQueueResetMessage message)
@@ -87,7 +109,7 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
 
     private void Remove(TransactionVM transaction)
     {
-        var index = QueuedTransactions.IndexOf(transaction);
+        var index = QueuedTransactions.ToList().FindIndex(candidate => ReferenceEquals(candidate, transaction));
         if (index < 0)
             return;
 
@@ -113,7 +135,7 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
             SelectedQueuedTransaction,
             QueuedTransactions.Any(transaction =>
                 !string.IsNullOrEmpty(transaction.Name) || transaction.Amount != 0m),
-            QueuedTransactions.All(transaction => transaction.IsValid)));
+            QueuedTransactions.All(transaction => transaction.IsValid)), _messageToken);
 
     public void Dispose()
     {

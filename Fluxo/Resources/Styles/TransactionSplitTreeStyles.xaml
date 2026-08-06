@@ -92,10 +92,10 @@
                     Margin="0,4"
                     ButtonIcon="{StaticResource Delete}"
                     ButtonText="Delete"
-                    Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Command="{Binding SplitsViewModel.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                     CommandParameter="{Binding}"
                     ToolTip="Delete"
-                    Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding SplitsViewModel.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Border
                     Grid.Row="2"
                     Width="1"
@@ -106,7 +106,7 @@
                 Grid.Column="2"
                 Margin="0,8,0,0"
                 Click="OnSplitCardClick"
-                Command="{Binding DataContext.SelectSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                Command="{Binding SplitsViewModel.SelectSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                 CommandParameter="{Binding}"
                 Style="{StaticResource SplitTransactionCardStyle}">
                 <Grid>
@@ -153,10 +153,10 @@
                         Margin="0,4"
                         ButtonIcon="{StaticResource Delete}"
                         ButtonText="Delete"
-                        Command="{Binding DataContext.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Command="{Binding SplitsViewModel.DeleteSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                         CommandParameter="{Binding}"
                         ToolTip="Delete"
-                        Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        Visibility="{Binding SplitsViewModel.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <Border
                         Grid.Row="2"
                         Width="1"
@@ -167,7 +167,7 @@
                     Grid.Column="2"
                     Margin="0,8,0,0"
                     Click="OnSplitCardClick"
-                    Command="{Binding DataContext.SelectSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Command="{Binding SplitsViewModel.SelectSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                     CommandParameter="{Binding}"
                     MouseDoubleClick="OnSplitCardMouseDoubleClick"
                     Style="{StaticResource SplitTransactionCardStyle}">
@@ -222,7 +222,7 @@
                                     Margin="0,0,8,0"
                                     ButtonIcon="{StaticResource CallSplit}"
                                     ButtonText="Split Equally"
-                                    Command="{Binding DataContext.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Command="{Binding SplitsViewModel.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                     CommandParameter="{Binding}"
                                     CornerRadius="8"
                                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
@@ -231,7 +231,7 @@
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource RegularUndo}"
                                     ButtonText="Reset"
-                                    Command="{Binding DataContext.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    Command="{Binding SplitsViewModel.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                     CommandParameter="{Binding}"
                                     CornerRadius="8"
                                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
@@ -270,11 +270,11 @@
                             Margin="2,4,0,0"
                             HorizontalAlignment="Left"
                             ButtonIcon="{StaticResource PlusSolid}"
-                            Command="{Binding DataContext.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
+                            Command="{Binding SplitsViewModel.AddSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                             CommandParameter="{Binding}"
                             IsEnabled="{Binding CanAddChildTransaction, Mode=OneWay}"
                             ToolTip="Add a sub-transaction"
-                            Visibility="{Binding DataContext.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding SplitsViewModel.CanModifySplitTree, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </StackPanel>
                 </StackPanel>
             </Grid>

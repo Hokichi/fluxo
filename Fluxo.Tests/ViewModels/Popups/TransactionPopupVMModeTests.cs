@@ -72,16 +72,23 @@ public sealed class TransactionPopupVMModeTests
     {
         RunInSta(() =>
         {
-            var (vm, _) = CreateVm();
+            var messenger = new WeakReferenceMessenger();
+            var appData = Substitute.For<IAppDataService>();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
+            appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new BudgetAllocation()));
+            var (vm, _, splits) = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingAccount()]), appData, messenger: messenger);
             vm.InitializeView(CreateTransaction());
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
             var changes = new List<string?>();
-            vm.PropertyChanged += (_, eventArgs) => changes.Add(eventArgs.PropertyName);
+            splits.PropertyChanged += (_, eventArgs) => changes.Add(eventArgs.PropertyName);
 
             vm.DiscardEditingViewedTransaction();
 
             Assert.True(vm.IsViewOnly);
-            Assert.Contains(nameof(vm.CanModifySplitTree), changes);
+            Assert.False(splits.CanModifySplitTree);
+            Assert.Contains(nameof(splits.CanModifySplitTree), changes);
         });
     }
 

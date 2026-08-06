@@ -37,7 +37,8 @@ public sealed class TransactionPopupVMPersistenceTests
                     added = call.Arg<Transaction>();
                     added.Id = 77;
                 });
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([accountVm]), appData);
+            var vm = peers.Popup;
             vm.NameText = "Standalone add";
             vm.AmountText = 25m;
 
@@ -67,7 +68,8 @@ public sealed class TransactionPopupVMPersistenceTests
             var transaction = CreateTransaction(account);
             transaction.Amount = 20m;
             var appData = CreateAppData(account, transaction);
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([accountVm]), appData);
+            var vm = peers.Popup;
             vm.InitializeView(CreateTransactionVm(accountVm));
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
             vm.AmountText = 40m;
@@ -536,19 +538,23 @@ public sealed class TransactionPopupVMPersistenceTests
             appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult<IReadOnlyList<Transaction>>(added));
 
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([accountVm]), appData);
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([accountVm]), appData);
+            var vm = peers.Popup;
             vm.InitializeGoalProcessing([
                 new SavingGoalVM { Id = 1, Name = "Emergency" },
                 new SavingGoalVM { Id = 1, Name = "Emergency" }
             ]);
 
             vm.AmountText = 10m;
-            vm.SelectedQueuedTransaction = vm.QueuedTransactions[1];
+            peers.Bulk.SelectedQueuedTransaction = peers.Bulk.QueuedTransactions[1];
             vm.AmountText = 20m;
-            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
+            peers.Bulk.SelectedQueuedTransaction = peers.Bulk.QueuedTransactions[0];
             vm.AmountText = 15m;
             Assert.Empty(added);
-            Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
+            Assert.Equal([15m, 20m], peers.Bulk.QueuedTransactions.Select(item => item.Amount));
+            var result = vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult();
+            Assert.True(result.IsSuccess,
+                $"{result.ErrorMessage}; added={added.Count}; form={vm.AmountText}; queue={string.Join(',', peers.Bulk.QueuedTransactions.Select(item => item.Amount))}");
 
             Assert.Equal(2, added.Count);
             appData.DidNotReceive().UpdateTransaction(Arg.Any<Transaction>());
@@ -592,13 +598,14 @@ public sealed class TransactionPopupVMPersistenceTests
                     added.Add(transaction);
                 });
 
-            var vm = TransactionPopupVMFactory.Create(
+            var peers = TransactionPopupVMFactory.CreatePeers(
                 CreateMainViewModel([checkingVm, creditOneVm, creditTwoVm]),
                 appData,
                 [checkingVm, creditOneVm, creditTwoVm]);
+            var vm = peers.Popup;
             vm.InitializeRepaymentProcessing([creditOneVm, creditTwoVm]);
 
-            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
+            peers.Bulk.SelectedQueuedTransaction = peers.Bulk.QueuedTransactions[0];
             vm.AmountText = 50m;
             Assert.Empty(added);
             Assert.Equal(50m, vm.AmountText);

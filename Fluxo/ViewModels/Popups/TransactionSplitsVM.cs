@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Enums;
 using Fluxo.DataModels.Messages;
 using Fluxo.DataModels.Popups.TransactionPopup;
+using Fluxo.Helpers.Transaction;
 using Fluxo.Helpers.Transactions;
 using Fluxo.ViewModels.Entities;
 
@@ -14,7 +15,9 @@ namespace Fluxo.ViewModels.Popups;
 public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
 {
     private readonly IMessenger _messenger;
-    private readonly HashSet<TransactionVM> _subscribedTransactions = [];
+    private readonly TransactionPopupMessageToken _messageToken;
+    private readonly HashSet<TransactionVM> _subscribedTransactions =
+        new(ReferenceEqualityComparer.Instance);
     private TransactionVM? _rootTransaction;
     private TransactionVM? _selectedSplitTransaction;
     private bool _isTabSelected;
@@ -22,26 +25,44 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
     private bool _isMutating;
 
     public TransactionSplitsVM(IMessenger messenger)
+        : this(messenger, TransactionPopupMessageToken.Default)
+    {
+    }
+
+    public TransactionSplitsVM(IMessenger messenger, TransactionPopupMessageToken messageToken)
     {
         _messenger = messenger;
-        messenger.Register<TransactionSplitsVM, TransactionSplitContextChangedMessage>(
-            this, static (recipient, message) => recipient.ApplyContext(message));
-        messenger.Register<TransactionSplitsVM, TransactionSplitValidationRequestedMessage>(
-            this, static (_, message) => message.Reply(ValidateTree(message.Root)));
-        messenger.Register<TransactionSplitsVM, TransactionSplitsClearRequestedMessage>(
-            this, static (recipient, message) => recipient.ClearSplitTransactions(message.Value));
+        _messageToken = messageToken;
+        messenger.Register<TransactionSplitsVM, TransactionSplitContextChangedMessage, TransactionPopupMessageToken>(
+            this, messageToken, static (recipient, message) => recipient.ApplyContext(message));
+        messenger.Register<TransactionSplitsVM, TransactionSplitValidationRequestedMessage, TransactionPopupMessageToken>(
+            this, messageToken, static (_, message) => message.Reply(ValidateTree(message.Root)));
     }
 
     public TransactionVM? RootTransaction
     {
         get => _rootTransaction;
-        private set => SetProperty(ref _rootTransaction, value);
+        private set
+        {
+            if (ReferenceEquals(_rootTransaction, value))
+                return;
+            OnPropertyChanging();
+            _rootTransaction = value;
+            OnPropertyChanged();
+        }
     }
 
     public TransactionVM? SelectedSplitTransaction
     {
         get => _selectedSplitTransaction;
-        private set => SetProperty(ref _selectedSplitTransaction, value);
+        private set
+        {
+            if (ReferenceEquals(_selectedSplitTransaction, value))
+                return;
+            OnPropertyChanging();
+            _selectedSplitTransaction = value;
+            OnPropertyChanged();
+        }
     }
 
     public bool IsTabSelected
@@ -58,7 +79,9 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
 
     public bool ShowInvalidSplitPlaceholder =>
         RootTransaction is not null &&
-        (RootTransaction.Type != TransactionType.Expense || !RootTransaction.IsValid);
+        (RootTransaction.Type != TransactionType.Expense ||
+         !TransactionValidationHelper.ValidateName(RootTransaction.Name, false).IsValid ||
+         !TransactionValidationHelper.ValidateAmount(RootTransaction.Amount, false, false, false, null).IsValid);
     public decimal SplitAmountRemaining => RootTransaction is null
         ? 0m
         : RootTransaction.HasChildAmountOverflow
@@ -167,7 +190,10 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
             RootTransaction = message.Root;
             SelectedSplitTransaction = null;
             SubscribeTree();
-            _messenger.Send(new TransactionLoadRequestedMessage(message.Root));
+        }
+        else if (message.IsRootLoaded && SelectedSplitTransaction is not null)
+        {
+            SelectedSplitTransaction = null;
         }
         else if (!message.IsTabSelected && SelectedSplitTransaction is not null)
         {
@@ -179,11 +205,12 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
 
     private void SelectTransaction(TransactionVM? node)
     {
-        if (RootTransaction is null || ReferenceEquals(SelectedSplitTransaction, node))
+        if (RootTransaction is null || node is not null && !IsTabSelected ||
+            ReferenceEquals(SelectedSplitTransaction, node))
             return;
 
         SelectedSplitTransaction = node;
-        _messenger.Send(new TransactionLoadRequestedMessage(node ?? RootTransaction));
+        _messenger.Send(new TransactionLoadRequestedMessage(node ?? RootTransaction), _messageToken);
         NotifyStateChanged();
     }
 
@@ -296,7 +323,7 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
     private void PublishChange()
     {
         if (RootTransaction is not null)
-            _messenger.Send(new TransactionSplitChangedMessage(RootTransaction));
+            _messenger.Send(new TransactionSplitChangedMessage(RootTransaction), _messageToken);
         NotifyStateChanged();
     }
 

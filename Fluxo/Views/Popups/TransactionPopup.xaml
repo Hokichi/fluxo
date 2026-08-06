@@ -510,21 +510,24 @@
             </Grid.RowDefinitions>
 
             <StackPanel
+                x:Name="BulkQueuePanel"
                 Grid.RowSpan="4"
                 Grid.Column="0"
                 Margin="0,8,0,0"
-                Visibility="{Binding IsBulkMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding DataContext.IsBulkMode, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Button
                     Width="220"
                     Margin="0,0,0,8"
                     Command="{Binding AddQueuedTransactionCommand, Mode=OneWay}"
                     Content="Add transaction"
                     Style="{StaticResource DashedButtonStyle}"
-                    Visibility="{Binding CanToggleBulk, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding DataContext.CanToggleBulk, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ListBox
+                    x:Name="BulkQueueListBox"
                     ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
                     ItemTemplate="{StaticResource TransactionQueueItemTemplate}"
                     ItemsSource="{Binding QueuedTransactions, Mode=OneWay}"
+                    PreviewMouseLeftButtonDown="OnBulkQueuePreviewMouseLeftButtonDown"
                     SelectedItem="{Binding SelectedQueuedTransaction, Mode=TwoWay}"
                     Style="{StaticResource TransactionHistoryListBoxStyle}" />
             </StackPanel>
@@ -1515,7 +1518,10 @@
                         Style="{StaticResource TransactionHistoryListBoxStyle}" />
                 </customControls:FadingScrollViewer>
 
-                <Grid Grid.Row="1" Visibility="{Binding ShowSplitPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid
+                    x:Name="SplitPanel"
+                    Grid.Row="1"
+                    Visibility="{Binding DataContext.ShowSplitPanel, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -1530,7 +1536,7 @@
                         <StackPanel>
                             <Button
                                 Click="OnRootSplitCardClick"
-                                Command="{Binding SelectSplitCommand}"
+                                Command="{Binding SelectSplitCommand, Mode=OneWay}"
                                 CommandParameter="{x:Null}"
                                 Style="{StaticResource SplitTransactionRootCardStyle}">
                                 <Grid>
@@ -1547,22 +1553,22 @@
                                         <TextBlock
                                             FontFamily="{StaticResource Bold}"
                                             Foreground="{StaticResource Brush.Text.Primary}"
-                                            Text="{Binding PendingTransaction.Name, Mode=OneWay}"
+                                            Text="{Binding RootTransaction.Name, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis" />
                                         <TextBlock
                                             Grid.Column="1"
                                             Margin="12,0,0,0"
                                             FontFamily="{StaticResource Bold}"
                                             Foreground="{StaticResource Brush.Text.Primary}"
-                                            Text="{Binding PendingTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                            Text="{Binding RootTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                                     </Grid>
                                     <ProgressBar
                                         Grid.Row="1"
                                         Height="12"
                                         Margin="0,12,0,0"
-                                        Maximum="{Binding PendingTransaction.Amount, Mode=OneWay}"
+                                        Maximum="{Binding RootTransaction.Amount, Mode=OneWay}"
                                         Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                        Value="{Binding PendingTransaction.ChildAmountTotal, Mode=OneWay}">
+                                        Value="{Binding RootTransaction.ChildAmountTotal, Mode=OneWay}">
                                         <ProgressBar.Style>
                                             <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
                                                 <Style.Triggers>
@@ -1594,7 +1600,7 @@
                                                 Margin="0,0,8,0"
                                                 ButtonIcon="{StaticResource CallSplit}"
                                                 ButtonText="Split Equally"
-                                                Command="{Binding SplitEquallyCommand}"
+                                                Command="{Binding SplitEquallyCommand, Mode=OneWay}"
                                                 CommandParameter="{x:Null}"
                                                 CornerRadius="8"
                                                 DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
@@ -1603,7 +1609,7 @@
                                             <customControls:BalloonButton
                                                 ButtonIcon="{StaticResource RegularUndo}"
                                                 ButtonText="Reset"
-                                                Command="{Binding ResetSplitCommand}"
+                                                Command="{Binding ResetSplitCommand, Mode=OneWay}"
                                                 CommandParameter="{x:Null}"
                                                 CornerRadius="8"
                                                 DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
@@ -1617,7 +1623,7 @@
                                 x:Name="SplitTransactionTree"
                                 Margin="0,8,0,0"
                                 ItemTemplate="{StaticResource SplitTransactionBranchTemplate}"
-                                ItemsSource="{Binding PendingTransaction.ChildTransactions, Mode=OneWay}"
+                                ItemsSource="{Binding RootTransaction.ChildTransactions, Mode=OneWay}"
                                 Style="{StaticResource SplitTransactionTreeViewStyle}" />
                             <Button
                                 Width="Auto"

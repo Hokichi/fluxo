@@ -77,19 +77,136 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = TransactionPopupVMFactory.Create(
+            var peers = TransactionPopupVMFactory.CreatePeers(
                 CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            var vm = peers.Popup;
             vm.NameText = "First";
             vm.AmountText = 10m;
             vm.IsBulkMode = true;
-            vm.AddQueuedTransactionCommand.Execute(null);
+            peers.Bulk.AddQueuedTransactionCommand.Execute(null);
             vm.NameText = "Second";
             vm.AmountText = 20m;
 
-            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
+            peers.Bulk.SelectedQueuedTransaction = peers.Bulk.QueuedTransactions[0];
 
             Assert.Equal("First", vm.NameText);
             Assert.Equal(10m, vm.AmountText);
+        });
+    }
+
+    [Fact]
+    public void BulkMode_change_tracking_only_uses_queue_name_or_amount()
+    {
+        RunInSta(() =>
+        {
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            peers.Popup.BeginChangeTracking();
+            peers.Popup.IsBulkMode = true;
+
+            peers.Popup.NoteText = "Ignored";
+            peers.Popup.SelectedDate = peers.Popup.SelectedDate.AddDays(1);
+            Assert.False(peers.Popup.HasChanges);
+
+            peers.Popup.NameText = "Tracked";
+            Assert.True(peers.Popup.HasChanges);
+
+            peers.Popup.NameText = string.Empty;
+            peers.Popup.AmountText = 0m;
+            Assert.False(peers.Popup.HasChanges);
+        });
+    }
+
+    [Fact]
+    public void Bulk_split_add_and_switch_preserves_root_and_child()
+    {
+        RunInSta(() =>
+        {
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            peers.Popup.NameText = "First root";
+            peers.Popup.AmountText = 100m;
+            peers.Popup.IsBulkMode = true;
+            peers.Popup.SelectedSidePanel = TransactionPopupSidePanel.Split;
+            peers.Splits.AddSplitCommand.Execute(null);
+            var firstRoot = peers.Bulk.QueuedTransactions[0];
+            var child = firstRoot.ChildTransactions.Single();
+            Assert.Equal("First root", firstRoot.Name);
+            peers.Popup.NameText = "Child";
+            peers.Popup.AmountText = 100m;
+            Assert.Equal("First root", firstRoot.Name);
+
+            peers.Bulk.AddQueuedTransactionCommand.Execute(null);
+            Assert.Equal("First root", firstRoot.Name);
+            peers.Bulk.SelectedQueuedTransaction = firstRoot;
+
+            Assert.Same(firstRoot, peers.Popup.PendingTransaction);
+            Assert.Equal("First root", firstRoot.Name);
+            Assert.Equal("Child", child.Name);
+            Assert.DoesNotContain(peers.Bulk.QueuedTransactions,
+                queued => ReferenceEquals(queued, child));
+        });
+    }
+
+    [Fact]
+    public void Activating_selected_queue_item_reopens_root_from_split_child()
+    {
+        RunInSta(() =>
+        {
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            peers.Popup.NameText = "Root";
+            peers.Popup.AmountText = 100m;
+            peers.Popup.IsBulkMode = true;
+            var root = peers.Bulk.SelectedQueuedTransaction!;
+            peers.Popup.SelectedSidePanel = TransactionPopupSidePanel.Split;
+            peers.Splits.AddSplitCommand.Execute(null);
+            Assert.NotSame(root, peers.Popup.PendingTransaction);
+
+            peers.Bulk.ActivateQueuedTransactionCommand.Execute(root);
+
+            Assert.Same(root, peers.Popup.PendingTransaction);
+            Assert.Null(peers.Splits.SelectedSplitTransaction);
+        });
+    }
+
+    [Fact]
+    public void Popup_peer_messages_are_isolated_by_token()
+    {
+        RunInSta(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var main = CreateMainViewModel([CreateCheckingSource(balance: 500m)]);
+            var first = TransactionPopupVMFactory.CreatePeers(main, CreateAppData(), messenger: messenger);
+            var second = TransactionPopupVMFactory.CreatePeers(main, CreateAppData(), messenger: messenger);
+
+            first.Popup.NameText = "First";
+            first.Popup.AmountText = 10m;
+            first.Popup.IsBulkMode = true;
+
+            Assert.Single(first.Bulk.QueuedTransactions);
+            Assert.Empty(second.Bulk.QueuedTransactions);
+            Assert.Null(second.Splits.RootTransaction);
+        });
+    }
+
+    [Fact]
+    public void Invalid_split_marks_queue_root_invalid_and_blocks_save()
+    {
+        RunInSta(() =>
+        {
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            peers.Popup.NameText = "Root";
+            peers.Popup.AmountText = 100m;
+            peers.Popup.IsBulkMode = true;
+            peers.Popup.SelectedSidePanel = TransactionPopupSidePanel.Split;
+            peers.Splits.AddSplitCommand.Execute(null);
+            peers.Popup.NameText = "Child";
+            peers.Popup.AmountText = 40m;
+
+            Assert.False(peers.Bulk.QueuedTransactions.Single().IsValid);
+            Assert.False(peers.Popup.CanPersist);
         });
     }
 
@@ -849,11 +966,12 @@ public sealed class TransactionPopupVMValidationTests
     {
         RunInSta(() =>
         {
-            var vm = TransactionPopupVMFactory.Create(
+            var peers = TransactionPopupVMFactory.CreatePeers(
                 CreateMainViewModel([CreateCheckingSource(balance: 500m)]),
                 CreateAppData());
+            peers.Popup.InitializeAsync().GetAwaiter().GetResult();
 
-            Assert.True(vm.ShowInvalidSplitPlaceholder);
+            Assert.True(peers.Splits.ShowInvalidSplitPlaceholder);
         });
     }
 
@@ -1059,30 +1177,6 @@ public sealed class TransactionPopupVMValidationTests
             var result = vm.SaveAsync(resetAfterSave: false).GetAwaiter().GetResult();
 
             Assert.True(result.IsSuccess);
-        });
-    }
-
-    [Fact]
-    public void AddSplit_AssignsFirstVisibleTagToNewLeaf()
-    {
-        RunInSta(() =>
-        {
-            var account = CreateCheckingSource(balance: 500m);
-            var appData = CreateAppData();
-            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>(
-            [
-                new Tag { Id = 1, Name = "Alpha", HexCode = "#111111" },
-                new Tag { Id = 2, Name = "Bravo", HexCode = "#222222" }
-            ]));
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([account]), appData, [account]);
-
-            vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
-            vm.NameText = "Split";
-            vm.AmountText = 100m;
-            vm.AddSplit(null);
-
-            Assert.Equal(1, vm.PendingTransaction.ChildTransactions.Single().Tag?.Id);
-            Assert.Equal(1, vm.SelectedTag?.Id);
         });
     }
 
@@ -2806,7 +2900,8 @@ public sealed class TransactionPopupVMValidationTests
         {
             var source = CreateCheckingSource(balance: 500m);
             var appData = CreateAppData();
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData, [source]);
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([source]), appData, [source]);
+            var vm = peers.Popup;
             var first = new RecurringTransactionVM
             {
                 Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense,
@@ -2821,16 +2916,15 @@ public sealed class TransactionPopupVMValidationTests
 
             Assert.Equal(PopupMode.Persist, vm.PopupMode);
             Assert.True(vm.IsBulkMode);
-            Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
+            Assert.Equal("First", peers.Bulk.SelectedQueuedTransaction?.Name);
             Assert.Equal("Payment Processing", vm.PopupTitle);
-            vm.AddQueuedTransactionCommand.Execute(null);
-            Assert.Equal(2, vm.QueuedTransactions.Count);
+            Assert.Equal(2, peers.Bulk.QueuedTransactions.Count);
             vm.NameText = "First edited";
             vm.AmountText = 12m;
-            vm.SelectedQueuedTransaction = vm.QueuedTransactions[1];
-            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
+            peers.Bulk.SelectedQueuedTransaction = peers.Bulk.QueuedTransactions[1];
+            Assert.Equal("Second", peers.Bulk.SelectedQueuedTransaction?.Name);
             vm.NameText = "Second edited";
-            vm.SelectedQueuedTransaction = vm.QueuedTransactions[0];
+            peers.Bulk.SelectedQueuedTransaction = peers.Bulk.QueuedTransactions[0];
 
             Assert.Equal(first.Id, vm.CurrentProcessingRecurringTransactionId);
             Assert.Equal("First edited", vm.NameText);
@@ -2846,7 +2940,9 @@ public sealed class TransactionPopupVMValidationTests
         {
             var source = CreateCheckingSource(balance: 500m);
             var tag = new TagVM { Id = 1, Name = "General" };
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), CreateAppData(), [source]);
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([source]), CreateAppData(), [source]);
+            var vm = peers.Popup;
             vm.InitializeRecurringProcessing(
             [
                 new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
@@ -2855,7 +2951,7 @@ public sealed class TransactionPopupVMValidationTests
 
             vm.NameText = string.Empty;
 
-            Assert.False(vm.SelectedQueuedTransaction!.IsValid);
+            Assert.False(peers.Bulk.SelectedQueuedTransaction!.IsValid);
             Assert.False(vm.CanPersist);
         });
     }
@@ -2868,7 +2964,8 @@ public sealed class TransactionPopupVMValidationTests
             var source = CreateCheckingSource(balance: 500m);
             var appData = CreateAppData();
             var tag = new TagVM { Id = 1, Name = "General" };
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData, [source]);
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([source]), appData, [source]);
+            var vm = peers.Popup;
             vm.InitializeRecurringProcessing(
             [
                 new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
@@ -2878,7 +2975,7 @@ public sealed class TransactionPopupVMValidationTests
             var result = vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult();
 
             Assert.True(result.IsSuccess, result.ErrorMessage);
-            Assert.Empty(vm.QueuedTransactions);
+            Assert.Empty(peers.Bulk.QueuedTransactions);
             appData.Received(2).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
         });
     }
@@ -2896,7 +2993,8 @@ public sealed class TransactionPopupVMValidationTests
                     ? Task.FromException(new InvalidOperationException("Failed"))
                     : Task.CompletedTask);
             var tag = new TagVM { Id = 1, Name = "General" };
-            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData, [source]);
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([source]), appData, [source]);
+            var vm = peers.Popup;
             vm.InitializeRecurringProcessing(
             [
                 new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
@@ -2906,8 +3004,8 @@ public sealed class TransactionPopupVMValidationTests
             var result = vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult();
 
             Assert.False(result.IsSuccess);
-            Assert.Single(vm.QueuedTransactions);
-            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
+            Assert.Single(peers.Bulk.QueuedTransactions);
+            Assert.Equal("Second", peers.Bulk.SelectedQueuedTransaction?.Name);
             Assert.True(vm.CanPersist);
         });
     }

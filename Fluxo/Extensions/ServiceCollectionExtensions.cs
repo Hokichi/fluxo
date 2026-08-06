@@ -1,6 +1,7 @@
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Messages;
 using Fluxo.Mappings;
 using Fluxo.Services.Backups;
 using Fluxo.Services.Mappings;
@@ -72,6 +73,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddUIData(this IServiceCollection services)
     {
         services.AddSingleton<IMessenger>(_ => WeakReferenceMessenger.Default);
+        services.AddScoped(_ => new TransactionPopupMessageToken(Guid.NewGuid()));
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<ILogService, FluxoLogService>();
         services.AddSingleton<IUiSettleAwaiter, UiSettleAwaiter>();
@@ -94,6 +96,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<FloatingNotificationListVM>();
         services.AddSingleton<LedgerVM>();
         services.AddTransient<TransactionPopupVM>();
+        services.AddTransient<TransactionBulkQueueVM>();
+        services.AddTransient<TransactionSplitsVM>();
         services.AddTransient<AddAccountVM>();
         services.AddTransient<AddSavingGoalVM>();
         services.AddTransient<PlanningReportVM>();

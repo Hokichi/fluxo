@@ -29,18 +29,27 @@ public partial class TransactionPopup : BasePopup
     }
 
     private readonly TransactionPopupVM _viewModel;
+    private readonly TransactionBulkQueueVM _bulkQueueViewModel;
+    private readonly TransactionSplitsVM _splitsViewModel;
     private bool _isInitialized;
     private bool _isHandlingAddTagSelection;
     private readonly DispatcherTimer _moreTagsHoverCloseTimer;
     private MoreTagsPopupLifecycleState _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
     private bool _isSyncingNoteDocument;
 
-    public TransactionPopup(TransactionPopupVM viewModel)
+    public TransactionPopup(
+        TransactionPopupVM viewModel,
+        TransactionBulkQueueVM bulkQueueViewModel,
+        TransactionSplitsVM splitsViewModel)
     {
         InitializeComponent();
 
         _viewModel = viewModel;
+        _bulkQueueViewModel = bulkQueueViewModel;
+        _splitsViewModel = splitsViewModel;
         DataContext = viewModel;
+        BulkQueuePanel.DataContext = bulkQueueViewModel;
+        SplitPanel.DataContext = splitsViewModel;
         BulkInsertChecked += (_, _) => _viewModel.IsBulkMode = true;
         BulkInsertUnchecked += OnBulkInsertUnchecked;
         _moreTagsHoverCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
@@ -73,8 +82,18 @@ public partial class TransactionPopup : BasePopup
         };
 
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
-        Unloaded += (_, _) => _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
-        Closed += (_, _) => _viewModel.Dispose();
+        _splitsViewModel.PropertyChanged += OnSplitsViewModelPropertyChanged;
+        Unloaded += (_, _) =>
+        {
+            _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+            _splitsViewModel.PropertyChanged -= OnSplitsViewModelPropertyChanged;
+        };
+        Closed += (_, _) =>
+        {
+            _viewModel.Dispose();
+            _bulkQueueViewModel.Dispose();
+            _splitsViewModel.Dispose();
+        };
         TagsDockPanel.SizeChanged += (_, _) => RecalculateTagLayout();
         PreviewMouseDown += OnPopupPreviewMouseDown;
     }
@@ -84,6 +103,8 @@ public partial class TransactionPopup : BasePopup
     internal bool IsViewingTransaction(int transactionId) => _viewModel.ViewedTransaction?.Id == transactionId;
 
     public bool IsOwnedBy(Guid ownerToken) => IsActive && _viewModel.AddTagOwnerToken == ownerToken;
+
+    public TransactionSplitsVM SplitsViewModel => _splitsViewModel;
 
     protected override async void OnSaveButtonClick()
     {
@@ -352,7 +373,7 @@ public partial class TransactionPopup : BasePopup
             return;
         }
 
-        var count = _viewModel.QueuedTransactions.Count;
+        var count = _bulkQueueViewModel.QueuedTransactions.Count;
         FluxoMessageBox.Show(this,
             count == 1 ? "1 transaction has not been saved." : $"{count} transactions have not been saved.",
             "Transaction", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -360,9 +381,9 @@ public partial class TransactionPopup : BasePopup
 
     private async Task<bool> ShouldSaveQueuedTransactionsAsync()
     {
-        foreach (var transaction in _viewModel.QueuedTransactions.ToList())
+        foreach (var transaction in _bulkQueueViewModel.QueuedTransactions.ToList())
         {
-            _viewModel.SelectedQueuedTransaction = transaction;
+            _bulkQueueViewModel.SelectedQueuedTransaction = transaction;
             if (!await ShouldSaveCurrentTransactionAsync())
                 return false;
         }
@@ -455,6 +476,16 @@ public partial class TransactionPopup : BasePopup
         e.Handled = true;
     }
 
+    private void OnBulkQueuePreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.OriginalSource is not DependencyObject source)
+            return;
+
+        var item = source as ListBoxItem ?? DependencyObjectTree.FindAncestor<ListBoxItem>(source);
+        if (item?.DataContext is TransactionVM transaction)
+            _bulkQueueViewModel.ActivateQueuedTransactionCommand.Execute(transaction);
+    }
+
     private void OnSplitPanelPreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
         if (sender is not ScrollViewer scrollViewer)
@@ -467,6 +498,7 @@ public partial class TransactionPopup : BasePopup
 
     private void OnRootSplitCardClick(object sender, RoutedEventArgs e)
     {
+        _splitsViewModel.SelectSplitCommand.Execute(null);
         TransactionSplitTreeStyles.SyncSelection(SplitTransactionTree, null);
     }
 
@@ -475,7 +507,7 @@ public partial class TransactionPopup : BasePopup
         if (sender is not SegmentedToggleOption option || option.IsSelected)
             return;
 
-        if (_viewModel.IsExpense && _viewModel.HasSplitTransactions &&
+        if (_viewModel.IsExpense && _splitsViewModel.HasSplitTransactions &&
             FluxoMessageBox.Show(
                 this,
                 "Switching transaction type will remove all sub-transactions. Continue?",
@@ -484,8 +516,8 @@ public partial class TransactionPopup : BasePopup
                 MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
 
-        if (_viewModel.IsExpense && _viewModel.HasSplitTransactions)
-            _viewModel.ClearSplitTransactions();
+        if (_viewModel.IsExpense && _splitsViewModel.HasSplitTransactions)
+            _splitsViewModel.ClearSplitTransactions();
 
         if (ReferenceEquals(option, ExpenseRadioButton))
             _viewModel.IsExpense = true;
@@ -507,16 +539,24 @@ public partial class TransactionPopup : BasePopup
 
         if (e.PropertyName is nameof(TransactionPopupVM.SelectedPinnedHistoryItem) or
             nameof(TransactionPopupVM.SelectedHistoryItem) or
-            nameof(TransactionPopupVM.SelectedQueuedTransaction))
+            nameof(TransactionPopupVM.PendingTransaction))
         {
             SyncNoteDocumentFromViewModel();
             FocusPrimaryInput();
         }
 
-        if (e.PropertyName is nameof(TransactionPopupVM.SelectedSplitTransaction) or
-            nameof(TransactionPopupVM.SelectedSidePanel))
+        if (e.PropertyName == nameof(TransactionPopupVM.SelectedSidePanel))
             Dispatcher.BeginInvoke(() => TransactionSplitTreeStyles.SyncSelection(
-                SplitTransactionTree, _viewModel.SelectedSplitTransaction), DispatcherPriority.Loaded);
+                SplitTransactionTree, _splitsViewModel.SelectedSplitTransaction), DispatcherPriority.Loaded);
+    }
+
+    private void OnSplitsViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(TransactionSplitsVM.SelectedSplitTransaction))
+        {
+            Dispatcher.BeginInvoke(() => TransactionSplitTreeStyles.SyncSelection(
+                SplitTransactionTree, _splitsViewModel.SelectedSplitTransaction), DispatcherPriority.Loaded);
+        }
     }
 
     private void OnMoreTagsButtonChecked(object sender, RoutedEventArgs e) => TryOpenMoreTagsPopup();

@@ -14,7 +14,7 @@ public sealed class TransactionBulkQueueVMTests
         var messenger = new WeakReferenceMessenger();
         var loads = new List<TransactionVM>();
         var recipient = new object();
-        messenger.Register<object, TransactionLoadRequestedMessage>(recipient,
+        messenger.Register<object, TransactionLoadRequestedMessage, TransactionPopupMessageToken>(recipient, TransactionPopupMessageToken.Default,
             (_, message) => loads.Add(message.Value));
         var account = new AccountVM { Id = 1, Name = "Checking", IsDefault = true };
         var first = new TransactionVM
@@ -26,7 +26,7 @@ public sealed class TransactionBulkQueueVMTests
         };
         using var vm = new TransactionBulkQueueVM(messenger);
 
-        messenger.Send(new TransactionBulkQueueResetMessage(true, [first], account));
+        messenger.Send(new TransactionBulkQueueResetMessage(true, [first], account), TransactionPopupMessageToken.Default);
         vm.AddQueuedTransactionCommand.Execute(null);
         var second = vm.SelectedQueuedTransaction!;
         second.Name = "Second";
@@ -48,12 +48,12 @@ public sealed class TransactionBulkQueueVMTests
         var messenger = new WeakReferenceMessenger();
         TransactionBulkQueueStateChangedMessage? state = null;
         var recipient = new object();
-        messenger.Register<object, TransactionBulkQueueStateChangedMessage>(recipient,
+        messenger.Register<object, TransactionBulkQueueStateChangedMessage, TransactionPopupMessageToken>(recipient, TransactionPopupMessageToken.Default,
             (_, message) => state = message);
         using var vm = new TransactionBulkQueueVM(messenger);
 
         messenger.Send(new TransactionBulkQueueResetMessage(
-            true, [new TransactionVM { Name = name, Amount = amount }], null));
+            true, [new TransactionVM { Name = name, Amount = amount }], null), TransactionPopupMessageToken.Default);
 
         Assert.Equal(expected, state!.HasChanges);
     }
@@ -65,13 +65,33 @@ public sealed class TransactionBulkQueueVMTests
         var first = new TransactionVM { Name = "First" };
         var second = new TransactionVM { Name = "Second" };
         using var vm = new TransactionBulkQueueVM(messenger);
-        messenger.Send(new TransactionBulkQueueResetMessage(true, [first, second], null));
+        messenger.Send(new TransactionBulkQueueResetMessage(true, [first, second], null), TransactionPopupMessageToken.Default);
 
-        messenger.Send(new TransactionBulkQueueSelectRequestedMessage(second));
+        messenger.Send(new TransactionBulkQueueSelectRequestedMessage(second), TransactionPopupMessageToken.Default);
         Assert.Same(second, vm.SelectedQueuedTransaction);
 
-        messenger.Send(new TransactionBulkQueueRemoveRequestedMessage(second));
+        messenger.Send(new TransactionBulkQueueRemoveRequestedMessage(second), TransactionPopupMessageToken.Default);
         Assert.DoesNotContain(second, vm.QueuedTransactions);
         Assert.Same(first, vm.SelectedQueuedTransaction);
+    }
+
+    [Fact]
+    public void Selection_uses_reference_identity_for_equal_transactions()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var first = new TransactionVM { Name = "Same", Amount = 1m };
+        var second = new TransactionVM { Name = "Same", Amount = 1m };
+        using var vm = new TransactionBulkQueueVM(messenger);
+        messenger.Send(new TransactionBulkQueueResetMessage(true, [first, second], null), TransactionPopupMessageToken.Default);
+
+        vm.SelectedQueuedTransaction = first;
+        vm.SelectedQueuedTransaction = second;
+
+        Assert.Same(second, vm.SelectedQueuedTransaction);
+
+        messenger.Send(new TransactionBulkQueueRemoveRequestedMessage(second), TransactionPopupMessageToken.Default);
+
+        Assert.Single(vm.QueuedTransactions);
+        Assert.Same(first, vm.QueuedTransactions[0]);
     }
 }

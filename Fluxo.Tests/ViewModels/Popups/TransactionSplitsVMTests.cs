@@ -15,19 +15,34 @@ public sealed class TransactionSplitsVMTests
         var messenger = new WeakReferenceMessenger();
         var loads = new List<TransactionVM>();
         var recipient = new object();
-        messenger.Register<object, TransactionLoadRequestedMessage>(recipient,
+        messenger.Register<object, TransactionLoadRequestedMessage, TransactionPopupMessageToken>(recipient, TransactionPopupMessageToken.Default,
             (_, message) => loads.Add(message.Value));
         var root = ValidRoot(100m);
         using var vm = new TransactionSplitsVM(messenger);
 
-        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
         vm.AddSplitCommand.Execute(null);
         var child = root.ChildTransactions.Single();
         vm.SelectSplitCommand.Execute(child);
-        messenger.Send(new TransactionSplitContextChangedMessage(root, false, true));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, false, true), TransactionPopupMessageToken.Default);
 
         Assert.Same(child, loads[^2]);
         Assert.Same(root, loads[^1]);
+        Assert.Null(vm.SelectedSplitTransaction);
+    }
+
+    [Fact]
+    public void Child_cannot_be_selected_outside_split_tab()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var root = ValidRoot(100m);
+        var child = ValidLeaf(100m);
+        root.ChildTransactions.Add(child);
+        using var vm = new TransactionSplitsVM(messenger);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, false, false), TransactionPopupMessageToken.Default);
+
+        vm.SelectSplitCommand.Execute(child);
+
         Assert.Null(vm.SelectedSplitTransaction);
     }
 
@@ -40,10 +55,10 @@ public sealed class TransactionSplitsVMTests
         using var vm = new TransactionSplitsVM(messenger);
         var root = ValidRoot(100m);
         root.ChildTransactions.Add(ValidLeaf(childAmount));
-        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
 
         var result = messenger
-            .Send(new TransactionSplitValidationRequestedMessage(root))
+            .Send(new TransactionSplitValidationRequestedMessage(root), TransactionPopupMessageToken.Default)
             .Response;
 
         Assert.False(result.IsSuccess);
@@ -56,17 +71,17 @@ public sealed class TransactionSplitsVMTests
         var messenger = new WeakReferenceMessenger();
         var changes = 0;
         var recipient = new object();
-        messenger.Register<object, TransactionSplitChangedMessage>(recipient,
+        messenger.Register<object, TransactionSplitChangedMessage, TransactionPopupMessageToken>(recipient, TransactionPopupMessageToken.Default,
             (_, _) => changes++);
         using var vm = new TransactionSplitsVM(messenger);
         var root = ValidRoot(100m);
         var leaf = ValidLeaf(100m);
         root.ChildTransactions.Add(leaf);
-        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
 
         leaf.Name = string.Empty;
         var result = messenger
-            .Send(new TransactionSplitValidationRequestedMessage(root))
+            .Send(new TransactionSplitValidationRequestedMessage(root), TransactionPopupMessageToken.Default)
             .Response;
 
         Assert.True(changes > 0);
@@ -75,12 +90,26 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
+    public void Invalid_split_tree_stays_editable_when_root_fields_are_valid()
+    {
+        var messenger = new WeakReferenceMessenger();
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
+
+        vm.AddSplitCommand.Execute(null);
+
+        Assert.False(vm.ShowInvalidSplitPlaceholder);
+        Assert.False(messenger.Send(new TransactionSplitValidationRequestedMessage(root), TransactionPopupMessageToken.Default).Response.IsSuccess);
+    }
+
+    [Fact]
     public void Add_delete_equal_and_reset_mutate_the_root_tree()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
         var root = ValidRoot(100m);
-        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
 
         vm.AddSplitCommand.Execute(null);
         vm.SelectSplitCommand.Execute(null);
@@ -103,7 +132,7 @@ public sealed class TransactionSplitsVMTests
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
         var root = ValidRoot(100m);
-        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
         vm.AddSplitCommand.Execute(null);
         var child = root.ChildTransactions.Single();
         child.Amount = 100m;
