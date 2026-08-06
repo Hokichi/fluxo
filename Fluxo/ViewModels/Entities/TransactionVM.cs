@@ -65,7 +65,8 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
             amount = TransactionCalculationHelper.CalculateInstallmentAmount(amount, installments.OccurrenceCount);
         }
 
-        IsValid = TransactionValidationHelper.ValidateName(Name, context.IsGoal).IsValid &&
+        IsValid = context.IsSplitTreeValid &&
+                  TransactionValidationHelper.ValidateName(Name, context.IsGoal).IsValid &&
                   SourceAccountId > 0 &&
                   (!context.IsGoal || GoalId is > 0) &&
                   (!context.IsRepayment || RepaymentAccountId is > 0) &&
@@ -76,23 +77,7 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
                       context.IsGoal, context.AmountValidationAccount, context.IgnoreMaximumSpending).IsValid &&
                   TransactionValidationHelper.ValidateTagSpending(
                       Type == TransactionType.Expense, context.IsRecurring || context.IsInstallments,
-                      IsExcludedFromBudget, Tag, context.CurrentTagSpending, amount).IsValid &&
-                  !HasChildAmountOverflow &&
-                  ValidateSplitTree(context);
-    }
-
-    private bool ValidateSplitTree(TransactionValidationContext context)
-    {
-        foreach (var child in ChildTransactions)
-        {
-            if (!TransactionValidationHelper.ValidateName(child.Name, context.IsGoal).IsValid ||
-                !TransactionValidationHelper.ValidateAmount(child.Amount, false, false, false, null).IsValid ||
-                (child.IsLeaf && Type == TransactionType.Expense && !context.IsRepayment && child.Tag is null) ||
-                !child.ValidateSplitTree(context))
-                return false;
-        }
-
-        return true;
+                      IsExcludedFromBudget, Tag, context.CurrentTagSpending, amount).IsValid;
     }
 
     partial void OnAmountChanged(decimal value) => NotifyChildStateChanged();

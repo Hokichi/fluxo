@@ -1,0 +1,142 @@
+using CommunityToolkit.Mvvm.Messaging;
+using Fluxo.Core.Enums;
+using Fluxo.DataModels.Messages;
+using Fluxo.ViewModels.Entities;
+using Fluxo.ViewModels.Popups;
+using Xunit;
+
+namespace Fluxo.Tests.ViewModels.Popups;
+
+public sealed class TransactionSplitsVMTests
+{
+    [Fact]
+    public void Child_selection_loads_child_and_leaving_tab_loads_root()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var loads = new List<TransactionVM>();
+        var recipient = new object();
+        messenger.Register<object, TransactionLoadRequestedMessage>(recipient,
+            (_, message) => loads.Add(message.Value));
+        var root = ValidRoot(100m);
+        using var vm = new TransactionSplitsVM(messenger);
+
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        vm.AddSplitCommand.Execute(null);
+        var child = root.ChildTransactions.Single();
+        vm.SelectSplitCommand.Execute(child);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, false, true));
+
+        Assert.Same(child, loads[^2]);
+        Assert.Same(root, loads[^1]);
+        Assert.Null(vm.SelectedSplitTransaction);
+    }
+
+    [Theory]
+    [InlineData(40, "Split amounts must equal their parent amount.")]
+    [InlineData(101, "Split amounts cannot exceed their parent amount.")]
+    public void Invalid_totals_fail_validation(decimal childAmount, string expectedMessage)
+    {
+        var messenger = new WeakReferenceMessenger();
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        root.ChildTransactions.Add(ValidLeaf(childAmount));
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+
+        var result = messenger
+            .Send(new TransactionSplitValidationRequestedMessage(root))
+            .Response;
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(expectedMessage, result.ErrorMessage);
+    }
+
+    [Fact]
+    public void Invalid_leaf_fails_validation_in_real_time()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var changes = 0;
+        var recipient = new object();
+        messenger.Register<object, TransactionSplitChangedMessage>(recipient,
+            (_, _) => changes++);
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        var leaf = ValidLeaf(100m);
+        root.ChildTransactions.Add(leaf);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+
+        leaf.Name = string.Empty;
+        var result = messenger
+            .Send(new TransactionSplitValidationRequestedMessage(root))
+            .Response;
+
+        Assert.True(changes > 0);
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Please fix the invalid sub-transactions.", result.ErrorMessage);
+    }
+
+    [Fact]
+    public void Add_delete_equal_and_reset_mutate_the_root_tree()
+    {
+        var messenger = new WeakReferenceMessenger();
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+
+        vm.AddSplitCommand.Execute(null);
+        vm.SelectSplitCommand.Execute(null);
+        vm.AddSplitCommand.Execute(null);
+        vm.SplitEquallyCommand.Execute(null);
+        Assert.Equal([50m, 50m], root.ChildTransactions.Select(child => child.Amount));
+
+        vm.ResetSplitCommand.Execute(null);
+        Assert.Equal([0m, 0m], root.ChildTransactions.Select(child => child.Amount));
+
+        var second = root.ChildTransactions[1];
+        vm.DeleteSplitCommand.Execute(second);
+        Assert.DoesNotContain(root.ChildTransactions,
+            child => ReferenceEquals(child, second));
+    }
+
+    [Fact]
+    public void Grandchild_is_last_supported_level_and_parent_classification_is_cleared()
+    {
+        var messenger = new WeakReferenceMessenger();
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true));
+        vm.AddSplitCommand.Execute(null);
+        var child = root.ChildTransactions.Single();
+        child.Amount = 100m;
+        child.Tag = new TagVM { Id = 2, Name = "Food" };
+        child.ExpenseCategory = ExpenseCategory.Needs;
+
+        vm.AddSplitCommand.Execute(child);
+        var grandchild = child.ChildTransactions.Single();
+
+        Assert.Null(child.Tag);
+        Assert.Null(child.ExpenseCategory);
+        Assert.False(vm.AddSplitCommand.CanExecute(grandchild));
+    }
+
+    private static TransactionVM ValidRoot(decimal amount) => new()
+    {
+        Type = TransactionType.Expense,
+        SourceAccountId = 1,
+        Account = new AccountVM { Id = 1, Name = "Checking" },
+        Name = "Root",
+        Amount = amount,
+        OccurredOn = DateTime.Today
+    };
+
+    private static TransactionVM ValidLeaf(decimal amount) => new()
+    {
+        Type = TransactionType.Expense,
+        SourceAccountId = 1,
+        Account = new AccountVM { Id = 1, Name = "Checking" },
+        Name = "Leaf",
+        Amount = amount,
+        OccurredOn = DateTime.Today,
+        ExpenseCategory = ExpenseCategory.Needs,
+        Tag = new TagVM { Id = 1, Name = "General" }
+    };
+}

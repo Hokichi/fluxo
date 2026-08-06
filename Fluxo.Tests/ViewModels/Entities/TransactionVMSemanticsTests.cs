@@ -117,4 +117,23 @@ public sealed class TransactionVMSemanticsTests
 
         Assert.False(transaction.IsValid);
     }
+
+    [Fact]
+    public void Validate_marks_root_invalid_when_split_tree_is_invalid()
+    {
+        var transaction = new TransactionVM
+        {
+            Type = TransactionType.Income,
+            SourceAccountId = 1,
+            Account = new AccountVM { Id = 1, Balance = 100m },
+            Name = "Root",
+            Amount = 10m
+        };
+
+        transaction.Validate(new TransactionValidationContext(
+            false, false, false, false, false, RecurringPeriod.None, string.Empty,
+            DateTime.Today, DateTime.Today, transaction.Account, 0m, false, false));
+
+        Assert.False(transaction.IsValid);
+    }
 }

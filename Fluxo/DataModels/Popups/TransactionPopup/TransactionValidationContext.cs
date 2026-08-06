@@ -15,4 +15,5 @@ public readonly record struct TransactionValidationContext(
     DateTime InstallmentEndDate,
     AccountVM? AmountValidationAccount,
     decimal CurrentTagSpending,
-    bool IgnoreMaximumSpending = false);
+    bool IgnoreMaximumSpending = false,
+    bool IsSplitTreeValid = true);
