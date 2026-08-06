@@ -109,7 +109,7 @@ public sealed class BasePopupModeTests
     }
 
     [Fact]
-    public void CheckingBulkInsert_SwitchesToNavigate()
+    public void CheckingBulkInsert_KeepsCurrentMode()
     {
         RunSta(() =>
         {
@@ -118,7 +118,7 @@ public sealed class BasePopupModeTests
 
             toggle.IsChecked = true;
 
-            Assert.Equal(PopupMode.Navigate, popup.Mode);
+            Assert.Equal(PopupMode.Persist, popup.Mode);
         });
     }
 
@@ -139,7 +139,7 @@ public sealed class BasePopupModeTests
     }
 
     [Fact]
-    public void UncheckingBulkInsert_WithoutHandler_KeepsNavigateSelected()
+    public void UncheckingBulkInsert_WithoutHandler_KeepsPersistSelected()
     {
         RunSta(() =>
         {
@@ -148,7 +148,7 @@ public sealed class BasePopupModeTests
             toggle.IsChecked = true;
             toggle.IsChecked = false;
 
-            Assert.Equal(PopupMode.Navigate, popup.Mode);
+            Assert.Equal(PopupMode.Persist, popup.Mode);
             Assert.True(toggle.IsChecked);
         });
     }

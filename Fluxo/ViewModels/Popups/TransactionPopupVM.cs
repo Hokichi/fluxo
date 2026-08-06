@@ -479,7 +479,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool ShowRightFormDivider => ShowNavigationPanel || ShowSidePanel;
     public bool CanGoNext => ShowNavigationPanel && SelectedQueuedTransaction is not null &&
                              GetQueuedTransactionIndex(SelectedQueuedTransaction) < QueuedTransactions.Count - 1;
-    public PopupMode PopupMode => _popupPurpose == TransactionPopupPurpose.Processing || IsBulkInsertMode
+    public PopupMode PopupMode => _popupPurpose == TransactionPopupPurpose.Processing
         ? PopupMode.Navigate
         : IsViewOnly ? PopupMode.Functional
         : _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.AddRecurringTransaction

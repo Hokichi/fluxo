@@ -87,6 +87,12 @@ public partial class TransactionPopup : BasePopup
 
     protected override async void OnSaveButtonClick()
     {
+        if (_viewModel.IsBulkInsertMode)
+        {
+            await FinishQueuedTransactionsAsync();
+            return;
+        }
+
         if (_viewModel.IsEditingViewedTransaction)
         {
             if (_viewModel.ViewedTransaction is null)
@@ -322,7 +328,9 @@ public partial class TransactionPopup : BasePopup
 
     protected override async void OnNextButtonClick() => await SaveAndAdvanceAsync();
 
-    protected override async void OnFinishButtonClick()
+    protected override async void OnFinishButtonClick() => await FinishQueuedTransactionsAsync();
+
+    private async Task FinishQueuedTransactionsAsync()
     {
         var result = await _viewModel.FinishQueuedTransactionsAsync();
         if (result.IsSuccess)

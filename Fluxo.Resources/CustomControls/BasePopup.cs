@@ -287,7 +287,6 @@ public class BasePopup : Window, IPopupHost
     {
         if (!_isSynchronizingBulkInsertToggle)
         {
-            SetCurrentValue(ModeProperty, PopupMode.Navigate);
             BulkInsertChecked?.Invoke(this, EventArgs.Empty);
         }
     }

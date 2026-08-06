@@ -58,6 +58,21 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
+    public void BulkInsert_UsesPersistMode()
+    {
+        RunInSta(() =>
+        {
+            var vm = TransactionPopupVMFactory.Create(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+
+            vm.IsBulkInsertMode = true;
+
+            Assert.Equal(PopupMode.Persist, vm.PopupMode);
+            Assert.False(vm.ShowNavigationPanel);
+        });
+    }
+
+    [Fact]
     public void PostedIoU_ForcesBudgetExclusion()
     {
         RunInSta(() =>
