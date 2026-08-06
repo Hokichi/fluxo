@@ -71,7 +71,7 @@ public sealed class TransactionPopupVMSplitTests
 
         Assert.True(vm.HasSplitAmountOverflow);
         Assert.Equal(1m, vm.SplitAmountRemaining);
-        Assert.False(vm.CanSave);
+        Assert.False(vm.CanPersist);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class TransactionPopupVMSplitTests
         parent.ChildTransactions.Single().Name = string.Empty;
         vm.SelectSplitCommand.Execute(null);
 
-        Assert.False(vm.CanSave);
+        Assert.False(vm.CanPersist);
     }
 
     [Fact]

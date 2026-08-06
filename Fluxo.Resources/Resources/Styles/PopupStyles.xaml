@@ -178,6 +178,7 @@
                                             ButtonText="Next"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                                            IsEnabled="{TemplateBinding CanGoNext}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Enter" />
@@ -199,6 +200,7 @@
                                             ButtonText="Finish"
                                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                                            IsEnabled="{TemplateBinding CanFinish}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Enter"

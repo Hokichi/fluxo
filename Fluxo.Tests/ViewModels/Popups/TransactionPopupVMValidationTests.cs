@@ -236,7 +236,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.RejectRepaymentCorrection();
 
             Assert.Equal("Invalid Repayment", vm.AmountValidationHint);
-            Assert.False(vm.CanSave);
+            Assert.False(vm.CanPersist);
         });
     }
 
@@ -565,7 +565,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.NameText = " ";
 
             Assert.False(vm.HasErrors);
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
         });
     }
 
@@ -577,14 +577,14 @@ public sealed class TransactionPopupVMValidationTests
             var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
 
             Assert.False(vm.HasErrors);
-            Assert.False(vm.CanSave);
+            Assert.False(vm.CanPersist);
             Assert.Equal(string.Empty, vm.NameValidationHint);
             Assert.Equal(string.Empty, vm.AmountValidationHint);
         });
     }
 
     [Fact]
-    public void CanSave_BecomesEnabled_WhenInitialRequiredFieldsAreValid()
+    public void CanPersist_BecomesEnabled_WhenInitialRequiredFieldsAreValid()
     {
         RunInSta(() =>
         {
@@ -593,7 +593,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.NameText = "Coffee";
             vm.AmountText = 5m;
 
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
             Assert.False(vm.HasErrors);
             Assert.Equal(string.Empty, vm.NameValidationHint);
             Assert.Equal(string.Empty, vm.AmountValidationHint);
@@ -755,7 +755,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.SelectedDate = selectedDate;
 
             Assert.Equal("Over Daily Allowance", vm.AmountWarningHint);
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
         });
     }
 
@@ -1125,7 +1125,7 @@ public sealed class TransactionPopupVMValidationTests
             var vm = CreateVm(TransactionKind.Income, source, isRecurring: false, amount: 999m);
 
             Assert.False(vm.HasErrors);
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
         });
     }
 
@@ -1242,7 +1242,7 @@ public sealed class TransactionPopupVMValidationTests
 
             var vm = CreateVm(TransactionKind.Expense, sourceVm, isRecurring: false, amount: 10m, appData: appData);
             Assert.False(vm.HasErrors);
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
 
             var result = vm.SaveAsync(resetAfterSave: false).GetAwaiter().GetResult();
 
@@ -2074,7 +2074,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CanSave_Installments_ValidatesSplitAmountAgainstSourceCapacity()
+    public void CanPersist_Installments_ValidatesSplitAmountAgainstSourceCapacity()
     {
         RunInSta(() =>
         {
@@ -2085,12 +2085,12 @@ public sealed class TransactionPopupVMValidationTests
             vm.InstallmentEndDate = new DateTime(2026, 10, 10);
             vm.IsInstallments = true;
 
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
         });
     }
 
     [Fact]
-    public void CanSave_Installments_ValidatesSplitAmountAgainstMaximumSpending()
+    public void CanPersist_Installments_ValidatesSplitAmountAgainstMaximumSpending()
     {
         RunInSta(() =>
         {
@@ -2103,7 +2103,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.IsInstallments = true;
             vm.ValidateAmountField();
 
-            Assert.True(vm.CanSave);
+            Assert.True(vm.CanPersist);
             Assert.Empty(vm.GetErrors(nameof(TransactionPopupVM.AmountText)));
             Assert.Equal(string.Empty, vm.AmountValidationHint);
         });
@@ -2160,7 +2160,7 @@ public sealed class TransactionPopupVMValidationTests
 
             Assert.Empty(vm.GetErrors(nameof(TransactionPopupVM.AmountText)));
             Assert.Equal(string.Empty, vm.AmountValidationHint);
-            Assert.False(vm.CanSave);
+            Assert.False(vm.CanPersist);
         });
     }
 
@@ -2187,7 +2187,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CanSave_Installments_ValidatesSplitAmountUsingClosestMatchingStartDate()
+    public void CanPersist_Installments_ValidatesSplitAmountUsingClosestMatchingStartDate()
     {
         RunInSta(() =>
         {
@@ -2199,7 +2199,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.IsInstallments = true;
             vm.ValidateAmountField();
 
-            Assert.False(vm.CanSave);
+            Assert.False(vm.CanPersist);
             Assert.Contains(vm.GetErrors(nameof(TransactionPopupVM.AmountText)),
                 error => error.ErrorMessage == "Amount exceeds this source's available balance.");
             Assert.Equal("Insufficient Balance", vm.AmountValidationHint);
@@ -2764,7 +2764,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingNext_PersistsAndBackRestoresSavedEdits()
+    public void ProcessingNext_QueuesAndBackRestoresEdits()
     {
         RunInSta(() =>
         {
@@ -2784,11 +2784,13 @@ public sealed class TransactionPopupVMValidationTests
             vm.InitializeRecurringProcessing([first, second]);
 
             Assert.Equal(PopupMode.Navigate, vm.PopupMode);
+            Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
             Assert.Equal("Payment Processing", vm.PopupTitle);
             vm.NameText = "First edited";
             vm.AmountText = 12m;
 
             var result = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
+            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
             vm.NameText = "Second edited";
             vm.NavigatePreviousProcessing();
 
@@ -2796,12 +2798,12 @@ public sealed class TransactionPopupVMValidationTests
             Assert.Equal(first.Id, vm.CurrentProcessingRecurringTransactionId);
             Assert.Equal("First edited", vm.NameText);
             Assert.Equal(12m, vm.AmountText);
-            appData.Received(1).AddTransactionAsync(Arg.Any<Transaction>());
+            appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>());
         });
     }
 
     [Fact]
-    public void ProcessingSkip_IsNotPersisted()
+    public void ProcessingSkip_RemovesTransactionFromQueue()
     {
         RunInSta(() =>
         {
@@ -2815,11 +2817,86 @@ public sealed class TransactionPopupVMValidationTests
                 new RecurringTransactionVM { Id = 2, Name = "Second", Amount = 20m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag }
             ]);
 
+            Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
             Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-            Assert.False(vm.SkipCurrentProcessing());
-            Assert.True(vm.PersistProcessedItemsAsync().GetAwaiter().GetResult().IsSuccess);
+            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
+            Assert.True(vm.SkipCurrentProcessing());
+            Assert.Single(vm.QueuedTransactions);
+            Assert.Equal("First", vm.SelectedQueuedTransaction?.Name);
+            appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>());
+        });
+    }
 
-            _ = appData.Received(1).AddTransactionAsync(Arg.Any<Transaction>());
+    [Fact]
+    public void ProcessingQueue_InvalidItem_DisablesPersistence()
+    {
+        RunInSta(() =>
+        {
+            var source = CreateCheckingSource(balance: 500m);
+            var tag = new TagVM { Id = 1, Name = "General" };
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), CreateAppData(), [source]);
+            vm.InitializeRecurringProcessing(
+            [
+                new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
+                new RecurringTransactionVM { Id = 2, Name = "Second", Amount = 20m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag }
+            ]);
+
+            vm.NameText = string.Empty;
+
+            Assert.False(vm.SelectedQueuedTransaction!.IsValid);
+            Assert.False(vm.CanPersist);
+        });
+    }
+
+    [Fact]
+    public void ProcessingFinish_PersistsAndDequeuesAllTransactions()
+    {
+        RunInSta(() =>
+        {
+            var source = CreateCheckingSource(balance: 500m);
+            var appData = CreateAppData();
+            var tag = new TagVM { Id = 1, Name = "General" };
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData, [source]);
+            vm.InitializeRecurringProcessing(
+            [
+                new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
+                new RecurringTransactionVM { Id = 2, Name = "Second", Amount = 20m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag }
+            ]);
+
+            var result = vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult();
+
+            Assert.True(result.IsSuccess, result.ErrorMessage);
+            Assert.Empty(vm.QueuedTransactions);
+            appData.Received(2).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Fact]
+    public void ProcessingFinish_KeepsOnlyFailedTransactionsQueued()
+    {
+        RunInSta(() =>
+        {
+            var source = CreateCheckingSource(balance: 500m);
+            var appData = CreateAppData();
+            var calls = 0;
+            appData.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>())
+                .Returns(_ => ++calls == 2
+                    ? Task.FromException(new InvalidOperationException("Failed"))
+                    : Task.CompletedTask);
+            var tag = new TagVM { Id = 1, Name = "General" };
+            var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData, [source]);
+            vm.InitializeRecurringProcessing(
+            [
+                new RecurringTransactionVM { Id = 1, Name = "First", Amount = 10m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag },
+                new RecurringTransactionVM { Id = 2, Name = "Second", Amount = 20m, Type = RecurringTransactionType.Expense, Category = ExpenseCategory.Needs, Source = source, Tag = tag }
+            ]);
+
+            var result = vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult();
+
+            Assert.False(result.IsSuccess);
+            Assert.Single(vm.QueuedTransactions);
+            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
+            Assert.True(vm.CanPersist);
         });
     }
 

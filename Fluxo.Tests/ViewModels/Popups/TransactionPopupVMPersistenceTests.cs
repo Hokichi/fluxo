@@ -88,7 +88,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Processing_edit_confirmation_requires_approval_before_persisting_and_advancing()
+    public void Processing_next_does_not_persist()
     {
         RunInSta(() =>
         {
@@ -141,26 +141,9 @@ public sealed class TransactionPopupVMPersistenceTests
             ]);
 
             Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-            var secondSave = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-            Assert.True(secondSave.IsSuccess, secondSave.ErrorMessage);
-            account.MaximumSpending = 100m;
-            vm.NavigatePreviousProcessing();
-            vm.AmountText = 40m;
-
-            var confirmation = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
-
-            Assert.False(confirmation.IsSuccess);
-            Assert.True(confirmation.RequiresConfirmation);
-            Assert.Equal(2, added.Count);
-            Assert.Equal(1, vm.CurrentProcessingStep);
+            Assert.Equal("Second", vm.SelectedQueuedTransaction?.Name);
+            Assert.Empty(added);
             appData.DidNotReceive().UpdateTransaction(firstPersisted);
-
-            var approved = vm.SaveCurrentAndAdvanceAsync(allowMaximumSpendingOverflow: true)
-                .GetAwaiter().GetResult();
-
-            Assert.True(approved.IsSuccess, approved.ErrorMessage);
-            Assert.True(vm.IsProcessingComplete);
-            appData.Received(1).UpdateTransaction(firstPersisted);
         });
     }
 
@@ -407,8 +390,6 @@ public sealed class TransactionPopupVMPersistenceTests
                     Tag = new TagVM { Id = 1, Name = "General" }
                 }
             ]);
-            vm.PersistProcessedItemsAsync().GetAwaiter().GetResult();
-
             appData.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
             appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
             appData.DidNotReceive().RemoveTransaction(Arg.Any<Transaction>());
@@ -443,7 +424,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Processing_back_after_next_edits_the_saved_item_and_suppresses_notification_invalidation()
+    public void Processing_back_after_next_restores_the_queued_item()
     {
         RunInSta(() =>
         {
@@ -486,27 +467,12 @@ public sealed class TransactionPopupVMPersistenceTests
                 vm.InitializeRecurringProcessing([first, second]);
                 scopes.Clear();
 
-                scopes.Clear();
                 Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-                Assert.All(scopes, scope => Assert.Equal(
-                    DashboardDataInvalidationScope.None,
-                    scope & DashboardDataInvalidationScope.Notifications));
-                scopes.Clear();
-                Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-                Assert.All(scopes, scope => Assert.Equal(
-                    DashboardDataInvalidationScope.None,
-                    scope & DashboardDataInvalidationScope.Notifications));
-                scopes.Clear();
                 vm.NavigatePreviousProcessing();
                 vm.NameText = "First edited";
-                Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
-                Assert.All(scopes, scope => Assert.Equal(
-                    DashboardDataInvalidationScope.None,
-                    scope & DashboardDataInvalidationScope.Notifications));
-
-                appData.Received(2).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
-                appData.Received(1).UpdateTransaction(firstPersisted);
-                Assert.Equal([1, 2], added.Select(transaction => transaction.RelatedRecurringTransactionId));
+                Assert.Equal("First edited", vm.NameText);
+                Assert.Empty(added);
+                appData.DidNotReceive().UpdateTransaction(firstPersisted);
             }
             finally
             {
@@ -550,7 +516,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Goal_processing_back_then_next_edits_goal_contribution_without_duplicate_add()
+    public void Goal_processing_persists_queued_contributions_on_finish()
     {
         RunInSta(() =>
         {
@@ -589,15 +555,17 @@ public sealed class TransactionPopupVMPersistenceTests
             vm.NavigatePreviousProcessing();
             vm.AmountText = 15m;
             Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+            Assert.Empty(added);
+            Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
 
             Assert.Equal(2, added.Count);
-            appData.Received(1).UpdateTransaction(added[0]);
+            appData.DidNotReceive().UpdateTransaction(Arg.Any<Transaction>());
             Assert.Equal(135m, goal.CurrentAmount);
         });
     }
 
     [Fact]
-    public void Repayment_processing_back_then_next_edits_pair_and_preserves_balances()
+    public void Repayment_processing_persists_queued_pairs_on_finish()
     {
         RunInSta(() =>
         {
@@ -646,13 +614,17 @@ public sealed class TransactionPopupVMPersistenceTests
             vm.AmountText = 50m;
             var editResult = vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult();
             Assert.True(editResult.IsSuccess, editResult.ErrorMessage);
+            Assert.Empty(added);
+            vm.NavigatePreviousProcessing();
+            Assert.Equal(50m, vm.AmountText);
+            Assert.True(vm.SaveCurrentAndAdvanceAsync().GetAwaiter().GetResult().IsSuccess);
+            Assert.True(vm.FinishQueuedTransactionsAsync().GetAwaiter().GetResult().IsSuccess);
 
             Assert.Equal(4, added.Count);
             Assert.Equal(350m, checking.Balance);
             Assert.Equal(50m, creditOne.SpentAmount);
             Assert.Equal(0m, creditTwo.SpentAmount);
-            appData.Received(1).UpdateTransaction(added[0]);
-            appData.Received(1).UpdateTransaction(added[1]);
+            appData.DidNotReceive().UpdateTransaction(Arg.Any<Transaction>());
         });
     }
 

@@ -1,3 +1,5 @@
+using Fluxo.Core.Enums;
+using Fluxo.DataModels.Popups.TransactionPopup;
 using Fluxo.Helpers.Transaction;
 using Fluxo.ViewModels.Entities;
 using Xunit;
@@ -97,5 +99,22 @@ public sealed class TransactionVMSemanticsTests
         Assert.Equal(11m, parent.ChildAmountTotal);
         Assert.True(parent.HasChildAmountOverflow);
         Assert.False(parent.CanAddChildTransaction);
+    }
+
+    [Fact]
+    public void Validate_marks_transaction_invalid_when_name_is_missing()
+    {
+        var transaction = new TransactionVM
+        {
+            SourceAccountId = 1,
+            Account = new AccountVM { Id = 1, Balance = 100m },
+            Amount = 10m
+        };
+
+        transaction.Validate(new TransactionValidationContext(
+            false, false, false, false, false, RecurringPeriod.None, string.Empty,
+            DateTime.Today, DateTime.Today, transaction.Account, 0m));
+
+        Assert.False(transaction.IsValid);
     }
 }

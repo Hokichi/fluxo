@@ -41,6 +41,7 @@ public readonly record struct FormState(
         string RecurringTimeText,
         string NoteText,
         DateTime SelectedDate,
+        DateTime StartDate,
         DateTime InstallmentEndDate,
         ExpenseCategory SelectedExpenseCategory,
         int SelectedAccountId,

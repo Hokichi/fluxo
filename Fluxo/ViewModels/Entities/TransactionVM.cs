@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Fluxo.Core.Enums;
+using Fluxo.DataModels.Popups.TransactionPopup;
+using Fluxo.Helpers.Transaction;
 
 namespace Fluxo.ViewModels.Entities;
 
@@ -34,6 +36,7 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
     [ObservableProperty] private bool _isIoU;
     [ObservableProperty] private bool _shouldAffectBalance;
     [ObservableProperty] private bool _isExcludedFromBudget;
+    [ObservableProperty] private bool _isValid;
 
     public ObservableCollection<TransactionVM> ChildTransactions { get; } = [];
     public decimal ChildAmountTotal => ChildTransactions.Sum(child => child.Amount);
@@ -44,6 +47,53 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
     public bool HasChildAmountOverflow => ChildAmountTotal > Amount;
     public bool CanAddChildTransaction => Amount > 0m && !HasChildAmountOverflow;
     public bool IsLeaf => ChildTransactions.Count == 0;
+
+    public void Validate(TransactionValidationContext context)
+    {
+        var amount = Amount;
+        if (context.IsInstallments)
+        {
+            var installments = RecurringTransactionValidationHelper.ValidateInstallments(
+                context.RecurringPeriod, context.RecurringTimeText,
+                context.InstallmentEndDate, context.StartDate);
+            if (!installments.IsValid)
+            {
+                IsValid = false;
+                return;
+            }
+
+            amount = TransactionCalculationHelper.CalculateInstallmentAmount(amount, installments.OccurrenceCount);
+        }
+
+        IsValid = TransactionValidationHelper.ValidateName(Name, context.IsGoal).IsValid &&
+                  SourceAccountId > 0 &&
+                  (!context.IsGoal || GoalId is > 0) &&
+                  (!context.IsRepayment || RepaymentAccountId is > 0) &&
+                  (!context.IsRecurring || RecurringTransactionValidationHelper
+                      .ValidateTime(context.RecurringPeriod, context.RecurringTimeText).IsValid) &&
+                  TransactionValidationHelper.ValidateAmount(
+                      amount, context.IsRepaymentAmountInvalid, Type == TransactionType.Expense,
+                      context.IsGoal, context.AmountValidationAccount, context.IgnoreMaximumSpending).IsValid &&
+                  TransactionValidationHelper.ValidateTagSpending(
+                      Type == TransactionType.Expense, context.IsRecurring || context.IsInstallments,
+                      IsExcludedFromBudget, Tag, context.CurrentTagSpending, amount).IsValid &&
+                  !HasChildAmountOverflow &&
+                  ValidateSplitTree(context);
+    }
+
+    private bool ValidateSplitTree(TransactionValidationContext context)
+    {
+        foreach (var child in ChildTransactions)
+        {
+            if (!TransactionValidationHelper.ValidateName(child.Name, context.IsGoal).IsValid ||
+                !TransactionValidationHelper.ValidateAmount(child.Amount, false, false, false, null).IsValid ||
+                (child.IsLeaf && Type == TransactionType.Expense && !context.IsRepayment && child.Tag is null) ||
+                !child.ValidateSplitTree(context))
+                return false;
+        }
+
+        return true;
+    }
 
     partial void OnAmountChanged(decimal value) => NotifyChildStateChanged();
 

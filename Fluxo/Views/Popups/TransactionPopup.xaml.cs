@@ -41,6 +41,7 @@ public partial class TransactionPopup : BasePopup
 
         _viewModel = viewModel;
         DataContext = viewModel;
+        BulkInsertChecked += (_, _) => _viewModel.IsBulkInsertMode = true;
         BulkInsertUnchecked += OnBulkInsertUnchecked;
         _moreTagsHoverCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
         _moreTagsHoverCloseTimer.Tick += (_, _) =>
@@ -173,7 +174,8 @@ public partial class TransactionPopup : BasePopup
 
     private void OnBulkInsertUnchecked(object? sender, BulkInsertUncheckedEventArgs e)
     {
-        // TODO: Reset bulk-insert state and set ShouldSwitchToSaveOnly when bulk mode can end.
+        _viewModel.IsBulkInsertMode = false;
+        e.ShouldSwitchToSaveOnly = true;
     }
 
     private async Task<TransactionPopupSubmissionResult?>
@@ -320,7 +322,20 @@ public partial class TransactionPopup : BasePopup
 
     protected override async void OnNextButtonClick() => await SaveAndAdvanceAsync();
 
-    protected override async void OnFinishButtonClick() => await SaveAndAdvanceAsync();
+    protected override async void OnFinishButtonClick()
+    {
+        var result = await _viewModel.FinishQueuedTransactionsAsync();
+        if (result.IsSuccess)
+        {
+            Close();
+            return;
+        }
+
+        var count = _viewModel.QueuedTransactions.Count;
+        FluxoMessageBox.Show(this,
+            count == 1 ? "1 transaction has not been saved." : $"{count} transactions have not been saved.",
+            "Transaction", MessageBoxButton.OK, MessageBoxImage.Warning);
+    }
 
     protected override void OnBackButtonClick()
     {
@@ -521,7 +536,8 @@ public partial class TransactionPopup : BasePopup
             SyncNameSuggestionsPopupState();
 
         if (e.PropertyName is nameof(TransactionPopupVM.SelectedPinnedHistoryItem) or
-            nameof(TransactionPopupVM.SelectedHistoryItem))
+            nameof(TransactionPopupVM.SelectedHistoryItem) or
+            nameof(TransactionPopupVM.SelectedQueuedTransaction))
         {
             SyncNoteDocumentFromViewModel();
             FocusPrimaryInput();

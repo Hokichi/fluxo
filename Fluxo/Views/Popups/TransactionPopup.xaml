@@ -12,10 +12,12 @@
     CanClone="{Binding CanCloneViewedTransaction, Mode=OneWay}"
     CanDelete="{Binding CanDeleteViewedTransaction, Mode=OneWay}"
     CanEdit="{Binding CanEditViewedTransaction, Mode=OneWay}"
+    CanFinish="{Binding CanPersist, Mode=OneWay}"
+    CanGoNext="{Binding CanGoNext, Mode=OneWay}"
     CanSkip="{Binding CanSkipProcessing, Mode=OneWay}"
     CanToggleBulk="{Binding CanToggleBulk, Mode=OneWay}"
     CurrentStep="{Binding CurrentProcessingStep, Mode=OneWay}"
-    IsSaveButtonEnabled="{Binding CanSave, Mode=OneWay}"
+    IsSaveButtonEnabled="{Binding CanPersist, Mode=OneWay}"
     Mode="{Binding PopupMode, Mode=OneWay}"
     PopupTitle="{Binding PopupTitle, Mode=OneWay}"
     StepCount="{Binding ProcessingStepCount, Mode=OneWay}"
@@ -180,6 +182,9 @@
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
                                 </Trigger>
+                                <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
+                                </DataTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -229,6 +234,45 @@
                             Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding Date, Converter={StaticResource DateTimeToRelativeDateConverter}, Mode=OneWay}" />
                     </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="TransactionQueueItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Ellipse
+                        Width="8"
+                        Height="8"
+                        Margin="0,5,10,0"
+                        VerticalAlignment="Top"
+                        Fill="{Binding Tag.HexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock
+                            FontFamily="{DynamicResource Bold}"
+                            FontSize="13"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
+                            Text="{Binding Name, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Margin="0,3,0,0"
+                            FontFamily="{DynamicResource Regular}"
+                            FontSize="11"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
+                            Text="{Binding Account.Name, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <TextBlock
+                        Grid.Column="2"
+                        Margin="12,0,0,0"
+                        HorizontalAlignment="Right"
+                        FontFamily="{DynamicResource Bold}"
+                        FontSize="13"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
+                        Text="{Binding Amount, StringFormat={}{0:N0}, Mode=OneWay}" />
                 </Grid>
             </DataTemplate>
 
@@ -424,13 +468,37 @@
                 </Style>
             </Grid.Style>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="220" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowNavigationPanel, Mode=OneWay}" Value="False">
+                                    <Setter Property="Width" Value="0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
+                <ColumnDefinition>
+                    <ColumnDefinition.Style>
+                        <Style TargetType="ColumnDefinition">
+                            <Setter Property="Width" Value="20" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowNavigationPanel, Mode=OneWay}" Value="False">
+                                    <Setter Property="Width" Value="0" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ColumnDefinition.Style>
+                </ColumnDefinition>
                 <ColumnDefinition Width="720" />
                 <ColumnDefinition>
                     <ColumnDefinition.Style>
                         <Style TargetType="ColumnDefinition">
                             <Setter Property="Width" Value="20" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ShowSidePanel, Mode=OneWay}" Value="False">
+                                <DataTrigger Binding="{Binding ShowRightFormDivider, Mode=OneWay}" Value="False">
                                     <Setter Property="Width" Value="0" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -446,7 +514,43 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Grid.Column="0">
+            <StackPanel
+                Grid.RowSpan="4"
+                Grid.Column="0"
+                Margin="0,8,0,0"
+                Visibility="{Binding ShowNavigationPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Button
+                    Width="220"
+                    Margin="0,0,0,8"
+                    Command="{Binding AddQueuedTransactionCommand, Mode=OneWay}"
+                    Content="Add transaction"
+                    Style="{StaticResource DashedButtonStyle}"
+                    Visibility="{Binding IsBulkInsertMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <ListBox
+                    ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
+                    ItemTemplate="{StaticResource TransactionQueueItemTemplate}"
+                    ItemsSource="{Binding QueuedTransactions, Mode=OneWay}"
+                    SelectedItem="{Binding SelectedQueuedTransaction, Mode=TwoWay}"
+                    Style="{StaticResource TransactionHistoryListBoxStyle}" />
+            </StackPanel>
+
+            <Border
+                Grid.RowSpan="4"
+                Grid.Column="1"
+                Width="1"
+                HorizontalAlignment="Center"
+                Background="{DynamicResource Brush.Border.Subtle}"
+                Visibility="{Binding ShowNavigationPanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <Border
+                Grid.RowSpan="4"
+                Grid.Column="3"
+                Width="1"
+                HorizontalAlignment="Center"
+                Background="{DynamicResource Brush.Border.Subtle}"
+                Visibility="{Binding ShowRightFormDivider, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <StackPanel Grid.Row="0" Grid.Column="2">
                 <customControls:SegmentedToggleGroup
                     Width="520"
                     HorizontalAlignment="Center"
@@ -480,7 +584,7 @@
 
             <Grid
                 Grid.Row="1"
-                Grid.Column="0"
+                Grid.Column="2"
                 Margin="0,16,0,0">
                 <StackPanel>
                     <StackPanel>
@@ -1189,7 +1293,7 @@
             <StackPanel
                 x:Name="TagsPanel"
                 Grid.Row="2"
-                Grid.Column="0"
+                Grid.Column="2"
                 Margin="0,16,0,0"
                 IsEnabled="{Binding CanEditTags, Mode=OneWay}"
                 Visibility="{Binding CanEditTags, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -1275,7 +1379,7 @@
 
             <StackPanel
                 Grid.Row="3"
-                Grid.Column="0"
+                Grid.Column="2"
                 Margin="0,16,0,0">
                 <StackPanel Visibility="{Binding ShowNoteField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Note" />
@@ -1369,7 +1473,7 @@
             <Grid
                 Grid.Row="0"
                 Grid.RowSpan="4"
-                Grid.Column="2"
+                Grid.Column="4"
                 Width="480"
                 MinHeight="520"
                 MaxHeight="720"

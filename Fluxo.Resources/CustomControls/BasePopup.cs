@@ -45,6 +45,14 @@ public class BasePopup : Window, IPopupHost
         DependencyProperty.Register(nameof(CanSkip), typeof(bool), typeof(BasePopup),
             new PropertyMetadata(false));
 
+    public static readonly DependencyProperty CanGoNextProperty =
+        DependencyProperty.Register(nameof(CanGoNext), typeof(bool), typeof(BasePopup),
+            new PropertyMetadata(true));
+
+    public static readonly DependencyProperty CanFinishProperty =
+        DependencyProperty.Register(nameof(CanFinish), typeof(bool), typeof(BasePopup),
+            new PropertyMetadata(true));
+
     public static readonly DependencyProperty CanToggleBulkProperty =
         DependencyProperty.Register(nameof(CanToggleBulk), typeof(bool), typeof(BasePopup),
             new PropertyMetadata(false));
@@ -163,6 +171,18 @@ public class BasePopup : Window, IPopupHost
         set => SetValue(CanSkipProperty, value);
     }
 
+    public bool CanGoNext
+    {
+        get => (bool)GetValue(CanGoNextProperty);
+        set => SetValue(CanGoNextProperty, value);
+    }
+
+    public bool CanFinish
+    {
+        get => (bool)GetValue(CanFinishProperty);
+        set => SetValue(CanFinishProperty, value);
+    }
+
     public bool CanToggleBulk
     {
         get => (bool)GetValue(CanToggleBulkProperty);
@@ -170,6 +190,7 @@ public class BasePopup : Window, IPopupHost
     }
 
     public event EventHandler<BulkInsertUncheckedEventArgs>? BulkInsertUnchecked;
+    public event EventHandler? BulkInsertChecked;
 
     public bool CanEdit
     {
@@ -265,7 +286,10 @@ public class BasePopup : Window, IPopupHost
     private void OnBulkInsertChecked(object sender, RoutedEventArgs e)
     {
         if (!_isSynchronizingBulkInsertToggle)
+        {
             SetCurrentValue(ModeProperty, PopupMode.Navigate);
+            BulkInsertChecked?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void OnBulkInsertUnchecked(object sender, RoutedEventArgs e)
@@ -379,12 +403,19 @@ public class BasePopup : Window, IPopupHost
 
                 if (Mode == PopupMode.Navigate)
                 {
-                    if (IsLastStep)
+                    if (IsLastStep && CanFinish)
+                    {
                         OnFinishButtonClick();
-                    else
-                        OnNextButtonClick();
+                        return true;
+                    }
 
-                    return true;
+                    if (!IsLastStep && CanGoNext)
+                    {
+                        OnNextButtonClick();
+                        return true;
+                    }
+
+                    return false;
                 }
 
                 return false;
