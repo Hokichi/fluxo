@@ -7,11 +7,11 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class BasePopupKeyboardTests
 {
     [Fact]
-    public void CtrlEnter_SkipsOnlyWhenBackNextPopupAllowsSkipping()
+    public void CtrlEnter_SkipsOnlyWhenNavigatePopupAllowsSkipping()
     {
         RunInSta(() =>
         {
-            var popup = new TestPopup { Mode = PopupMode.BackNext, CanSkip = true, StepCount = 2 };
+            var popup = new TestPopup { Mode = PopupMode.Navigate, CanSkip = true, StepCount = 2 };
 
             Assert.True(popup.Handle(Key.Enter, ModifierKeys.Control));
             Assert.Equal(1, popup.SkipCount);

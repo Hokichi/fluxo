@@ -361,8 +361,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     public bool IsViewOnly => _popupPurpose == TransactionPopupPurpose.ViewTransaction;
     public bool IsEditingViewedTransaction => _popupPurpose == TransactionPopupPurpose.EditTransaction;
-    public bool CanContinue => _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.AddRecurringTransaction;
-    public bool CanDiscard => _popupPurpose is TransactionPopupPurpose.EditRecurringTransaction or TransactionPopupPurpose.EditTransaction;
+    public bool CanToggleBulk => _popupPurpose == TransactionPopupPurpose.AddNewTransaction;
     public TransactionVM LoadedTransaction { get; private set; } = null!;
     public TransactionVM PendingTransaction { get; private set; } = null!;
     public TransactionVM? ViewedTransaction { get; private set; }
@@ -456,8 +455,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool IsProcessingComplete => IsProcessingSession && _processingStates.Values.All(state => state != ProcessingTransactionHelper.State.Pending);
     public bool CanSkipProcessing => IsProcessingSession && CurrentProcessingTarget is not null;
     public PopupMode PopupMode => _popupPurpose == TransactionPopupPurpose.Processing
-        ? PopupMode.BackNext
-        : IsViewOnly ? PopupMode.Functional : PopupMode.SaveDiscard;
+        ? PopupMode.Navigate
+        : IsViewOnly ? PopupMode.Functional
+        : _popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.AddRecurringTransaction
+            ? PopupMode.Persist
+            : PopupMode.Modify;
     public int CurrentProcessingStep { get; private set; } = 1;
     public int ProcessingStepCount { get; private set; }
     public int? CurrentProcessingRecurringTransactionId => _currentProcessingRecurringTransactionId;
@@ -1006,8 +1008,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         ClearViewModeFeedback();
         OnPropertyChanged(nameof(CanChangeTransactionType));
         OnPropertyChanged(nameof(IsViewOnly));
-        OnPropertyChanged(nameof(CanContinue));
-        OnPropertyChanged(nameof(CanDiscard));
+        OnPropertyChanged(nameof(CanToggleBulk));
         OnPropertyChanged(nameof(PopupMode));
         OnPropertyChanged(nameof(CanModifySplitTree));
         OnPropertyChanged(nameof(ShowRootSplitAddAction));
@@ -3554,8 +3555,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(PopupTitle));
         OnPropertyChanged(nameof(CanPinTransaction));
         OnPropertyChanged(nameof(IsViewOnly));
-        OnPropertyChanged(nameof(CanContinue));
-        OnPropertyChanged(nameof(CanDiscard));
+        OnPropertyChanged(nameof(CanToggleBulk));
         OnPropertyChanged(nameof(PopupMode));
         OnPropertyChanged(nameof(ShowSidePanelToggle));
         OnPropertyChanged(nameof(CanChangeTransactionType));

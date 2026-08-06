@@ -35,17 +35,6 @@ public partial class AddAccountPopup : BasePopup
             Close();
     }
 
-    protected override async void OnSaveAndCreateNewButtonClick()
-    {
-        var result = await _viewModel.SaveAsync();
-        if (HandleSaveFailure(result))
-            return;
-
-        _viewModel.ResetAfterSaveAndCreateNew();
-        await _viewModel.LoadDeductSourcesAsync();
-        FocusPrimaryInput();
-    }
-
     protected override void OnCloseButtonClick()
     {
         if (_viewModel.HasChanges)

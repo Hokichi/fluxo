@@ -2783,7 +2783,7 @@ public sealed class TransactionPopupVMValidationTests
             };
             vm.InitializeRecurringProcessing([first, second]);
 
-            Assert.Equal(PopupMode.BackNext, vm.PopupMode);
+            Assert.Equal(PopupMode.Navigate, vm.PopupMode);
             Assert.Equal("Payment Processing", vm.PopupTitle);
             vm.NameText = "First edited";
             vm.AmountText = 12m;
@@ -2844,8 +2844,6 @@ public sealed class TransactionPopupVMValidationTests
 
             Assert.True(vm.IsViewOnly);
             Assert.Equal(PopupMode.Functional, vm.PopupMode);
-            Assert.False(vm.CanContinue);
-            Assert.False(vm.CanDiscard);
             Assert.Equal("Transaction Detail", vm.PopupTitle);
             Assert.True(vm.CanEditViewedTransaction);
             Assert.True(vm.CanCloneViewedTransaction);

@@ -128,7 +128,6 @@ public sealed class TransactionPopupVMModeTests
             Assert.False(vm.PendingTransaction.IsForDeletion);
             Assert.Equal(vm.LoadedTransaction, vm.PendingTransaction);
             Assert.Equal("Add New Transaction", vm.PopupTitle);
-            Assert.True(vm.CanContinue);
             Assert.Equal(name, vm.NameText);
             Assert.Equal(amount, vm.AmountText);
             Assert.Empty(appData.ReceivedCalls());

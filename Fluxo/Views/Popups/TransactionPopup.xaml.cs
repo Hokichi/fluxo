@@ -41,6 +41,7 @@ public partial class TransactionPopup : BasePopup
 
         _viewModel = viewModel;
         DataContext = viewModel;
+        BulkInsertUnchecked += OnBulkInsertUnchecked;
         _moreTagsHoverCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
         _moreTagsHoverCloseTimer.Tick += (_, _) =>
         {
@@ -170,23 +171,9 @@ public partial class TransactionPopup : BasePopup
         Close();
     }
 
-    protected override async void OnSaveAndCreateNewButtonClick()
+    private void OnBulkInsertUnchecked(object? sender, BulkInsertUncheckedEventArgs e)
     {
-        if (!await ShouldSaveCurrentTransactionAsync())
-            return;
-
-        var result = await TrySaveWithMaximumSpendingConfirmationAsync(true);
-        if (result is not { } resultValue)
-            return;
-        if (!resultValue.IsSuccess)
-        {
-            ShowValidationMessage(resultValue.ErrorMessage);
-            return;
-        }
-
-        NoteRichTextBox.Text = string.Empty;
-        _viewModel.BeginChangeTracking();
-        FocusPrimaryInput();
+        // TODO: Reset bulk-insert state and set ShouldSwitchToSaveOnly when bulk mode can end.
     }
 
     private async Task<TransactionPopupSubmissionResult?>

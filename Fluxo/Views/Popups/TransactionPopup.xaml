@@ -10,13 +10,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:popups="clr-namespace:Fluxo.ViewModels.Popups"
     CanClone="{Binding CanCloneViewedTransaction, Mode=OneWay}"
-    CanContinue="{Binding CanContinue, Mode=OneWay}"
     CanDelete="{Binding CanDeleteViewedTransaction, Mode=OneWay}"
-    CanDiscard="{Binding CanDiscard, Mode=OneWay}"
     CanEdit="{Binding CanEditViewedTransaction, Mode=OneWay}"
     CanSkip="{Binding CanSkipProcessing, Mode=OneWay}"
+    CanToggleBulk="{Binding CanToggleBulk, Mode=OneWay}"
     CurrentStep="{Binding CurrentProcessingStep, Mode=OneWay}"
-    IsSaveAndCreateNewButtonEnabled="{Binding CanSave, Mode=OneWay}"
     IsSaveButtonEnabled="{Binding CanSave, Mode=OneWay}"
     Mode="{Binding PopupMode, Mode=OneWay}"
     PopupTitle="{Binding PopupTitle, Mode=OneWay}"
@@ -411,7 +409,6 @@
                     </Popup>
                 </Grid>
             </DataTemplate>
-
         </ResourceDictionary>
     </customControls:BasePopup.Resources>
 
@@ -917,10 +914,8 @@
                                     <GroupStyle HeaderTemplate="{StaticResource AccountComboGroupHeaderTemplate}" />
                                 </ComboBox.GroupStyle>
                             </ComboBox>
-
                         </Grid>
                     </Border>
-
                 </StackPanel>
 
                 <StackPanel Visibility="Collapsed">
@@ -1323,8 +1318,8 @@
                                 <components:Icon
                                     Width="6"
                                     Margin="12,0"
-                                    Color="{DynamicResource Brush.Text.Primary}"
-                                    Path="{StaticResource AngleRight}" />
+                                    Path="{StaticResource AngleRight}"
+                                    Color="{DynamicResource Brush.Text.Primary}" />
                                 <TextBlock
                                     FontFamily="{DynamicResource Medium}"
                                     Foreground="{DynamicResource Brush.Text.Primary}"
@@ -1376,6 +1371,9 @@
                 Grid.RowSpan="4"
                 Grid.Column="2"
                 Width="480"
+                MinHeight="520"
+                MaxHeight="720"
+                VerticalAlignment="Top"
                 Visibility="{Binding ShowSidePanel, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -1387,9 +1385,7 @@
                     Visibility="{Binding ShowSidePanelToggle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <customControls:SegmentedToggleOption Content="History" Value="{x:Static dataEnums:TransactionPopupSidePanel.History}" />
                     <customControls:SegmentedToggleOption Content="Pinned" Value="{x:Static dataEnums:TransactionPopupSidePanel.Pinned}" />
-                    <customControls:SegmentedToggleOption
-                        Content="Split"
-                        Value="{x:Static dataEnums:TransactionPopupSidePanel.Split}" />
+                    <customControls:SegmentedToggleOption Content="Split" Value="{x:Static dataEnums:TransactionPopupSidePanel.Split}" />
                 </customControls:SegmentedToggleGroup>
 
                 <customControls:FadingScrollViewer

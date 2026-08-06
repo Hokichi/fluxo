@@ -12,9 +12,10 @@ namespace Fluxo.Resources.CustomControls;
 public enum PopupMode
 {
     None,
-    ApplyCancel,
-    SaveDiscard,
-    BackNext,
+    Update,
+    Persist,
+    Modify,
+    Navigate,
     Functional
 }
 
@@ -38,19 +39,15 @@ public class BasePopup : Window, IPopupHost
     // --- Footer mode ---
     public static readonly DependencyProperty ModeProperty =
         DependencyProperty.Register(nameof(Mode), typeof(PopupMode), typeof(BasePopup),
-            new PropertyMetadata(PopupMode.None));
-
-    public static readonly DependencyProperty CanContinueProperty =
-        DependencyProperty.Register(nameof(CanContinue), typeof(bool), typeof(BasePopup),
-            new PropertyMetadata(false));
+            new PropertyMetadata(PopupMode.None, OnModeChanged));
 
     public static readonly DependencyProperty CanSkipProperty =
         DependencyProperty.Register(nameof(CanSkip), typeof(bool), typeof(BasePopup),
             new PropertyMetadata(false));
 
-    public static readonly DependencyProperty CanDiscardProperty =
-        DependencyProperty.Register(nameof(CanDiscard), typeof(bool), typeof(BasePopup),
-            new PropertyMetadata(true));
+    public static readonly DependencyProperty CanToggleBulkProperty =
+        DependencyProperty.Register(nameof(CanToggleBulk), typeof(bool), typeof(BasePopup),
+            new PropertyMetadata(false));
 
     public static readonly DependencyProperty CanEditProperty =
         DependencyProperty.Register(nameof(CanEdit), typeof(bool), typeof(BasePopup),
@@ -88,10 +85,6 @@ public class BasePopup : Window, IPopupHost
         DependencyProperty.Register(nameof(IsSaveButtonEnabled), typeof(bool), typeof(BasePopup),
             new PropertyMetadata(true));
 
-    public static readonly DependencyProperty IsSaveAndCreateNewButtonEnabledProperty =
-        DependencyProperty.Register(nameof(IsSaveAndCreateNewButtonEnabled), typeof(bool), typeof(BasePopup),
-            new PropertyMetadata(true));
-
     public static readonly DependencyProperty ShowCloseButtonProperty =
         DependencyProperty.Register(nameof(ShowCloseButton), typeof(bool), typeof(BasePopup),
             new PropertyMetadata(true));
@@ -103,6 +96,7 @@ public class BasePopup : Window, IPopupHost
     private IPopupHost? _popupHost;
     private FrameworkElement? _contentRoot;
     private UIElement? _popupOverlay;
+    private BalloonCheckBox? _bulkInsertCheckBox;
     private readonly PopupOverlayHandoffState _popupOverlayHandoffState = new();
 
     private readonly DispatcherTimer _popupOverlayDeferredHideTimer = new()
@@ -117,6 +111,7 @@ public class BasePopup : Window, IPopupHost
     private bool _isPopupOverlayHandoffPending;
     private Window? _previousApplicationMainWindow;
     private bool _isApplicationMainWindow;
+    private bool _isSynchronizingBulkInsertToggle;
 
     static BasePopup()
     {
@@ -162,23 +157,19 @@ public class BasePopup : Window, IPopupHost
         set => SetValue(ModeProperty, value);
     }
 
-    public bool CanContinue
-    {
-        get => (bool)GetValue(CanContinueProperty);
-        set => SetValue(CanContinueProperty, value);
-    }
-
     public bool CanSkip
     {
         get => (bool)GetValue(CanSkipProperty);
         set => SetValue(CanSkipProperty, value);
     }
 
-    public bool CanDiscard
+    public bool CanToggleBulk
     {
-        get => (bool)GetValue(CanDiscardProperty);
-        set => SetValue(CanDiscardProperty, value);
+        get => (bool)GetValue(CanToggleBulkProperty);
+        set => SetValue(CanToggleBulkProperty, value);
     }
+
+    public event EventHandler<BulkInsertUncheckedEventArgs>? BulkInsertUnchecked;
 
     public bool CanEdit
     {
@@ -220,12 +211,6 @@ public class BasePopup : Window, IPopupHost
         set => SetValue(IsSaveButtonEnabledProperty, value);
     }
 
-    public bool IsSaveAndCreateNewButtonEnabled
-    {
-        get => (bool)GetValue(IsSaveAndCreateNewButtonEnabledProperty);
-        set => SetValue(IsSaveAndCreateNewButtonEnabledProperty, value);
-    }
-
     public bool ShowCloseButton
     {
         get => (bool)GetValue(ShowCloseButtonProperty);
@@ -244,7 +229,6 @@ public class BasePopup : Window, IPopupHost
 
         WireButton("PART_CloseButton", _ => OnCloseButtonClick());
         WireButton("PART_SaveButton", _ => OnSaveButtonClick());
-        WireButton("PART_SaveAndCreateNewButton", _ => OnSaveAndCreateNewButtonClick());
         WireButton("PART_ApplyButton", _ => OnApplyButtonClick());
         WireButton("PART_CancelButton", _ => OnDiscardButtonClick());
         WireButton("PART_DiscardButton", _ => OnDiscardButtonClick());
@@ -255,6 +239,7 @@ public class BasePopup : Window, IPopupHost
         WireButton("PART_EditButton", _ => OnEditButtonClick());
         WireButton("PART_DeleteButton", _ => OnDeleteButtonClick());
         WireButton("PART_CloneButton", _ => OnCloneButtonClick());
+        WireBulkInsertToggle();
 
         _contentRoot = GetTemplateChild("PART_ContentRoot") as FrameworkElement;
         _popupOverlay = GetTemplateChild("PART_PopupOverlay") as UIElement;
@@ -264,6 +249,36 @@ public class BasePopup : Window, IPopupHost
     {
         if (GetTemplateChild(partName) is ButtonBase btn)
             btn.Click += (_, e) => handler(e);
+    }
+
+    private void WireBulkInsertToggle()
+    {
+        if (GetTemplateChild("PART_BulkInsertCheckBox") is not BalloonCheckBox checkBox)
+            return;
+
+        _bulkInsertCheckBox = checkBox;
+        checkBox.Checked += OnBulkInsertChecked;
+        checkBox.Unchecked += OnBulkInsertUnchecked;
+        SyncBulkInsertToggle();
+    }
+
+    private void OnBulkInsertChecked(object sender, RoutedEventArgs e)
+    {
+        if (!_isSynchronizingBulkInsertToggle)
+            SetCurrentValue(ModeProperty, PopupMode.Navigate);
+    }
+
+    private void OnBulkInsertUnchecked(object sender, RoutedEventArgs e)
+    {
+        if (_isSynchronizingBulkInsertToggle)
+            return;
+
+        var eventArgs = new BulkInsertUncheckedEventArgs();
+        BulkInsertUnchecked?.Invoke(this, eventArgs);
+        if (eventArgs.ShouldSwitchToSaveOnly)
+            SetCurrentValue(ModeProperty, PopupMode.Persist);
+        else if (_bulkInsertCheckBox is not null)
+            _bulkInsertCheckBox.IsChecked = true;
     }
 
     // Virtual button handlers (override in child popups)
@@ -280,10 +295,6 @@ public class BasePopup : Window, IPopupHost
     }
 
     protected virtual void OnSaveButtonClick()
-    {
-    }
-
-    protected virtual void OnSaveAndCreateNewButtonClick()
     {
     }
 
@@ -338,14 +349,14 @@ public class BasePopup : Window, IPopupHost
         switch (key)
         {
             case Key.Escape:
-                if (CanDiscard && (Mode is PopupMode.ApplyCancel or PopupMode.SaveDiscard))
+                if (Mode is PopupMode.Update or PopupMode.Modify)
                     OnDiscardButtonClick();
                 else
                     OnCloseButtonClick();
                 return true;
 
             case Key.Enter when modifiers == ModifierKeys.Control:
-                if (Mode == PopupMode.BackNext && CanSkip)
+                if (Mode == PopupMode.Navigate && CanSkip)
                 {
                     OnSkipButtonClick();
                     return true;
@@ -353,29 +364,20 @@ public class BasePopup : Window, IPopupHost
 
                 return false;
 
-            case Key.Enter when modifiers == ModifierKeys.Shift:
-                if (Mode == PopupMode.SaveDiscard && CanContinue && IsSaveAndCreateNewButtonEnabled)
-                {
-                    OnSaveAndCreateNewButtonClick();
-                    return true;
-                }
-
-                return false;
-
             case Key.Enter when modifiers == ModifierKeys.None:
-                if (Mode == PopupMode.ApplyCancel)
+                if (Mode == PopupMode.Update)
                 {
                     OnApplyButtonClick();
                     return true;
                 }
 
-                if (Mode == PopupMode.SaveDiscard && IsSaveButtonEnabled)
+                if (Mode is (PopupMode.Persist or PopupMode.Modify) && IsSaveButtonEnabled)
                 {
                     OnSaveButtonClick();
                     return true;
                 }
 
-                if (Mode == PopupMode.BackNext)
+                if (Mode == PopupMode.Navigate)
                 {
                     if (IsLastStep)
                         OnFinishButtonClick();
@@ -388,7 +390,7 @@ public class BasePopup : Window, IPopupHost
                 return false;
 
             case Key.Back when modifiers == ModifierKeys.None:
-                if (Mode == PopupMode.BackNext && !IsFirstStep)
+                if (Mode == PopupMode.Navigate && !IsFirstStep)
                 {
                     OnBackButtonClick();
                     return true;
@@ -405,6 +407,21 @@ public class BasePopup : Window, IPopupHost
         var popup = (BasePopup)d;
         popup.SetValue(IsFirstStepPropertyKey, popup.CurrentStep <= 1);
         popup.SetValue(IsLastStepPropertyKey, popup.StepCount <= 1 || popup.CurrentStep >= popup.StepCount);
+    }
+
+    private static void OnModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        ((BasePopup)d).SyncBulkInsertToggle();
+    }
+
+    private void SyncBulkInsertToggle()
+    {
+        if (_bulkInsertCheckBox is null)
+            return;
+
+        _isSynchronizingBulkInsertToggle = true;
+        _bulkInsertCheckBox.IsChecked = Mode == PopupMode.Navigate;
+        _isSynchronizingBulkInsertToggle = false;
     }
 
     // Overlay & blur on owner

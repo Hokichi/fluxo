@@ -7,7 +7,7 @@
     Height="340"
     IsSaveButtonEnabled="{Binding CanSave}"
     PopupTitle="Account Reconciliation"
-    Mode="SaveDiscard">
+    Mode="Modify">
 
     <customControls:BasePopup.Resources>
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">

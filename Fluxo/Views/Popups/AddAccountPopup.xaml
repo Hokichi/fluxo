@@ -4,10 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
-    CanContinue="True"
-    IsSaveAndCreateNewButtonEnabled="{Binding CanSave}"
     IsSaveButtonEnabled="{Binding CanSave}"
-    Mode="SaveDiscard"
+    Mode="Modify"
     PopupTitle="{Binding PopupTitle}">
 
     <customControls:BasePopup.Resources>

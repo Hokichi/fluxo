@@ -11,31 +11,11 @@ namespace Fluxo.Tests.Views.CustomControls;
 public sealed class BasePopupModeTests
 {
     [Fact]
-    public void CanDiscard_DefaultsToTrue()
-    {
-        RunSta(() => Assert.True(new BasePopup().CanDiscard));
-    }
-
-    [Fact]
-    public void Escape_ClosesWhenDiscardIsUnavailable()
-    {
-        RunSta(() =>
-        {
-            var popup = new RecordingPopup { Mode = PopupMode.SaveDiscard, CanDiscard = false };
-
-            popup.InvokeShortcut(Key.Escape, ModifierKeys.None);
-
-            Assert.Equal(0, popup.DiscardCount);
-            Assert.Equal(1, popup.CloseCount);
-        });
-    }
-
-    [Fact]
     public void Enter_InvokesSaveWhenSaveIsVisible()
     {
         RunSta(() =>
         {
-            var popup = new RecordingPopup { Mode = PopupMode.SaveDiscard };
+            var popup = new RecordingPopup { Mode = PopupMode.Persist };
 
             popup.InvokeShortcut(Key.Enter, ModifierKeys.None);
 
@@ -44,18 +24,13 @@ public sealed class BasePopupModeTests
     }
 
     [Fact]
-    public void ShiftEnter_InvokesSaveAndNewOnlyWhenContinuationIsAvailable()
+    public void ShiftEnter_IsNotHandled()
     {
         RunSta(() =>
         {
-            var popup = new RecordingPopup { Mode = PopupMode.SaveDiscard, CanContinue = true };
+            var popup = new RecordingPopup { Mode = PopupMode.Persist };
 
-            Assert.True(popup.InvokeShortcut(Key.Enter, ModifierKeys.Shift));
-            Assert.Equal(1, popup.SaveAndNewCount);
-
-            popup.CanContinue = false;
             Assert.False(popup.InvokeShortcut(Key.Enter, ModifierKeys.Shift));
-            Assert.Equal(1, popup.SaveAndNewCount);
         });
     }
 
@@ -64,7 +39,7 @@ public sealed class BasePopupModeTests
     {
         RunSta(() =>
         {
-            var discardPopup = new RecordingPopup { Mode = PopupMode.SaveDiscard };
+            var discardPopup = new RecordingPopup { Mode = PopupMode.Modify };
             discardPopup.InvokeShortcut(Key.Escape, ModifierKeys.None);
 
             Assert.Equal(1, discardPopup.DiscardCount);
@@ -83,7 +58,7 @@ public sealed class BasePopupModeTests
     {
         RunSta(() =>
         {
-            var popup = new DefaultDiscardPopup { Mode = PopupMode.SaveDiscard };
+            var popup = new DefaultDiscardPopup { Mode = PopupMode.Modify };
 
             popup.InvokeShortcut(Key.Escape, ModifierKeys.None);
 
@@ -92,15 +67,15 @@ public sealed class BasePopupModeTests
     }
 
     [Fact]
-    public void ApplyCancelAndBackNext_RoutePrimaryAndNavigationHotkeys()
+    public void UpdateAndNavigate_RoutePrimaryAndNavigationHotkeys()
     {
         RunSta(() =>
         {
-            var applyPopup = new RecordingPopup { Mode = PopupMode.ApplyCancel };
+            var applyPopup = new RecordingPopup { Mode = PopupMode.Update };
             applyPopup.InvokeShortcut(Key.Enter, ModifierKeys.None);
             Assert.Equal(1, applyPopup.ApplyCount);
 
-            var popup = new RecordingPopup { Mode = PopupMode.BackNext, CurrentStep = 1, StepCount = 2 };
+            var popup = new RecordingPopup { Mode = PopupMode.Navigate, CurrentStep = 1, StepCount = 2 };
             Assert.False(popup.InvokeShortcut(Key.Back, ModifierKeys.None));
             popup.InvokeShortcut(Key.Enter, ModifierKeys.None);
             Assert.Equal(1, popup.NextCount);
@@ -122,7 +97,7 @@ public sealed class BasePopupModeTests
 
             var popup = new BasePopup
             {
-                Mode = PopupMode.SaveDiscard,
+                Mode = PopupMode.Persist,
                 Content = new Border { Width = 320, Height = 100 }
             };
 
@@ -131,6 +106,75 @@ public sealed class BasePopupModeTests
 
             Assert.InRange(popup.ActualWidth, 320, 600);
         });
+    }
+
+    [Fact]
+    public void CheckingBulkInsert_SwitchesToNavigate()
+    {
+        RunSta(() =>
+        {
+            var popup = ShowPopupWithBulkToggle();
+            var toggle = GetBulkToggle(popup);
+
+            toggle.IsChecked = true;
+
+            Assert.Equal(PopupMode.Navigate, popup.Mode);
+        });
+    }
+
+    [Fact]
+    public void UncheckingBulkInsert_WhenHandlerRequestsPersist_SwitchesToPersist()
+    {
+        RunSta(() =>
+        {
+            var popup = ShowPopupWithBulkToggle();
+            var toggle = GetBulkToggle(popup);
+            toggle.IsChecked = true;
+            popup.BulkInsertUnchecked += (_, e) => e.ShouldSwitchToSaveOnly = true;
+
+            toggle.IsChecked = false;
+
+            Assert.Equal(PopupMode.Persist, popup.Mode);
+        });
+    }
+
+    [Fact]
+    public void UncheckingBulkInsert_WithoutHandler_KeepsNavigateSelected()
+    {
+        RunSta(() =>
+        {
+            var popup = ShowPopupWithBulkToggle();
+            var toggle = GetBulkToggle(popup);
+            toggle.IsChecked = true;
+            toggle.IsChecked = false;
+
+            Assert.Equal(PopupMode.Navigate, popup.Mode);
+            Assert.True(toggle.IsChecked);
+        });
+    }
+
+    private static BasePopup ShowPopupWithBulkToggle()
+    {
+        EnsureApplicationResources();
+        var popup = new BasePopup
+        {
+            CanToggleBulk = true,
+            Mode = PopupMode.Persist,
+            Content = new Border { Width = 320, Height = 100 }
+        };
+
+        popup.Show();
+        popup.ApplyTemplate();
+        popup.UpdateLayout();
+        return popup;
+    }
+
+    private static BalloonCheckBox GetBulkToggle(BasePopup popup)
+    {
+        var toggle = popup.Template.FindName("PART_BulkInsertCheckBox", popup) as BalloonCheckBox;
+        Assert.NotNull(toggle);
+        Assert.Equal(Visibility.Visible, toggle.Visibility);
+        return toggle;
     }
 
     private static void EnsureApplicationResources()
@@ -175,8 +219,6 @@ public sealed class BasePopupModeTests
     {
         public int SaveCount { get; private set; }
 
-        public int SaveAndNewCount { get; private set; }
-
         public int ApplyCount { get; private set; }
 
         public int DiscardCount { get; private set; }
@@ -192,8 +234,6 @@ public sealed class BasePopupModeTests
         public bool InvokeShortcut(Key key, ModifierKeys modifiers) => TryHandlePopupShortcut(key, modifiers);
 
         protected override void OnSaveButtonClick() => SaveCount++;
-
-        protected override void OnSaveAndCreateNewButtonClick() => SaveAndNewCount++;
 
         protected override void OnApplyButtonClick() => ApplyCount++;
 

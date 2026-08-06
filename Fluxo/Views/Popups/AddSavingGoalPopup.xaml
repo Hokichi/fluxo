@@ -6,7 +6,7 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     IsSaveButtonEnabled="{Binding CanSave}"
     PopupTitle="{Binding PopupTitle}"
-    Mode="SaveDiscard">
+    Mode="Modify">
 
     <customControls:BasePopup.Resources>
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">

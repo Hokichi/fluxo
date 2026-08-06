@@ -84,16 +84,29 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <c:BalloonButton
-                                        x:Name="PART_BackButton"
-                                        ButtonIcon="{StaticResource AngleLeft}"
-                                        ButtonText="Back"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                                        ShouldShowText="True"
-                                        Style="{StaticResource HeaderButtonStyle}"
-                                        SubText="Backspace"
-                                        Visibility="Collapsed" />
+                                    <StackPanel
+                                        x:Name="NavigationBulkActions"
+                                        Grid.Column="0"
+                                        Orientation="Horizontal"
+                                        Visibility="Collapsed">
+                                        <c:BalloonButton
+                                            x:Name="PART_BackButton"
+                                            ButtonIcon="{StaticResource AngleLeft}"
+                                            ButtonText="Back"
+                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            ShouldShowText="True"
+                                            Style="{StaticResource HeaderButtonStyle}"
+                                            SubText="Backspace"
+                                            Visibility="Collapsed" />
+                                        <c:BalloonCheckBox
+                                            x:Name="PART_BulkInsertCheckBox"
+                                            Margin="8,0,0,0"
+                                            ButtonText="Bulk Insert"
+                                            ShouldShowText="True"
+                                            Style="{StaticResource HeaderCheckBoxStyle}"
+                                            Visibility="{TemplateBinding CanToggleBulk, Converter={StaticResource PopupBoolToVisibility}}" />
+                                    </StackPanel>
 
                                     <StackPanel
                                         x:Name="ApplyCancelActions"
@@ -122,7 +135,7 @@
                                     </StackPanel>
 
                                     <StackPanel
-                                        x:Name="SaveDiscardDiscardAction"
+                                        x:Name="ModifyDiscardAction"
                                         Grid.Column="0"
                                         Orientation="Horizontal"
                                         Visibility="Collapsed">
@@ -134,13 +147,11 @@
                                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
-                                            SubText="Esc"
-                                            Visibility="{TemplateBinding CanDiscard,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
+                                            SubText="Esc" />
                                     </StackPanel>
 
                                     <StackPanel
-                                        x:Name="SaveDiscardActions"
+                                        x:Name="PersistModifyActions"
                                         Grid.Column="2"
                                         Orientation="Horizontal"
                                         Visibility="Collapsed">
@@ -154,19 +165,6 @@
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Enter" />
-                                        <c:BalloonButton
-                                            x:Name="PART_SaveAndCreateNewButton"
-                                            Margin="8,0,0,0"
-                                            ButtonIcon="{StaticResource ContentSaveMove}"
-                                            ButtonText="Save &amp; New"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
-                                            IsEnabled="{TemplateBinding IsSaveAndCreateNewButtonEnabled}"
-                                            ShouldShowText="True"
-                                            Style="{StaticResource HeaderButtonStyle}"
-                                            SubText="Shift+Enter"
-                                            Visibility="{TemplateBinding CanContinue,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
                                     </StackPanel>
 
                                     <StackPanel
@@ -272,17 +270,23 @@
                             <Setter TargetName="PopupTitleText" Property="Visibility" Value="Visible" />
                             <Setter TargetName="PopupTitleContentPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.ApplyCancel}">
+                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.Update}">
                             <Setter TargetName="FooterHost" Property="Visibility" Value="Visible" />
                             <Setter TargetName="ApplyCancelActions" Property="Visibility" Value="Visible" />
                         </Trigger>
-                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.SaveDiscard}">
+                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.Persist}">
                             <Setter TargetName="FooterHost" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="SaveDiscardDiscardAction" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="SaveDiscardActions" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="NavigationBulkActions" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PersistModifyActions" Property="Visibility" Value="Visible" />
                         </Trigger>
-                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.BackNext}">
+                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.Modify}">
                             <Setter TargetName="FooterHost" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="ModifyDiscardAction" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PersistModifyActions" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="Mode" Value="{x:Static c:PopupMode.Navigate}">
+                            <Setter TargetName="FooterHost" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="NavigationBulkActions" Property="Visibility" Value="Visible" />
                             <Setter TargetName="BackNextActions" Property="Visibility" Value="Visible" />
                             <Setter TargetName="PART_BackButton" Property="Visibility" Value="Visible" />
                         </Trigger>

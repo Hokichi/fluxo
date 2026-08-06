@@ -5,7 +5,7 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     PopupTitle="Transfer Funds"
-    Mode="ApplyCancel">
+    Mode="Update">
 
     <customControls:BasePopup.Resources>
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
