@@ -14,8 +14,7 @@ public sealed class TransactionVMSemanticsTests
         var loaded = new TransactionVM { Id = 7, Name = "Coffee", Amount = 5m };
         var pending = new TransactionVM { Id = 0, Name = "Coffee", Amount = 5m };
 
-        Assert.Equal(loaded, pending);
-        Assert.Equal(loaded.GetHashCode(), pending.GetHashCode());
+        Assert.True(loaded.HasSameValues(pending));
     }
 
     [Fact]
@@ -24,7 +23,7 @@ public sealed class TransactionVMSemanticsTests
         var first = new TransactionVM { Name = "Coffee", Amount = 5m };
         var second = new TransactionVM { Name = "Coffee", Amount = 6m };
 
-        Assert.NotEqual(first, second);
+        Assert.False(first.HasSameValues(second));
     }
 
     [Fact]

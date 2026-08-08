@@ -37,7 +37,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.NotSame(loaded, pending);
             Assert.Same(loaded, vm.LoadedTransaction);
             Assert.Same(pending, vm.PendingTransaction);
-            Assert.Equal(loaded, pending);
+            Assert.True(loaded.HasSameValues(pending));
             Assert.Equal(0, pending.Id);
             var callsAfterFirstInitialization = appData.ReceivedCalls().Count();
             Assert.True(callsAfterFirstInitialization > 0);
@@ -63,7 +63,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.Equal(default, vm.PendingTransaction.LoggedOn);
             Assert.Null(vm.PendingTransaction.ParentTransactionId);
             Assert.False(vm.PendingTransaction.IsForDeletion);
-            Assert.Equal(vm.LoadedTransaction, vm.PendingTransaction);
+            Assert.True(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
         });
     }
 
@@ -133,7 +133,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.Equal(default, vm.PendingTransaction.LoggedOn);
             Assert.Null(vm.PendingTransaction.ParentTransactionId);
             Assert.False(vm.PendingTransaction.IsForDeletion);
-            Assert.Equal(vm.LoadedTransaction, vm.PendingTransaction);
+            Assert.True(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
             Assert.Equal("Add New Transaction", vm.PopupTitle);
             Assert.Equal(name, vm.NameText);
             Assert.Equal(amount, vm.AmountText);
@@ -156,7 +156,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.Equal("Goal Update for Goal", loaded.Name);
             Assert.Equal(1, loaded.SourceAccountId);
             Assert.Equal(1, loaded.GoalId);
-            Assert.Equal(loaded, pending);
+            Assert.True(loaded.HasSameValues(pending));
 
             vm.SelectedGoal = new SavingGoalVM { Id = 2, Name = "Emergency Fund" };
 
@@ -166,7 +166,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.Equal(1, loaded.GoalId);
             Assert.Equal("Goal Update for Emergency Fund", pending.Name);
             Assert.Equal(2, pending.GoalId);
-            Assert.NotEqual(loaded, pending);
+            Assert.False(loaded.HasSameValues(pending));
         });
     }
 
@@ -204,7 +204,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.Equal(80m, loaded.Amount);
             Assert.Equal(checking.Id, loaded.SourceAccountId);
             Assert.Equal(visa.Id, loaded.RepaymentAccountId);
-            Assert.Equal(loaded, pending);
+            Assert.True(loaded.HasSameValues(pending));
 
             vm.SelectedRepaymentAccount = mastercard;
 
@@ -216,7 +216,7 @@ public sealed class TransactionPopupVMModeTests
             Assert.Equal("Repayment to Mastercard", pending.Name);
             Assert.Equal(120m, pending.Amount);
             Assert.Equal(mastercard.Id, pending.RepaymentAccountId);
-            Assert.NotEqual(loaded, pending);
+            Assert.False(loaded.HasSameValues(pending));
         });
     }
 
@@ -230,7 +230,7 @@ public sealed class TransactionPopupVMModeTests
             vm.InitializeView(CreateTransaction());
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
 
-            Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.True(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
         });
     }
 
@@ -296,7 +296,7 @@ public sealed class TransactionPopupVMModeTests
 
             vm.InitializeView(transaction);
 
-            Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.True(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
         });
     }
 
@@ -394,7 +394,7 @@ public sealed class TransactionPopupVMModeTests
 
             vm.NoteText = "Afternoon";
 
-            Assert.False(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.False(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
             Assert.True(vm.HasChanges);
         });
     }
@@ -408,12 +408,12 @@ public sealed class TransactionPopupVMModeTests
             vm.InitializeAsync().GetAwaiter().GetResult();
             vm.BeginChangeTracking();
 
-            Assert.True(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.True(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
             Assert.False(vm.HasChanges);
 
             vm.NoteText = "Memo";
 
-            Assert.False(vm.LoadedTransaction.Equals(vm.PendingTransaction));
+            Assert.False(vm.LoadedTransaction.HasSameValues(vm.PendingTransaction));
             Assert.True(vm.HasChanges);
         });
     }

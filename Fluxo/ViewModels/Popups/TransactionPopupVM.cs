@@ -272,10 +272,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool HasChanges => _isChangeTrackingInitialized &&
                               (IsBulkMode
                                   ? _bulkQueueHasChanges
-                                  : !LoadedTransaction.Equals(_currentRootTransaction) ||
+                                  : !LoadedTransaction.HasSameValues(_currentRootTransaction) ||
                                     !TransactionSplitHelper.AreTreesEqual(LoadedTransaction, _currentRootTransaction));
     public bool HasPendingTransactionChanges => IsEditingViewedTransaction && _isTransactionStateInitialized &&
-                                                 (!TransactionMappingHelper.CreatePending(LoadedTransaction).Equals(_currentRootTransaction) ||
+                                                 (!TransactionMappingHelper.CreatePending(LoadedTransaction).HasSameValues(_currentRootTransaction) ||
                                                   !TransactionSplitHelper.AreTreesEqual(LoadedTransaction, _currentRootTransaction));
     public bool HasTransactionNameSuggestions => TransactionNameSuggestions.Count > 0;
     public bool IsRecurringTransactionMode => IsRecurring || IsInstallments;

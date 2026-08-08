@@ -8,7 +8,7 @@ using Fluxo.Helpers.Transaction;
 
 namespace Fluxo.ViewModels.Entities;
 
-public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
+public partial class TransactionVM : ObservableObject
 {
     private readonly HashSet<TransactionVM> _subscribedChildren = [];
 
@@ -129,11 +129,8 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
         OnPropertyChanged(nameof(IsLeaf));
     }
 
-    public bool Equals(TransactionVM? other)
+    public bool HasSameValues(TransactionVM? other)
     {
-        if (ReferenceEquals(this, other))
-            return true;
-
         return other is not null &&
             Type == other.Type &&
             SourceAccountId == other.SourceAccountId &&
@@ -151,25 +148,4 @@ public partial class TransactionVM : ObservableObject, IEquatable<TransactionVM>
             IsExcludedFromBudget == other.IsExcludedFromBudget;
     }
 
-    public override bool Equals(object? obj) => Equals(obj as TransactionVM);
-
-    public override int GetHashCode()
-    {
-        var hash = new HashCode();
-        hash.Add(Type);
-        hash.Add(SourceAccountId);
-        hash.Add(GoalId);
-        hash.Add(RepaymentAccountId);
-        hash.Add(Name);
-        hash.Add(Amount);
-        hash.Add(OccurredOn);
-        hash.Add(Notes);
-        hash.Add(ExpenseCategory);
-        hash.Add(Tag?.Id);
-        hash.Add(IsPinned);
-        hash.Add(IsIoU);
-        hash.Add(ShouldAffectBalance);
-        hash.Add(IsExcludedFromBudget);
-        return hash.ToHashCode();
-    }
 }

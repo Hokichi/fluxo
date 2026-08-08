@@ -75,7 +75,7 @@ public sealed class TransactionModeHelperTests
 
         Assert.Equal(42, state.LoadedTransaction.Id);
         Assert.Equal(0, state.PendingTransaction.Id);
-        Assert.Equal(state.LoadedTransaction, state.PendingTransaction);
+        Assert.True(state.LoadedTransaction.HasSameValues(state.PendingTransaction));
         Assert.Same(account, state.SelectedAccount);
     }
 

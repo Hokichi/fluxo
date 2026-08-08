@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -7,6 +8,7 @@ using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Components;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Styles;
+using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Views.Popups;
 using NSubstitute;
@@ -112,6 +114,31 @@ public sealed class TransactionPopupSplitLayoutTests
             Assert.Equal("First note", note.Text);
             note.Text = "Edited first note";
             Assert.Equal("Edited first note", first.Notes);
+        });
+    }
+
+    [Fact]
+    public void Queue_selection_switches_between_equal_new_transactions()
+    {
+        RunOnStaThread(() =>
+        {
+            var first = new TransactionVM();
+            var second = new TransactionVM();
+            var third = new TransactionVM();
+            var queue = new ObservableCollection<TransactionVM> { first, second, third };
+            var listBox = new ListBox { ItemsSource = queue };
+            listBox.Measure(new Size(400, 300));
+            listBox.Arrange(new Rect(0, 0, 400, 300));
+            listBox.UpdateLayout();
+
+            listBox.SelectedItem = first;
+            Assert.Same(first, listBox.SelectedItem);
+
+            listBox.SelectedItem = second;
+            Assert.Same(second, listBox.SelectedItem);
+
+            listBox.SelectedItem = third;
+            Assert.Same(third, listBox.SelectedItem);
         });
     }
 

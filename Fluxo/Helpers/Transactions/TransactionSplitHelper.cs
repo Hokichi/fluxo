@@ -83,7 +83,7 @@ public static class TransactionSplitHelper
     public static bool AreTreesEqual(TransactionVM left, TransactionVM right) =>
         left.ChildTransactions.Count == right.ChildTransactions.Count &&
         left.ChildTransactions.Zip(right.ChildTransactions).All(pair =>
-            pair.First.Equals(pair.Second) && AreTreesEqual(pair.First, pair.Second));
+            pair.First.HasSameValues(pair.Second) && AreTreesEqual(pair.First, pair.Second));
 
     private static bool RemoveReference(IList<TransactionVM> items, TransactionVM node)
     {

@@ -537,7 +537,8 @@
                 Grid.Column="1"
                 Width="1"
                 HorizontalAlignment="Center"
-                Background="{DynamicResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Border.Default}"
+                SnapsToDevicePixels="True"
                 Visibility="{Binding IsBulkMode, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <Border
@@ -545,7 +546,8 @@
                 Grid.Column="3"
                 Width="1"
                 HorizontalAlignment="Center"
-                Background="{DynamicResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Border.Default}"
+                SnapsToDevicePixels="True"
                 Visibility="{Binding ShowRightFormDivider, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <StackPanel Grid.Row="0" Grid.Column="2">

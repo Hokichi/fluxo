@@ -187,7 +187,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         if (transaction is null || transaction.Type != loaded.Type)
             return Result.Failure("Unable to load this transaction.");
 
-        if (loaded.Equals(pending))
+        if (loaded.HasSameValues(pending))
             return Result.Success(loaded.Id);
 
         if (options.IsRepayment)
