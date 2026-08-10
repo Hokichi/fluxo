@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -20,22 +19,17 @@ namespace Fluxo.Views.Popups;
 
 public partial class TransactionPopup : BasePopup
 {
-    private enum MoreTagsPopupLifecycleState
-    {
-        Closed,
-        Opening,
-        Open,
-        Closing
-    }
-
     private readonly TransactionPopupVM _viewModel;
     private readonly TransactionBulkQueueVM _bulkQueueViewModel;
     private readonly TransactionSplitsVM _splitsViewModel;
     private bool _isInitialized;
     private bool _isHandlingAddTagSelection;
-    private readonly DispatcherTimer _moreTagsHoverCloseTimer;
-    private MoreTagsPopupLifecycleState _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
     private bool _isSyncingNoteDocument;
+    private Point _tagScrollStartPoint;
+    private double _tagScrollStartOffset;
+    private TagVM? _tagPointerDownTag;
+    private bool _wasSelectedTagPointerDown;
+    private bool _isDraggingTags;
 
     public TransactionPopup(
         TransactionPopupVM viewModel,
@@ -53,13 +47,6 @@ public partial class TransactionPopup : BasePopup
         SplitPanel.DataContext = splitsViewModel;
         BulkInsertChecked += (_, _) => _viewModel.IsBulkMode = true;
         BulkInsertUnchecked += OnBulkInsertUnchecked;
-        _moreTagsHoverCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(120) };
-        _moreTagsHoverCloseTimer.Tick += (_, _) =>
-        {
-            _moreTagsHoverCloseTimer.Stop();
-            TryCloseMoreTagsPopupIfNotPinned();
-        };
-
         Loaded += async (_, _) =>
         {
             if (_isInitialized)
@@ -74,8 +61,6 @@ public partial class TransactionPopup : BasePopup
             await _viewModel.EnsureTagsLoadedAsync();
             if (_viewModel.IsHistoryOpen)
                 await _viewModel.LoadHistoryAsync();
-            RecalculateTagLayout();
-            SyncMoreTagsPopupState();
             SyncNameSuggestionsPopupState();
             SyncNoteDocumentFromViewModel();
             _viewModel.BeginChangeTracking();
@@ -95,8 +80,6 @@ public partial class TransactionPopup : BasePopup
             _bulkQueueViewModel.Dispose();
             _splitsViewModel.Dispose();
         };
-        TagsDockPanel.SizeChanged += (_, _) => RecalculateTagLayout();
-        PreviewMouseDown += OnPopupPreviewMouseDown;
     }
 
     internal void Configure(TransactionPopupRequest request) => _viewModel.Configure(request);
@@ -179,8 +162,6 @@ public partial class TransactionPopup : BasePopup
             return;
 
         _viewModel.SwitchToCloneAddMode();
-        RecalculateTagLayout();
-        SyncMoreTagsPopupState();
         SyncNameSuggestionsPopupState();
         SyncNoteDocumentFromViewModel();
         FocusPrimaryInput();
@@ -415,18 +396,15 @@ public partial class TransactionPopup : BasePopup
         _isHandlingAddTagSelection = true;
         try
         {
-            var previousTagNames = _viewModel.VisibleTags
-                .Concat(_viewModel.OverflowTags)
+            var previousTagNames = _viewModel.Tags
                 .Select(tag => tag.Name)
                 .Where(name => !string.IsNullOrWhiteSpace(name))
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             _viewModel.RequestAddTag();
             await _viewModel.EnsureTagsLoadedAsync();
-            RecalculateTagLayout();
 
-            var newTag = _viewModel.VisibleTags
-                .Concat(_viewModel.OverflowTags)
+            var newTag = _viewModel.Tags
                 .FirstOrDefault(tag =>
                     !string.IsNullOrWhiteSpace(tag.Name) &&
                     !previousTagNames.Contains(tag.Name));
@@ -438,15 +416,6 @@ public partial class TransactionPopup : BasePopup
         {
             _isHandlingAddTagSelection = false;
         }
-    }
-
-    private void OnTagSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        _ = Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-        {
-            RecalculateTagLayout();
-            SyncMoreTagsPopupState();
-        }));
     }
 
     private void OnTransactionNameSuggestionSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -570,59 +539,84 @@ public partial class TransactionPopup : BasePopup
         }
     }
 
-    private void OnMoreTagsButtonChecked(object sender, RoutedEventArgs e) => TryOpenMoreTagsPopup();
+    internal static double CalculateTagScrollOffset(
+        double startingOffset,
+        double horizontalDelta,
+        double scrollableWidth) =>
+        Math.Clamp(startingOffset - horizontalDelta, 0d, scrollableWidth);
 
-    private void OnMoreTagsButtonUnchecked(object sender, RoutedEventArgs e) => TryCloseMoreTagsPopup();
-
-    private void OnMoreTagsHoverChanged(object sender, RoutedEventArgs e)
+    internal void OnTagsScrollViewerPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (!CanShowMoreTagsPopup())
+        if (sender is not FadingScrollViewer scrollViewer)
+            return;
+
+        _tagScrollStartPoint = e.GetPosition(scrollViewer);
+        _tagScrollStartOffset = scrollViewer.HorizontalOffset;
+        _tagPointerDownTag = GetTagFromSource((e.OriginalSource ?? e.Source) as DependencyObject);
+        _wasSelectedTagPointerDown = ReferenceEquals(_tagPointerDownTag, _viewModel.SelectedTag);
+        _isDraggingTags = false;
+        scrollViewer.CaptureMouse();
+    }
+
+    private void OnTagsScrollViewerPreviewMouseMove(object sender, MouseEventArgs e)
+    {
+        if (sender is not FadingScrollViewer { IsMouseCaptured: true } scrollViewer)
+            return;
+
+        if (e.LeftButton != MouseButtonState.Pressed)
         {
-            _moreTagsHoverCloseTimer.Stop();
-            TryCloseMoreTagsPopup();
+            ResetTagPointerState(scrollViewer);
             return;
         }
 
-        var isPointerOverMoreRegion = IsPointerOverMoreRegion();
-        if (isPointerOverMoreRegion)
-        {
-            _moreTagsHoverCloseTimer.Stop();
-
-            if (!_viewModel.IsMoreTagsOpen)
-                TryOpenMoreTagsPopup();
-
-            return;
-        }
-
-        if (_viewModel.IsMoreTagsOpen)
+        var horizontalDelta = e.GetPosition(scrollViewer).X - _tagScrollStartPoint.X;
+        if (!_isDraggingTags && Math.Abs(horizontalDelta) < SystemParameters.MinimumHorizontalDragDistance)
             return;
 
-        _moreTagsHoverCloseTimer.Stop();
-        _moreTagsHoverCloseTimer.Start();
+        _isDraggingTags = true;
+        scrollViewer.ScrollToHorizontalOffset(CalculateTagScrollOffset(
+            _tagScrollStartOffset,
+            horizontalDelta,
+            scrollViewer.ScrollableWidth));
+        e.Handled = true;
     }
 
-    private void OnMoreTagsPopupClosed(object? sender, EventArgs e)
+    internal void OnTagsScrollViewerPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        _moreTagsHoverCloseTimer.Stop();
-        _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
+        if (sender is not FadingScrollViewer scrollViewer)
+            return;
 
-        if (_viewModel.IsMoreTagsOpen)
-            _viewModel.IsMoreTagsOpen = false;
+        var shouldDeselect = !_isDraggingTags && _wasSelectedTagPointerDown && _tagPointerDownTag is not null;
+        ResetTagPointerState(scrollViewer);
+
+        if (!shouldDeselect)
+            return;
+
+        TagsListBox.SelectedItem = null;
+        _viewModel.SelectedTag = null;
+        e.Handled = true;
     }
 
-    private void OnPopupPreviewMouseDown(object sender, MouseButtonEventArgs e)
+    private void OnTagsScrollViewerLostMouseCapture(object sender, MouseEventArgs e)
     {
-        if (!_viewModel.IsMoreTagsOpen || _moreTagsPopupState is not MoreTagsPopupLifecycleState.Open)
-            return;
+        if (sender is FadingScrollViewer scrollViewer)
+            ResetTagPointerState(scrollViewer);
+    }
 
-        if (e.OriginalSource is not DependencyObject source)
-            return;
+    private static TagVM? GetTagFromSource(DependencyObject? source)
+    {
+        var item = source as ListBoxItem ?? DependencyObjectTree.FindAncestor<ListBoxItem>(source);
+        return item?.DataContext as TagVM;
+    }
 
-        if (DependencyObjectTree.IsDescendantOf(source, MoreTagsButton))
-            return;
+    private void ResetTagPointerState(FadingScrollViewer scrollViewer)
+    {
+        if (scrollViewer.IsMouseCaptured)
+            scrollViewer.ReleaseMouseCapture();
 
-        _viewModel.IsMoreTagsOpen = false;
-        TryCloseMoreTagsPopup();
+        _tagPointerDownTag = null;
+        _wasSelectedTagPointerDown = false;
+        _isDraggingTags = false;
     }
 
     private void SyncNameSuggestionsPopupState()
@@ -659,143 +653,4 @@ public partial class TransactionPopup : BasePopup
         _viewModel.ActivateAmountValidation();
     }
 
-    private void RecalculateTagLayout()
-    {
-        if (!IsLoaded || !_viewModel.IsExpense)
-            return;
-
-        var containerWidth = TagsDockPanel.ActualWidth;
-        if (containerWidth <= 0)
-            return;
-
-        var orderedTags = _viewModel.VisibleTags.Concat(_viewModel.OverflowTags).ToList();
-        if (orderedTags.Count == 0)
-        {
-            _viewModel.SetVisibleTagSlots(0);
-            SyncMoreTagsPopupState();
-            return;
-        }
-
-        var addTagWidth = AddTagButton.ActualWidth + AddTagButton.Margin.Left + AddTagButton.Margin.Right;
-        var moreButtonWidth = MeasureMoreButtonWidth();
-        var tagWidths = orderedTags.Select(MeasureTagWidth).ToList();
-        var visibleSlots = CalculateVisibleTagSlots(containerWidth, addTagWidth, moreButtonWidth, tagWidths);
-        _viewModel.SetVisibleTagSlots(visibleSlots);
-        SyncMoreTagsPopupState();
-    }
-
-    private bool IsPointerOverMoreRegion()
-    {
-        return MoreTagsButton.IsMouseOver || MoreTagsPopupContent.IsMouseOver;
-    }
-
-    private bool CanShowMoreTagsPopup()
-    {
-        return IsLoaded && _viewModel.HasMoreTags;
-    }
-
-    private void SyncMoreTagsPopupState()
-    {
-        if (!CanShowMoreTagsPopup())
-        {
-            _viewModel.IsMoreTagsOpen = false;
-            TryCloseMoreTagsPopup();
-            return;
-        }
-
-        if (_viewModel.IsMoreTagsOpen || IsPointerOverMoreRegion())
-            TryOpenMoreTagsPopup();
-        else
-            TryCloseMoreTagsPopup();
-    }
-
-    private void TryOpenMoreTagsPopup()
-    {
-        if (!CanShowMoreTagsPopup())
-            return;
-
-        if (_moreTagsPopupState is MoreTagsPopupLifecycleState.Open or MoreTagsPopupLifecycleState.Opening)
-            return;
-
-        _moreTagsPopupState = MoreTagsPopupLifecycleState.Opening;
-        MoreTagsPopup.IsOpen = true;
-        if (MoreTagsPopup.IsOpen)
-            _moreTagsPopupState = MoreTagsPopupLifecycleState.Open;
-        else
-            _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
-    }
-
-    private void TryCloseMoreTagsPopup()
-    {
-        if (_moreTagsPopupState is MoreTagsPopupLifecycleState.Closed or MoreTagsPopupLifecycleState.Closing)
-            return;
-
-        _moreTagsPopupState = MoreTagsPopupLifecycleState.Closing;
-        MoreTagsPopup.IsOpen = false;
-        if (!MoreTagsPopup.IsOpen)
-            _moreTagsPopupState = MoreTagsPopupLifecycleState.Closed;
-    }
-
-    private void TryCloseMoreTagsPopupIfNotPinned()
-    {
-        if (_viewModel.IsMoreTagsOpen || IsPointerOverMoreRegion())
-            return;
-
-        TryCloseMoreTagsPopup();
-    }
-
-    private double MeasureTagWidth(TagVM tag)
-    {
-        var tagChip = new RadioButton
-        {
-            Content = tag.Name,
-            DataContext = tag,
-            Style = (Style)FindResource("PopupTagItemRadioStyle")
-        };
-
-        tagChip.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-        return tagChip.DesiredSize.Width + 8d;
-    }
-
-    private double MeasureMoreButtonWidth()
-    {
-        var moreButton = new ToggleButton
-        {
-            Content = "More",
-            Style = (Style)FindResource("PopupTagToggleStyle")
-        };
-
-        moreButton.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-        return moreButton.DesiredSize.Width + MoreTagsButton.Margin.Left + MoreTagsButton.Margin.Right;
-    }
-
-    private static int CalculateVisibleTagSlots(
-        double containerWidth,
-        double addTagWidth,
-        double moreButtonWidth,
-        IReadOnlyList<double> tagWidths)
-    {
-        var remainingWidth = Math.Max(0d, containerWidth - addTagWidth);
-        var totalTagsWidth = tagWidths.Sum();
-
-        if (totalTagsWidth <= remainingWidth)
-            return tagWidths.Count;
-
-        var remainingWidthWithMore = Math.Max(0d, remainingWidth - moreButtonWidth);
-        if (remainingWidthWithMore <= 0d)
-            return 0;
-
-        var consumedWidth = 0d;
-        var visibleCount = 0;
-        foreach (var width in tagWidths)
-        {
-            if (consumedWidth + width > remainingWidthWithMore)
-                break;
-
-            consumedWidth += width;
-            visibleCount++;
-        }
-
-        return visibleCount;
-    }
 }

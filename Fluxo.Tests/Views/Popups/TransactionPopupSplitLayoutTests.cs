@@ -21,6 +21,109 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class TransactionPopupSplitLayoutTests
 {
     [Fact]
+    public void Form_uses_capped_layout_with_fixed_transaction_type_toggles()
+    {
+        RunOnStaThread(() =>
+        {
+            var popup = CreatePopup();
+            popup.Measure(new Size(800, 900));
+            popup.Arrange(new Rect(0, 0, 800, 900));
+            popup.UpdateLayout();
+
+            var formLayout = Assert.IsType<Grid>(popup.FindName("TransactionFormLayout"));
+            var form = Assert.IsType<FadingScrollViewer>(popup.FindName("TransactionFormScrollViewer"));
+            var transactionTypeToggle = FindControls<SegmentedToggleGroup>(popup).Single(group =>
+                FindControls<SegmentedToggleOption>(group).Any(option => Equals(option.Content, "Expense")));
+
+            Assert.Equal(520d, formLayout.MaxHeight);
+            Assert.Equal(1, Grid.GetRow(form));
+            Assert.False(IsLogicalDescendantOf(transactionTypeToggle, form));
+            Assert.Equal(ScrollBarVisibility.Disabled, form.HorizontalScrollBarVisibility);
+            Assert.Equal(ScrollBarVisibility.Auto, form.VerticalScrollBarVisibility);
+        });
+    }
+
+    [Fact]
+    public void Tags_use_horizontal_fading_scroll_viewer_without_more_popup()
+    {
+        RunOnStaThread(() =>
+        {
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger());
+            var popup = CreatePopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+
+            var tagsScrollViewer = Assert.IsType<FadingScrollViewer>(popup.FindName("TagsScrollViewer"));
+            var tagsList = Assert.IsType<ListBox>(popup.FindName("TagsListBox"));
+
+            Assert.Equal(ScrollBarVisibility.Hidden, tagsScrollViewer.HorizontalScrollBarVisibility);
+            Assert.Equal(ScrollBarVisibility.Disabled, tagsScrollViewer.VerticalScrollBarVisibility);
+            Assert.Same(viewModel.Tags, tagsList.ItemsSource);
+            Assert.DoesNotContain(FindControls<ToggleButton>(popup), button => Equals(button.Content, "More"));
+        });
+    }
+
+    [Fact]
+    public void Selected_tag_click_clears_tag_selection()
+    {
+        RunOnStaThread(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+            var tag = new TagVM { Id = 1, Name = "General", HexCode = "#111111" };
+            viewModel.Tags.Add(tag);
+            viewModel.SelectedTag = tag;
+            var popup = CreatePopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+            var tags = Assert.IsType<ListBox>(popup.FindName("TagsListBox"));
+
+            RaisePreviewTagClick(popup, Assert.IsType<FadingScrollViewer>(popup.FindName("TagsScrollViewer")), tag);
+
+            Assert.Null(tags.SelectedItem);
+            Assert.Null(viewModel.SelectedTag);
+        });
+    }
+
+    [Theory]
+    [InlineData(120d, 30d, 500d, 90d)]
+    [InlineData(20d, 50d, 500d, 0d)]
+    [InlineData(480d, -80d, 500d, 500d)]
+    public void CalculateTagScrollOffset_ClampsHorizontalDrag(
+        double startingOffset,
+        double horizontalDelta,
+        double scrollableWidth,
+        double expectedOffset)
+    {
+        Assert.Equal(expectedOffset,
+            TransactionPopup.CalculateTagScrollOffset(startingOffset, horizontalDelta, scrollableWidth));
+    }
+
+    [Fact]
+    public void Category_includes_excluded_option_and_no_budget_checkbox()
+    {
+        RunOnStaThread(() =>
+        {
+            var popup = CreatePopup();
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+            var excluded = FindControls<BalloonRadioButton>(popup)
+                .Single(button => Equals(button.UncheckedText, "Excluded"));
+
+            var binding = excluded.GetBindingExpression(BalloonCheckBox.IsCheckedProperty)!.ParentBinding;
+
+            Assert.Equal(nameof(TransactionPopupVM.IsExcludedCategory), binding.Path.Path);
+            Assert.DoesNotContain(
+                FindControls<BalloonCheckBox>(popup),
+                checkBox => checkBox.GetBindingExpression(BalloonCheckBox.IsCheckedProperty)?.ParentBinding.Path.Path ==
+                            nameof(TransactionPopupVM.IsBudgetExcluded));
+        });
+    }
+
+    [Fact]
     public void BulkInsert_shows_queue_panel()
     {
         RunOnStaThread(() =>
@@ -232,9 +335,12 @@ public sealed class TransactionPopupSplitLayoutTests
                 .Single(option => Equals(option.Content, "Split"));
             var sidePanel = FindControls<Grid>(popup).Single(grid => grid.Width == 480);
             var popupGrid = Assert.IsType<Grid>(LogicalTreeHelper.GetParent(sidePanel));
+            var formLayout = Assert.IsType<Grid>(popup.FindName("TransactionFormLayout"));
+            var form = Assert.IsType<FadingScrollViewer>(popup.FindName("TransactionFormScrollViewer"));
 
             Assert.True(split.IsEnabled);
-            Assert.Equal(popupGrid.ActualHeight, sidePanel.ActualHeight);
+            Assert.False(IsLogicalDescendantOf(sidePanel, form));
+            Assert.Equal(formLayout.ActualHeight, sidePanel.ActualHeight);
             Assert.Equal(0, sidePanel.TranslatePoint(new Point(), popupGrid).Y);
         });
     }
@@ -411,6 +517,17 @@ public sealed class TransactionPopupSplitLayoutTests
         }
     }
 
+    private static bool IsLogicalDescendantOf(DependencyObject control, DependencyObject ancestor)
+    {
+        for (var current = LogicalTreeHelper.GetParent(control); current is not null; current = LogicalTreeHelper.GetParent(current))
+        {
+            if (ReferenceEquals(current, ancestor))
+                return true;
+        }
+
+        return false;
+    }
+
     private static void RunOnStaThread(Action action)
     {
         Exception? exception = null;
@@ -426,6 +543,29 @@ public sealed class TransactionPopupSplitLayoutTests
 
         if (exception is not null)
             throw exception;
+    }
+
+    private static TransactionPopup CreatePopup(TransactionPopupVM? viewModel = null)
+    {
+        EnsureApplicationResources();
+        var messenger = new WeakReferenceMessenger();
+        viewModel ??= new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+        return new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
+    }
+
+    private static void RaisePreviewTagClick(TransactionPopup popup, FadingScrollViewer scrollViewer, TagVM tag)
+    {
+        var item = new ListBoxItem { DataContext = tag };
+        popup.OnTagsScrollViewerPreviewMouseLeftButtonDown(scrollViewer, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+        {
+            RoutedEvent = Mouse.PreviewMouseDownEvent,
+            Source = item
+        });
+        popup.OnTagsScrollViewerPreviewMouseLeftButtonUp(scrollViewer, new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+        {
+            RoutedEvent = Mouse.PreviewMouseUpEvent,
+            Source = item
+        });
     }
 
     private static void EnsureApplicationResources()

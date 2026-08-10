@@ -31,9 +31,9 @@ public readonly record struct TransactionEditInput(
         bool IsPinned,
         string Note,
         DateTime Date,
-        ExpenseCategory Category,
+        ExpenseCategory? Category,
         int AccountId,
-        int TagId,
+        int? TagId,
         bool IsIoU,
         bool ShouldAffectBalance,
         bool IsExcludedFromBudget);

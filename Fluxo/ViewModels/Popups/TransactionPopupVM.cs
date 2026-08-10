@@ -30,9 +30,7 @@ namespace Fluxo.ViewModels.Popups;
 
 public partial class TransactionPopupVM : ObservableValidator, IDisposable
 {
-    private const int DefaultVisibleTagSlots = 4;
     private const int NoAccountId = -1;
-    private const int NoTagId = -1;
     private const int NoSavingGoalId = -1;
     private const decimal SimilarAmountTolerance = 0.05m;
 
@@ -82,10 +80,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     [ObservableProperty] private bool _isExpense = true;
     [ObservableProperty] private bool _isGoal;
     [ObservableProperty] private bool _isRepayment;
-    [ObservableProperty] private bool _isMoreTagsOpen;
     [ObservableProperty] private bool _isSaving;
     private bool _isUpdatingTagCollections;
-    private int _visibleTagSlots = DefaultVisibleTagSlots;
 
     [ObservableProperty]
     [CustomValidation(typeof(TransactionPopupVM), nameof(ValidateNameText))]
@@ -214,16 +210,60 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public ICollectionView AccountsView { get; }
     public ObservableCollection<AccountVM> RepaymentAccounts { get; } = [];
     public ObservableCollection<SavingGoalVM> Goals { get; } = [];
-    public ObservableCollection<TagVM> VisibleTags { get; } = [];
-    public ObservableCollection<TagVM> OverflowTags { get; } = [];
+    public ObservableCollection<TagVM> Tags { get; } = [];
     public ObservableCollection<BalanceUpdateItem> CategoryBalanceUpdates { get; } = [];
     public ObservableCollection<BalanceUpdateItem> TagBalanceUpdates { get; } = [];
     public ObservableCollection<AddNewTransactionSuggestion> TransactionNameSuggestions { get; } = [];
     public AddNewTransactionHistoryListVM PinnedHistory { get; } = new();
     public AddNewTransactionHistoryListVM TransactionHistory { get; } = new();
-    public bool IsNeedsCategory { get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Needs; set { if (value) SelectedExpenseCategory = ExpenseCategory.Needs; } }
-    public bool IsWantsCategory { get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Wants; set { if (value) SelectedExpenseCategory = ExpenseCategory.Wants; } }
-    public bool IsInvestCategory { get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Savings; set { if (value) SelectedExpenseCategory = ExpenseCategory.Savings; } }
+    public bool IsNeedsCategory
+    {
+        get => CanEditCategory && !IsExcludedFromBudget && SelectedExpenseCategory == ExpenseCategory.Needs;
+        set
+        {
+            if (!value)
+                return;
+
+            IsExcludedFromBudget = false;
+            SelectedExpenseCategory = ExpenseCategory.Needs;
+        }
+    }
+
+    public bool IsWantsCategory
+    {
+        get => CanEditCategory && !IsExcludedFromBudget && SelectedExpenseCategory == ExpenseCategory.Wants;
+        set
+        {
+            if (!value)
+                return;
+
+            IsExcludedFromBudget = false;
+            SelectedExpenseCategory = ExpenseCategory.Wants;
+        }
+    }
+
+    public bool IsInvestCategory
+    {
+        get => CanEditCategory && !IsExcludedFromBudget && SelectedExpenseCategory == ExpenseCategory.Savings;
+        set
+        {
+            if (!value)
+                return;
+
+            IsExcludedFromBudget = false;
+            SelectedExpenseCategory = ExpenseCategory.Savings;
+        }
+    }
+
+    public bool IsExcludedCategory
+    {
+        get => CanEditCategory && IsExcludedFromBudget;
+        set
+        {
+            if (value)
+                IsExcludedFromBudget = true;
+        }
+    }
     public bool ShowCategoryImpact => !IsEditingSplitNode && !IsViewOnly && !IsRecurringTransactionMode && AmountText > 0m && !IsUnpostedIoUMode &&
                                        (IsRepayment || (IsExpense && !IsExcludedFromBudget));
     public bool ShowAccountImpact => !IsEditingSplitNode && !IsViewOnly && !IsRecurringTransactionMode && AmountText > 0m && !IsUnpostedIoUMode && SelectedAccount is not null;
@@ -381,7 +421,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool ShowNoteField => !IsGoal && !IsRepayment;
     public bool ShowGoalField => IsGoal;
     public bool ShowRepaymentAccountField => IsRepayment;
-    public bool ShowCategoryField => IsExpense && !IsExcludedFromBudget;
+    public bool ShowCategoryField => IsExpense;
     public bool ShowCategoryOrRepaymentField => ShowCategoryField || IsRepayment;
     public bool ShouldExpandAccountField => !ShowCategoryOrRepaymentField;
     public bool ShowTransactionModes => !IsRepayment;
@@ -425,13 +465,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         _orderedTags.AddRange(persistedTags);
 
         RefreshTagCollections();
-        SelectedTag = selectedTagId is null
-            ? _orderedTags.FirstOrDefault()
-            : _orderedTags.FirstOrDefault(tag => tag.Id == selectedTagId.Value) ?? _orderedTags.FirstOrDefault();
+        if (selectedTagId is not null)
+            SelectedTag = _orderedTags.FirstOrDefault(tag => tag.Id == selectedTagId.Value) ?? _orderedTags.FirstOrDefault();
 
-        if (_popupPurpose is TransactionPopupPurpose.AddNewTransaction or TransactionPopupPurpose.EditTransaction &&
-            SelectedTag is { } selectedTag && _orderedTags.FirstOrDefault()?.Id != selectedTag.Id)
-            PromoteTagToVisibleStart(selectedTag);
     }
 
     public bool IsIncome
@@ -461,7 +497,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
     }
 
-    public bool HasMoreTags => OverflowTags.Count > 0;
     public bool IsProcessingSession => ProcessingTargets.Any();
     public bool ShowRightFormDivider => IsBulkMode || ShowSidePanel;
     public PopupMode PopupMode => IsViewOnly ? PopupMode.Functional
@@ -834,6 +869,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     partial void OnIsExcludedFromBudgetChanged(bool value)
     {
         OnPropertyChanged(nameof(IsBudgetExcluded));
+        OnPropertyChanged(nameof(IsNeedsCategory));
+        OnPropertyChanged(nameof(IsWantsCategory));
+        OnPropertyChanged(nameof(IsInvestCategory));
+        OnPropertyChanged(nameof(IsExcludedCategory));
         NotifyLayoutStateChanged();
         RefreshActiveValidation(nameof(AmountText));
         RefreshAmountWarning();
@@ -910,8 +949,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     }
 
     partial void OnIsPinnedChanged(bool value) => NotifyFormStateChanged();
-
-    partial void OnIsMoreTagsOpenChanged(bool value) => NotifyFormStateChanged();
 
     partial void OnIsSavingChanged(bool value) => NotifyFormStateChanged();
 
@@ -1050,7 +1087,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         SelectedAccount = state.SelectedAccount;
         SelectedTag = state.SelectedTag;
         SelectedGoal = state.SelectedGoal;
-        IsMoreTagsOpen = false;
         if (IsGoal)
             SyncGoalUpdateName();
         _isTransactionTypeLocked = state.Input.LockTransactionType;
@@ -1126,10 +1162,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
         SetPopupPurpose(TransactionPopupPurpose.EditTransaction);
         await EnsureTagsLoadedAsync();
-        if (SelectedTag is { } selectedTag && _orderedTags.FirstOrDefault()?.Id != selectedTag.Id)
-            PromoteTagToVisibleStart(selectedTag);
-        else
-            RefreshTagCollections();
+        RefreshTagCollections();
         await LoadSplitTreeAsync(LoadedTransaction.Id);
         BeginChangeTracking();
     }
@@ -1145,7 +1178,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     public TransactionEditInput CreateTransactionEditInput()
     {
-        if (ViewedTransaction is null || SelectedAccount is null || SelectedTag is null)
+        if (ViewedTransaction is null || SelectedAccount is null)
             throw new InvalidOperationException("The transaction edit is incomplete.");
         SyncPendingTransactionFromForm();
         var input = EditTransactionHelper.CreateInput(_currentRootTransaction);
@@ -1186,9 +1219,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (!CanUseIoU)
             IsIoU = false;
 
-        if (!value || IsGoal)
-            IsMoreTagsOpen = false;
-
         RefreshTransactionTypeState(seedGeneratedBaseline: false);
     }
 
@@ -1210,7 +1240,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             IsInstallments = false;
             IsIoU = false;
-            IsMoreTagsOpen = false;
             SyncGoalUpdateName();
         }
 
@@ -1341,8 +1370,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             SelectedExpenseCategory = suggestion.Category ?? SelectedExpenseCategory;
             SelectedTag = suggestion.TagId is int tagId
-                ? _orderedTags.FirstOrDefault(tag => tag.Id == tagId) ?? SelectedTag
-                : SelectedTag;
+                ? _orderedTags.FirstOrDefault(tag => tag.Id == tagId)
+                : null;
         }
 
         ClearTransactionNameSuggestions();
@@ -1362,14 +1391,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
         if (_isUpdatingTagCollections || value is null)
             return;
-
-        if ((ViewedTransaction is null && _popupPurpose == TransactionPopupPurpose.AddNewTransaction ||
-             _popupPurpose == TransactionPopupPurpose.EditTransaction ||
-             OverflowTags.Any(tag => tag.Id == value.Id)) &&
-            _orderedTags.FirstOrDefault()?.Id != value.Id)
-            PromoteTagToVisibleStart(value);
-
-        IsMoreTagsOpen = false;
     }
 
     public async Task<TransactionPopupSubmissionResult> SaveAsync(
@@ -1666,10 +1687,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         RecurringTimeText = GetDefaultRecurringTimeText(SelectedRecurringPeriod);
         SelectedExpenseCategory = ExpenseCategory.Needs;
         SelectedAccount = Accounts.FirstOrDefault(account => account.IsDefault) ?? Accounts.FirstOrDefault();
-        SelectedTag = _orderedTags.FirstOrDefault();
+        SelectedTag = null;
         SelectedGoal = Goals.FirstOrDefault();
         SelectedRepaymentAccount = RepaymentAccounts.FirstOrDefault();
-        IsMoreTagsOpen = false;
         ClearTransactionNameSuggestions();
     }
 
@@ -1678,16 +1698,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         AmountText = 0m;
         NameText = string.Empty;
         NoteText = string.Empty;
-    }
-
-    public void SetVisibleTagSlots(int visibleTagSlots)
-    {
-        var normalizedSlots = Math.Max(0, visibleTagSlots);
-        if (_visibleTagSlots == normalizedSlots)
-            return;
-
-        _visibleTagSlots = normalizedSlots;
-        RefreshTagCollections();
+        SelectedTag = null;
     }
 
     private bool TryBuildTransactionInput(out QuickTransactionInput input, out string validationMessage)
@@ -1934,20 +1945,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             option.IsEnabled = isEnabled;
     }
 
-    private void PromoteTagToVisibleStart(TagVM selectedTag)
-    {
-        var reorderedTags = _orderedTags
-            .Where(tag => tag.Id != selectedTag.Id)
-            .Prepend(selectedTag)
-            .ToList();
-
-        _orderedTags.Clear();
-        _orderedTags.AddRange(reorderedTags);
-
-        RefreshTagCollections();
-        SelectedTag = _orderedTags.FirstOrDefault(tag => tag.Id == selectedTag.Id);
-    }
-
     private void RefreshTagCollections()
     {
         var selectedTagId = SelectedTag?.Id;
@@ -1958,19 +1955,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             if (IsViewOnly)
             {
-                ReplaceCollection(VisibleTags, SelectedTag is null ? [] : [SelectedTag]);
-                ReplaceCollection(OverflowTags, []);
-                OnPropertyChanged(nameof(HasMoreTags));
-                IsMoreTagsOpen = false;
+                ReplaceCollection(Tags, SelectedTag is null ? [] : [SelectedTag]);
                 return;
             }
 
-            ReplaceCollection(VisibleTags, _orderedTags.Take(_visibleTagSlots));
-            ReplaceCollection(OverflowTags, _orderedTags.Skip(_visibleTagSlots));
-
-            OnPropertyChanged(nameof(HasMoreTags));
-            if (!HasMoreTags)
-                IsMoreTagsOpen = false;
+            ReplaceCollection(Tags, _orderedTags);
 
             if (selectedTagId is null)
                 return;
@@ -2326,6 +2315,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsNeedsCategory));
         OnPropertyChanged(nameof(IsWantsCategory));
         OnPropertyChanged(nameof(IsInvestCategory));
+        OnPropertyChanged(nameof(IsExcludedCategory));
         OnPropertyChanged(nameof(CanEditCategory));
         OnPropertyChanged(nameof(CanEditTags));
         OnPropertyChanged(nameof(ShowSplitPanel));
@@ -2961,8 +2951,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             SelectedExpenseCategory = item.Category ?? SelectedExpenseCategory;
             SelectedTag = item.TagId is int tagId
-                ? _orderedTags.FirstOrDefault(tag => tag.Id == tagId) ?? SelectedTag
-                : SelectedTag;
+                ? _orderedTags.FirstOrDefault(tag => tag.Id == tagId)
+                : null;
         }
 
         ClearTransactionNameSuggestions();

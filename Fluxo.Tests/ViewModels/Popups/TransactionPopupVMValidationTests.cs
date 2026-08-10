@@ -1181,6 +1181,85 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
+    public void EnsureTagsLoadedAsync_KeepsNewTransactionTagless()
+    {
+        RunInSta(() =>
+        {
+            var appData = CreateAppData();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(
+            [
+                new Tag { Id = 1, Name = "General", HexCode = "#111111" },
+                new Tag { Id = 2, Name = "Travel", HexCode = "#222222" }
+            ]);
+            var vm = TransactionPopupVMFactory.Create(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), appData);
+
+            vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
+
+            Assert.Null(vm.SelectedTag);
+        });
+    }
+
+    [Fact]
+    public void ResetForm_ClearsSelectedTag()
+    {
+        RunInSta(() =>
+        {
+            var vm = CreateVm(TransactionKind.Expense, CreateCheckingSource(balance: 500m), isRecurring: false, amount: 10m);
+            vm.SelectedTag = new TagVM { Id = 1, Name = "General", HexCode = "#111111" };
+
+            vm.ResetForm(false);
+
+            Assert.Null(vm.SelectedTag);
+        });
+    }
+
+    [Fact]
+    public void ExcludedCategory_TracksBudgetExclusion()
+    {
+        RunInSta(() =>
+        {
+            var vm = CreateVm(TransactionKind.Expense, CreateCheckingSource(balance: 500m), isRecurring: false, amount: 10m);
+
+            vm.IsExcludedCategory = true;
+
+            Assert.True(vm.IsExcludedFromBudget);
+            Assert.True(vm.IsExcludedCategory);
+
+            vm.IsWantsCategory = true;
+
+            Assert.False(vm.IsExcludedFromBudget);
+            Assert.Equal(ExpenseCategory.Wants, vm.SelectedExpenseCategory);
+        });
+    }
+
+    [Fact]
+    public void CreateTransactionEditInput_AllowsTaglessExpense()
+    {
+        RunInSta(() =>
+        {
+            var source = CreateCheckingSource(balance: 500m);
+            var vm = CreateVm(TransactionKind.Expense, source, isRecurring: false, amount: 10m);
+            vm.InitializeView(new TransactionVM
+            {
+                Id = 4,
+                Type = TransactionType.Expense,
+                Name = "Uncategorized",
+                Amount = 10m,
+                SourceAccountId = source.Id,
+                Account = source,
+                ExpenseCategory = ExpenseCategory.Needs,
+                Tag = null
+            });
+            vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+
+            var input = vm.CreateTransactionEditInput();
+
+            Assert.Null(input.TagId);
+        });
+    }
+
+    [Fact]
     public void SelectedGoal_IsRequired_ForGoalUpdate()
     {
         RunInSta(() =>
@@ -1324,7 +1403,7 @@ public sealed class TransactionPopupVMValidationTests
             ]);
             var vm = TransactionPopupVMFactory.Create(CreateMainViewModel([source]), appData);
             vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
-            vm.SelectedTag = vm.VisibleTags.Concat(vm.OverflowTags).Single(tag => tag.Id == 1);
+            vm.SelectedTag = vm.Tags.Single(tag => tag.Id == 1);
             vm.SelectedDate = new DateTime(2026, 7, 24);
             vm.SelectedExpenseCategory = ExpenseCategory.Wants;
             vm.IsPinned = true;
@@ -1340,7 +1419,7 @@ public sealed class TransactionPopupVMValidationTests
             Assert.Equal(0m, vm.AmountText);
             Assert.Empty(vm.NoteText);
             Assert.Same(source, vm.SelectedAccount);
-            Assert.Equal(1, vm.SelectedTag?.Id);
+            Assert.Null(vm.SelectedTag);
             Assert.Equal(new DateTime(2026, 7, 24), vm.SelectedDate);
             Assert.Equal(ExpenseCategory.Wants, vm.SelectedExpenseCategory);
             Assert.True(vm.IsPinned);
@@ -3112,21 +3191,19 @@ public sealed class TransactionPopupVMValidationTests
             });
             vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
 
-            Assert.Equal([5], vm.VisibleTags.Select(tag => tag.Id));
-            Assert.Empty(vm.OverflowTags);
+            Assert.Equal([5], vm.Tags.Select(tag => tag.Id));
 
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
 
-            Assert.Equal([5, 1, 2, 3, 4], vm.VisibleTags.Concat(vm.OverflowTags).Select(tag => tag.Id));
+            Assert.Equal([1, 2, 3, 4, 5], vm.Tags.Select(tag => tag.Id));
 
             vm.DiscardEditingViewedTransaction();
 
-            Assert.Equal([5], vm.VisibleTags.Select(tag => tag.Id));
-            Assert.Empty(vm.OverflowTags);
+            Assert.Equal([5], vm.Tags.Select(tag => tag.Id));
 
             vm.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
 
-            Assert.Equal([5, 1, 2, 3, 4], vm.VisibleTags.Concat(vm.OverflowTags).Select(tag => tag.Id));
+            Assert.Equal([1, 2, 3, 4, 5], vm.Tags.Select(tag => tag.Id));
         });
     }
 
@@ -3163,7 +3240,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.SelectedTag = null;
 
             Assert.Equal(transaction.Tag!.Id, vm.SelectedTag!.Id);
-            Assert.Equal([transaction.Tag.Id], vm.VisibleTags.Select(tag => tag.Id));
+            Assert.Equal([transaction.Tag.Id], vm.Tags.Select(tag => tag.Id));
         });
     }
 
@@ -3208,7 +3285,7 @@ public sealed class TransactionPopupVMValidationTests
 
             vm.EnsureTagsLoadedAsync().GetAwaiter().GetResult();
 
-            Assert.Equal([5, 1, 2, 3, 4], vm.VisibleTags.Concat(vm.OverflowTags).Select(tag => tag.Id));
+            Assert.Equal([1, 2, 3, 4, 5], vm.Tags.Select(tag => tag.Id));
             Assert.Equal(5, vm.SelectedTag?.Id);
         });
     }

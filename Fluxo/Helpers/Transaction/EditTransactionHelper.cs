@@ -8,7 +8,7 @@ public static class EditTransactionHelper
     public static Input CreateInput(TransactionVM transaction)
     {
         ArgumentNullException.ThrowIfNull(transaction);
-        if (transaction.SourceAccountId <= 0 || transaction.Tag is null)
+        if (transaction.SourceAccountId <= 0)
             throw new InvalidOperationException("The transaction edit is incomplete.");
 
         return new Input(
@@ -17,9 +17,9 @@ public static class EditTransactionHelper
             transaction.IsPinned,
             transaction.Notes,
             transaction.OccurredOn,
-            transaction.ExpenseCategory ?? ExpenseCategory.Needs,
+            transaction.ExpenseCategory,
             transaction.SourceAccountId,
-            transaction.Tag.Id,
+            transaction.Tag?.Id,
             transaction.IsIoU,
             transaction.ShouldAffectBalance,
             transaction.IsExcludedFromBudget);
@@ -50,9 +50,9 @@ public static class EditTransactionHelper
         bool IsPinned,
         string Note,
         DateTime Date,
-        ExpenseCategory Category,
+        ExpenseCategory? Category,
         int AccountId,
-        int TagId,
+        int? TagId,
         bool IsIoU,
         bool ShouldAffectBalance,
         bool IsExcludedFromBudget);
