@@ -101,11 +101,13 @@
                                             Visibility="Collapsed" />
                                         <c:BalloonCheckBox
                                             x:Name="PART_BulkInsertCheckBox"
-                                            Margin="8,0,0,0"
+                                            ButtonIcon="{StaticResource LayerGroupSolid}"
                                             ButtonText="Bulk Insert"
+                                            IconSize="12"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderCheckBoxStyle}"
-                                            Visibility="{TemplateBinding CanToggleBulk, Converter={StaticResource PopupBoolToVisibility}}" />
+                                            Visibility="{TemplateBinding CanToggleBulk,
+                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
                                     </StackPanel>
 
                                     <StackPanel

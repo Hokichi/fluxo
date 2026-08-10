@@ -79,7 +79,8 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
 
     public bool ShowInvalidSplitPlaceholder =>
         RootTransaction is not null &&
-        (RootTransaction.Type != TransactionType.Expense ||
+        (!CanModifySplitTree ||
+         RootTransaction.Type != TransactionType.Expense ||
          !TransactionValidationHelper.ValidateName(RootTransaction.Name, false).IsValid ||
          !TransactionValidationHelper.ValidateAmount(RootTransaction.Amount, false, false, false, null).IsValid);
     public decimal SplitAmountRemaining => RootTransaction is null

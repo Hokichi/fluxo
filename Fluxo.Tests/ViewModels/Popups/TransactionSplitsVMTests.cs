@@ -104,6 +104,20 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
+    public void Non_modifiable_split_context_shows_unavailable_placeholder()
+    {
+        var messenger = new WeakReferenceMessenger();
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+
+        messenger.Send(
+            new TransactionSplitContextChangedMessage(root, true, false),
+            TransactionPopupMessageToken.Default);
+
+        Assert.True(vm.ShowInvalidSplitPlaceholder);
+    }
+
+    [Fact]
     public void Add_delete_equal_and_reset_mutate_the_root_tree()
     {
         var messenger = new WeakReferenceMessenger();

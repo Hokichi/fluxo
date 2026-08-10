@@ -42,6 +42,18 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
+    public void Switching_split_expense_to_goal_update_shows_unavailable_placeholder()
+    {
+        var peers = CreatePeers();
+        peers.Splits.AddSplitCommand.Execute(null);
+
+        peers.Popup.IsGoal = true;
+
+        Assert.True(peers.Popup.ShowSplitPanel);
+        Assert.True(peers.Splits.ShowInvalidSplitPlaceholder);
+    }
+
+    [Fact]
     public void Root_account_and_date_changes_update_all_descendants()
     {
         var peers = CreatePeers();

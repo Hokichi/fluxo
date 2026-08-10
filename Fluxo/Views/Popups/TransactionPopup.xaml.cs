@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -28,7 +29,6 @@ public partial class TransactionPopup : BasePopup
     private Point _tagScrollStartPoint;
     private double _tagScrollStartOffset;
     private TagVM? _tagPointerDownTag;
-    private bool _wasSelectedTagPointerDown;
     private bool _isDraggingTags;
 
     public TransactionPopup(
@@ -186,6 +186,14 @@ public partial class TransactionPopup : BasePopup
 
     private void OnBulkInsertUnchecked(object? sender, BulkInsertUncheckedEventArgs e)
     {
+        if (FluxoMessageBox.Show(
+                this,
+                "Stop Bulk Insert and discard all queued transactions?",
+                "Bulk Insert",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
         _viewModel.IsBulkMode = false;
         e.ShouldSwitchToSaveOnly = true;
     }
@@ -244,8 +252,29 @@ public partial class TransactionPopup : BasePopup
         if (e.Key == Key.Enter && NoteRichTextBox.IsKeyboardFocusWithin && Keyboard.Modifiers != ModifierKeys.Shift)
             return;
 
+        if (CanDeleteActiveQueuedTransaction(
+                _viewModel.IsBulkMode,
+                _bulkQueueViewModel.SelectedQueuedTransaction,
+                e.Key,
+                Keyboard.Modifiers,
+                Keyboard.FocusedElement))
+        {
+            ApplicationCommands.Delete.Execute(_bulkQueueViewModel.SelectedQueuedTransaction, this);
+            e.Handled = true;
+            return;
+        }
+
         base.OnPreviewKeyDown(e);
     }
+
+    internal static bool CanDeleteActiveQueuedTransaction(
+        bool isBulkMode,
+        TransactionVM? activeTransaction,
+        Key key,
+        ModifierKeys modifiers,
+        IInputElement? focusedElement) =>
+        isBulkMode && activeTransaction is not null && key == Key.Delete && modifiers == ModifierKeys.None &&
+        focusedElement is not TextBoxBase and not PasswordBox and not ComboBox { IsEditable: true };
 
     protected override void OnCloseButtonClick()
     {
@@ -456,6 +485,19 @@ public partial class TransactionPopup : BasePopup
             _bulkQueueViewModel.ActivateQueuedTransactionCommand.Execute(transaction);
     }
 
+    private void OnBulkQueuePreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.OriginalSource is not DependencyObject source)
+            return;
+
+        var item = source as ListBoxItem ?? DependencyObjectTree.FindAncestor<ListBoxItem>(source);
+        if (item?.DataContext is not TransactionVM transaction)
+            return;
+
+        ApplicationCommands.Delete.Execute(transaction, this);
+        e.Handled = true;
+    }
+
     private void OnDeleteQueuedTransactionExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         if (e.Parameter is not TransactionVM transaction ||
@@ -553,7 +595,6 @@ public partial class TransactionPopup : BasePopup
         _tagScrollStartPoint = e.GetPosition(scrollViewer);
         _tagScrollStartOffset = scrollViewer.HorizontalOffset;
         _tagPointerDownTag = GetTagFromSource((e.OriginalSource ?? e.Source) as DependencyObject);
-        _wasSelectedTagPointerDown = ReferenceEquals(_tagPointerDownTag, _viewModel.SelectedTag);
         _isDraggingTags = false;
         scrollViewer.CaptureMouse();
     }
@@ -586,14 +627,30 @@ public partial class TransactionPopup : BasePopup
         if (sender is not FadingScrollViewer scrollViewer)
             return;
 
-        var shouldDeselect = !_isDraggingTags && _wasSelectedTagPointerDown && _tagPointerDownTag is not null;
+        var selectedTag = !_isDraggingTags ? _tagPointerDownTag : null;
         ResetTagPointerState(scrollViewer);
 
-        if (!shouldDeselect)
+        if (selectedTag is null)
             return;
 
-        TagsListBox.SelectedItem = null;
-        _viewModel.SelectedTag = null;
+        TagsListBox.SelectedItem = selectedTag;
+        _viewModel.SelectedTag = selectedTag;
+        e.Handled = true;
+    }
+
+    internal static bool IsHorizontalTagScroll(ModifierKeys modifiers) =>
+        (modifiers & ModifierKeys.Shift) != 0;
+
+    private void OnTagsScrollViewerPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (sender is not FadingScrollViewer scrollViewer || !IsHorizontalTagScroll(Keyboard.Modifiers))
+            return;
+
+        var wheelSteps = e.Delta / (double)Mouse.MouseWheelDeltaForOneLine;
+        scrollViewer.ScrollToHorizontalOffset(Math.Clamp(
+            scrollViewer.HorizontalOffset - wheelSteps * 48d,
+            0d,
+            scrollViewer.ScrollableWidth));
         e.Handled = true;
     }
 
@@ -615,7 +672,6 @@ public partial class TransactionPopup : BasePopup
             scrollViewer.ReleaseMouseCapture();
 
         _tagPointerDownTag = null;
-        _wasSelectedTagPointerDown = false;
         _isDraggingTags = false;
     }
 

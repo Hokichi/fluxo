@@ -88,7 +88,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private string _nameText = string.Empty;
 
     [ObservableProperty] private string _noteText = string.Empty;
-    [ObservableProperty] private DateTime _selectedDate = DateTime.Today;
+    [ObservableProperty] private DateTime _selectedDate = DateTime.Now.Date;
+    [ObservableProperty] private TimeSpan _selectedTime = DateTime.Now.TimeOfDay;
     [ObservableProperty] private DateTime _startDate = DateTime.Today;
     [ObservableProperty] private bool _isRecurring;
     [ObservableProperty] private bool _isInstallments;
@@ -274,8 +275,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
     public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
     public bool ShowBalanceUpdate => _isTransactionStateInitialized && !IsViewOnly && !IsRecurringTransactionMode && !IsUnpostedIoUMode;
-    public bool ShowBalanceUpdateCategories => ShowBalanceUpdate &&
+    public bool ShowBalanceUpdateCategories => ShowBalanceUpdate && CanEditCategory && !IsExcludedFromBudget &&
                                                !(_currentRootTransaction.IsIoU && _currentRootTransaction.ShouldAffectBalance);
+    public bool ShowBalanceUpdateTags => ShowBalanceUpdate && CanEditTags && SelectedTag is not null;
     public string BalanceUpdateAccountName => _isTransactionStateInitialized ? _currentRootTransaction.Account.Name : string.Empty;
     public decimal BalanceUpdateAccountCurrent => _isTransactionStateInitialized
         ? TransactionCalculationHelper.GetAccountCurrent(_currentRootTransaction.Account)
@@ -1082,7 +1084,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         IsIoU = state.Input.IsIoU;
         ShouldAffectBalance = state.Input.ShouldAffectBalance;
         IsExcludedFromBudget = state.Input.IsExcludedFromBudget;
-        SelectedDate = state.Input.Date.Date;
+        SetSelectedOccurredOn(state.Input.Date);
         SelectedExpenseCategory = state.Input.Category ?? ExpenseCategory.Needs;
         SelectedAccount = state.SelectedAccount;
         SelectedTag = state.SelectedTag;
@@ -1113,7 +1115,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             NameText = loaded.Name;
             AmountText = loaded.Amount;
             NoteText = loaded.Notes;
-            SelectedDate = loaded.OccurredOn.Date;
+            SetSelectedOccurredOn(loaded.OccurredOn);
             SelectedExpenseCategory = loaded.ExpenseCategory ?? ExpenseCategory.Needs;
             IsPinned = loaded.IsPinned;
             IsIoU = loaded.IsIoU;
@@ -1209,7 +1211,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 AmountText = 0m;
             }
         }
-        else if (SelectedSidePanel == TransactionPopupSidePanel.Split)
+        else if (SelectedSidePanel == TransactionPopupSidePanel.Split && !HasSplitTransactions)
         {
             SelectedSidePanel = TransactionPopupSidePanel.History;
         }
@@ -1669,7 +1671,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         AmountText = 0m;
         NameText = string.Empty;
         NoteText = string.Empty;
-        SelectedDate = DateTime.Today;
+        SetSelectedOccurredOn(DateTime.Now);
         StartDate = DateTime.Today;
         InstallmentEndDate = DateTime.Today;
         IsInstallments = false;
@@ -1691,6 +1693,12 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         SelectedGoal = Goals.FirstOrDefault();
         SelectedRepaymentAccount = RepaymentAccounts.FirstOrDefault();
         ClearTransactionNameSuggestions();
+    }
+
+    private void SetSelectedOccurredOn(DateTime occurredOn)
+    {
+        SelectedDate = occurredOn.Date;
+        SelectedTime = occurredOn.TimeOfDay;
     }
 
     private void ResetAfterSaveAndCreateNew()
@@ -1773,7 +1781,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             NameText.Trim(),
             AmountText,
             SelectedAccount.Id,
-            SelectedDate.Date.Add(DateTime.Now.TimeOfDay),
+            SelectedDate.Date.Add(SelectedTime),
             InstallmentEndDate.Date,
             RecurringTimeText.Trim(),
             NoteText.Trim(),
@@ -2487,6 +2495,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         OnPropertyChanged(nameof(ShowBalanceUpdate));
         OnPropertyChanged(nameof(ShowBalanceUpdateCategories));
+        OnPropertyChanged(nameof(ShowBalanceUpdateTags));
         OnPropertyChanged(nameof(BalanceUpdateAccountName));
         OnPropertyChanged(nameof(BalanceUpdateAccountCurrent));
         OnPropertyChanged(nameof(BalanceUpdateAccountToBe));
@@ -2730,7 +2739,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             NameText = transactionName;
             AmountText = transactionAmount;
             NoteText = transaction.Notes;
-            SelectedDate = transaction.OccurredOn == default ? DateTime.Today : transaction.OccurredOn.Date;
+            SetSelectedOccurredOn(transaction.OccurredOn == default ? DateTime.Now : transaction.OccurredOn);
             SelectedExpenseCategory = transaction.ExpenseCategory ?? ExpenseCategory.Needs;
             SelectedAccount = Accounts.FirstOrDefault(account => account.Id == transaction.SourceAccountId) ??
                               transaction.Account;
@@ -2768,8 +2777,15 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             _isLoadingTransaction || _isSyncingTransaction || IsSaving)
             return;
 
-        RevalidateTransactions();
-        NotifyFormDependenciesChanged();
+        _isSyncingTransaction = true;
+        try
+        {
+            LoadTransaction(PendingTransaction);
+        }
+        finally
+        {
+            _isSyncingTransaction = false;
+        }
     }
 
     private TransactionPopupSubmissionResult RequestSplitValidation(TransactionVM root)
@@ -2825,7 +2841,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         transaction.Account = SelectedAccount ?? transaction.Account;
         transaction.Name = NameText;
         transaction.Amount = AmountText;
-        transaction.OccurredOn = SelectedDate.Date;
+        transaction.OccurredOn = SelectedDate.Date.Add(SelectedTime);
         transaction.Notes = NoteText;
         var isSplitParent = _isTransactionStateInitialized &&
                             _currentRootTransaction.ChildTransactions.Count > 0 &&
@@ -2874,7 +2890,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         Account = SelectedAccount ?? new AccountVM(),
         Name = NameText,
         Amount = AmountText,
-        OccurredOn = SelectedDate,
+        OccurredOn = SelectedDate.Date.Add(SelectedTime),
         Notes = NoteText,
         ExpenseCategory = IsGoal ? ExpenseCategory.Savings : null,
         IsExcludedFromBudget = IsBudgetExcluded
@@ -2942,7 +2958,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         NameText = item.Name;
         AmountText = item.Amount;
         NoteText = item.Note;
-        SelectedDate = item.Date.Date;
+        SetSelectedOccurredOn(item.Date);
         IsPinned = item.IsPinned;
         SelectedAccount = Accounts.FirstOrDefault(source => source.Id == item.AccountId) ??
                                  SelectedAccount;
@@ -3326,7 +3342,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             SelectedExpenseCategory = recurring.Category ?? ExpenseCategory.Needs;
             SelectedAccount = Accounts.FirstOrDefault(account => account.Id == recurring.Source.Id);
             SelectedTag = recurring.Tag;
-            SelectedDate = DateTime.Today;
+            SetSelectedOccurredOn(DateTime.Now);
             IsExcludedFromBudget = recurring.IsExcludedFromBudget;
         }
 

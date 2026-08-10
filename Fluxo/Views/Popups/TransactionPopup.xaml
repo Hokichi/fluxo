@@ -181,17 +181,6 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="ContextMenu">
-                    <Setter.Value>
-                        <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                            <MenuItem
-                                Command="{x:Static ApplicationCommands.Delete}"
-                                CommandParameter="{Binding}"
-                                CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
-                                Header="Delete" />
-                        </ContextMenu>
-                    </Setter.Value>
-                </Setter>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBoxItem">
@@ -562,10 +551,26 @@
                     x:Name="BulkQueueListBox"
                     ItemContainerStyle="{StaticResource TransactionQueueListBoxItemStyle}"
                     ItemTemplate="{StaticResource TransactionQueueItemTemplate}"
-                    ItemsSource="{Binding QueuedTransactions, Mode=OneWay}"
+                    ItemsSource="{Binding QueuedTransactionsView, Mode=OneWay}"
                     PreviewMouseLeftButtonDown="OnBulkQueuePreviewMouseLeftButtonDown"
+                    PreviewMouseRightButtonDown="OnBulkQueuePreviewMouseRightButtonDown"
                     SelectedItem="{Binding SelectedQueuedTransaction, Mode=TwoWay}"
-                    Style="{StaticResource TransactionHistoryListBoxStyle}" />
+                    Style="{StaticResource TransactionHistoryListBoxStyle}">
+                    <ListBox.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        FontFamily="{DynamicResource Bold}"
+                                        FontSize="11"
+                                        Foreground="{DynamicResource Brush.Text.Muted}"
+                                        Text="{Binding Name, StringFormat={}{0:ddd, MMM d, yyyy}}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListBox.GroupStyle>
+                </ListBox>
             </StackPanel>
 
             <Border
@@ -734,11 +739,23 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2" IsEnabled="{Binding ShowDateSelector, Mode=OneWay}">
-                                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Date" />
-                                            <components:DateSelector
-                                                x:Name="ExpenseTransactionDateSelector"
-                                                IsEnabled="{Binding CanEditDate, Mode=OneWay}"
-                                                SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
+                                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Time" />
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <components:DateSelector
+                                                    x:Name="ExpenseTransactionDateSelector"
+                                                    IsEnabled="{Binding CanEditDate, Mode=OneWay}"
+                                                    SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
+                                                <components:TimeSelector
+                                                    x:Name="ExpenseTransactionTimeSelector"
+                                                    Grid.Column="1"
+                                                    Margin="8,0,0,0"
+                                                    IsEnabled="{Binding CanEditDate, Mode=OneWay}"
+                                                    SelectedTime="{Binding SelectedTime, Mode=TwoWay}" />
+                                            </Grid>
                                         </StackPanel>
                                     </Grid>
 
@@ -945,6 +962,9 @@
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
                                                                 <Setter Property="Width" Value="0" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding DataContext.IsRepayment, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="True">
+                                                                <Setter Property="Width" Value="*" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
@@ -1232,11 +1252,17 @@
 
                                     <StackPanel Grid.Column="2">
                                         <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel, Mode=OneWay}" />
-                                        <components:DateSelector
-                                            x:Name="IncomeTransactionDateSelector"
-                                            IsEnabled="{Binding CanEditDate, Mode=OneWay}"
-                                            SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
-                                            Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                                            <components:DateSelector
+                                                x:Name="IncomeTransactionDateSelector"
+                                                IsEnabled="{Binding CanEditDate, Mode=OneWay}"
+                                                SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
+                                            <components:TimeSelector
+                                                x:Name="IncomeTransactionTimeSelector"
+                                                Margin="8,0,0,0"
+                                                IsEnabled="{Binding CanEditDate, Mode=OneWay}"
+                                                SelectedTime="{Binding SelectedTime, Mode=TwoWay}" />
+                                        </StackPanel>
                                         <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                             <ComboBox
                                                 ItemsSource="{Binding RecurringPeriods, Mode=OneWay}"
@@ -1287,10 +1313,13 @@
 
                                     <StackPanel Grid.Column="0">
                                         <TextBlock Style="{StaticResource SectionLabelStyle}" Text="{Binding DateOrRecurrenceLabel, Mode=OneWay}" />
-                                        <components:DateSelector
-                                            x:Name="GoalTransactionDateSelector"
-                                            SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
-                                            Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowDateSelector, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                                            <components:DateSelector x:Name="GoalTransactionDateSelector" SelectedDate="{Binding SelectedDate, Mode=TwoWay}" />
+                                            <components:TimeSelector
+                                                x:Name="GoalTransactionTimeSelector"
+                                                Margin="8,0,0,0"
+                                                SelectedTime="{Binding SelectedTime, Mode=TwoWay}" />
+                                        </StackPanel>
                                         <StackPanel Visibility="{Binding ShowRecurringDayInput, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                             <ComboBox
                                                 ItemsSource="{Binding RecurringPeriods, Mode=OneWay}"
@@ -1361,7 +1390,6 @@
                                 </Grid.ColumnDefinitions>
                                 <Button
                                     x:Name="AddTagButton"
-                                    Margin="0,0,8,0"
                                     Click="OnAddTagClick"
                                     Content="+ Add Tag"
                                     Style="{StaticResource PopupTagButtonStyle}" />
@@ -1374,6 +1402,7 @@
                                     PreviewMouseLeftButtonDown="OnTagsScrollViewerPreviewMouseLeftButtonDown"
                                     PreviewMouseLeftButtonUp="OnTagsScrollViewerPreviewMouseLeftButtonUp"
                                     PreviewMouseMove="OnTagsScrollViewerPreviewMouseMove"
+                                    PreviewMouseWheel="OnTagsScrollViewerPreviewMouseWheel"
                                     VerticalScrollBarVisibility="Disabled">
                                     <ListBox
                                         x:Name="TagsListBox"
@@ -1402,6 +1431,23 @@
                                         TextChanged="OnNoteTextChanged"
                                         VerticalScrollBarVisibility="Auto" />
                                 </Border>
+                            </StackPanel>
+
+                            <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Goal" />
+                                    <ContentControl
+                                        Margin="8,0,0,0"
+                                        Content="{Binding GoalFeedback, Mode=OneWay}"
+                                        ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                                </StackPanel>
+                                <ComboBox
+                                    x:Name="SharedGoalComboBox"
+                                    VerticalAlignment="Top"
+                                    DisplayMemberPath="Name"
+                                    ItemsSource="{Binding Goals, Mode=OneWay}"
+                                    SelectedItem="{Binding SelectedGoal, Mode=TwoWay}"
+                                    Style="{StaticResource FluxoComboBoxStyle}" />
                             </StackPanel>
 
                             <Border
@@ -1448,7 +1494,10 @@
                                             ItemsSource="{Binding CategoryBalanceUpdates, Mode=OneWay}"
                                             Style="{StaticResource BalanceUpdateListViewStyle}" />
                                     </StackPanel>
-                                    <StackPanel x:Name="BalanceUpdateTags" Margin="0,16,0,0">
+                                    <StackPanel
+                                        x:Name="BalanceUpdateTags"
+                                        Margin="0,16,0,0"
+                                        Visibility="{Binding ShowBalanceUpdateTags, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                         <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Tags:" />
                                         <ListView
                                             ItemContainerStyle="{StaticResource BalanceUpdateListViewItemStyle}"
@@ -1459,22 +1508,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <StackPanel Visibility="{Binding ShowGoalField, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Goal" />
-                                    <ContentControl
-                                        Margin="8,0,0,0"
-                                        Content="{Binding GoalFeedback, Mode=OneWay}"
-                                        ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
-                                </StackPanel>
-                                <ComboBox
-                                    x:Name="SharedGoalComboBox"
-                                    VerticalAlignment="Top"
-                                    DisplayMemberPath="Name"
-                                    ItemsSource="{Binding Goals, Mode=OneWay}"
-                                    SelectedItem="{Binding SelectedGoal, Mode=TwoWay}"
-                                    Style="{StaticResource FluxoComboBoxStyle}" />
-                            </StackPanel>
                         </StackPanel>
 
                     </Grid>

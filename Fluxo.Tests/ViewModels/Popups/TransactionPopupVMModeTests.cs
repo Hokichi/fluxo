@@ -22,6 +22,55 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMModeTests
 {
     [Fact]
+    public void InitializeAsync_add_mode_defaults_selected_time_to_current_time()
+    {
+        RunInSta(() =>
+        {
+            var before = DateTime.Now;
+            var (vm, _) = CreateProductionVm(TransactionPopupRequest.Add());
+
+            vm.InitializeAsync().GetAwaiter().GetResult();
+
+            var after = DateTime.Now;
+            Assert.Equal(before.Date, vm.SelectedDate.Date);
+            Assert.InRange(vm.SelectedTime, before.TimeOfDay, after.TimeOfDay);
+        });
+    }
+
+    [Fact]
+    public void InitializeView_separates_transaction_date_and_time()
+    {
+        RunInSta(() =>
+        {
+            var transaction = CreateTransaction();
+            transaction.OccurredOn = new DateTime(2026, 8, 10, 14, 30, 0);
+            var (vm, _) = CreateProductionVm(TransactionPopupRequest.View(transaction));
+
+            vm.InitializeAsync().GetAwaiter().GetResult();
+
+            Assert.Equal(transaction.OccurredOn.Date, vm.SelectedDate);
+            Assert.Equal(transaction.OccurredOn.TimeOfDay, vm.SelectedTime);
+        });
+    }
+
+    [Fact]
+    public void Editing_viewed_transaction_combines_selected_date_and_time()
+    {
+        RunInSta(() =>
+        {
+            var transaction = CreateTransaction();
+            var (vm, _) = CreateProductionVm(TransactionPopupRequest.View(transaction));
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.SelectedDate = new DateTime(2026, 8, 10);
+            vm.SelectedTime = new TimeSpan(14, 30, 0);
+
+            var input = vm.CreateTransactionEditInput();
+
+            Assert.Equal(new DateTime(2026, 8, 10, 14, 30, 0), input.Date);
+        });
+    }
+
+    [Fact]
     public void InitializeAsync_add_mode_creates_two_distinct_equal_entities_once()
     {
         RunInSta(() =>

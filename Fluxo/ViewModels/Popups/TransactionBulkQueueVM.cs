@@ -4,8 +4,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Enums;
+using Fluxo.Converters;
 using Fluxo.DataModels.Messages;
 using Fluxo.ViewModels.Entities;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace Fluxo.ViewModels.Popups;
 
@@ -32,9 +35,16 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
                 recipient.SelectedQueuedTransaction = message.Value);
         messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueRemoveRequestedMessage, TransactionPopupMessageToken>(
             this, messageToken, static (recipient, message) => recipient.Remove(message.Value));
+
+        QueuedTransactionsView = CollectionViewSource.GetDefaultView(QueuedTransactions);
+        QueuedTransactionsView.GroupDescriptions.Add(
+            new PropertyGroupDescription(nameof(TransactionVM.OccurredOn), new TransactionDateGroupConverter()));
+        QueuedTransactionsView.SortDescriptions.Add(
+            new SortDescription(nameof(TransactionVM.OccurredOn), ListSortDirection.Descending));
     }
 
     public ObservableCollection<TransactionVM> QueuedTransactions { get; } = [];
+    public ICollectionView QueuedTransactionsView { get; }
 
     public bool IsBulkMode { get; private set; }
 
@@ -66,7 +76,7 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
             Type = TransactionType.Expense,
             Account = _defaultAccount ?? new AccountVM(),
             SourceAccountId = _defaultAccount?.Id ?? 0,
-            OccurredOn = DateTime.Today
+            OccurredOn = DateTime.Now
         };
         Add(transaction);
         SelectedQueuedTransaction = transaction;
@@ -124,8 +134,11 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
 
     private void OnTransactionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(TransactionVM.OccurredOn))
+            QueuedTransactionsView.Refresh();
+
         if (e.PropertyName is nameof(TransactionVM.Name) or nameof(TransactionVM.Amount)
-            or nameof(TransactionVM.IsValid))
+            or nameof(TransactionVM.OccurredOn) or nameof(TransactionVM.IsValid))
             PublishState();
     }
 
