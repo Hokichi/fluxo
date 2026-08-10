@@ -48,6 +48,7 @@ public partial class TransactionPopup : BasePopup
         _bulkQueueViewModel = bulkQueueViewModel;
         _splitsViewModel = splitsViewModel;
         DataContext = viewModel;
+        CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDeleteQueuedTransactionExecuted));
         BulkQueuePanel.DataContext = bulkQueueViewModel;
         SplitPanel.DataContext = splitsViewModel;
         BulkInsertChecked += (_, _) => _viewModel.IsBulkMode = true;
@@ -484,6 +485,16 @@ public partial class TransactionPopup : BasePopup
         var item = source as ListBoxItem ?? DependencyObjectTree.FindAncestor<ListBoxItem>(source);
         if (item?.DataContext is TransactionVM transaction)
             _bulkQueueViewModel.ActivateQueuedTransactionCommand.Execute(transaction);
+    }
+
+    private void OnDeleteQueuedTransactionExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (e.Parameter is not TransactionVM transaction ||
+            FluxoMessageBox.Show(this, "Delete this transaction?", "Transaction", MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        _viewModel.RemoveQueuedTransaction(transaction);
     }
 
     private void OnSplitPanelPreviewMouseWheel(object sender, MouseWheelEventArgs e)

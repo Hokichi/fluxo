@@ -601,6 +601,11 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         return await FinishQueuedTransactionsAsync();
     }
 
+    public void RemoveQueuedTransaction(TransactionVM transaction)
+    {
+        _messenger.Send(new TransactionBulkQueueRemoveRequestedMessage(transaction), _messageToken);
+    }
+
     public async Task<TransactionPopupSubmissionResult> FinishQueuedTransactionsAsync(
         bool allowMaximumSpendingOverflow = false)
     {

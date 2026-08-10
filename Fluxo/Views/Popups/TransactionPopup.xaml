@@ -186,6 +186,53 @@
                 </Setter>
             </Style>
 
+            <Style x:Key="TransactionQueueListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="Margin" Value="0,0,0,8" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="ContextMenu">
+                    <Setter.Value>
+                        <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                            <MenuItem
+                                Command="{x:Static ApplicationCommands.Delete}"
+                                CommandParameter="{Binding}"
+                                CommandTarget="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                Header="Delete" />
+                        </ContextMenu>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border
+                                x:Name="ItemBackground"
+                                Padding="10,8"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{DynamicResource Brush.Border.Default}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                                <ContentPresenter />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                                </Trigger>
+                                <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
+                                </DataTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <DataTemplate x:Key="TransactionHistoryItemTemplate">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -524,7 +571,7 @@
                     Visibility="{Binding DataContext.CanToggleBulk, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ListBox
                     x:Name="BulkQueueListBox"
-                    ItemContainerStyle="{StaticResource TransactionHistoryListBoxItemStyle}"
+                    ItemContainerStyle="{StaticResource TransactionQueueListBoxItemStyle}"
                     ItemTemplate="{StaticResource TransactionQueueItemTemplate}"
                     ItemsSource="{Binding QueuedTransactions, Mode=OneWay}"
                     PreviewMouseLeftButtonDown="OnBulkQueuePreviewMouseLeftButtonDown"

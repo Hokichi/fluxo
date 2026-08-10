@@ -2,9 +2,11 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Messages;
 using Fluxo.Resources.Components;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Styles;
@@ -38,6 +40,32 @@ public sealed class TransactionPopupSplitLayoutTests
             var queuePanel = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(queue));
 
             Assert.Equal(Visibility.Visible, queuePanel.Visibility);
+        });
+    }
+
+    [Fact]
+    public void Bulk_queue_item_has_delete_menu_and_transparent_unselected_background()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var messenger = new WeakReferenceMessenger();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+            var popup = new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger),
+                new TransactionSplitsVM(messenger));
+            var item = new ListBoxItem
+            {
+                DataContext = new TransactionVM { Name = "Queue item" },
+                Style = Assert.IsType<Style>(popup.FindResource("TransactionQueueListBoxItemStyle"))
+            };
+            item.ApplyTemplate();
+            var itemBackground = Assert.IsType<Border>(item.Template.FindName("ItemBackground", item));
+            var menu = Assert.IsType<ContextMenu>(item.ContextMenu);
+            var delete = Assert.IsType<MenuItem>(Assert.Single(menu.Items));
+
+            Assert.Equal(Colors.Transparent, Assert.IsType<SolidColorBrush>(itemBackground.Background).Color);
+            Assert.Equal("Delete", delete.Header);
+            Assert.Same(ApplicationCommands.Delete, delete.Command);
         });
     }
 

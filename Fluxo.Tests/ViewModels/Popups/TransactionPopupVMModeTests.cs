@@ -455,6 +455,24 @@ public sealed class TransactionPopupVMModeTests
         });
     }
 
+    [Fact]
+    public void Removing_queued_transaction_sends_the_exact_transaction_instance()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var recipient = new object();
+        TransactionVM? removed = null;
+        messenger.Register<object, TransactionBulkQueueRemoveRequestedMessage, TransactionPopupMessageToken>(
+            recipient,
+            TransactionPopupMessageToken.Default,
+            (_, message) => removed = message.Value);
+        var vm = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+        var transaction = CreateTransaction();
+
+        vm.RemoveQueuedTransaction(transaction);
+
+        Assert.Same(transaction, removed);
+    }
+
     private static TransactionVM CreateTransaction()
     {
         var account = CreateCheckingAccount();
