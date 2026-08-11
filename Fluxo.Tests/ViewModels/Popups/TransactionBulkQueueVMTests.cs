@@ -93,6 +93,27 @@ public sealed class TransactionBulkQueueVMTests
         Assert.InRange(occurredOn, before, after);
     }
 
+    [Fact]
+    public void Empty_queue_adopts_exact_draft_without_requesting_form_reload()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var loads = new List<TransactionVM>();
+        var recipient = new object();
+        messenger.Register<object, TransactionLoadRequestedMessage, TransactionPopupMessageToken>(recipient,
+            TransactionPopupMessageToken.Default, (_, message) => loads.Add(message.Value));
+        using var vm = new TransactionBulkQueueVM(messenger);
+        messenger.Send(new TransactionBulkQueueResetMessage(true, [], null),
+            TransactionPopupMessageToken.Default);
+        var draft = new TransactionVM { Name = "Lunch", Amount = 12m };
+
+        messenger.Send(new TransactionBulkQueueAdoptRequestedMessage(draft),
+            TransactionPopupMessageToken.Default);
+
+        Assert.Same(draft, Assert.Single(vm.QueuedTransactions));
+        Assert.Same(draft, vm.SelectedQueuedTransaction);
+        Assert.Empty(loads);
+    }
+
     [Theory]
     [InlineData("", 0, false)]
     [InlineData("Named", 0, true)]

@@ -33,6 +33,8 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
                 recipient.SelectedQueuedTransaction = message.Value);
         messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueRemoveRequestedMessage, TransactionPopupMessageToken>(
             this, messageToken, static (recipient, message) => recipient.Remove(message.Value));
+        messenger.Register<TransactionBulkQueueVM, TransactionBulkQueueAdoptRequestedMessage, TransactionPopupMessageToken>(
+            this, messageToken, static (recipient, message) => recipient.Adopt(message.Value));
 
         QueuedTransactionsView = CollectionViewSource.GetDefaultView(QueuedTransactions);
         QueuedTransactionsView.GroupDescriptions.Add(
@@ -114,6 +116,19 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
     {
         QueuedTransactions.Add(transaction);
         transaction.PropertyChanged += OnTransactionPropertyChanged;
+        PublishState();
+    }
+
+    private void Adopt(TransactionVM transaction)
+    {
+        if (!IsBulkMode || QueuedTransactions.Count > 0)
+            return;
+
+        QueuedTransactions.Add(transaction);
+        transaction.PropertyChanged += OnTransactionPropertyChanged;
+        OnPropertyChanging(nameof(SelectedQueuedTransaction));
+        _selectedQueuedTransaction = transaction;
+        OnPropertyChanged(nameof(SelectedQueuedTransaction));
         PublishState();
     }
 

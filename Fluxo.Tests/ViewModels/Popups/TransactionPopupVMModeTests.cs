@@ -310,6 +310,44 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
+    public void Removing_only_bulk_item_resets_form_and_typing_adopts_fresh_transaction()
+    {
+        RunInSta(() =>
+        {
+            var checking = CreateCheckingAccount();
+            var appData = Substitute.For<IAppDataService>();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
+            appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new BudgetAllocation()));
+            var (vm, queue, _) = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([checking]), appData);
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.NameText = "Coffee";
+            vm.AmountText = 10m;
+            vm.NoteText = "Morning";
+            vm.IsBulkMode = true;
+            var removed = Assert.Single(queue.QueuedTransactions);
+
+            vm.RemoveQueuedTransaction(removed);
+
+            Assert.Empty(queue.QueuedTransactions);
+            Assert.Empty(vm.NameText);
+            Assert.Equal(0m, vm.AmountText);
+            Assert.Empty(vm.NoteText);
+            Assert.True(vm.IsExpense);
+            Assert.Null(vm.SelectedTag);
+            Assert.NotSame(removed, vm.PendingTransaction);
+            var fresh = vm.PendingTransaction;
+
+            vm.NameText = "Lunch";
+
+            Assert.Same(fresh, Assert.Single(queue.QueuedTransactions));
+            Assert.Same(fresh, queue.SelectedQueuedTransaction);
+            Assert.Equal("Lunch", fresh.Name);
+        });
+    }
+
+    [Fact]
     public void View_edit_mode_starts_with_equal_loaded_and_pending_transactions()
     {
         RunInSta(() =>

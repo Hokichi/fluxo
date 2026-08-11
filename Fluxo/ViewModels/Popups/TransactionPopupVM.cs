@@ -59,6 +59,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private IReadOnlyList<TransactionVM> _queuedTransactions = [];
     private bool _bulkQueueHasChanges;
     private bool _bulkQueueAllValid = true;
+    private bool _bulkQueueHadItems;
     private int _currentProcessingIndex;
     private int? _currentProcessingRecurringTransactionId;
     private bool _isTransactionStateInitialized;
@@ -68,6 +69,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private bool _isDisposed;
     private bool _isLoadingTransaction;
     private bool _isSyncingTransaction;
+    private bool _isResettingBulkForm;
     private TransactionVM _currentRootTransaction = null!;
     private IReadOnlyDictionary<ExpenseCategory, decimal> _balanceUpdateCategoryCurrentAmounts = new Dictionary<ExpenseCategory, decimal>();
     private IReadOnlyDictionary<int, decimal> _balanceUpdateTagCurrentAmounts = new Dictionary<int, decimal>();
@@ -540,7 +542,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private void HandleQueueStateChanged(TransactionBulkQueueStateChangedMessage message)
     {
+        var shouldResetForm = IsBulkMode && !IsProcessingSession &&
+                              _bulkQueueHadItems && message.Transactions.Count == 0;
         _queuedTransactions = message.Transactions;
+        _bulkQueueHadItems = message.Transactions.Count > 0;
         _selectedQueuedTransaction = message.SelectedTransaction;
         _bulkQueueHasChanges = message.HasChanges;
         _bulkQueueAllValid = message.AllValid;
@@ -554,6 +559,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CanPersist));
         OnPropertyChanged(nameof(HasChanges));
         NotifyProcessingChanged();
+
+        if (shouldResetForm)
+            ResetEmptyBulkForm();
     }
 
     private void HandleLoadRequested(TransactionVM transaction)
@@ -731,6 +739,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         RefreshActiveValidation(nameof(AmountText));
         RefreshAmountWarning();
         NotifyFormStateChanged();
+        TryAdoptCurrentBulkTransaction();
     }
 
     public async Task<bool> InitializeAsync(CancellationToken cancellationToken = default)
@@ -958,10 +967,15 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         RefreshActiveValidation(nameof(NameText));
         NotifyFormStateChanged();
+        TryAdoptCurrentBulkTransaction();
         _ = RefreshTransactionNameSuggestionsAsync();
     }
 
-    partial void OnNoteTextChanged(string value) => NotifyFormStateChanged();
+    partial void OnNoteTextChanged(string value)
+    {
+        NotifyFormStateChanged();
+        TryAdoptCurrentBulkTransaction();
+    }
 
     partial void OnSelectedDateChanged(DateTime value)
     {
@@ -1693,6 +1707,35 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         SelectedGoal = Goals.FirstOrDefault();
         SelectedRepaymentAccount = RepaymentAccounts.FirstOrDefault();
         ClearTransactionNameSuggestions();
+    }
+
+    private void ResetEmptyBulkForm()
+    {
+        _isResettingBulkForm = true;
+        try
+        {
+            _transactionFormOptions.Clear();
+            SetTransactionState(new TransactionVM());
+            ResetForm(false);
+            SyncPendingTransactionFromForm();
+            LoadedTransaction = TransactionMappingHelper.CreateLoaded(PendingTransaction);
+            _transactionFormOptions[_currentRootTransaction] = CaptureOptions();
+        }
+        finally
+        {
+            _isResettingBulkForm = false;
+        }
+    }
+
+    private void TryAdoptCurrentBulkTransaction()
+    {
+        if (!IsBulkMode || IsProcessingSession || _isResettingBulkForm || _isLoadingTransaction ||
+            !_isTransactionStateInitialized || _queuedTransactions.Count > 0 ||
+            string.IsNullOrWhiteSpace(NameText) && AmountText == 0m && string.IsNullOrWhiteSpace(NoteText))
+            return;
+
+        _transactionFormOptions[_currentRootTransaction] = CaptureOptions();
+        _messenger.Send(new TransactionBulkQueueAdoptRequestedMessage(_currentRootTransaction), _messageToken);
     }
 
     private void SetSelectedOccurredOn(DateTime occurredOn)
