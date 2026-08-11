@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionBulkQueueVMTests
 {
     [Fact]
-    public void Queue_groups_dates_descending_and_times_descending()
+    public void Queue_groups_dates_descending_and_times_ascending()
     {
         var messenger = new WeakReferenceMessenger();
         var oldDay = new TransactionVM { Name = "Old day", OccurredOn = new DateTime(2026, 8, 9, 23, 0, 0) };
@@ -25,8 +25,8 @@ public sealed class TransactionBulkQueueVMTests
 
         Assert.Equal(new DateTime(2026, 8, 10), groups[0].Name);
         Assert.Collection(groups[0].Items.Cast<TransactionVM>(),
-            item => Assert.Equal("Later", item.Name),
-            item => Assert.Equal("Earlier", item.Name));
+            item => Assert.Equal("Earlier", item.Name),
+            item => Assert.Equal("Later", item.Name));
         Assert.Equal(new DateTime(2026, 8, 9), groups[1].Name);
     }
 
@@ -42,7 +42,7 @@ public sealed class TransactionBulkQueueVMTests
         first.OccurredOn = new DateTime(2026, 8, 10, 10, 0, 0);
 
         var group = Assert.IsAssignableFrom<CollectionViewGroup>(Assert.Single(vm.QueuedTransactionsView.Groups!));
-        Assert.Same(first, group.Items[0]);
+        Assert.Same(second, group.Items[0]);
         Assert.Same(first, vm.SelectedQueuedTransaction);
     }
 
@@ -147,5 +147,28 @@ public sealed class TransactionBulkQueueVMTests
 
         Assert.Single(vm.QueuedTransactions);
         Assert.Same(first, vm.QueuedTransactions[0]);
+    }
+
+    [Fact]
+    public void Removing_any_item_selects_and_loads_displayed_top_item()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var loads = new List<TransactionVM>();
+        var recipient = new object();
+        messenger.Register<object, TransactionLoadRequestedMessage, TransactionPopupMessageToken>(
+            recipient, TransactionPopupMessageToken.Default, (_, message) => loads.Add(message.Value));
+        var oldDay = new TransactionVM { Name = "Old", OccurredOn = new DateTime(2026, 8, 9, 8, 0, 0) };
+        var later = new TransactionVM { Name = "Later", OccurredOn = new DateTime(2026, 8, 10, 17, 0, 0) };
+        var earlier = new TransactionVM { Name = "Earlier", OccurredOn = new DateTime(2026, 8, 10, 8, 0, 0) };
+        using var vm = new TransactionBulkQueueVM(messenger);
+        messenger.Send(new TransactionBulkQueueResetMessage(true, [oldDay, later, earlier], null),
+            TransactionPopupMessageToken.Default);
+        vm.SelectedQueuedTransaction = later;
+
+        messenger.Send(new TransactionBulkQueueRemoveRequestedMessage(oldDay),
+            TransactionPopupMessageToken.Default);
+
+        Assert.Same(earlier, vm.SelectedQueuedTransaction);
+        Assert.Same(earlier, loads[^1]);
     }
 }

@@ -4,10 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Enums;
-using Fluxo.Converters;
 using Fluxo.DataModels.Messages;
 using Fluxo.ViewModels.Entities;
-using System.ComponentModel;
 using System.Windows.Data;
 
 namespace Fluxo.ViewModels.Popups;
@@ -38,9 +36,11 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
 
         QueuedTransactionsView = CollectionViewSource.GetDefaultView(QueuedTransactions);
         QueuedTransactionsView.GroupDescriptions.Add(
-            new PropertyGroupDescription(nameof(TransactionVM.OccurredOn), new TransactionDateGroupConverter()));
+            new PropertyGroupDescription(nameof(TransactionVM.OccurredOnDate)));
         QueuedTransactionsView.SortDescriptions.Add(
-            new SortDescription(nameof(TransactionVM.OccurredOn), ListSortDirection.Descending));
+            new SortDescription(nameof(TransactionVM.OccurredOnDate), ListSortDirection.Descending));
+        QueuedTransactionsView.SortDescriptions.Add(
+            new SortDescription(nameof(TransactionVM.OccurredOnTime), ListSortDirection.Ascending));
     }
 
     public ObservableCollection<TransactionVM> QueuedTransactions { get; } = [];
@@ -125,12 +125,21 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
 
         transaction.PropertyChanged -= OnTransactionPropertyChanged;
         QueuedTransactions.RemoveAt(index);
-        if (ReferenceEquals(SelectedQueuedTransaction, transaction))
-            SelectedQueuedTransaction = QueuedTransactions.ElementAtOrDefault(
-                Math.Min(index, QueuedTransactions.Count - 1));
-        else
+        var displayedTop = GetDisplayedTopTransaction();
+        if (ReferenceEquals(SelectedQueuedTransaction, displayedTop))
+        {
             PublishState();
+            if (displayedTop is not null)
+                _messenger.Send(new TransactionLoadRequestedMessage(displayedTop), _messageToken);
+        }
+        else
+        {
+            SelectedQueuedTransaction = displayedTop;
+        }
     }
+
+    private TransactionVM? GetDisplayedTopTransaction() =>
+        QueuedTransactionsView.Cast<TransactionVM>().FirstOrDefault();
 
     private void OnTransactionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {

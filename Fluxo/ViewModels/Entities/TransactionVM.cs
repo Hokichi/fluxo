@@ -39,6 +39,8 @@ public partial class TransactionVM : ObservableObject
     [ObservableProperty] private bool _isValid;
 
     public ObservableCollection<TransactionVM> ChildTransactions { get; } = [];
+    public DateTime OccurredOnDate => OccurredOn.Date;
+    public TimeSpan OccurredOnTime => OccurredOn.TimeOfDay;
     public decimal ChildAmountTotal => ChildTransactions.Sum(child => child.Amount);
     public decimal ChildAmountRemaining => Amount - ChildAmountTotal;
     public decimal ChildAmountOverflow => Math.Max(0m, ChildAmountTotal - Amount);
@@ -81,6 +83,12 @@ public partial class TransactionVM : ObservableObject
     }
 
     partial void OnAmountChanged(decimal value) => NotifyChildStateChanged();
+
+    partial void OnOccurredOnChanged(DateTime value)
+    {
+        OnPropertyChanged(nameof(OccurredOnDate));
+        OnPropertyChanged(nameof(OccurredOnTime));
+    }
 
     private void OnChildTransactionsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
