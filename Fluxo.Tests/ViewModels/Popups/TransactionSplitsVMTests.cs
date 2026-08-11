@@ -90,6 +90,26 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
+    public void Balanced_tagless_expense_leaf_is_valid()
+    {
+        var messenger = new WeakReferenceMessenger();
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        var leaf = ValidLeaf(100m);
+        leaf.Tag = null;
+        root.ChildTransactions.Add(leaf);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true),
+            TransactionPopupMessageToken.Default);
+
+        var result = messenger
+            .Send(new TransactionSplitValidationRequestedMessage(root), TransactionPopupMessageToken.Default)
+            .Response;
+
+        Assert.True(result.IsSuccess);
+        Assert.True(leaf.IsValid);
+    }
+
+    [Fact]
     public void Invalid_split_tree_stays_editable_when_root_fields_are_valid()
     {
         var messenger = new WeakReferenceMessenger();
@@ -98,6 +118,7 @@ public sealed class TransactionSplitsVMTests
         messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
 
         vm.AddSplitCommand.Execute(null);
+        root.ChildTransactions.Single().Amount = 0m;
 
         Assert.False(vm.ShowInvalidSplitPlaceholder);
         Assert.False(messenger.Send(new TransactionSplitValidationRequestedMessage(root), TransactionPopupMessageToken.Default).Response.IsSuccess);

@@ -25,7 +25,7 @@ public sealed class TransactionSplitHelperTests
         var child = TransactionSplitHelper.AddChild(root, null);
 
         Assert.Equal("New Sub-transaction", child.Name);
-        Assert.Equal(0m, child.Amount);
+        Assert.Equal(100m, child.Amount);
         Assert.Equal(root.Type, child.Type);
         Assert.Equal(root.SourceAccountId, child.SourceAccountId);
         Assert.Equal(root.OccurredOn, child.OccurredOn);
@@ -33,6 +33,30 @@ public sealed class TransactionSplitHelperTests
         Assert.True(child.ShouldAffectBalance);
         Assert.True(child.IsExcludedFromBudget);
         Assert.Equal([child], root.ChildTransactions);
+    }
+
+    [Fact]
+    public void AddChild_prefills_direct_parents_remaining_amount()
+    {
+        var root = new TransactionVM { Name = "Root", Amount = 100m };
+        root.ChildTransactions.Add(new TransactionVM { Name = "Existing", Amount = 35m });
+
+        var child = TransactionSplitHelper.AddChild(root, null);
+
+        Assert.Equal(65m, child.Amount);
+    }
+
+    [Fact]
+    public void AddChild_prefills_nested_parents_remaining_amount()
+    {
+        var root = new TransactionVM { Name = "Root", Amount = 100m };
+        var parent = new TransactionVM { Name = "Parent", Amount = 40m };
+        parent.ChildTransactions.Add(new TransactionVM { Name = "Existing", Amount = 15m });
+        root.ChildTransactions.Add(parent);
+
+        var child = TransactionSplitHelper.AddChild(root, parent);
+
+        Assert.Equal(25m, child.Amount);
     }
 
     [Fact]

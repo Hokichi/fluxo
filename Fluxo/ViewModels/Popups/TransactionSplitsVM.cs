@@ -267,15 +267,17 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
         if (depth > 2)
             return false;
 
+        var allValid = true;
         foreach (var child in parent.ChildTransactions)
         {
-            if (string.IsNullOrWhiteSpace(child.Name) || child.Amount <= 0m ||
-                child.IsLeaf && child.Type == TransactionType.Expense && child.Tag is null ||
-                !ValidateNodes(child, depth + 1))
-                return false;
+            var isValid = !string.IsNullOrWhiteSpace(child.Name) &&
+                          child.Amount > 0m &&
+                          ValidateNodes(child, depth + 1);
+            child.IsValid = isValid;
+            allValid &= isValid;
         }
 
-        return true;
+        return allValid;
     }
 
     private void SubscribeTree()

@@ -20,19 +20,19 @@ public static class TransactionSplitHelper
         if (!CanAddChild(root, parent))
             throw new InvalidOperationException("Sub-transactions support two levels only.");
 
+        var parentNode = parent ?? root;
         var child = new TransactionVM
         {
             Type = root.Type,
             SourceAccountId = root.SourceAccountId,
             Account = root.Account,
             Name = "New Sub-transaction",
-            Amount = 0m,
+            Amount = GetRemainingAmount(parentNode),
             OccurredOn = root.OccurredOn,
             IsIoU = root.IsIoU,
             ShouldAffectBalance = root.ShouldAffectBalance,
             IsExcludedFromBudget = root.IsExcludedFromBudget
         };
-        var parentNode = parent ?? root;
         parentNode.ExpenseCategory = null;
         parentNode.Tag = null;
         parentNode.ChildTransactions.Add(child);
