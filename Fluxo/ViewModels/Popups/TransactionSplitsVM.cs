@@ -310,6 +310,9 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
 
     private void OnTransactionPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName is nameof(TransactionVM.IsValid) or nameof(TransactionVM.HasWarnings))
+            return;
+
         if (!_isMutating)
             PublishChange();
     }

@@ -270,6 +270,46 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
+    public void Bulk_type_round_trip_keeps_queued_identity_and_later_field_updates()
+    {
+        RunInSta(() =>
+        {
+            var checking = CreateCheckingAccount();
+            var visa = new AccountVM
+            {
+                Id = 2,
+                Name = "Visa",
+                AccountType = AccountType.Credit,
+                IsEnabled = true,
+                SpentAmount = 80m
+            };
+            var appData = Substitute.For<IAppDataService>();
+            appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
+            appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(new BudgetAllocation()));
+            var (vm, queue, _) = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([checking, visa]), appData);
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.NameText = "Coffee";
+            vm.AmountText = 10m;
+            vm.SelectedRepaymentAccount = visa;
+            vm.IsBulkMode = true;
+            var queued = Assert.Single(queue.QueuedTransactions);
+
+            vm.IsRepayment = true;
+            vm.IsExpense = true;
+            vm.NameText = "Lunch";
+            vm.AmountText = 22m;
+
+            Assert.Same(queued, vm.PendingTransaction);
+            Assert.Same(queued, Assert.Single(queue.QueuedTransactions));
+            Assert.Equal(TransactionType.Expense, queued.Type);
+            Assert.Equal("Lunch", queued.Name);
+            Assert.Equal(22m, queued.Amount);
+        });
+    }
+
+    [Fact]
     public void View_edit_mode_starts_with_equal_loaded_and_pending_transactions()
     {
         RunInSta(() =>

@@ -37,6 +37,7 @@ public partial class TransactionVM : ObservableObject
     [ObservableProperty] private bool _shouldAffectBalance;
     [ObservableProperty] private bool _isExcludedFromBudget;
     [ObservableProperty] private bool _isValid;
+    [ObservableProperty] private bool _hasWarnings;
 
     public ObservableCollection<TransactionVM> ChildTransactions { get; } = [];
     public DateTime OccurredOnDate => OccurredOn.Date;

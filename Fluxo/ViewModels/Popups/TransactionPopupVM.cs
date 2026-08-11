@@ -2877,6 +2877,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private bool IsGeneratedAddMode => !_isLoadingTransaction &&
                                        _popupPurpose == TransactionPopupPurpose.AddNewTransaction &&
+                                       !IsBulkMode &&
                                        !IsRecurringTransactionMode &&
                                        !IsProcessingSession &&
                                        (IsGoal || IsRepayment);

@@ -90,6 +90,27 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
+    public void Validation_metadata_changes_do_not_publish_split_changes()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var changes = 0;
+        var recipient = new object();
+        messenger.Register<object, TransactionSplitChangedMessage, TransactionPopupMessageToken>(recipient,
+            TransactionPopupMessageToken.Default, (_, _) => changes++);
+        using var vm = new TransactionSplitsVM(messenger);
+        var root = ValidRoot(100m);
+        var leaf = ValidLeaf(100m);
+        root.ChildTransactions.Add(leaf);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true),
+            TransactionPopupMessageToken.Default);
+        changes = 0;
+
+        leaf.IsValid = !leaf.IsValid;
+
+        Assert.Equal(0, changes);
+    }
+
+    [Fact]
     public void Balanced_tagless_expense_leaf_is_valid()
     {
         var messenger = new WeakReferenceMessenger();
