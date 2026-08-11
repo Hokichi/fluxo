@@ -738,7 +738,18 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2" IsEnabled="{Binding ShowDateSelector, Mode=OneWay}">
-                                            <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Time" />
+                                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0"
+                                                        Style="{StaticResource SectionLabelStyle}"
+                                                        Text="Time" />
+                                                    <ContentControl
+                                                        Margin="8,0,0,0"
+                                                        Content="{Binding TimeFeedback, Mode=OneWay}"
+                                                        ContentTemplate="{StaticResource TransactionFieldFeedbackTemplate}" />
+                                                </StackPanel>
+                                            </Grid>
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />

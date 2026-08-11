@@ -93,7 +93,8 @@ public partial class TransactionPopup : BasePopup
 
     protected override async void OnSaveButtonClick()
     {
-        if (_viewModel.IsProcessingSession && !await ShouldSaveQueuedTransactionsAsync())
+        if ((_viewModel.IsBulkMode || _viewModel.IsProcessingSession) &&
+            !await ShouldSaveQueuedTransactionsAsync())
             return;
 
         if (_viewModel.IsBulkMode || _viewModel.IsProcessingSession)
@@ -396,11 +397,33 @@ public partial class TransactionPopup : BasePopup
         foreach (var transaction in _bulkQueueViewModel.QueuedTransactions.ToList())
         {
             _bulkQueueViewModel.SelectedQueuedTransaction = transaction;
-            if (!await ShouldSaveCurrentTransactionAsync())
+            if (!_viewModel.TryGetRepaymentCorrection(out var correctedAmount))
+                continue;
+
+            var useCorrectAmount = FluxoMessageBox.Show(
+                this,
+                $"Repayment exceeds the credit account's spent amount. Use {correctedAmount:N2} instead?",
+                "Invalid Repayment",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) == MessageBoxResult.Yes;
+            if (!useCorrectAmount)
+            {
+                _viewModel.RejectRepaymentCorrection();
                 return false;
+            }
+
+            _viewModel.AcceptRepaymentCorrection();
         }
 
-        return true;
+        if (!await _viewModel.HasSimilarQueuedTransactionsAsync())
+            return true;
+
+        return FluxoMessageBox.Show(
+            this,
+            "Potentially duplicated transaction found. Would you like to save the current one?",
+            "Add New Transaction",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning) == MessageBoxResult.Yes;
     }
 
     private void SyncNoteDocumentFromViewModel()

@@ -7,6 +7,7 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.DataModels.Messages;
+using Fluxo.DataModels.Popups.TransactionPopup;
 using Fluxo.Resources.Components;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Styles;
@@ -472,6 +473,35 @@ public sealed class TransactionPopupSplitLayoutTests
 
             Assert.Equal(popup.FindResource("Brush.Danger"), feedbackIcon.Color);
             Assert.Equal("IsMouseOver", feedbackPopup.GetBindingExpression(Popup.IsOpenProperty)!.ParentBinding.Path.Path);
+        });
+    }
+
+    [Fact]
+    public void Time_header_shows_duplicate_warning_feedback_in_warning_color()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var messenger = new WeakReferenceMessenger();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+            viewModel.TimeFeedback.Update(
+                [new TransactionWarning("Potentially duplicated transaction found.", true)]);
+            var popup = new TransactionPopup(
+                viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+            var feedback = FindControls<ContentControl>(popup).Single(control =>
+                ReferenceEquals(control.Content, viewModel.TimeFeedback));
+
+            var feedbackHost = Assert.IsType<Grid>(feedback.ContentTemplate!.LoadContent());
+            feedbackHost.DataContext = viewModel.TimeFeedback;
+            feedbackHost.Measure(new Size(100, 100));
+            feedbackHost.Arrange(new Rect(0, 0, 100, 100));
+            feedbackHost.UpdateLayout();
+            var icon = Assert.Single(FindVisualControls<Icon>(feedbackHost));
+
+            Assert.Equal(popup.FindResource("Brush.Warning"), icon.Color);
         });
     }
 

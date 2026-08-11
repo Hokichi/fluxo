@@ -1518,6 +1518,127 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
+    public void Persisted_duplicate_warns_name_and_time_in_real_time_without_blocking_save()
+    {
+        RunInSta(() =>
+        {
+            var selectedDate = new DateTime(2026, 6, 29);
+            var existing = CreateTransaction("Valid name", 10m, sourceId: 1);
+            existing.OccurredOn = selectedDate.AddHours(8);
+            var source = CreateCheckingSource(balance: 500m);
+            var otherSource = CreateCheckingSource(balance: 500m);
+            otherSource.Id = 2;
+            otherSource.Name = "Savings";
+            otherSource.IsDefault = false;
+            var vm = TransactionPopupVMFactory.Create(
+                CreateMainViewModel([source, otherSource]),
+                CreateAppData(expenseLogs: [existing]));
+            vm.InitializeAsync().GetAwaiter().GetResult();
+            vm.SelectedDate = selectedDate;
+            vm.NameText = "Valid name";
+            vm.AmountText = 10m;
+
+            Assert.Contains(vm.NameFeedback.Warnings,
+                warning => warning.IsWarning && warning.Message == "Potentially duplicated transaction found.");
+            Assert.Contains(vm.TimeFeedback.Warnings,
+                warning => warning.IsWarning && warning.Message == "Potentially duplicated transaction found.");
+            Assert.True(vm.PendingTransaction.HasWarnings);
+            Assert.True(vm.CanPersist);
+
+            vm.SelectedTime = vm.SelectedTime.Add(TimeSpan.FromHours(1));
+            Assert.True(vm.TimeFeedback.HasFeedback);
+
+            vm.NameText = "Different";
+            Assert.False(vm.NameFeedback.HasFeedback);
+            Assert.False(vm.TimeFeedback.HasFeedback);
+
+            vm.NameText = "Valid name";
+            Assert.True(vm.NameFeedback.HasFeedback);
+            vm.AmountText = 20m;
+            Assert.False(vm.NameFeedback.HasFeedback);
+            Assert.False(vm.TimeFeedback.HasFeedback);
+
+            vm.AmountText = 10m;
+            vm.SelectedDate = selectedDate.AddDays(1);
+            Assert.False(vm.NameFeedback.HasFeedback);
+            vm.SelectedDate = selectedDate;
+            Assert.True(vm.NameFeedback.HasFeedback);
+
+            vm.SelectedAccount = otherSource;
+            Assert.False(vm.NameFeedback.HasFeedback);
+            vm.SelectedAccount = source;
+            Assert.True(vm.NameFeedback.HasFeedback);
+
+            vm.IsIncome = true;
+            Assert.False(vm.NameFeedback.HasFeedback);
+            vm.IsExpense = true;
+            Assert.True(vm.NameFeedback.HasFeedback);
+        });
+    }
+
+    [Fact]
+    public void Queue_peer_duplicates_warn_both_items_and_self_is_excluded()
+    {
+        RunInSta(() =>
+        {
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), CreateAppData());
+            peers.Popup.InitializeAsync().GetAwaiter().GetResult();
+            peers.Popup.NameText = "Lunch";
+            peers.Popup.AmountText = 10m;
+            peers.Popup.IsExcludedFromBudget = true;
+            peers.Popup.IsBulkMode = true;
+            var first = Assert.Single(peers.Bulk.QueuedTransactions);
+
+            Assert.False(first.HasWarnings);
+
+            peers.Bulk.AddQueuedTransactionCommand.Execute(null);
+            peers.Popup.IsExcludedFromBudget = true;
+            peers.Popup.NameText = "Lunch";
+            peers.Popup.AmountText = 10m;
+            var second = peers.Bulk.SelectedQueuedTransaction!;
+
+            Assert.True(first.HasWarnings);
+            Assert.True(second.HasWarnings);
+            Assert.True(peers.Popup.NameFeedback.HasFeedback);
+            Assert.True(peers.Popup.TimeFeedback.HasFeedback);
+            Assert.True(peers.Popup.CanPersist);
+
+            first.Name = "Breakfast";
+
+            Assert.False(first.HasWarnings);
+            Assert.False(second.HasWarnings);
+            Assert.False(peers.Popup.NameFeedback.HasFeedback);
+            Assert.False(peers.Popup.TimeFeedback.HasFeedback);
+        });
+    }
+
+    [Fact]
+    public void Queue_duplicate_preflight_refreshes_persisted_candidates()
+    {
+        RunInSta(() =>
+        {
+            IReadOnlyList<Transaction> persisted = [];
+            var appData = CreateAppData();
+            appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
+                .Returns(_ => Task.FromResult(persisted));
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]), appData);
+            peers.Popup.InitializeAsync().GetAwaiter().GetResult();
+            peers.Popup.NameText = "Lunch";
+            peers.Popup.AmountText = 10m;
+            peers.Popup.IsBulkMode = true;
+            var existing = CreateTransaction("Lunch", 10m, sourceId: 1);
+            existing.OccurredOn = peers.Popup.SelectedDate;
+            persisted = [existing];
+
+            var result = peers.Popup.HasSimilarQueuedTransactionsAsync().GetAwaiter().GetResult();
+
+            Assert.True(result);
+        });
+    }
+
+    [Fact]
     public void HasSimilarTransactionAsync_IgnoresExpense_OutsideSelectedDate()
     {
         RunInSta(() =>

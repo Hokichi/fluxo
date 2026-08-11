@@ -33,6 +33,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private const int NoAccountId = -1;
     private const int NoSavingGoalId = -1;
     private const decimal SimilarAmountTolerance = 0.05m;
+    private const string DuplicateWarningMessage = "Potentially duplicated transaction found.";
 
     private readonly List<AccountVM> _availableAccounts = [];
     private IReadOnlyList<AccountVM>? _accountsOverride;
@@ -43,6 +44,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private readonly TransactionPersistenceHelper _persistence;
     private readonly List<TagVM> _orderedTags = [];
     private readonly IAppDataService _appData;
+    private IReadOnlyList<Transaction> _duplicateCandidates = [];
+    private IReadOnlySet<int> _duplicateGoalUpdateTagIds = new HashSet<int>();
+    private bool _isRefreshingDuplicateWarnings;
     private bool _isChangeTrackingInitialized;
     private bool _isAmountValidationActive;
     private string _amountWarningHint = string.Empty;
@@ -286,6 +290,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         : 0m;
     public decimal BalanceUpdateAccountToBe => CalculateBalanceUpdateAccountToBe();
     public TransactionFieldFeedback NameFeedback { get; } = new();
+    public TransactionFieldFeedback TimeFeedback { get; } = new();
     public TransactionFieldFeedback AmountFeedback { get; } = new();
     public TransactionFieldFeedback AccountFeedback { get; } = new();
     public TransactionFieldFeedback TagFeedback { get; } = new();
@@ -559,6 +564,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CanPersist));
         OnPropertyChanged(nameof(HasChanges));
         NotifyProcessingChanged();
+        RefreshDuplicateWarningState();
 
         if (shouldResetForm)
             ResetEmptyBulkForm();
@@ -759,6 +765,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 SelectedDate = date.Date;
         }
         await LoadBalanceUpdateCurrentAmountsAsync(cancellationToken);
+        await RefreshDuplicateCandidatesAsync(cancellationToken);
         _isInitialized = true;
         return true;
     }
@@ -1669,6 +1676,122 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
     }
 
+    public async Task<bool> HasSimilarQueuedTransactionsAsync(CancellationToken cancellationToken = default)
+    {
+        await RefreshDuplicateCandidatesAsync(cancellationToken);
+        return _queuedTransactions.Any(HasRealtimeDuplicate);
+    }
+
+    private async Task RefreshDuplicateCandidatesAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            _duplicateCandidates = (await _appData.GetTransactionsAsync(cancellationToken))
+                .Where(transaction => !transaction.IsForDeletion)
+                .ToArray();
+        }
+        catch (Exception exception)
+        {
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception,
+                "load duplicate transaction candidates");
+        }
+
+        try
+        {
+            _duplicateGoalUpdateTagIds = (await _appData.GetTagsAsync(cancellationToken))
+                .Where(tag => string.Equals(
+                    tag.Name?.Trim(),
+                    GoalUpdateTransactionSupport.GoalUpdateTagName,
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(tag => tag.Id)
+                .ToHashSet();
+        }
+        catch (Exception exception)
+        {
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception,
+                "load duplicate transaction classifications");
+        }
+
+        RefreshDuplicateWarningState();
+    }
+
+    private bool HasRealtimeDuplicate(TransactionVM candidate)
+    {
+        var options = GetOptions(candidate);
+        if (options.IsRecurring || string.IsNullOrWhiteSpace(GetDuplicateCandidateName(candidate, options)))
+            return false;
+
+        return _duplicateCandidates.Any(existing => IsSimilarPersistedTransaction(existing, candidate, options)) ||
+               _queuedTransactions.Any(peer =>
+                   !ReferenceEquals(peer, candidate) && IsSimilarQueuedTransaction(peer, candidate, options));
+    }
+
+    private bool IsSimilarPersistedTransaction(
+        Transaction existing,
+        TransactionVM candidate,
+        TransactionFormOptions options)
+    {
+        if (existing.IsForDeletion || IsLoadedTransaction(existing) ||
+            existing.OccurredOn.Date != candidate.OccurredOn.Date ||
+            existing.Type != candidate.Type ||
+            existing.SourceAccountId != candidate.SourceAccountId ||
+            !IsSameTransactionName(existing.Name, GetDuplicateCandidateName(candidate, options)) ||
+            !IsSimilarAmount(existing.Amount, candidate.Amount))
+        {
+            return false;
+        }
+
+        return candidate.Type != TransactionType.Expense ||
+               IsGoalUpdateExpenseLog(existing, _duplicateGoalUpdateTagIds) == options.IsGoal;
+    }
+
+    private bool IsSimilarQueuedTransaction(
+        TransactionVM existing,
+        TransactionVM candidate,
+        TransactionFormOptions candidateOptions)
+    {
+        var existingOptions = GetOptions(existing);
+        return !existingOptions.IsRecurring &&
+               existing.OccurredOn.Date == candidate.OccurredOn.Date &&
+               existing.Type == candidate.Type &&
+               existing.SourceAccountId == candidate.SourceAccountId &&
+               IsSameTransactionName(
+                   GetDuplicateCandidateName(existing, existingOptions),
+                   GetDuplicateCandidateName(candidate, candidateOptions)) &&
+               IsSimilarAmount(existing.Amount, candidate.Amount) &&
+               (candidate.Type != TransactionType.Expense || existingOptions.IsGoal == candidateOptions.IsGoal);
+    }
+
+    private string GetDuplicateCandidateName(TransactionVM candidate, TransactionFormOptions options)
+    {
+        if (!options.IsGoal)
+            return candidate.Name.Trim();
+
+        var goalName = candidate.GoalId is int goalId
+            ? Goals.FirstOrDefault(goal => goal.Id == goalId)?.Name
+            : null;
+        return string.IsNullOrWhiteSpace(goalName) ? string.Empty : BuildGoalUpdateName(goalName);
+    }
+
+    private void RefreshDuplicateWarningState()
+    {
+        if (_isRefreshingDuplicateWarnings)
+            return;
+
+        _isRefreshingDuplicateWarnings = true;
+        try
+        {
+            foreach (var transaction in _queuedTransactions)
+                RefreshWarningStates(transaction, GetOptions(transaction).IsRecurring);
+
+            RefreshFieldFeedback();
+        }
+        finally
+        {
+            _isRefreshingDuplicateWarnings = false;
+        }
+    }
+
     public bool HasValidEntryToPersistOnClose()
     {
         return TryBuildTransactionInput(out _, out _);
@@ -2351,6 +2474,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             _transactionFormOptions[_currentRootTransaction] = CaptureOptions();
         RevalidateTransactions();
         NotifyFormDependenciesChanged();
+        RefreshDuplicateWarningState();
     }
 
     private void NotifyFormDependenciesChanged()
@@ -2653,7 +2777,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private void RefreshFieldFeedback()
     {
         var context = CreateValidationContext();
-        NameFeedback.Update(ToFeedback(ValidateNameText(NameText, context)));
+        var duplicateWarning = _isTransactionStateInitialized && HasRealtimeDuplicate(PendingTransaction)
+            ? new TransactionWarning(DuplicateWarningMessage, true)
+            : null;
+        NameFeedback.Update(ToFeedback(ValidateNameText(NameText, context))
+            .Append(duplicateWarning)
+            .OfType<TransactionWarning>());
+        TimeFeedback.Update(new[] { duplicateWarning }.OfType<TransactionWarning>());
         AmountFeedback.Update(ToFeedback(ValidateAmountText(AmountText, context))
             .Append(string.IsNullOrWhiteSpace(AmountWarningHint)
                 ? null
@@ -2733,12 +2863,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private void RefreshWarningStates(TransactionVM transaction, bool isRecurring)
     {
-        transaction.HasWarnings = !string.IsNullOrWhiteSpace(GetDailyAllowanceWarning(
+        var hasDailyAllowanceWarning = !string.IsNullOrWhiteSpace(GetDailyAllowanceWarning(
             transaction.Type == TransactionType.Expense,
             isRecurring,
             transaction.IsExcludedFromBudget,
             transaction.Amount,
             transaction.OccurredOn));
+        transaction.HasWarnings = hasDailyAllowanceWarning || HasRealtimeDuplicate(transaction);
 
         foreach (var child in transaction.ChildTransactions)
             RefreshWarningStates(child, isRecurring);

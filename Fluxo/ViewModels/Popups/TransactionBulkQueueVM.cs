@@ -161,8 +161,11 @@ public sealed partial class TransactionBulkQueueVM : ObservableObject, IDisposab
         if (e.PropertyName == nameof(TransactionVM.OccurredOn))
             QueuedTransactionsView.Refresh();
 
-        if (e.PropertyName is nameof(TransactionVM.Name) or nameof(TransactionVM.Amount)
-            or nameof(TransactionVM.OccurredOn) or nameof(TransactionVM.IsValid))
+        if (e.PropertyName is nameof(TransactionVM.Type) or nameof(TransactionVM.SourceAccountId)
+            or nameof(TransactionVM.GoalId) or nameof(TransactionVM.RepaymentAccountId)
+            or nameof(TransactionVM.Name) or nameof(TransactionVM.Amount)
+            or nameof(TransactionVM.OccurredOn) or nameof(TransactionVM.IsValid)
+            or nameof(TransactionVM.HasWarnings))
             PublishState();
     }
 
