@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Views.Components;
 public sealed class DateSelectorFutureSelectionTests
 {
     [Fact]
-    public void DateSelector_DisablesDayItemsAfterMaxSelectableDate()
+    public void DateSelectorFutureSelection_DateSelector_DisablesDayItemsAfterMaxSelectableDate()
     {
         RunOnStaThread(() =>
         {
@@ -27,7 +27,7 @@ public sealed class DateSelectorFutureSelectionTests
     }
 
     [Fact]
-    public void DateSelector_CoercesSelectedDateToMaxSelectableDate()
+    public void DateSelectorFutureSelection_DateSelector_CoercesSelectedDateToMaxSelectableDate()
     {
         RunOnStaThread(() =>
         {

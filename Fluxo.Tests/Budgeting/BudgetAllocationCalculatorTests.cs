@@ -15,7 +15,7 @@ public class BudgetAllocationCalculatorTests
     [InlineData(AllocationPeriod.Monthly, 31, 28)]
     [InlineData(AllocationPeriod.Quarterly, 4, 3)]
     [InlineData(AllocationPeriod.Yearly, 13, 12)]
-    public void ClampPeriodStart_UsesAllocationPeriodBounds(
+    public void BudgetAllocationCalculator_ClampPeriodStart_UsesAllocationPeriodBounds(
         AllocationPeriod period,
         int value,
         int expected)
@@ -32,7 +32,7 @@ public class BudgetAllocationCalculatorTests
     [InlineData(AllocationPeriod.Monthly, "2026-03-31", 28)]
     [InlineData(AllocationPeriod.Quarterly, "2026-05-10", 2)]
     [InlineData(AllocationPeriod.Yearly, "2026-12-10", 12)]
-    public void ResolveCurrentPeriodIndex_ReturnsExpectedIndex(
+    public void BudgetAllocationCalculator_ResolveCurrentPeriodIndex_ReturnsExpectedIndex(
         AllocationPeriod period,
         string dateText,
         int expected)
@@ -43,7 +43,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolveCurrentPeriod_MonthlyForFebruary2026_ReturnsFullMonth()
+    public void BudgetAllocationCalculator_ResolveCurrentPeriod_MonthlyForFebruary2026ReturnsFullMonth()
     {
         var period = BudgetAllocationCalculator.ResolveCurrentPeriod(
             AllocationPeriod.Monthly,
@@ -55,7 +55,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolveCurrentPeriod_MonthlyPeriodStart10_ReturnsCrossMonthPeriod()
+    public void BudgetAllocationCalculator_ResolveCurrentPeriod_MonthlyPeriodStart10_ReturnsCrossMonthPeriod()
     {
         var period = BudgetAllocationCalculator.ResolveCurrentPeriod(
             AllocationPeriod.Monthly,
@@ -67,7 +67,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_UsesAllocationPeriodStartForCurrentAndPreviousPeriods()
+    public void BudgetAllocationCalculator_CalculateSnapshot_UsesAllocationPeriodStartForCurrentAndPreviousPeriods()
     {
         var allocation = new BudgetAllocation
         {
@@ -92,7 +92,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateDailyAllowance_QuarterlyAllocationLimit_ReturnsRoundedDailyAmount()
+    public void BudgetAllocationCalculator_CalculateDailyAllowance_QuarterlyAllocationLimit_ReturnsRoundedDailyAmount()
     {
         var allocation = new BudgetAllocation
         {
@@ -108,7 +108,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_PooledRollover_DistributesPositivePreviousRemainingByThresholds()
+    public void BudgetAllocationCalculator_CalculateSnapshot_PooledRollover_DistributesPositivePreviousRemainingByThresholds()
     {
         var allocation = new BudgetAllocation
         {
@@ -137,7 +137,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_RolloverMarkerForCurrentPeriod_SkipsRollover()
+    public void BudgetAllocationCalculator_CalculateSnapshot_RolloverMarkerForCurrentPeriod_SkipsRollover()
     {
         var allocation = new BudgetAllocation
         {
@@ -167,7 +167,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_RolloverMarkerBeforeCurrentPeriod_AppliesRollover()
+    public void BudgetAllocationCalculator_CalculateSnapshot_RolloverMarkerBeforeCurrentPeriod_AppliesRollover()
     {
         var allocation = new BudgetAllocation
         {
@@ -197,7 +197,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSoftDebtDelta_WhenRemainingIsAlreadyNegative_ReturnsFullExpenseAmount()
+    public void BudgetAllocationCalculator_CalculateSoftDebtDelta_WhenRemainingIsAlreadyNegative_ReturnsFullExpenseAmount()
     {
         var delta = BudgetAllocationCalculator.CalculateSoftDebtDelta(-20m, 15m);
 
@@ -205,7 +205,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolveCurrentPeriod_WeeklyOnMonday_StartsThatMondayAndEndsSunday()
+    public void BudgetAllocationCalculator_ResolveCurrentPeriod_WeeklyOnMonday_StartsThatMondayAndEndsSunday()
     {
         var period = BudgetAllocationCalculator.ResolveCurrentPeriod(
             AllocationPeriod.Weekly,
@@ -217,7 +217,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolveCurrentPeriod_BiweeklyUsesContinuousFixedMondayAnchor()
+    public void BudgetAllocationCalculator_ResolveCurrentPeriod_BiweeklyUsesContinuousFixedMondayAnchor()
     {
         var period = BudgetAllocationCalculator.ResolveCurrentPeriod(
             AllocationPeriod.Biweekly,
@@ -229,7 +229,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolveCurrentPeriod_BiweeklyAcrossYearBoundary_UsesSameContinuousPeriod()
+    public void BudgetAllocationCalculator_ResolveCurrentPeriod_BiweeklyAcrossYearBoundary_UsesSameContinuousPeriod()
     {
         var decemberPeriod = BudgetAllocationCalculator.ResolveCurrentPeriod(
             AllocationPeriod.Biweekly,
@@ -249,7 +249,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolveCurrentPeriod_BiweeklyAdjacentYearBoundaryPeriods_DoNotOverlap()
+    public void BudgetAllocationCalculator_ResolveCurrentPeriod_BiweeklyAdjacentYearBoundaryPeriods_DoNotOverlap()
     {
         var priorPeriod = BudgetAllocationCalculator.ResolveCurrentPeriod(
             AllocationPeriod.Biweekly,
@@ -266,7 +266,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void ResolvePreviousPeriod_Biweekly_ReturnsImmediatelyPreviousContinuousPeriod()
+    public void BudgetAllocationCalculator_ResolvePreviousPeriod_Biweekly_ReturnsImmediatelyPreviousContinuousPeriod()
     {
         var period = BudgetAllocationCalculator.ResolvePreviousPeriod(
             AllocationPeriod.Biweekly,
@@ -278,7 +278,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_MatchingRollover_RollsEachPositivePreviousRemainingToSameSegment()
+    public void BudgetAllocationCalculator_CalculateSnapshot_MatchingRollover_RollsEachPositivePreviousRemainingToSameSegment()
     {
         var allocation = new BudgetAllocation
         {
@@ -307,7 +307,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_CategoryDebt_ReducesAvailability()
+    public void BudgetAllocationCalculator_CalculateSnapshot_CategoryDebt_ReducesAvailability()
     {
         var allocation = new BudgetAllocation
         {
@@ -332,7 +332,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void CalculateSnapshot_CurrentSpent_UpdatesRemainingAndPercentage()
+    public void BudgetAllocationCalculator_CalculateSnapshot_CurrentSpent_UpdatesRemainingAndPercentage()
     {
         var allocation = new BudgetAllocation
         {
@@ -363,7 +363,7 @@ public class BudgetAllocationCalculatorTests
     }
 
     [Fact]
-    public void WouldHardStop_ReturnsTrueOnlyWhenExpenseExceedsRemainingBudget()
+    public void BudgetAllocationCalculator_WouldHardStop_ReturnsTrueOnlyWhenExpenseExceedsRemainingBudget()
     {
         var category = new BudgetAllocationCategoryState(
             BudgetAllocationSegment.Needs,

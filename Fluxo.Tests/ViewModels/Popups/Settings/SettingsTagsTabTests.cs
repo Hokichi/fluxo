@@ -9,7 +9,7 @@ namespace Fluxo.Tests.ViewModels.Popups.Settings;
 public sealed class SettingsTagsTabTests
 {
     [Fact]
-    public void CreateCards_UsesOnlyEffectiveExpensesFromCurrentPeriod()
+    public void SettingsTagsTab_CreateCards_UsesOnlyEffectiveExpensesFromCurrentPeriod()
     {
         var today = DateTime.Today;
         var allocation = new BudgetAllocation
@@ -51,7 +51,7 @@ public sealed class SettingsTagsTabTests
     [InlineData(75, SettingsTagSpendingState.Warning)]
     [InlineData(100, SettingsTagSpendingState.Warning)]
     [InlineData(101, SettingsTagSpendingState.Danger)]
-    public void Create_LimitedTagUsesApprovedThresholds(int spent, SettingsTagSpendingState expected)
+    public void SettingsTagsTab_Create_LimitedTagUsesApprovedThresholds(int spent, SettingsTagSpendingState expected)
     {
         var card = SettingsTagCardVM.Create(
             new Tag { Id = 1, Name = "Food", HexCode = "#A983FF", SpendingLimit = 100m },
@@ -63,7 +63,7 @@ public sealed class SettingsTagsTabTests
     }
 
     [Fact]
-    public void Create_OverLimitTagClampsBarAndShowsUnsignedOverage()
+    public void SettingsTagsTab_Create_OverLimitTagClampsBarAndShowsUnsignedOverage()
     {
         var card = SettingsTagCardVM.Create(
             new Tag { Id = 1, Name = "Grocery", HexCode = "#FFC22C", SpendingLimit = 300m },
@@ -78,7 +78,7 @@ public sealed class SettingsTagsTabTests
     }
 
     [Fact]
-    public void Create_NoLimitTagUsesFullSuccessBarAndInfinityBadge()
+    public void SettingsTagsTab_Create_NoLimitTagUsesFullSuccessBarAndInfinityBadge()
     {
         var card = SettingsTagCardVM.Create(
             new Tag { Id = 1, Name = "Personal Needs", HexCode = "#65DDB5" },

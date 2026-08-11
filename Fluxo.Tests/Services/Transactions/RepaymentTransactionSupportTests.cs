@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Services.Transactions;
 public sealed class RepaymentTransactionSupportTests
 {
     [Fact]
-    public void FindNewestIncome_SelectsNewestMatchingCreditIncome()
+    public void RepaymentTransactionSupport_FindNewestIncome_SelectsNewestMatchingCreditIncome()
     {
         var checking = new Account { Id = 1, Name = "Checking" };
         var expense = new Transaction
@@ -31,7 +31,7 @@ public sealed class RepaymentTransactionSupportTests
     }
 
     [Fact]
-    public void Create_ProducesExcludedBalanceUpdatePair_AndMutatesAccounts()
+    public void RepaymentTransactionSupport_Create_ProducesExcludedBalanceUpdatePair_AndMutatesAccounts()
     {
         var checking = new Account
         {
@@ -78,7 +78,7 @@ public sealed class RepaymentTransactionSupportTests
     [InlineData(AccountType.Checking, AccountType.Checking, 10)]
     [InlineData(AccountType.Checking, AccountType.Credit, 0)]
     [InlineData(AccountType.Checking, AccountType.Credit, 101)]
-    public void Create_RejectsInvalidRepayment(
+    public void RepaymentTransactionSupport_Create_RejectsInvalidRepayment(
         AccountType sourceType,
         AccountType targetType,
         decimal amount)

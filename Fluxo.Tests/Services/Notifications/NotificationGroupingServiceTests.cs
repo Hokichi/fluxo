@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Services.Notifications;
 public sealed class NotificationGroupingServiceTests
 {
     [Fact]
-    public void Group_MapsRecurringTransactionDue_WithoutActionCta()
+    public void NotificationGroupingService_Group_MapsRecurringTransactionDue_WithoutActionCta()
     {
         var input = new[]
         {
@@ -27,7 +27,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_LeavesLegacyDeadlineCardsNonActionable()
+    public void NotificationGroupingService_Group_LeavesLegacyDeadlineCardsNonActionable()
     {
         var input = new[]
         {
@@ -45,7 +45,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_GroupsByCategory_SetsCountAndLatestCreatedOn_AndOrdersDescending()
+    public void NotificationGroupingService_Group_GroupsByCategorySetsCountAndLatestCreatedOn_AndOrdersDescending()
     {
         var now = DateTime.Now;
         var input = new[]
@@ -73,7 +73,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_SingleNotification_UsesSingularPendingItemMessage()
+    public void NotificationGroupingService_Group_SingleNotification_UsesSingularPendingItemMessage()
     {
         var input = new[]
         {
@@ -88,7 +88,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_UsesSeverityPrecedence_DangerOverWarningOverSuccessOverInfo()
+    public void NotificationGroupingService_Group_UsesSeverityPrecedence_DangerOverWarningOverSuccessOverInfo()
     {
         var input = new[]
         {
@@ -107,7 +107,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_MapsUnknownType_ToOtherCategory()
+    public void NotificationGroupingService_Group_MapsUnknownType_ToOtherCategory()
     {
         var input = new[]
         {
@@ -127,7 +127,7 @@ public sealed class NotificationGroupingServiceTests
     [InlineData("LowCredit-7", NotificationGroupCategory.LowCredit)]
     [InlineData("BudgetThresholdNeeds", NotificationGroupCategory.BudgetThreshold)]
     [InlineData("AutoExpenseProcessed", NotificationGroupCategory.AutoExpenseProcessed)]
-    public void Group_NonActionableCategories_HaveNoActionCta(string type, NotificationGroupCategory category)
+    public void NotificationGroupingService_Group_NonActionableCategoriesHaveNoActionCta(string type, NotificationGroupCategory category)
     {
         var input = new[]
         {
@@ -143,7 +143,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_AppUpdate_MapsCategory_WithoutActionCta_AndPreservesHeaderAndMessage()
+    public void NotificationGroupingService_Group_AppUpdateMapsCategoryWithoutActionCta_AndPreservesHeaderAndMessage()
     {
         const string persistedHeader = "Update Ready - Install Recommended";
         const string persistedMessage = "Version 9.9.9 is available for download";
@@ -170,7 +170,7 @@ public sealed class NotificationGroupingServiceTests
     }
 
     [Fact]
-    public void Group_AppUpdate_IsOrderedBeforeNewerNonUpdateCard()
+    public void NotificationGroupingService_Group_AppUpdate_IsOrderedBeforeNewerNonUpdateCard()
     {
         var now = DateTime.Now;
         var input = new[]

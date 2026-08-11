@@ -19,7 +19,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AnalyticsVMTests
 {
     [Fact]
-    public void InitialDateRange_CoversSevenInclusiveDatesEndingToday()
+    public void AnalyticsVM_InitialDateRange_CoversSevenInclusiveDatesEndingToday()
     {
         var vm = CreateVm();
 
@@ -28,7 +28,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public void DateRangeOver31Days_AdjustsEndDateAndShowsWarning()
+    public void AnalyticsVM_DateRangeOver31Days_AdjustsEndDateAndShowsWarning()
     {
         var vm = CreateVm();
 
@@ -41,7 +41,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public void DateRangeOver14Days_RotatesLabelsAndHidesTrendValues()
+    public void AnalyticsVM_DateRangeOver14Days_RotatesLabelsAndHidesTrendValues()
     {
         var vm = CreateVm();
 
@@ -56,7 +56,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task TrendBarsUseModeSpecificColorFlags()
+    public async Task AnalyticsVM_TrendBarsUseModeSpecificColorFlags_ReturnsVerifiedOutcome()
     {
         var vm = CreateVm();
         vm.StartDate = new DateTime(2026, 1, 1);
@@ -123,7 +123,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task TrendScale_UsesRoundedCeilingForSelectedMode()
+    public async Task AnalyticsVM_TrendScale_UsesRoundedCeilingForSelectedMode()
     {
         var vm = CreateVm();
 
@@ -142,7 +142,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task TrendTooltips_DoNotIncludeCurrencySymbols()
+    public async Task AnalyticsVM_TrendTooltips_DoNotIncludeCurrencySymbols()
     {
         var vm = CreateVm();
 
@@ -156,7 +156,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task ApplyExternalDateRangeWithoutRefresh_UsesRangeOnFirstLoad()
+    public async Task AnalyticsVM_ApplyExternalDateRangeWithoutRefresh_UsesRangeOnFirstLoad()
     {
         var service = Substitute.For<IAnalyticsService>();
         service.GetAnalyticsAsync(Arg.Any<DateOnly>(), Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())
@@ -183,7 +183,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task RefreshForOpenAsync_ShowToastFalse_RefreshesAndSettlesWithoutDialogToast()
+    public async Task AnalyticsVM_RefreshForOpenAsync_ShowToastFalse_RefreshesAndSettlesWithoutDialogToast()
     {
         var service = CreateAnalyticsService();
         var dialogService = Substitute.For<IDialogService>();
@@ -206,7 +206,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task RefreshForOpenAsync_ShowToastFalse_CancelsPendingDebounceRefresh()
+    public async Task AnalyticsVM_RefreshForOpenAsync_ShowToastFalse_CancelsPendingDebounceRefresh()
     {
         var serviceCallCount = 0;
         var service = Substitute.For<IAnalyticsService>();
@@ -238,7 +238,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task RefreshForOpenAsync_ShowToastTrue_UsesDialogToastWrapper()
+    public async Task AnalyticsVM_RefreshForOpenAsync_ShowToastTrue_UsesDialogToastWrapper()
     {
         var service = Substitute.For<IAnalyticsService>();
         var dialogService = Substitute.For<IDialogService>();
@@ -291,7 +291,7 @@ public sealed class AnalyticsVMTests
     }
 
     [Fact]
-    public async Task RefreshForOpenAsync_ShowToastTrue_WithCanceledToken_DoesNotInvokeDialogToastWrapper()
+    public async Task AnalyticsVM_RefreshForOpenAsync_ShowToastTrueWithCanceledToken_DoesNotInvokeDialogToastWrapper()
     {
         var service = CreateAnalyticsService();
         var dialogService = Substitute.For<IDialogService>();

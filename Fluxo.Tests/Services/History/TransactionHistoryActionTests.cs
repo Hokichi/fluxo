@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Services.History;
 public sealed class TransactionHistoryActionTests
 {
     [Fact]
-    public async Task DeleteGoalUpdate_RevertRestoresGoalAndSourceTotals()
+    public async Task TransactionHistoryAction_DeleteGoalUpdate_RevertRestoresGoalAndSourceTotals()
     {
         var source = new Account { Id = 1, Name = "Checking", AccountType = AccountType.Checking, Balance = 150m };
         var goal = new SavingGoal { Id = 2, Name = "Emergency", CurrentAmount = 25m };
@@ -30,7 +30,7 @@ public sealed class TransactionHistoryActionTests
     }
 
     [Fact]
-    public async Task DeleteGoalUpdate_ReapplyReversesGoalAndSourceTotals()
+    public async Task TransactionHistoryAction_DeleteGoalUpdate_ReapplyReversesGoalAndSourceTotals()
     {
         var source = new Account { Id = 1, Name = "Checking", AccountType = AccountType.Checking, Balance = 125m };
         var goal = new SavingGoal { Id = 2, Name = "Emergency", CurrentAmount = 50m };

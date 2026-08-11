@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Helpers.Transactions;
 public sealed class TransactionSplitHelperTests
 {
     [Fact]
-    public void AddChild_creates_root_child_with_required_root_context()
+    public void TransactionSplitHelper_AddChild_CreatesRootChildWithRequiredRoot_Context()
     {
         var root = new TransactionVM
         {
@@ -36,7 +36,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void AddChild_prefills_direct_parents_remaining_amount()
+    public void TransactionSplitHelper_AddChild_PrefillsDirectParentsRemaining_Amount()
     {
         var root = new TransactionVM { Name = "Root", Amount = 100m };
         root.ChildTransactions.Add(new TransactionVM { Name = "Existing", Amount = 35m });
@@ -47,7 +47,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void AddChild_prefills_nested_parents_remaining_amount()
+    public void TransactionSplitHelper_AddChild_PrefillsNestedParentsRemaining_Amount()
     {
         var root = new TransactionVM { Name = "Root", Amount = 100m };
         var parent = new TransactionVM { Name = "Parent", Amount = 40m };
@@ -60,7 +60,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void AddChild_allows_grandchild_but_rejects_third_level()
+    public void TransactionSplitHelper_AddChild_AllowsGrandchildButRejectsThird_Level()
     {
         var root = new TransactionVM();
         var child = TransactionSplitHelper.AddChild(root, null);
@@ -74,7 +74,7 @@ public sealed class TransactionSplitHelperTests
     [InlineData("", 100, false)]
     [InlineData("Valid", 0, false)]
     [InlineData("Valid", 100, true)]
-    public void IsValidParent_requires_a_name_and_positive_amount(string name, decimal amount, bool expected)
+    public void TransactionSplitHelper_IsValidParent_RequiresANameAndPositiveAmount(string name, decimal amount, bool expected)
     {
         var parent = new TransactionVM { Name = name, Amount = amount };
 
@@ -82,7 +82,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void SplitEqually_assigns_final_remainder()
+    public void TransactionSplitHelper_SplitEqually_AssignsFinalRemainder()
     {
         var parent = new TransactionVM { Amount = 10m };
         parent.ChildTransactions.Add(new TransactionVM());
@@ -96,7 +96,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void Reset_sets_only_direct_child_amounts_to_zero()
+    public void TransactionSplitHelper_Reset_SetsOnlyDirectChildAmountsToZero()
     {
         var root = new TransactionVM { Amount = 100m };
         var child = new TransactionVM { Amount = 50m };
@@ -110,7 +110,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void Remove_deletes_branch_and_returns_removed_nodes_parent()
+    public void TransactionSplitHelper_Remove_DeletesBranchAndReturnsRemovedNodes_Parent()
     {
         var root = new TransactionVM();
         var child = TransactionSplitHelper.AddChild(root, null);
@@ -124,7 +124,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void Balance_checks_each_split_level()
+    public void TransactionSplitHelper_Balance_ChecksEachSplit_Level()
     {
         var root = new TransactionVM { Amount = 100m };
         var child = new TransactionVM { Amount = 100m };
@@ -140,7 +140,7 @@ public sealed class TransactionSplitHelperTests
     }
 
     [Fact]
-    public void CanAddChild_rejects_an_overfilled_parent()
+    public void TransactionSplitHelper_CanAddChild_RejectsAnOverfilled_Parent()
     {
         var root = new TransactionVM { Amount = 100m };
         root.ChildTransactions.Add(new TransactionVM { Amount = 101m });

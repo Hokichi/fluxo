@@ -9,7 +9,7 @@ namespace Fluxo.Tests.ViewModels.Entities;
 public sealed class TransactionVMSemanticsTests
 {
     [Fact]
-    public void Identity_only_changes_do_not_make_transactions_unequal()
+    public void TransactionVMSemantics_Identity_OnlyChangesDoNotMakeTransactions_Unequal()
     {
         var loaded = new TransactionVM { Id = 7, Name = "Coffee", Amount = 5m };
         var pending = new TransactionVM { Id = 0, Name = "Coffee", Amount = 5m };
@@ -18,7 +18,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Business_field_changes_make_transactions_unequal()
+    public void TransactionVMSemantics_Business_FieldChangesMakeTransactions_Unequal()
     {
         var first = new TransactionVM { Name = "Coffee", Amount = 5m };
         var second = new TransactionVM { Name = "Coffee", Amount = 6m };
@@ -27,7 +27,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Loaded_snapshot_retains_identity_and_is_isolated()
+    public void TransactionVMSemantics_Loaded_SnapshotRetainsIdentityAndIs_Isolated()
     {
         var source = new TransactionVM
         {
@@ -49,7 +49,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Pending_snapshot_copies_business_data_and_clears_identity()
+    public void TransactionVMSemantics_Pending_SnapshotCopiesBusinessDataAndClears_Identity()
     {
         var source = new TransactionVM
         {
@@ -72,7 +72,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Empty_pending_snapshot_has_cleared_identity()
+    public void TransactionVMSemantics_Empty_PendingSnapshotHasCleared_Identity()
     {
         var pending = TransactionMappingHelper.CreatePending();
 
@@ -83,7 +83,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Child_total_tracks_direct_child_amount_changes()
+    public void TransactionVMSemantics_Child_TotalTracksDirectChildAmount_Changes()
     {
         var parent = new TransactionVM { Amount = 10m };
         var child = new TransactionVM { Amount = 4m };
@@ -101,7 +101,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Validate_marks_transaction_invalid_when_name_is_missing()
+    public void TransactionVMSemantics_Validate_MarksTransactionInvalidWhenNameIs_Missing()
     {
         var transaction = new TransactionVM
         {
@@ -118,7 +118,7 @@ public sealed class TransactionVMSemanticsTests
     }
 
     [Fact]
-    public void Validate_marks_root_invalid_when_split_tree_is_invalid()
+    public void TransactionVMSemantics_Validate_MarksRootInvalidWhenSplitTreeIs_Invalid()
     {
         var transaction = new TransactionVM
         {

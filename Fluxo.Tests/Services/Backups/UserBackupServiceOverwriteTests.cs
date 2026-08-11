@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Services.Backups;
 public sealed class UserBackupServiceOverwriteTests
 {
     [Fact]
-    public void OverwriteRemovalOrder_RemovesDependentsBeforePrincipals()
+    public void UserBackupServiceOverwrite_OverwriteRemovalOrder_RemovesDependentsBeforePrincipals()
     {
         var order = UserBackupService.BuildOverwriteRemovalLabels(
             new UserBackupSelection(new HashSet<DataManagementEntityKind>
@@ -26,7 +26,7 @@ public sealed class UserBackupServiceOverwriteTests
     }
 
     [Fact]
-    public void OverwriteRemovalOrder_SelectingTagsAlsoRemovesRecurringTransactionsFirst()
+    public void UserBackupServiceOverwrite_OverwriteRemovalOrder_SelectingTagsAlsoRemovesRecurringTransactionsFirst()
     {
         var order = UserBackupService.BuildOverwriteRemovalLabels(
             new UserBackupSelection(new HashSet<DataManagementEntityKind>
@@ -38,7 +38,7 @@ public sealed class UserBackupServiceOverwriteTests
     }
 
     [Fact]
-    public void OverwriteRemovalOrder_SelectingGoalsAlsoRemovesRecurringTransactionsFirst()
+    public void UserBackupServiceOverwrite_OverwriteRemovalOrder_SelectingGoalsAlsoRemovesRecurringTransactionsFirst()
     {
         var order = UserBackupService.BuildOverwriteRemovalLabels(
             new UserBackupSelection(new HashSet<DataManagementEntityKind>
@@ -50,7 +50,7 @@ public sealed class UserBackupServiceOverwriteTests
     }
 
     [Fact]
-    public void OverwriteRemovalOrder_SelectingAccountsIncludesDependentRemovals()
+    public void UserBackupServiceOverwrite_OverwriteRemovalOrder_SelectingAccountsIncludesDependentRemovals()
     {
         var order = UserBackupService.BuildOverwriteRemovalLabels(
             new UserBackupSelection(new HashSet<DataManagementEntityKind>
@@ -64,7 +64,7 @@ public sealed class UserBackupServiceOverwriteTests
     }
 
     [Fact]
-    public void OverwriteRemovalOrder_UserSettingsOnly_RemainsIsolated()
+    public void UserBackupServiceOverwrite_OverwriteRemovalOrder_UserSettingsOnly_RemainsIsolated()
     {
         var order = UserBackupService.BuildOverwriteRemovalLabels(
             new UserBackupSelection(new HashSet<DataManagementEntityKind>

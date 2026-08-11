@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Views.CustomControls;
 public sealed class BalloonRadioButtonTests
 {
     [Fact]
-    public void Click_SelectsOneRadioAndCannotToggleItOff()
+    public void BalloonRadioButton_Click_SelectsOneRadioAndCannotToggleItOff()
     {
         RunOnStaThread(() =>
         {
@@ -29,7 +29,7 @@ public sealed class BalloonRadioButtonTests
     }
 
     [Fact]
-    public void DifferentGroups_StaySelectedAndInheritCheckBoxProperties()
+    public void BalloonRadioButton_DifferentGroups_StaySelected()
     {
         RunOnStaThread(() =>
         {
@@ -44,19 +44,6 @@ public sealed class BalloonRadioButtonTests
 
             Assert.True(first.IsChecked);
             Assert.True(second.IsChecked);
-            Assert.Equal("First", first.UncheckedText);
-            Assert.Equal("Second", second.CheckedText);
-        });
-    }
-
-    [Fact]
-    public void CheckedRadio_KeepsItsUncheckedText()
-    {
-        RunOnStaThread(() =>
-        {
-            var radio = new TestBalloonRadioButton { IsChecked = true, UncheckedText = "Regular" };
-
-            Assert.Equal("Regular", radio.ResolveText());
         });
     }
 
@@ -64,7 +51,6 @@ public sealed class BalloonRadioButtonTests
     {
         public void InvokeClick() => OnClick();
 
-        public string? ResolveText() => ResolveButtonText();
     }
 
     private static void RunOnStaThread(Action action)

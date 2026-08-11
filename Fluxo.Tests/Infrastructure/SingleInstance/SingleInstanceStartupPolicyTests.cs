@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Infrastructure.SingleInstance;
 public sealed class SingleInstanceStartupPolicyTests
 {
     [Fact]
-    public void SecondaryInstancePath_RequestsActivationAndAbortsStartup()
+    public void SingleInstanceStartupPolicy_SecondaryInstancePath_RequestsActivationAndAbortsStartup()
     {
         var coordinator = new SecondaryInstanceCoordinatorStub();
 
@@ -19,7 +19,7 @@ public sealed class SingleInstanceStartupPolicyTests
     }
 
     [Fact]
-    public void PrimaryInstancePath_ContinuesStartup_AndCanInvokeActivationCallback()
+    public void SingleInstanceStartupPolicy_PrimaryInstancePath_ContinuesStartup_AndCanInvokeActivationCallback()
     {
         var activationCalls = 0;
         var coordinator = new PrimaryInstanceCoordinatorStub();

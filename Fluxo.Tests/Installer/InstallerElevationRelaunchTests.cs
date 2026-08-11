@@ -14,7 +14,7 @@ public sealed class InstallerElevationRelaunchTests : IDisposable
     }
 
     [Fact]
-    public void ShouldRelaunch_InteractiveUnelevatedBundle()
+    public void InstallerElevationRelaunch_ShouldRelaunch_InteractiveUnelevatedBundle()
     {
         var shouldRelaunch = InstallerElevationRelaunch.ShouldRelaunch(
             isInteractive: true,
@@ -26,7 +26,7 @@ public sealed class InstallerElevationRelaunchTests : IDisposable
     }
 
     [Fact]
-    public void ShouldRelaunchForElevation_RequiresInteractiveUnelevatedExistingBundle()
+    public void InstallerElevationRelaunch_ShouldRelaunchForElevation_RequiresInteractiveUnelevatedExistingBundle()
     {
         Assert.True(InstallerElevationRelaunch.ShouldRelaunchForElevation(
             isInteractive: true,
@@ -48,7 +48,7 @@ public sealed class InstallerElevationRelaunchTests : IDisposable
     }
 
     [Fact]
-    public void SelectBundlePathForElevationRelaunch_PrefersRepairerSourceProcess_WhenOriginalIsInstaller()
+    public void InstallerElevationRelaunch_SelectBundlePathForElevationRelaunch_PrefersRepairerSourceProcess_WhenOriginalIsInstaller()
     {
         var path = InstallerElevationRelaunch.SelectBundlePathForElevationRelaunch(
             wixBundleSourceProcessPath: WindowsPathFixtures.AlternateRepairerExecutable,
@@ -59,7 +59,7 @@ public sealed class InstallerElevationRelaunchTests : IDisposable
     }
 
     [Fact]
-    public void ShouldRelaunch_SkipsHeadlessOrAlreadyElevatedRuns()
+    public void InstallerElevationRelaunch_ShouldRelaunch_SkipsHeadlessOrAlreadyElevatedRuns()
     {
         Assert.False(InstallerElevationRelaunch.ShouldRelaunch(
             isInteractive: false,
@@ -74,7 +74,7 @@ public sealed class InstallerElevationRelaunchTests : IDisposable
     }
 
     [Fact]
-    public void ShouldRelaunch_SkipsWhenOriginalPathIsCurrentProcess()
+    public void InstallerElevationRelaunch_ShouldRelaunch_SkipsWhenOriginalPathIsCurrentProcess()
     {
         Assert.False(InstallerElevationRelaunch.ShouldRelaunch(
             isInteractive: true,
@@ -84,7 +84,7 @@ public sealed class InstallerElevationRelaunchTests : IDisposable
     }
 
     [Fact]
-    public void CreateStartInfo_UsesRunAsShellVerb()
+    public void InstallerElevationRelaunch_CreateStartInfo_UsesRunAsShellVerb()
     {
         var startInfo = InstallerElevationRelaunch.CreateStartInfo(bundlePath);
 

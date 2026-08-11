@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Shell.StartupWizard;
 public sealed class QuickSetupWizardDraftCollectionTests
 {
     [Fact]
-    public void NextTempId_DecrementsForEachNewSource()
+    public void QuickSetupWizardDraftCollection_NextTempId_DecrementsForEachNewSource()
     {
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var vm = new QuickSetupWizardAccountsVM(null!, new AppDataService(unitOfWork),

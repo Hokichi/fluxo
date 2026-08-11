@@ -12,7 +12,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AccountReconciliationVMTests
 {
     [Fact]
-    public void Constructor_FiltersSavingSources_AndSelectsPromptSource()
+    public void AccountReconciliationVM_Constructor_FiltersSavingSources_AndSelectsPromptSource()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -26,7 +26,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public void SelectedAccount_ExposesTargetAndCurrentLabels()
+    public void AccountReconciliationVM_SelectedAccount_ExposesTargetAndCurrentLabels()
     {
         var sources = CreateSourceViewModels();
         sources[0].SpentAmount = 80m;
@@ -52,7 +52,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenTargetDecreases_CreatesNeedExpenseWithBudgetReconciliationTag()
+    public async Task AccountReconciliationVM_SaveAsync_WhenTargetDecreases_CreatesNeedExpenseWithBudgetReconciliationTag()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -112,7 +112,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenTargetIncreases_CreatesIncome()
+    public async Task AccountReconciliationVM_SaveAsync_WhenTargetIncreases_CreatesIncome()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -157,7 +157,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenCreditTargetDecreases_CreatesExpense()
+    public async Task AccountReconciliationVM_SaveAsync_WhenCreditTargetDecreases_CreatesExpense()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -201,7 +201,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenLoggingDeclined_UpdatesTargetWithoutTransaction()
+    public async Task AccountReconciliationVM_SaveAsync_WhenLoggingDeclined_UpdatesTargetWithoutTransaction()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -233,7 +233,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenDifferenceIsZero_DoesNotCreateTransaction()
+    public async Task AccountReconciliationVM_SaveAsync_WhenDifferenceIsZero_DoesNotCreateTransaction()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -265,7 +265,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_AddsMissingBudgetReconciliationSystemTag()
+    public async Task AccountReconciliationVM_SaveAsync_AddsMissingBudgetReconciliationSystemTag()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
@@ -307,7 +307,7 @@ public sealed class AccountReconciliationVMTests
     }
 
     [Fact]
-    public void CanSave_IsFalseUntilAmountIsGreaterThanZero()
+    public void AccountReconciliationVM_CanSave_IsFalseUntilAmountIsGreaterThanZero()
     {
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();

@@ -12,7 +12,7 @@ namespace Fluxo.Tests.Views.Shell.Main;
 public sealed class TransactionDetailTargetResolverTests
 {
     [Fact]
-    public async Task ResolveAsync_ReturnsNull_WhenTransactionIdDoesNotExist()
+    public async Task TransactionDetailTargetResolver_ResolveAsync_ReturnsNull_WhenTransactionIdDoesNotExist()
     {
         var appData = Substitute.For<IAppDataService>();
 
@@ -20,7 +20,7 @@ public sealed class TransactionDetailTargetResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_LoadsTransactionById_WhenItHasNoParent()
+    public async Task TransactionDetailTargetResolver_ResolveAsync_LoadsTransactionById_WhenItHasNoParent()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetTransactionByIdAsync(7, Arg.Any<CancellationToken>()).Returns(new Transaction
@@ -40,7 +40,7 @@ public sealed class TransactionDetailTargetResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_LoadsParent_WhenTransactionIdBelongsToChild()
+    public async Task TransactionDetailTargetResolver_ResolveAsync_LoadsParent_WhenTransactionIdBelongsToChild()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetTransactionByIdAsync(4, Arg.Any<CancellationToken>()).Returns(new Transaction
@@ -69,7 +69,7 @@ public sealed class TransactionDetailTargetResolverTests
     }
 
     [Fact]
-    public async Task ResolveAsync_ReturnsTransaction_WhenItHasNoParent()
+    public async Task TransactionDetailTargetResolver_ResolveAsync_ReturnsTransaction_WhenItHasNoParent()
     {
         var appData = Substitute.For<IAppDataService>();
         var transaction = new TransactionVM { Id = 7 };
@@ -81,7 +81,7 @@ public sealed class TransactionDetailTargetResolverTests
     [Theory]
     [InlineData(TransactionType.Expense)]
     [InlineData(TransactionType.Income)]
-    public async Task ResolveAsync_ReturnsParent_ForEitherType(TransactionType type)
+    public async Task TransactionDetailTargetResolver_ResolveAsync_ReturnsParentForEitherType(TransactionType type)
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetTransactionByIdAsync(3, Arg.Any<CancellationToken>()).Returns(new Transaction

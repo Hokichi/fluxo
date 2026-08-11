@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class DotNetRuntimeReleaseResolverTests
 {
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_SelectsLatest10WinX64Exe()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_SelectsLatest10WinX64Exe()
     {
         const string indexJson = """
         {
@@ -79,7 +79,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_SkipsIncompleteNonTargetFiles()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_SkipsIncompleteNonTargetFiles()
     {
         const string indexJson = """
         {
@@ -132,7 +132,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveReleasesJsonUrl_ReturnsUrlForChannel()
+    public void DotNetRuntimeReleaseResolver_ResolveReleasesJsonUrl_ReturnsUrlForChannel()
     {
         const string indexJson = """
         {
@@ -155,7 +155,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveReleasesJsonUrl_Throws_WhenChannelMissing()
+    public void DotNetRuntimeReleaseResolver_ResolveReleasesJsonUrl_Throws_WhenChannelMissing()
     {
         const string indexJson = """{ "releases-index": [] }""";
 
@@ -166,7 +166,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_Throws_WhenChannelMissing()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_Throws_WhenChannelMissing()
     {
         const string indexJson = """{ "releases-index": [] }""";
         const string releasesJson = """{ "releases": [] }""";
@@ -182,7 +182,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveReleasesJsonUrl_ThrowsDomainError_WhenReleaseIndexJsonMalformed()
+    public void DotNetRuntimeReleaseResolver_ResolveReleasesJsonUrl_ThrowsDomainError_WhenReleaseIndexJsonMalformed()
     {
         const string indexJson = """{ "releases-index": [ """;
 
@@ -194,7 +194,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_ThrowsDomainError_WhenReleasesJsonMalformed()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_ThrowsDomainError_WhenReleasesJsonMalformed()
     {
         const string indexJson = """
         {
@@ -221,7 +221,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveReleasesJsonUrl_ThrowsDomainError_WhenReleasesIndexIsNotArray()
+    public void DotNetRuntimeReleaseResolver_ResolveReleasesJsonUrl_ThrowsDomainError_WhenReleasesIndexIsNotArray()
     {
         const string indexJson = """{ "releases-index": {} }""";
 
@@ -233,7 +233,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_ThrowsDomainError_WhenWindowsDesktopFilesIsNotArray()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_ThrowsDomainError_WhenWindowsDesktopFilesIsNotArray()
     {
         const string indexJson = """
         {
@@ -269,7 +269,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_Throws_WhenWinX64DesktopInstallerMissing()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_Throws_WhenWinX64DesktopInstallerMissing()
     {
         const string indexJson = """
         {
@@ -304,7 +304,7 @@ public sealed class DotNetRuntimeReleaseResolverTests
     }
 
     [Fact]
-    public void ResolveLatestWindowsDesktopRuntimeInstaller_Throws_WhenInstallerHashMissing()
+    public void DotNetRuntimeReleaseResolver_ResolveLatestWindowsDesktopRuntimeInstaller_Throws_WhenInstallerHashMissing()
     {
         const string indexJson = """
         {

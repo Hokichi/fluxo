@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class LegacySelfContainedCleanupServiceTests
 {
     [Fact]
-    public void Cleanup_RemovesKnownLegacyRuntimeArtifacts()
+    public void LegacySelfContainedCleanupService_Cleanup_RemovesKnownLegacyRuntimeArtifacts()
     {
         var deleted = new List<string>();
         var service = CreateService(
@@ -33,7 +33,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_PreservesCurrentApplicationFilesAndUserState()
+    public void LegacySelfContainedCleanupService_Cleanup_PreservesCurrentApplicationFilesAndUserState()
     {
         var deleted = new List<string>();
         var service = CreateService(
@@ -56,7 +56,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_RemovesRootDll_WhenSameDllExistsUnderLibs()
+    public void LegacySelfContainedCleanupService_Cleanup_RemovesRootDll_WhenSameDllExistsUnderLibs()
     {
         var deleted = new List<string>();
         var service = CreateService(
@@ -71,7 +71,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_RemovesRootDll_WhenSameDllExistsUnderVendor()
+    public void LegacySelfContainedCleanupService_Cleanup_RemovesRootDll_WhenSameDllExistsUnderVendor()
     {
         var deleted = new List<string>();
         var service = CreateService(
@@ -86,7 +86,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_PreservesUnknownRootDll_WhenNoNestedDuplicateExists()
+    public void LegacySelfContainedCleanupService_Cleanup_PreservesUnknownRootDll_WhenNoNestedDuplicateExists()
     {
         var deleted = new List<string>();
         var service = CreateService(
@@ -100,7 +100,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_RemovesRootPdbFiles()
+    public void LegacySelfContainedCleanupService_Cleanup_RemovesRootPdbFiles()
     {
         var deleted = new List<string>();
         var service = CreateService(
@@ -123,7 +123,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_RemovesLegacyPublishFolder()
+    public void LegacySelfContainedCleanupService_Cleanup_RemovesLegacyPublishFolder()
     {
         var deletedDirectories = new List<string>();
         var service = CreateService(
@@ -138,7 +138,7 @@ public sealed class LegacySelfContainedCleanupServiceTests
     }
 
     [Fact]
-    public void Cleanup_ReturnsFailure_WhenDeleteFails()
+    public void LegacySelfContainedCleanupService_Cleanup_ReturnsFailure_WhenDeleteFails()
     {
         var service = new LegacySelfContainedCleanupService(
             directoryExists: _ => true,

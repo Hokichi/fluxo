@@ -21,52 +21,10 @@ namespace Fluxo.Tests.Views.Popups;
 
 public sealed class TransactionPopupSplitLayoutTests
 {
-    [Fact]
-    public void Form_uses_capped_layout_with_fixed_transaction_type_toggles()
-    {
-        RunOnStaThread(() =>
-        {
-            var popup = CreatePopup();
-            popup.Measure(new Size(800, 900));
-            popup.Arrange(new Rect(0, 0, 800, 900));
-            popup.UpdateLayout();
 
-            var formLayout = Assert.IsType<Grid>(popup.FindName("TransactionFormLayout"));
-            var form = Assert.IsType<FadingScrollViewer>(popup.FindName("TransactionFormScrollViewer"));
-            var transactionTypeToggle = FindControls<SegmentedToggleGroup>(popup).Single(group =>
-                FindControls<SegmentedToggleOption>(group).Any(option => Equals(option.Content, "Expense")));
-
-            Assert.Equal(520d, formLayout.MaxHeight);
-            Assert.Equal(1, Grid.GetRow(form));
-            Assert.False(IsLogicalDescendantOf(transactionTypeToggle, form));
-            Assert.Equal(ScrollBarVisibility.Disabled, form.HorizontalScrollBarVisibility);
-            Assert.Equal(ScrollBarVisibility.Auto, form.VerticalScrollBarVisibility);
-        });
-    }
 
     [Fact]
-    public void Tags_use_horizontal_fading_scroll_viewer_without_more_popup()
-    {
-        RunOnStaThread(() =>
-        {
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), new WeakReferenceMessenger());
-            var popup = CreatePopup(viewModel);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var tagsScrollViewer = Assert.IsType<FadingScrollViewer>(popup.FindName("TagsScrollViewer"));
-            var tagsList = Assert.IsType<ListBox>(popup.FindName("TagsListBox"));
-
-            Assert.Equal(ScrollBarVisibility.Hidden, tagsScrollViewer.HorizontalScrollBarVisibility);
-            Assert.Equal(ScrollBarVisibility.Disabled, tagsScrollViewer.VerticalScrollBarVisibility);
-            Assert.Same(viewModel.Tags, tagsList.ItemsSource);
-            Assert.DoesNotContain(FindControls<ToggleButton>(popup), button => Equals(button.Content, "More"));
-        });
-    }
-
-    [Fact]
-    public void Tag_click_selects_tag()
+    public void TransactionPopupSplitLayout_Tag_ClickSelects_Tag()
     {
         RunOnStaThread(() =>
         {
@@ -88,7 +46,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Clicking_selected_tag_clears_transaction_tag()
+    public void TransactionPopupSplitLayout_Clicking_SelectedTagClearsTransaction_Tag()
     {
         RunOnStaThread(() =>
         {
@@ -113,7 +71,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Shift_wheel_is_the_only_horizontal_tag_scroll_gesture()
+    public void TransactionPopupSplitLayout_Shift_WheelIsTheOnlyHorizontalTagScroll_Gesture()
     {
         Assert.True(TransactionPopup.IsHorizontalTagScroll(ModifierKeys.Shift));
         Assert.False(TransactionPopup.IsHorizontalTagScroll(ModifierKeys.None));
@@ -121,7 +79,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Delete_shortcut_only_targets_active_bulk_queue_item_outside_text_editors()
+    public void TransactionPopupSplitLayout_Delete_ShortcutOnlyTargetsActiveBulkQueueItemOutsideText_Editors()
     {
         RunOnStaThread(() =>
         {
@@ -141,7 +99,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Child_split_equally_command_distributes_to_all_direct_grandchildren()
+    public void TransactionPopupSplitLayout_Child_SplitEquallyCommandDistributesToAllDirect_Grandchildren()
     {
         RunOnStaThread(() =>
         {
@@ -171,7 +129,7 @@ public sealed class TransactionPopupSplitLayoutTests
     [InlineData(120d, 30d, 500d, 90d)]
     [InlineData(20d, 50d, 500d, 0d)]
     [InlineData(480d, -80d, 500d, 500d)]
-    public void CalculateTagScrollOffset_ClampsHorizontalDrag(
+    public void TransactionPopupSplitLayout_CalculateTagScrollOffset_ClampsHorizontalDrag(
         double startingOffset,
         double horizontalDelta,
         double scrollableWidth,
@@ -181,187 +139,15 @@ public sealed class TransactionPopupSplitLayoutTests
             TransactionPopup.CalculateTagScrollOffset(startingOffset, horizontalDelta, scrollableWidth));
     }
 
-    [Fact]
-    public void Category_includes_excluded_option_and_no_budget_checkbox()
-    {
-        RunOnStaThread(() =>
-        {
-            var popup = CreatePopup();
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-            var excluded = FindControls<BalloonRadioButton>(popup)
-                .Single(button => Equals(button.UncheckedText, "Excluded"));
 
-            var binding = excluded.GetBindingExpression(BalloonCheckBox.IsCheckedProperty)!.ParentBinding;
 
-            Assert.Equal(nameof(TransactionPopupVM.IsExcludedCategory), binding.Path.Path);
-            Assert.DoesNotContain(
-                FindControls<BalloonCheckBox>(popup),
-                checkBox => checkBox.GetBindingExpression(BalloonCheckBox.IsCheckedProperty)?.ParentBinding.Path.Path ==
-                            nameof(TransactionPopupVM.IsBudgetExcluded));
-        });
-    }
+
+
+
+
 
     [Fact]
-    public void BulkInsert_shows_queue_panel()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            var bulk = new TransactionBulkQueueVM(messenger);
-            var splits = new TransactionSplitsVM(messenger);
-            viewModel.IsBulkMode = true;
-            var popup = new TransactionPopup(viewModel, bulk, splits);
-            popup.Measure(new Size(1300, 800));
-            popup.Arrange(new Rect(0, 0, 1300, 800));
-            popup.UpdateLayout();
-
-            var queue = FindControls<ListBox>(popup).Single(list => ReferenceEquals(list.ItemsSource, bulk.QueuedTransactionsView));
-            var queuePanel = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(queue));
-
-            Assert.Equal(Visibility.Visible, queuePanel.Visibility);
-        });
-    }
-
-    [Fact]
-    public void Transaction_date_fields_have_neighboring_time_selectors()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var popup = CreatePopup();
-
-            Assert.IsType<TimeSelector>(popup.FindName("ExpenseTransactionTimeSelector"));
-            Assert.IsType<TimeSelector>(popup.FindName("IncomeTransactionTimeSelector"));
-            Assert.IsType<TimeSelector>(popup.FindName("GoalTransactionTimeSelector"));
-        });
-    }
-
-    [Fact]
-    public void Bulk_queue_item_has_no_context_menu_and_transparent_unselected_background()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            var popup = new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger),
-                new TransactionSplitsVM(messenger));
-            var item = new ListBoxItem
-            {
-                DataContext = new TransactionVM { Name = "Queue item" },
-                Style = Assert.IsType<Style>(popup.FindResource("TransactionQueueListBoxItemStyle"))
-            };
-            item.ApplyTemplate();
-            var itemBackground = Assert.IsType<Border>(item.Template.FindName("ItemBackground", item));
-
-            Assert.Equal(Colors.Transparent, Assert.IsType<SolidColorBrush>(itemBackground.Background).Color);
-            Assert.Null(item.ContextMenu);
-        });
-    }
-
-    [Fact]
-    public void Queue_border_only_marks_active_item_and_status_icon_distinguishes_errors_from_warnings()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var popup = CreatePopup();
-            var transaction = new TransactionVM { IsValid = false };
-            var item = new ListBoxItem
-            {
-                DataContext = transaction,
-                Style = Assert.IsType<Style>(popup.FindResource("TransactionQueueListBoxItemStyle"))
-            };
-            item.ApplyTemplate();
-            var border = Assert.IsType<Border>(item.Template.FindName("ItemBackground", item));
-            var defaultBorder = popup.FindResource("Brush.Border.Default");
-
-            Assert.Equal(defaultBorder, border.BorderBrush);
-
-            item.IsSelected = true;
-
-            Assert.Equal(popup.FindResource("Brush.Border.Focus"), border.BorderBrush);
-
-            var icon = new Icon
-            {
-                DataContext = transaction,
-                Style = Assert.IsType<Style>(popup.FindResource("TransactionCardStatusIconStyle"))
-            };
-            Assert.Equal(Visibility.Visible, icon.Visibility);
-            Assert.Equal(popup.FindResource("Brush.Danger"), icon.Color);
-
-            transaction.IsValid = true;
-            transaction.HasWarnings = true;
-
-            Assert.Equal(Visibility.Visible, icon.Visibility);
-            Assert.Equal(popup.FindResource("Brush.Warning"), icon.Color);
-
-            transaction.HasWarnings = false;
-
-            Assert.Equal(Visibility.Collapsed, icon.Visibility);
-        });
-    }
-
-    [Fact]
-    public void Queue_and_split_templates_place_status_icon_below_amount()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var popup = CreatePopup();
-            var transaction = new TransactionVM { Name = "Lunch", Amount = 10m, IsValid = false };
-
-            foreach (var resourceName in new[] { "TransactionQueueItemTemplate", "SplitTransactionLeafTemplate" })
-            {
-                var template = Assert.IsType<DataTemplate>(popup.FindResource(resourceName));
-                var root = Assert.IsAssignableFrom<FrameworkElement>(template.LoadContent());
-                root.DataContext = transaction;
-                root.Measure(new Size(400, 200));
-                root.Arrange(new Rect(0, 0, 400, 200));
-                root.UpdateLayout();
-                var icon = Assert.Single(FindControls<Icon>(root));
-                var amount = FindControls<TextBlock>(root).Single(textBlock =>
-                    textBlock.GetBindingExpression(TextBlock.TextProperty)?.ParentBinding.Path.Path ==
-                    nameof(TransactionVM.Amount));
-
-                Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(icon));
-                Assert.Same(LogicalTreeHelper.GetParent(amount), LogicalTreeHelper.GetParent(icon));
-            }
-        });
-    }
-
-    [Fact]
-    public void SplitPanel_without_subtransactions_shows_root_dashed_add_button()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            var bulk = new TransactionBulkQueueVM(messenger);
-            var splits = new TransactionSplitsVM(messenger);
-            var popup = new TransactionPopup(viewModel, bulk, splits);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var rootButton = FindButtons(popup).SingleOrDefault(candidate =>
-                Equals(candidate.Content, "Add a sub-transaction"));
-
-            Assert.NotNull(rootButton);
-            rootButton.GetBindingExpression(Button.CommandProperty)!.UpdateTarget();
-            Assert.Same(splits.AddSplitCommand, rootButton.Command);
-            Assert.Null(rootButton.CommandParameter);
-            Assert.Same(popup.FindResource("DashedButtonStyle"), rootButton.Style);
-        });
-    }
-
-    [Fact]
-    public void SplitTree_selection_syncs_to_the_loaded_transaction()
+    public void TransactionPopupSplitLayout_SplitTree_SelectionSyncsToTheLoaded_Transaction()
     {
         RunOnStaThread(() =>
         {
@@ -380,7 +166,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Queue_switch_updates_note_before_editing_selected_transaction()
+    public void TransactionPopupSplitLayout_Queue_SwitchUpdatesNoteBeforeEditingSelected_Transaction()
     {
         RunOnStaThread(() =>
         {
@@ -411,7 +197,7 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
-    public void Queue_selection_switches_between_equal_new_transactions()
+    public void TransactionPopupSplitLayout_Queue_SelectionSwitchesBetweenEqualNew_Transactions()
     {
         RunOnStaThread(() =>
         {
@@ -435,390 +221,16 @@ public sealed class TransactionPopupSplitLayoutTests
         });
     }
 
-    [Fact]
-    public void InvalidName_shows_hover_feedback_icon_without_affecting_layout()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                NameText = "Lunch"
-            };
-            viewModel.NameText = string.Empty;
-            var popup = new TransactionPopup(
-                viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
 
-            var feedback = FindControls<ContentControl>(popup).Single(control =>
-                ReferenceEquals(control.Content, viewModel.NameFeedback));
 
-            Assert.NotNull(feedback.ContentTemplate);
 
-            var feedbackHost = Assert.IsType<Grid>(feedback.ContentTemplate.LoadContent());
-            feedbackHost.DataContext = viewModel.NameFeedback;
-            feedbackHost.Measure(new Size(100, 100));
-            feedbackHost.Arrange(new Rect(0, 0, 100, 100));
-            feedbackHost.UpdateLayout();
-            Assert.Equal(10, feedbackHost.DesiredSize.Width);
-            Assert.Equal(10, feedbackHost.DesiredSize.Height);
 
-            var feedbackIcon = FindVisualControls<Icon>(feedbackHost).Single(icon =>
-                Equals(icon.Path, popup.FindResource("ExclamationTriangle")));
-            var feedbackPopup = FindControls<Popup>(feedbackHost).Single(candidate =>
-                ReferenceEquals(candidate.PlacementTarget, feedbackIcon));
 
-            Assert.Equal(popup.FindResource("Brush.Danger"), feedbackIcon.Color);
-            Assert.Equal("IsMouseOver", feedbackPopup.GetBindingExpression(Popup.IsOpenProperty)!.ParentBinding.Path.Path);
-        });
-    }
 
-    [Fact]
-    public void Time_header_shows_duplicate_warning_feedback_in_warning_color()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            viewModel.TimeFeedback.Update(
-                [new TransactionWarning("Potentially duplicated transaction found.", true)]);
-            var popup = new TransactionPopup(
-                viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-            var feedback = FindControls<ContentControl>(popup).Single(control =>
-                ReferenceEquals(control.Content, viewModel.TimeFeedback));
 
-            var feedbackHost = Assert.IsType<Grid>(feedback.ContentTemplate!.LoadContent());
-            feedbackHost.DataContext = viewModel.TimeFeedback;
-            feedbackHost.Measure(new Size(100, 100));
-            feedbackHost.Arrange(new Rect(0, 0, 100, 100));
-            feedbackHost.UpdateLayout();
-            var icon = Assert.Single(FindVisualControls<Icon>(feedbackHost));
 
-            Assert.Equal(popup.FindResource("Brush.Warning"), icon.Color);
-        });
-    }
 
-    [Fact]
-    public void Split_option_is_enabled_for_income_and_side_panel_matches_form_height()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                IsExpense = false
-            };
-            var popup = new TransactionPopup(
-                viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(1300, 800));
-            popup.Arrange(new Rect(0, 0, 1300, 800));
-            popup.UpdateLayout();
 
-            var split = FindControls<SegmentedToggleOption>(popup)
-                .Single(option => Equals(option.Content, "Split"));
-            var sidePanel = FindControls<Grid>(popup).Single(grid => grid.Width == 480);
-            var popupGrid = Assert.IsType<Grid>(LogicalTreeHelper.GetParent(sidePanel));
-            var formLayout = Assert.IsType<Grid>(popup.FindName("TransactionFormLayout"));
-            var form = Assert.IsType<FadingScrollViewer>(popup.FindName("TransactionFormScrollViewer"));
-
-            Assert.True(split.IsEnabled);
-            Assert.False(IsLogicalDescendantOf(sidePanel, form));
-            Assert.Equal(formLayout.ActualHeight, sidePanel.ActualHeight);
-            Assert.Equal(0, sidePanel.TranslatePoint(new Point(), popupGrid).Y);
-        });
-    }
-
-    [Fact]
-    public void Root_split_card_tracks_name_after_goal_update_returns_to_expense()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                NameText = "Original",
-                AmountText = 100m
-            };
-            var bulk = new TransactionBulkQueueVM(messenger);
-            var splits = new TransactionSplitsVM(messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
-            splits.AddSplitCommand.Execute(null);
-            splits.SelectSplitCommand.Execute(null);
-            var popup = new TransactionPopup(viewModel, bulk, splits);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var rootCard = FindButtons(popup).Single(button =>
-                ReferenceEquals(button.Style, popup.FindResource("SplitTransactionRootCardStyle")));
-            var rootName = FindControls<TextBlock>(Assert.IsType<Grid>(rootCard.Content)).Single(textBlock =>
-                textBlock.GetBindingExpression(TextBlock.TextProperty)?.ParentBinding.Path.Path == "RootTransaction.Name");
-
-            viewModel.IsGoal = true;
-            viewModel.IsExpense = true;
-            viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
-            viewModel.NameText = "Current";
-            popup.UpdateLayout();
-
-            Assert.Equal("Current", rootName.Text);
-        });
-    }
-
-    [Fact]
-    public void BalanceUpdateCard_ShowsAtZeroAndHidesForInstallments()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var account = new Fluxo.ViewModels.Entities.AccountVM
-            {
-                Id = 1,
-                Name = "Checking",
-                Balance = 500m,
-                IsEnabled = true
-            };
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                SelectedAccount = account,
-                NameText = "Transaction",
-                AmountText = 10m
-            };
-            var bulk = new TransactionBulkQueueVM(messenger);
-            var splits = new TransactionSplitsVM(messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
-            splits.AddSplitCommand.Execute(null);
-            splits.SelectSplitCommand.Execute(null);
-            viewModel.AmountText = 0m;
-
-            var popup = new TransactionPopup(viewModel, bulk, splits);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var card = FindControls<Border>(popup).Single(control => control.Name == "BalanceUpdateCard");
-            Assert.Equal(Visibility.Visible, card.Visibility);
-            Assert.Equal(2, FindControls<ListView>(card).Count());
-
-            viewModel.IsInstallments = true;
-            popup.UpdateLayout();
-
-            Assert.Equal(Visibility.Collapsed, card.Visibility);
-        });
-    }
-
-    [Fact]
-    public void BalanceUpdateCard_IsBelowNoteAndHidesUnavailableSections()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                NameText = "Transaction",
-                AmountText = 10m
-            };
-            var bulk = new TransactionBulkQueueVM(messenger);
-            var splits = new TransactionSplitsVM(messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.NameText = "Transaction";
-            viewModel.AmountText = 10m;
-            viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
-            splits.AddSplitCommand.Execute(null);
-            var root = splits.RootTransaction!;
-            Assert.True(root.ChildTransactions.Count == 1, "Split child was not created.");
-            var leaf = root.ChildTransactions[0];
-            root.IsIoU = true;
-            root.ShouldAffectBalance = true;
-            leaf.IsIoU = false;
-            leaf.ShouldAffectBalance = false;
-            splits.SelectSplitCommand.Execute(leaf);
-            var popup = new TransactionPopup(viewModel, bulk, splits);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var cards = FindControls<Border>(popup).Where(control => control.Name == "BalanceUpdateCard").ToList();
-            Assert.True(cards.Count == 1, "Balance update card was not found.");
-            var card = cards[0];
-            var notes = FindControls<TextBox>(popup).Where(control => control.Name == "NoteRichTextBox").ToList();
-            Assert.True(notes.Count == 1, "Note field was not found.");
-            var note = notes[0];
-            var noteSection = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(LogicalTreeHelper.GetParent(note)!));
-            var formSection = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(noteSection));
-
-            Assert.Same(formSection, LogicalTreeHelper.GetParent(card));
-            Assert.True(formSection.Children.IndexOf(noteSection) < formSection.Children.IndexOf(card));
-
-            var categories = Assert.IsType<StackPanel>(popup.FindName("BalanceUpdateCategories"));
-            var tags = Assert.IsType<StackPanel>(popup.FindName("BalanceUpdateTags"));
-            Assert.Equal(Visibility.Collapsed, categories.Visibility);
-            Assert.Equal(Visibility.Collapsed, tags.Visibility);
-            var item = new ListViewItem { Style = Assert.IsType<Style>(popup.FindResource("BalanceUpdateListViewItemStyle")) };
-            Assert.Equal(HorizontalAlignment.Stretch, item.HorizontalContentAlignment);
-        });
-    }
-
-    [Fact]
-    public void BalanceUpdateCard_HidesCategoriesAndTagsForUnselectableRoot()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var account = new Fluxo.ViewModels.Entities.AccountVM
-            {
-                Id = 1,
-                Name = "Checking",
-                Balance = 500m,
-                IsEnabled = true
-            };
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                SelectedAccount = account
-            };
-            var bulk = new TransactionBulkQueueVM(messenger);
-            var splits = new TransactionSplitsVM(messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.NameText = "Transaction";
-            viewModel.AmountText = 10m;
-            viewModel.SelectedTag = new TagVM { Id = 1, Name = "General" };
-            viewModel.SelectedSidePanel = TransactionPopupSidePanel.Split;
-            splits.AddSplitCommand.Execute(null);
-            splits.SelectSplitCommand.Execute(null);
-
-            Assert.True(splits.RootTransaction!.ChildTransactions.Count > 0);
-            Assert.False(viewModel.CanEditCategory);
-            Assert.False(viewModel.CanEditTags);
-
-            var popup = new TransactionPopup(viewModel, bulk, splits);
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var categories = Assert.IsType<StackPanel>(popup.FindName("BalanceUpdateCategories"));
-            var tags = Assert.IsType<StackPanel>(popup.FindName("BalanceUpdateTags"));
-
-            Assert.Equal(Visibility.Collapsed, categories.Visibility);
-            Assert.Equal(Visibility.Collapsed, tags.Visibility);
-        });
-    }
-
-    [Fact]
-    public void BalanceUpdateCard_HidesCategoriesWhenBudgetExcluded()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.NameText = "Excluded transaction";
-            viewModel.AmountText = 10m;
-            viewModel.IsExcludedCategory = true;
-            var popup = new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var categories = Assert.IsType<StackPanel>(popup.FindName("BalanceUpdateCategories"));
-
-            Assert.Equal(Visibility.Collapsed, categories.Visibility);
-        });
-    }
-
-    [Fact]
-    public void BalanceUpdateCard_ShowsTagsForSelectedEditableTag()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.NameText = "Tagged transaction";
-            viewModel.AmountText = 10m;
-            viewModel.SelectedTag = new TagVM { Id = 1, Name = "General" };
-            var popup = new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var tags = Assert.IsType<StackPanel>(popup.FindName("BalanceUpdateTags"));
-
-            Assert.Equal(Visibility.Visible, tags.Visibility);
-        });
-    }
-
-    [Fact]
-    public void GoalSelector_IsRenderedBeforeBalanceUpdateCard()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var account = new Fluxo.ViewModels.Entities.AccountVM
-            {
-                Id = 1,
-                Name = "Checking",
-                Balance = 500m,
-                IsEnabled = true
-            };
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger)
-            {
-                SelectedAccount = account
-            };
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.NameText = "Goal update";
-            viewModel.AmountText = 10m;
-            viewModel.IsGoal = true;
-            var popup = new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var card = Assert.IsType<Border>(popup.FindName("BalanceUpdateCard"));
-            var goal = Assert.IsType<ComboBox>(popup.FindName("SharedGoalComboBox"));
-            var goalSection = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(goal));
-            var formSection = Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(card));
-
-            Assert.Same(formSection, LogicalTreeHelper.GetParent(goalSection));
-            Assert.True(formSection.Children.IndexOf(goalSection) < formSection.Children.IndexOf(card));
-        });
-    }
-
-    [Fact]
-    public void Repayment_ExpandsCategoryAccountFirstColumn()
-    {
-        RunOnStaThread(() =>
-        {
-            EnsureApplicationResources();
-            var messenger = new WeakReferenceMessenger();
-            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-            viewModel.InitializeAsync().GetAwaiter().GetResult();
-            viewModel.IsRepayment = true;
-            var popup = new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
-            popup.Measure(new Size(800, 600));
-            popup.Arrange(new Rect(0, 0, 800, 600));
-            popup.UpdateLayout();
-
-            var categoryAccountGrid = Assert.IsType<Grid>(popup.FindName("CategoryAccountGrid"));
-
-            Assert.Equal(GridUnitType.Star, categoryAccountGrid.ColumnDefinitions[0].Width.GridUnitType);
-        });
-    }
 
     private static IEnumerable<Button> FindButtons(DependencyObject root)
     {

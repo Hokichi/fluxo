@@ -15,7 +15,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public sealed class MainVMUserSettingsTests
 {
     [Fact]
-    public async Task ReloadUserSettingsAsync_RefreshesAutoLockState()
+    public async Task MainVMUserSettings_ReloadUserSettingsAsync_RefreshesAutoLockState()
     {
         var settings = new Dictionary<string, string>(StringComparer.Ordinal)
         {

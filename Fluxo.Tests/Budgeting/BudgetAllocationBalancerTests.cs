@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Budgeting;
 public sealed class BudgetAllocationBalancerTests
 {
     [Fact]
-    public void Balance_WhenBucketIncreases_ReducesOtherBuckets()
+    public void BudgetAllocationBalancer_Balance_WhenBucketIncreases_ReducesOtherBuckets()
     {
         var balancer = new BudgetAllocationBalancer();
 
@@ -17,7 +17,7 @@ public sealed class BudgetAllocationBalancerTests
     }
 
     [Fact]
-    public void Balance_WhenBucketDecreases_IncreasesOtherBuckets()
+    public void BudgetAllocationBalancer_Balance_WhenBucketDecreases_IncreasesOtherBuckets()
     {
         var balancer = new BudgetAllocationBalancer();
 

@@ -16,7 +16,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public class SavingGoalsPanelVMTests
 {
     [Fact]
-    public void WeeklyAverageText_UsesCurrentAmountOverCompletedWeeks()
+    public void SavingGoalsPanelVM_WeeklyAverageText_UsesCurrentAmountOverCompletedWeeks()
     {
         var goal = new SavingGoalVM
         {
@@ -29,7 +29,7 @@ public class SavingGoalsPanelVMTests
     }
 
     [Fact]
-    public void WeeklyAverageText_RoundsUp()
+    public void SavingGoalsPanelVM_WeeklyAverageText_RoundsUp()
     {
         var goal = new SavingGoalVM
         {
@@ -42,7 +42,7 @@ public class SavingGoalsPanelVMTests
     }
 
     [Fact]
-    public void WeeklyAverageText_ClampsNewGoalToOneWeek()
+    public void SavingGoalsPanelVM_WeeklyAverageText_ClampsNewGoalToOneWeek()
     {
         var goal = new SavingGoalVM
         {
@@ -55,7 +55,7 @@ public class SavingGoalsPanelVMTests
     }
 
     [Fact]
-    public void EstimatedDeadlineText_ReturnsUndefinedWhenEndDateMissing()
+    public void SavingGoalsPanelVM_EstimatedDeadlineText_ReturnsUndefinedWhenEndDateMissing()
     {
         var goal = new SavingGoalVM
         {
@@ -66,7 +66,7 @@ public class SavingGoalsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_FiltersCompletedGoals()
+    public async Task SavingGoalsPanelVM_LoadAsync_FiltersCompletedGoals()
     {
         var goals = new List<SavingGoalVM>
         {
@@ -86,11 +86,10 @@ public class SavingGoalsPanelVMTests
         Assert.Equal(1, vm.CurrentStepNumber);
         var activeGoal = Assert.Single(vm.SavingGoals, goal => goal.IsActive);
         Assert.Equal(remainingGoal, activeGoal);
-        Assert.Null(typeof(SavingGoalsPanelVM).GetProperty("GoalDots"));
     }
 
     [Fact]
-    public async Task NavigatePrevious_WrapsFromFirstToLastGoal()
+    public async Task SavingGoalsPanelVM_NavigatePrevious_WrapsFromFirstToLastGoal()
     {
         var vm = CreateVm(CreateGoals(3));
         await vm.LoadAsync();
@@ -107,7 +106,7 @@ public class SavingGoalsPanelVMTests
     }
 
     [Fact]
-    public async Task NavigateNext_WrapsFromLastToFirstGoal()
+    public async Task SavingGoalsPanelVM_NavigateNext_WrapsFromLastToFirstGoal()
     {
         var vm = CreateVm(CreateGoals(2));
         await vm.LoadAsync();

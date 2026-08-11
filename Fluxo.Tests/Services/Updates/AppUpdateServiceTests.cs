@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Services.Updates;
 public sealed class AppUpdateServiceTests
 {
     [Fact]
-    public async Task CheckForUpdatesAsync_WhenLatestReleaseIsNewer_ReturnsInstallerAsset()
+    public async Task AppUpdateService_CheckForUpdatesAsync_WhenLatestReleaseIsNewer_ReturnsInstallerAsset()
     {
         var handler = new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -39,7 +39,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task CheckForUpdatesAsync_WhenLatestReleaseIsSameVersion_ReturnsUpToDate()
+    public async Task AppUpdateService_CheckForUpdatesAsync_WhenLatestReleaseIsSameVersion_ReturnsUpToDate()
     {
         var handler = new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -67,7 +67,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task CheckForUpdatesAsync_WhenNetworkFails_ReturnsConnectionError()
+    public async Task AppUpdateService_CheckForUpdatesAsync_WhenNetworkFails_ReturnsConnectionError()
     {
         var sut = new AppUpdateService(new HttpClient(
             new StubHttpMessageHandler(_ => throw new HttpRequestException("network unavailable"))));
@@ -79,7 +79,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task DownloadInstallerAsync_WritesInstallerToTempFile()
+    public async Task AppUpdateService_DownloadInstallerAsync_WritesInstallerToTempFile()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), $"fluxo-update-test-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempDirectory);
@@ -110,7 +110,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task DownloadInstallerAsync_WhenContentLengthKnown_ReportsProgressPercentage()
+    public async Task AppUpdateService_DownloadInstallerAsync_WhenContentLengthKnown_ReportsProgressPercentage()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), $"fluxo-update-test-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempDirectory);
@@ -139,7 +139,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task DownloadInstallerAsync_WhenStreamReportsTinyChunks_ThrottlesProgressReports()
+    public async Task AppUpdateService_DownloadInstallerAsync_WhenStreamReportsTinyChunks_ThrottlesProgressReports()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), $"fluxo-update-test-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempDirectory);
@@ -172,7 +172,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task DownloadInstallerAsync_RequestsLargeReadBuffer()
+    public async Task AppUpdateService_DownloadInstallerAsync_RequestsLargeReadBuffer()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), $"fluxo-update-test-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempDirectory);
@@ -200,7 +200,7 @@ public sealed class AppUpdateServiceTests
     }
 
     [Fact]
-    public async Task DownloadInstallerAsync_WhenStreamCancels_DeletesPartialInstaller()
+    public async Task AppUpdateService_DownloadInstallerAsync_WhenStreamCancels_DeletesPartialInstaller()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), $"fluxo-update-test-{Guid.NewGuid():N}");
         Directory.CreateDirectory(tempDirectory);

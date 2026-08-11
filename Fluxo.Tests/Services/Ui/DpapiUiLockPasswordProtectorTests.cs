@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Services.Ui;
 public sealed class DpapiUiLockPasswordProtectorTests
 {
     [Fact]
-    public void Protect_ReturnsEmpty_WhenPasswordIsBlank()
+    public void DpapiUiLockPasswordProtector_Protect_ReturnsEmpty_WhenPasswordIsBlank()
     {
         var protector = new DpapiUiLockPasswordProtector();
 
@@ -14,7 +14,7 @@ public sealed class DpapiUiLockPasswordProtectorTests
     }
 
     [Fact]
-    public void Protect_DoesNotReturnPlainText()
+    public void DpapiUiLockPasswordProtector_Protect_DoesNotReturnPlainText()
     {
         var protector = new DpapiUiLockPasswordProtector();
 
@@ -25,7 +25,7 @@ public sealed class DpapiUiLockPasswordProtectorTests
     }
 
     [Fact]
-    public void Unprotect_RoundTripsProtectedPassword()
+    public void DpapiUiLockPasswordProtector_Unprotect_RoundTripsProtectedPassword()
     {
         var protector = new DpapiUiLockPasswordProtector();
         var protectedValue = protector.Protect("secret-pass");
@@ -36,7 +36,7 @@ public sealed class DpapiUiLockPasswordProtectorTests
     }
 
     [Fact]
-    public void Unprotect_ReturnsEmpty_ForBlankValue()
+    public void DpapiUiLockPasswordProtector_Unprotect_ReturnsEmpty_ForBlankValue()
     {
         var protector = new DpapiUiLockPasswordProtector();
 

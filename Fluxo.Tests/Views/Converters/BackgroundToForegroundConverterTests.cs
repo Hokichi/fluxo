@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Views.Converters;
 public sealed class BackgroundToForegroundConverterTests
 {
     [Fact]
-    public void Convert_ReturnsHarmonicDarkBrush_WhenBackgroundIsBright()
+    public void BackgroundToForegroundConverter_Convert_ReturnsHarmonicDarkBrush_WhenBackgroundIsBright()
     {
         var converter = new BackgroundToForegroundConverter();
         var background = Color.FromRgb(230, 234, 240);
@@ -26,7 +26,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_ReturnsHarmonicLightBrush_WhenBackgroundIsDark()
+    public void BackgroundToForegroundConverter_Convert_ReturnsHarmonicLightBrush_WhenBackgroundIsDark()
     {
         var converter = new BackgroundToForegroundConverter();
         var background = Color.FromRgb(18, 20, 23);
@@ -44,7 +44,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_UsesStringBackground_WhenHexIsProvided()
+    public void BackgroundToForegroundConverter_Convert_UsesStringBackground_WhenHexIsProvided()
     {
         var converter = new BackgroundToForegroundConverter();
         var background = Color.FromRgb(255, 176, 32);
@@ -60,7 +60,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_UsesBlackFallback_WhenInputIsUnsupported()
+    public void BackgroundToForegroundConverter_Convert_UsesBlackFallback_WhenInputIsUnsupported()
     {
         var converter = new BackgroundToForegroundConverter();
 
@@ -76,7 +76,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_ReturnsWhiteBrush_WhenBackgroundIsTransparent()
+    public void BackgroundToForegroundConverter_Convert_ReturnsWhiteBrush_WhenBackgroundIsTransparent()
     {
         var converter = new BackgroundToForegroundConverter();
 
@@ -91,7 +91,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_RespectsCustomTargetContrast()
+    public void BackgroundToForegroundConverter_Convert_RespectsCustomTargetContrast()
     {
         var converter = new BackgroundToForegroundConverter { TargetContrast = 7.0 };
         var background = Color.FromRgb(18, 20, 23);
@@ -107,7 +107,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_DecreasesLuminanceSlightly_WhenForegroundIsDark()
+    public void BackgroundToForegroundConverter_Convert_DecreasesLuminanceSlightly_WhenForegroundIsDark()
     {
         var adjustedConverter = new BackgroundToForegroundConverter();
         var baselineConverter = new BackgroundToForegroundConverter { LuminanceAdjustment = 0 };
@@ -131,7 +131,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void Convert_IncreasesLuminanceSlightly_WhenForegroundIsLight()
+    public void BackgroundToForegroundConverter_Convert_IncreasesLuminanceSlightly_WhenForegroundIsLight()
     {
         var adjustedConverter = new BackgroundToForegroundConverter();
         var baselineConverter = new BackgroundToForegroundConverter { LuminanceAdjustment = 0 };
@@ -155,7 +155,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void ConvertMultiValue_UsesBackgroundValue()
+    public void BackgroundToForegroundConverter_ConvertMultiValue_UsesBackgroundValue()
     {
         var converter = new BackgroundToForegroundConverter();
         var background = Color.FromRgb(230, 234, 240);
@@ -172,7 +172,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void ConvertBack_ThrowsNotSupportedException()
+    public void BackgroundToForegroundConverter_ConvertBack_ThrowsNotSupportedException()
     {
         var converter = new BackgroundToForegroundConverter();
 
@@ -184,7 +184,7 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void ConvertBackMultiValue_ThrowsNotSupportedException()
+    public void BackgroundToForegroundConverter_ConvertBackMultiValue_ThrowsNotSupportedException()
     {
         var converter = new BackgroundToForegroundConverter();
 

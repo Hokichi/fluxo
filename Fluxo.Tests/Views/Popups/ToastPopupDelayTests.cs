@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class ToastPopupDelayTests
 {
     [Fact]
-    public void CalculateCloseDelay_UsesFiveHundredMillisecondsForShortMessages()
+    public void ToastPopupDelay_CalculateCloseDelay_UsesFiveHundredMillisecondsForShortMessages()
     {
         var delay = ToastPopup.CalculateCloseDelay("Done");
 
@@ -14,7 +14,7 @@ public sealed class ToastPopupDelayTests
     }
 
     [Fact]
-    public void CalculateCloseDelay_ScalesWithMessageLength()
+    public void ToastPopupDelay_CalculateCloseDelay_ScalesWithMessageLength()
     {
         var delay = ToastPopup.CalculateCloseDelay(new string('x', 20));
 

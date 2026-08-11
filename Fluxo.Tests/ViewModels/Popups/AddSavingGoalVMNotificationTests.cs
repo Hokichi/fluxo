@@ -11,7 +11,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AddSavingGoalVMNotificationTests
 {
     [Fact]
-    public async Task SaveAsync_InEditMode_PublishesUpdatedAction()
+    public async Task AddSavingGoalVMNotification_SaveAsync_InEditMode_PublishesUpdatedAction()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetSavingGoalByIdAsync(7).Returns(new SavingGoal { Id = 7, Name = "Old goal" });

@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Helpers.Transaction;
 public sealed class TransactionModeHelperTests
 {
     [Fact]
-    public void Add_state_resolves_requested_entities_and_preserves_typed_values()
+    public void TransactionModeHelper_Add_StateResolvesRequestedEntitiesAndPreservesTyped_Values()
     {
         var account = new AccountVM { Id = 2, Name = "Checking" };
         var tag = new TagVM { Id = 3, Name = "Food" };
@@ -27,7 +27,7 @@ public sealed class TransactionModeHelperTests
     }
 
     [Fact]
-    public void Add_recurring_state_enables_recurring_mode_and_honors_lock()
+    public void TransactionModeHelper_Add_RecurringStateEnablesRecurringModeAndHonors_Lock()
     {
         var state = AddRecurringTransactionHelper.CreateState(isLocked: true);
 
@@ -38,7 +38,7 @@ public sealed class TransactionModeHelperTests
     }
 
     [Fact]
-    public void Edit_recurring_state_resolves_saved_relationships()
+    public void TransactionModeHelper_Edit_RecurringStateResolvesSaved_Relationships()
     {
         var account = new AccountVM { Id = 2 };
         var tag = new TagVM { Id = 3 };
@@ -58,7 +58,7 @@ public sealed class TransactionModeHelperTests
     }
 
     [Fact]
-    public void View_state_keeps_loaded_identity_and_clears_pending_identity()
+    public void TransactionModeHelper_View_StateKeepsLoadedIdentityAndClearsPending_Identity()
     {
         var account = new AccountVM { Id = 2 };
         var transaction = new TransactionVM
@@ -80,7 +80,7 @@ public sealed class TransactionModeHelperTests
     }
 
     [Fact]
-    public void Edit_input_maps_pending_business_values()
+    public void TransactionModeHelper_Edit_InputMapsPendingBusiness_Values()
     {
         var pending = new TransactionVM
         {
@@ -103,7 +103,7 @@ public sealed class TransactionModeHelperTests
     }
 
     [Fact]
-    public void Processing_navigation_skips_non_pending_targets()
+    public void TransactionModeHelper_Processing_NavigationSkipsNonPending_Targets()
     {
         var states = new[]
         {

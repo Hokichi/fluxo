@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Services.Updates;
 public sealed class AppUpdateInteractionServiceTests
 {
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenFirstPromptDeclined_DoesNotDownloadLaunchOrDelete()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenFirstPromptDeclined_DoesNotDownloadLaunchOrDelete()
     {
         var update = CreateAvailableUpdate();
         var dialogService = Substitute.For<IDialogService>();
@@ -36,7 +36,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenInstallPromptDeclined_DeletesDownloadedInstaller()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenInstallPromptDeclined_DeletesDownloadedInstaller()
     {
         const string installerPath = "C:\\temp\\fluxo-installer.exe";
         var update = CreateAvailableUpdate();
@@ -60,7 +60,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenDownloadFails_ShowsErrorAndDoesNotLaunch()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenDownloadFails_ShowsErrorAndDoesNotLaunch()
     {
         var update = CreateAvailableUpdate();
         var dialogService = Substitute.For<IDialogService>();
@@ -88,7 +88,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenLaunchFails_ShowsError()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenLaunchFails_ShowsError()
     {
         const string installerPath = "C:\\temp\\fluxo-installer.exe";
         var update = CreateAvailableUpdate();
@@ -114,7 +114,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenBothPromptsAccepted_LaunchesInstallerOnce_AndDoesNotDeleteInstaller()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenBothPromptsAcceptedLaunchesInstallerOnce_AndDoesNotDeleteInstaller()
     {
         const string installerPath = "C:\\temp\\fluxo-installer.exe";
         var update = CreateAvailableUpdate();
@@ -134,7 +134,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenMetadataMissing_HydratesAndLaunchesInstaller()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenMetadataMissing_HydratesAndLaunchesInstaller()
     {
         const string installerPath = "C:\\temp\\fluxo-installer.exe";
         var update = AppUpdateCheckResult.UpdateAvailable("2.5.0", string.Empty, string.Empty);
@@ -171,7 +171,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public async Task HandleAvailableUpdateAsync_WhenDownloadPopupRunsDelegate_DownloadsWithProgressAndCancellationToken()
+    public async Task AppUpdateInteractionService_HandleAvailableUpdateAsync_WhenDownloadPopupRunsDelegate_DownloadsWithProgressAndCancellationToken()
     {
         const string installerPath = "C:\\temp\\fluxo-installer.exe";
         var update = CreateAvailableUpdate();
@@ -213,7 +213,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public void BuildAvailableUpdatePrompt_UsesLatestVersion()
+    public void AppUpdateInteractionService_BuildAvailableUpdatePrompt_UsesLatestVersion()
     {
         var update = AppUpdateCheckResult.UpdateAvailable(
             "2.5.0",
@@ -226,7 +226,7 @@ public sealed class AppUpdateInteractionServiceTests
     }
 
     [Fact]
-    public void BuildAvailableUpdatePrompt_FallsBackToUnknown_WhenLatestVersionMissing()
+    public void AppUpdateInteractionService_BuildAvailableUpdatePrompt_FallsBackToUnknown_WhenLatestVersionMissing()
     {
         var update = AppUpdateCheckResult.UpdateAvailable(
             " ",

@@ -28,7 +28,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupMessengerTests
 {
     [Fact]
-    public async Task TransactionUpdate_RefreshesMatchingOpenPopup()
+    public async Task TransactionPopupMessenger_TransactionUpdate_RefreshesMatchingOpenPopup()
     {
         var messenger = new WeakReferenceMessenger();
         var account = CreateAccount();
@@ -46,7 +46,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public void TransientRecipients_UnregisterWhenClosedOrReopened()
+    public void TransactionPopupMessenger_TransientRecipients_UnregisterWhenClosedOrReopened()
     {
         var messenger = new WeakReferenceMessenger();
         var appData = CreateAppData(CreateAccount());
@@ -66,7 +66,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public async Task PopupRequestAndRecurringMessage_UseNeutralContracts()
+    public async Task TransactionPopupMessenger_PopupRequestAndRecurringMessage_UseNeutralContracts()
     {
         var messenger = new WeakReferenceMessenger();
         var popupDraft = new TransactionPopupDraft(
@@ -87,7 +87,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public async Task SettingsRecurringRequest_PublishesInitializationDataInsteadOfPopupViewModel()
+    public async Task TransactionPopupMessenger_SettingsRecurringRequest_PublishesInitializationDataInsteadOfPopupViewModel()
     {
         var messenger = new WeakReferenceMessenger();
         var appData = Substitute.For<IAppDataService>();
@@ -105,7 +105,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public async Task BudgetInvalidation_ReloadsDashboardRecipientThroughInjectedMessenger()
+    public async Task TransactionPopupMessenger_BudgetInvalidation_ReloadsDashboardRecipientThroughInjectedMessenger()
     {
         var messenger = new WeakReferenceMessenger();
         var unitOfWork = Substitute.For<IUnitOfWork>();
@@ -134,7 +134,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public void FirstRunAddTagRequest_UsesHostBeforeMainWindowExists()
+    public void TransactionPopupMessenger_FirstRunAddTagRequest_UsesHostBeforeMainWindowExists()
     {
         RunInSta(() =>
         {
@@ -156,7 +156,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public void AddTagRequest_WithTwoHosts_UsesOnlyLatestHostAndScopedWorkflow()
+    public void TransactionPopupMessenger_AddTagRequest_WithTwoHosts_UsesOnlyLatestHostAndScopedWorkflow()
     {
         RunInSta(() =>
         {
@@ -184,7 +184,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public void AddTagRequest_FromSiblingPopup_IsIgnoredByActiveOwnerHost()
+    public void TransactionPopupMessenger_AddTagRequest_FromSiblingPopup_IsIgnoredByActiveOwnerHost()
     {
         RunInSta(() =>
         {
@@ -208,7 +208,7 @@ public sealed class TransactionPopupMessengerTests
     }
 
     [Fact]
-    public async Task ComposedMainAndLedgerGraph_RefreshesEachOwnerOncePerPath()
+    public async Task TransactionPopupMessenger_ComposedMainAndLedgerGraph_RefreshesEachOwnerOncePerPath()
     {
         var messenger = new WeakReferenceMessenger();
         var graph = CreateMainGraph(messenger);

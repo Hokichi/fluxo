@@ -11,7 +11,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class GoalUpdateTransactionSupportTests
 {
     [Fact]
-    public async Task ResolveGoalUpdateTagAsync_ReturnsExistingTag_WhenItAlreadyExists()
+    public async Task GoalUpdateTransactionSupport_ResolveGoalUpdateTagAsync_ReturnsExistingTag_WhenItAlreadyExists()
     {
         var existingTag = new Tag
         {
@@ -31,7 +31,7 @@ public sealed class GoalUpdateTransactionSupportTests
     }
 
     [Fact]
-    public async Task ResolveGoalUpdateTagAsync_CreatesGoalUpdateTag_WhenMissing()
+    public async Task GoalUpdateTransactionSupport_ResolveGoalUpdateTagAsync_CreatesGoalUpdateTag_WhenMissing()
     {
         var tagRepository = new TestTagRepository([]);
         var unitOfWork = new TestUnitOfWork(tagRepository);

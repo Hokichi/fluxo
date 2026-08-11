@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Services.Backups;
 public sealed class UserBackupServiceRestoreSafetyTests
 {
     [Fact]
-    public async Task RestoreDatabaseBackupAsync_CopiesSafetyBackupOverDatabase()
+    public async Task UserBackupServiceRestoreSafety_RestoreDatabaseBackupAsync_CopiesSafetyBackupOverDatabase()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);
@@ -22,7 +22,7 @@ public sealed class UserBackupServiceRestoreSafetyTests
     }
 
     [Fact]
-    public async Task RestoreDatabaseBackupAsync_MissingBackup_ThrowsAndKeepsDestinationUnchanged()
+    public async Task UserBackupServiceRestoreSafety_RestoreDatabaseBackupAsync_MissingBackup_ThrowsAndKeepsDestinationUnchanged()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDirectory);

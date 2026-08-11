@@ -12,7 +12,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AddAccountVMTests
 {
     [Fact]
-    public void Constructor_DefaultsMonthlyDueDateToCurrentDay()
+    public void AddAccountVM_Constructor_DefaultsMonthlyDueDateToCurrentDay()
     {
         var sut = CreateSut();
         var expected = MonthlyDueDateHelper.Normalize(DateTime.Today.Day)?
@@ -22,7 +22,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void PopupTitle_WhenEditingAccount_UsesAccountCopy()
+    public void AddAccountVM_PopupTitle_WhenEditingAccount_UsesAccountCopy()
     {
         var sut = new AddAccountVM(
             mainViewModel: null!,
@@ -35,7 +35,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void NotificationAction_ReflectsCreateOrEditMode()
+    public void AddAccountVM_NotificationAction_ReflectsCreateOrEditMode()
     {
         var create = new AddAccountVM(mainViewModel: null!, appData: null!);
         var edit = new AddAccountVM(mainViewModel: null!, appData: null!) { EditingId = 7 };
@@ -45,7 +45,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void InitializeFromAccount_LoadsEditableFields()
+    public void AddAccountVM_InitializeFromAccount_LoadsEditableFields()
     {
         var sut = CreateSut();
         var source = new Fluxo.Core.Entities.Account
@@ -86,7 +86,7 @@ public sealed class AddAccountVMTests
     [InlineData(AccountType.Cash, true)]
     [InlineData(AccountType.Saving, true)]
     [InlineData(AccountType.Credit, false)]
-    public void IsBalanceLike_MatchesExpectedTypes(AccountType sourceType, bool expected)
+    public void AddAccountVM_IsBalanceLike_MatchesExpectedTypes(AccountType sourceType, bool expected)
     {
         var sut = CreateSut();
 
@@ -96,7 +96,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenCreditMaximumSpendingExceedsAccountLimit_ReturnsWarningAndDoesNotSave()
+    public async Task AddAccountVM_SaveAsync_WhenCreditMaximumSpendingExceedsAccountLimit_ReturnsWarningAndDoesNotSave()
     {
         var saveWasCalled = false;
         var sut = CreateSut(_ =>
@@ -120,7 +120,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenSavingApyExceeds100_ReturnsWarningAndDoesNotSave()
+    public async Task AddAccountVM_SaveAsync_WhenSavingApyExceeds100_ReturnsWarningAndDoesNotSave()
     {
         var saveWasCalled = false;
         var sut = CreateSut(_ =>
@@ -143,7 +143,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenCreditMinimumPaymentExceeds100_ReturnsWarningAndDoesNotSave()
+    public async Task AddAccountVM_SaveAsync_WhenCreditMinimumPaymentExceeds100_ReturnsWarningAndDoesNotSave()
     {
         var saveWasCalled = false;
         var sut = CreateSut(_ =>
@@ -166,7 +166,7 @@ public sealed class AddAccountVMTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void ValidateNameField_WhenNameIsEmptyOrWhitespace_ShowsRequiredHint(string name)
+    public void AddAccountVM_ValidateNameField_WhenNameIsEmptyOrWhitespaceShowsRequiredHint(string name)
     {
         var sut = CreateSut();
         sut.NameText = name;
@@ -178,7 +178,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateNameField_WhenNameContainsControlCharacter_ShowsInvalidNameHint()
+    public void AddAccountVM_ValidateNameField_WhenNameContainsControlCharacter_ShowsInvalidNameHint()
     {
         var sut = CreateSut();
         sut.NameText = "Bad\u0001Name";
@@ -190,7 +190,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateNameField_WhenNameExceedsMaximumLength_ShowsTooLongHint()
+    public void AddAccountVM_ValidateNameField_WhenNameExceedsMaximumLength_ShowsTooLongHint()
     {
         var sut = CreateSut();
         sut.NameText = new string('A', 257);
@@ -202,7 +202,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateMaximumSpendingField_WhenBalanceLikeMaximumExceedsBalance_ShowsLimitHint()
+    public void AddAccountVM_ValidateMaximumSpendingField_WhenBalanceLikeMaximumExceedsBalance_ShowsLimitHint()
     {
         var sut = CreateSut();
         sut.NameText = "Checking";
@@ -217,7 +217,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateMaximumSpendingField_WhenCreditMaximumExceedsAccountLimit_ShowsLimitHint()
+    public void AddAccountVM_ValidateMaximumSpendingField_WhenCreditMaximumExceedsAccountLimit_ShowsLimitHint()
     {
         var sut = CreateSut();
         ConfigureValidCreditFields(sut);
@@ -232,7 +232,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateSpentAmountField_WhenCreditSpentAmountExceedsAccountLimit_ShowsLimitHint()
+    public void AddAccountVM_ValidateSpentAmountField_WhenCreditSpentAmountExceedsAccountLimit_ShowsLimitHint()
     {
         var sut = CreateSut();
         ConfigureValidCreditFields(sut);
@@ -246,7 +246,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateMinimumPaymentField_WhenCreditMinimumPaymentIsZero_ShowsRequiredHint()
+    public void AddAccountVM_ValidateMinimumPaymentField_WhenCreditMinimumPaymentIsZero_ShowsRequiredHint()
     {
         var sut = CreateSut();
         ConfigureValidCreditFields(sut);
@@ -259,7 +259,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void ValidateApyField_WhenSavingApyIsZero_ShowsRequiredHint()
+    public void AddAccountVM_ValidateApyField_WhenSavingApyIsZero_ShowsRequiredHint()
     {
         var sut = CreateSut();
         sut.NameText = "Savings";
@@ -274,7 +274,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void SelectedAccountTypeChanged_ClearsNameValidation()
+    public void AddAccountVM_SelectedAccountTypeChanged_ClearsNameValidation()
     {
         var sut = CreateSut();
         sut.NameText = " ";
@@ -290,7 +290,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void SelectedAccountTypeChanged_ClearsMaximumSpendingValidation()
+    public void AddAccountVM_SelectedAccountTypeChanged_ClearsMaximumSpendingValidation()
     {
         var sut = CreateSut();
         ConfigureValidCreditFields(sut);
@@ -308,7 +308,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void SelectedAccountTypeChanged_ClearsInvalidNameValidationButKeepsSaveDisabled()
+    public void AddAccountVM_SelectedAccountTypeChanged_ClearsInvalidNameValidationButKeepsSaveDisabled()
     {
         var sut = CreateSut();
         sut.NameText = new string('A', 257);
@@ -325,7 +325,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public async Task ValidateNameField_WhenSourceNameAlreadyExists_ShowsExistingNameHint()
+    public async Task AddAccountVM_ValidateNameField_WhenSourceNameAlreadyExists_ShowsExistingNameHint()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetAccountsAsync(Arg.Any<CancellationToken>())
@@ -352,7 +352,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void HasChanges_IgnoresDueDateDeductSourceMaximumSpendingAndSourceType()
+    public void AddAccountVM_HasChanges_IgnoresDueDateDeductSourceMaximumSpendingAndSourceType()
     {
         var sut = CreateSut();
         sut.DeductSources.Add(new AddAccountDeductSourceOption(1, "Checking", AccountType.Checking));
@@ -367,7 +367,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void MaximumSpendingPlaceholderText_UsesBalanceForBalanceLikeSources()
+    public void AddAccountVM_MaximumSpendingPlaceholderText_UsesBalanceForBalanceLikeSources()
     {
         var sut = CreateSut();
         sut.SelectedAccountType = AccountType.Checking;
@@ -377,7 +377,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public void MaximumSpendingPlaceholderText_UsesAccountLimitForCreditSources()
+    public void AddAccountVM_MaximumSpendingPlaceholderText_UsesAccountLimitForCreditSources()
     {
         var sut = CreateSut();
         sut.SelectedAccountType = AccountType.Credit;
@@ -387,7 +387,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenMaximumSpendingIsUnmodified_PersistsPlaceholderValue()
+    public async Task AddAccountVM_SaveAsync_WhenMaximumSpendingIsUnmodified_PersistsPlaceholderValue()
     {
         AddAccountInput? savedInput = null;
         var sut = CreateSut(input =>
@@ -406,7 +406,7 @@ public sealed class AddAccountVMTests
     }
 
     [Fact]
-    public async Task SaveAsync_WhenMaximumSpendingIsModified_PersistsEditedValue()
+    public async Task AddAccountVM_SaveAsync_WhenMaximumSpendingIsModified_PersistsEditedValue()
     {
         AddAccountInput? savedInput = null;
         var sut = CreateSut(input =>

@@ -8,7 +8,7 @@ namespace Fluxo.Tests.ViewModels.Popups.Helpers;
 public sealed class AccountDeletionConfirmationHelperTests
 {
     [Fact]
-    public void IsOnlyFunctioningSource_WhenSingleEnabledPositiveSource_ReturnsTrue()
+    public void AccountDeletionConfirmationHelper_IsOnlyFunctioningSource_WhenSingleEnabledPositiveSource_ReturnsTrue()
     {
         var sources = new[]
         {
@@ -22,7 +22,7 @@ public sealed class AccountDeletionConfirmationHelperTests
     }
 
     [Fact]
-    public void IsOnlyFunctioningSource_WhenMultipleEnabledPositiveSources_ReturnsFalse()
+    public void AccountDeletionConfirmationHelper_IsOnlyFunctioningSource_WhenMultipleEnabledPositiveSources_ReturnsFalse()
     {
         var sources = new[]
         {

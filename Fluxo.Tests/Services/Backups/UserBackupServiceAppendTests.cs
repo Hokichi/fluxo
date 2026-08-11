@@ -10,7 +10,7 @@ namespace Fluxo.Tests.Services.Backups;
 public sealed class UserBackupServiceAppendTests
 {
     [Fact]
-    public void LegacyIoUWithoutBalanceFlag_RestoresAsPosted()
+    public void UserBackupServiceAppend_LegacyIoUWithoutBalanceFlag_RestoresAsPosted()
     {
         var backup = new BackupTransaction(
             1, "Expense", 2, "Loan", 10m, DateTime.Today, string.Empty,
@@ -20,7 +20,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task BackupAsync_WithFileNameOnlyPath_WritesBackupWithoutDirectoryCreationFailure()
+    public async Task UserBackupServiceAppend_BackupAsync_WithFileNameOnlyPath_WritesBackupWithoutDirectoryCreationFailure()
     {
         var appData = Substitute.For<IAppDataService>();
         var service = new UserBackupService(appData);
@@ -48,7 +48,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task FindAppendConflictsAsync_DetectsSourceGoalAndTagNameConflicts()
+    public async Task UserBackupServiceAppend_FindAppendConflictsAsync_DetectsSourceGoalAndTagNameConflicts()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetAccountsAsync(Arg.Any<CancellationToken>())
@@ -94,7 +94,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task AppendAsync_WhenTagsNotSelected_MapsUnresolvedExpenseAndRecurringTagsToDataRestorationTag()
+    public async Task UserBackupServiceAppend_AppendAsync_WhenTagsNotSelected_MapsUnresolvedExpenseAndRecurringTagsToDataRestorationTag()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetTagsAsync(Arg.Any<CancellationToken>())
@@ -186,7 +186,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task AppendAsync_WhenTagsSelected_RestoresSpendingLimit()
+    public async Task UserBackupServiceAppend_AppendAsync_WhenTagsSelected_RestoresSpendingLimit()
     {
         var appendedTags = new List<Tag>();
         var appData = Substitute.For<IAppDataService>();
@@ -237,7 +237,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task AppendAsync_WithLegacySchema_ReturnsFailure()
+    public async Task UserBackupServiceAppend_AppendAsync_WithLegacySchema_ReturnsFailure()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetAccountsAsync(Arg.Any<CancellationToken>())
@@ -302,7 +302,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task AppendAsync_WhenUserSettingsSelected_SkipsLegacyBudgetAllocationSettings()
+    public async Task UserBackupServiceAppend_AppendAsync_WhenUserSettingsSelected_SkipsLegacyBudgetAllocationSettings()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetUserSettingsAsync(Arg.Any<CancellationToken>())
@@ -371,7 +371,7 @@ public sealed class UserBackupServiceAppendTests
     }
 
     [Fact]
-    public async Task AppendAsync_WithAppendDecisionOnSourceAndGoal_AddsAmountsToExistingEntities()
+    public async Task UserBackupServiceAppend_AppendAsync_WithAppendDecisionOnSourceAndGoal_AddsAmountsToExistingEntities()
     {
         var existingSource = new Account
         {

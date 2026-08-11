@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Services.Updates;
 public sealed class AppUpdateInstallerLauncherTests
 {
     [Fact]
-    public void CreateStartInfo_PassesExistingInstallDirectory()
+    public void AppUpdateInstallerLauncher_CreateStartInfo_PassesExistingInstallDirectory()
     {
         var startInfo = AppUpdateInstallerLauncher.CreateStartInfo(
             installerPath: @"X:\Downloads\fluxo-1.2.0-Installer.exe",

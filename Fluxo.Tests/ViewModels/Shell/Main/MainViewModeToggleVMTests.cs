@@ -14,7 +14,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public class MainViewModeToggleVMTests
 {
     [Fact]
-    public void SetSelectedMainContentViewCommand_PublishesViewModeChangeMessage()
+    public void MainViewModeToggleVM_SetSelectedMainContentViewCommand_PublishesViewModeChangeMessage()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -31,7 +31,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public void SetSelectedMainContentViewCommand_UpdatesSelectionFlags()
+    public void MainViewModeToggleVM_SetSelectedMainContentViewCommand_UpdatesSelectionFlags()
     {
         var vm = new MainViewModeToggleVM();
 
@@ -46,7 +46,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public void ViewModeChangeMessage_SynchronizesSeparateToggleViewModels()
+    public void MainViewModeToggleVM_ViewModeChangeMessage_SynchronizesSeparateToggleViewModels()
     {
         var messenger = new WeakReferenceMessenger();
         var dashboardToggle = new MainViewModeToggleVM(messenger);
@@ -62,7 +62,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public void SetSelectedMainContentViewCommand_UpdatesAllocationPeriodSelectionFlag()
+    public void MainViewModeToggleVM_SetSelectedMainContentViewCommand_UpdatesAllocationPeriodSelectionFlag()
     {
         var vm = new MainViewModeToggleVM();
 
@@ -77,7 +77,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public void MoveToCurrentPeriodCommand_PublishesMoveRequestMessage()
+    public void MainViewModeToggleVM_MoveToCurrentPeriodCommand_PublishesMoveRequestMessage()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -92,7 +92,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public void SpinnerPeriodStateChangedMessage_UpdatesMoveToCurrentUiState()
+    public void MainViewModeToggleVM_SpinnerPeriodStateChangedMessage_UpdatesMoveToCurrentUiState()
     {
         var messenger = new WeakReferenceMessenger();
         var vm = new MainViewModeToggleVM(messenger);
@@ -108,7 +108,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public async Task MoveToCurrentPeriodFromUserAsync_UsesToastAndWaitsForUiReady()
+    public async Task MainViewModeToggleVM_MoveToCurrentPeriodFromUserAsync_UsesToastAndWaitsForUiReady()
     {
         var messenger = new WeakReferenceMessenger();
         var dialogService = Substitute.For<IDialogService>();
@@ -147,7 +147,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public async Task MoveToCurrentPeriodFromUserAsync_WhenAlreadyCurrent_DoesNotShowToastOrPublishMoveRequest()
+    public async Task MainViewModeToggleVM_MoveToCurrentPeriodFromUserAsync_WhenAlreadyCurrent_DoesNotShowToastOrPublishMoveRequest()
     {
         var messenger = new WeakReferenceMessenger();
         var dialogService = Substitute.For<IDialogService>();
@@ -175,7 +175,7 @@ public class MainViewModeToggleVMTests
     }
 
     [Fact]
-    public async Task MoveToCurrentPeriodFromUserAsync_WithoutServices_WhenAlreadyCurrent_DoesNotPublishMoveRequest()
+    public async Task MainViewModeToggleVM_MoveToCurrentPeriodFromUserAsync_WithoutServicesWhenAlreadyCurrent_DoesNotPublishMoveRequest()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();

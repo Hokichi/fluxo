@@ -8,7 +8,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public sealed class MainVMAppLockTests
 {
     [Fact]
-    public async Task ApplySettings_LoadsAppLockSettings()
+    public async Task MainVMAppLock_ApplySettings_LoadsAppLockSettings()
     {
         var mainViewModel = CreateMainViewModel(new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -24,7 +24,7 @@ public sealed class MainVMAppLockTests
     }
 
     [Fact]
-    public async Task ApplySettings_UsesThirtySecondDefault_WhenIntervalMissing()
+    public async Task MainVMAppLock_ApplySettings_UsesThirtySecondDefault_WhenIntervalMissing()
     {
         var mainViewModel = CreateMainViewModel(new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -43,7 +43,7 @@ public sealed class MainVMAppLockTests
     [InlineData(300, "300")]
     [InlineData(600, "600")]
     [InlineData(45, "Custom")]
-    public void AutoLockPreset_FromIntervalSeconds_MapsKnownValuesAndCustomValues(
+    public void MainVMAppLock_AutoLockPreset_FromIntervalSecondsMapsKnownValuesAndCustomValues(
         int seconds,
         string expectedPreset)
     {
@@ -57,7 +57,7 @@ public sealed class MainVMAppLockTests
     [InlineData("300", true, 300)]
     [InlineData("600", true, 600)]
     [InlineData("Custom", false, 0)]
-    public void AutoLockPreset_TryGetSeconds_MapsFixedPresetValues(
+    public void MainVMAppLock_AutoLockPreset_TryGetSecondsMapsFixedPresetValues(
         string preset,
         bool expectedResult,
         int expectedSeconds)
@@ -69,7 +69,7 @@ public sealed class MainVMAppLockTests
     }
 
     [Fact]
-    public void LockUi_SetsLockedState()
+    public void MainVMAppLock_LockUi_SetsLockedState()
     {
         var mainViewModel = CreateMainViewModel();
 
@@ -79,7 +79,7 @@ public sealed class MainVMAppLockTests
     }
 
     [Fact]
-    public void TryUnlockUi_ReturnsTrue_WhenNoPasswordSaved()
+    public void MainVMAppLock_TryUnlockUi_ReturnsTrue_WhenNoPasswordSaved()
     {
         var mainViewModel = CreateMainViewModel();
         mainViewModel.LockUi();
@@ -91,7 +91,7 @@ public sealed class MainVMAppLockTests
     }
 
     [Fact]
-    public async Task TryUnlockUi_ReturnsFalse_WhenPasswordMismatch()
+    public async Task MainVMAppLock_TryUnlockUi_ReturnsFalse_WhenPasswordMismatch()
     {
         var mainViewModel = CreateMainViewModel(new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -107,7 +107,7 @@ public sealed class MainVMAppLockTests
     }
 
     [Fact]
-    public async Task TryUnlockUi_ReturnsTrue_WhenPasswordMatches()
+    public async Task MainVMAppLock_TryUnlockUi_ReturnsTrue_WhenPasswordMatches()
     {
         var mainViewModel = CreateMainViewModel(new Dictionary<string, string>(StringComparer.Ordinal)
         {

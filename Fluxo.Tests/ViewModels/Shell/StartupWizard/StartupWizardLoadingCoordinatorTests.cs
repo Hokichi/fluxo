@@ -6,7 +6,7 @@ namespace Fluxo.Tests.ViewModels.Shell.StartupWizard;
 public sealed class QuickSetupWizardLoadingCoordinatorTests
 {
     [Fact]
-    public async Task RunAsync_SuccessOnFirstAttempt_ReturnsSuccess()
+    public async Task QuickSetupWizardLoadingCoordinator_RunAsync_SuccessOnFirstAttempt_ReturnsSuccess()
     {
         var attempts = 0;
         var prompted = 0;
@@ -36,7 +36,7 @@ public sealed class QuickSetupWizardLoadingCoordinatorTests
     }
 
     [Fact]
-    public async Task RunAsync_SixthAttemptAfterUserYes_ReturnsSuccess()
+    public async Task QuickSetupWizardLoadingCoordinator_RunAsync_SixthAttemptAfterUserYes_ReturnsSuccess()
     {
         var attempts = 0;
         var prompted = 0;
@@ -60,7 +60,7 @@ public sealed class QuickSetupWizardLoadingCoordinatorTests
     }
 
     [Fact]
-    public async Task RunAsync_FiveFailuresAndUserNo_ReturnsAbandoned()
+    public async Task QuickSetupWizardLoadingCoordinator_RunAsync_FiveFailuresAndUserNo_ReturnsAbandoned()
     {
         var attempts = 0;
         var prompted = 0;

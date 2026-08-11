@@ -6,7 +6,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AddNewTransactionHistoryListVMTests
 {
     [Fact]
-    public void Reset_LoadsFirstPageAndLoadMoreAppendsNextPage()
+    public void AddNewTransactionHistoryListVM_Reset_LoadsFirstPageAndLoadMoreAppendsNextPage()
     {
         var list = new AddNewTransactionHistoryListVM(pageSize: 2);
         var items = Enumerable.Range(1, 5)

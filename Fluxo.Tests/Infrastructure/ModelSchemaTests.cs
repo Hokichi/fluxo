@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class ModelSchemaTests
 {
     [Fact]
-    public void FluxoDbContext_ModelIncludesRequestedSchemaChanges()
+    public void ModelSchema_FluxoDbContext_ModelIncludesRequestedSchemaChanges()
     {
         using var dbContext = CreateDbContext();
         var model = dbContext.Model;
@@ -90,7 +90,7 @@ public sealed class ModelSchemaTests
     }
 
     [Fact]
-    public async Task SaveChanges_ClearsShouldAffectBalanceWhenTransactionIsNotIoU()
+    public async Task ModelSchema_SaveChanges_ClearsShouldAffectBalanceWhenTransactionIsNotIoU()
     {
         await using var dbContext = CreateDbContext();
         await dbContext.Database.OpenConnectionAsync();
@@ -114,7 +114,7 @@ public sealed class ModelSchemaTests
     }
 
     [Fact]
-    public async Task DatabaseRejectsBalanceAffectingTransactionThatIsNotIoU()
+    public async Task ModelSchema_DatabaseRejectsBalanceAffectingTransactionThatIsNotIoU_ReturnsVerifiedOutcome()
     {
         await using var dbContext = CreateDbContext();
         await dbContext.Database.OpenConnectionAsync();
@@ -138,7 +138,7 @@ public sealed class ModelSchemaTests
     [Theory]
     [InlineData(TransactionType.Expense)]
     [InlineData(TransactionType.Income)]
-    public async Task SaveChanges_NormalizesOccurredOnAndStampsLoggedOn(TransactionType type)
+    public async Task ModelSchema_SaveChanges_NormalizesOccurredOnAndStampsLoggedOn(TransactionType type)
     {
         await using var dbContext = CreateDbContext();
         await dbContext.Database.OpenConnectionAsync();
@@ -166,7 +166,7 @@ public sealed class ModelSchemaTests
     }
 
     [Fact]
-    public void EntitiesAndViewModels_ExposeRequestedProperties()
+    public void ModelSchema_EntitiesAndViewModels_ExposeRequestedProperties()
     {
         var source = new Account
         {
@@ -246,7 +246,7 @@ public sealed class ModelSchemaTests
     }
 
     [Fact]
-    public void PeriodEnums_ContainAllowedValues()
+    public void ModelSchema_PeriodEnums_ContainAllowedValues()
     {
         Assert.Equal(
             ["Weekly", "Biweekly", "Monthly", "Quarterly", "Yearly"],

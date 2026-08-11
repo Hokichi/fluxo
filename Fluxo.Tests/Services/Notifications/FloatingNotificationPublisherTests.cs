@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Services.Notifications;
 public sealed class FloatingNotificationPublisherTests
 {
     [Fact]
-    public void Success_PreservesStructuredHeaderAction()
+    public void FloatingNotificationPublisher_Success_PreservesStructuredHeaderAction()
     {
         var messenger = new StrongReferenceMessenger();
         ShowFloatingNotificationMessage? received = null;
@@ -23,7 +23,7 @@ public sealed class FloatingNotificationPublisherTests
     }
 
     [Fact]
-    public void Publish_ReturnsRequestId()
+    public void FloatingNotificationPublisher_Publish_ReturnsRequestId()
     {
         var messenger = new StrongReferenceMessenger();
         ShowFloatingNotificationMessage? received = null;
@@ -37,7 +37,7 @@ public sealed class FloatingNotificationPublisherTests
     }
 
     [Fact]
-    public void SaveFailed_PublishesSpecificHeaderAndDeduplicatedDetails()
+    public void FloatingNotificationPublisher_SaveFailed_PublishesSpecificHeaderAndDeduplicatedDetails()
     {
         var messenger = new StrongReferenceMessenger();
         ShowFloatingNotificationMessage? received = null;
@@ -55,7 +55,7 @@ public sealed class FloatingNotificationPublisherTests
     }
 
     [Fact]
-    public async Task Success_WithHistoryAction_ClickRequestsHistoryDrawer()
+    public async Task FloatingNotificationPublisher_Success_WithHistoryAction_ClickRequestsHistoryDrawer()
     {
         var messenger = new StrongReferenceMessenger();
         ShowFloatingNotificationMessage? received = null;

@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Services.History;
 public sealed class LogMemorySnapshotTests
 {
     [Fact]
-    public void Create_CapturesUnifiedTransactionFlags()
+    public void LogMemorySnapshot_Create_CapturesUnifiedTransactionFlags()
     {
         var account = new Account { Id = 1, Name = "Checking" };
         var tag = new Tag { Id = 2, Name = "Budget Reconciliation", HexCode = "#9ca3af" };

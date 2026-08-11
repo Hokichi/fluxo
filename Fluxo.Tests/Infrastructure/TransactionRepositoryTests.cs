@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class TransactionRepositoryTests
 {
     [Fact]
-    public async Task GetAllAsync_ReturnsActiveTransactionsWithNavigations()
+    public async Task TransactionRepository_GetAllAsync_ReturnsActiveTransactionsWithNavigations()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();

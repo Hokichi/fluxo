@@ -13,7 +13,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMSplitTests
 {
     [Fact]
-    public void Switching_between_child_and_root_saves_exact_instances()
+    public void TransactionPopupVMSplit_Switching_BetweenChildAndRootSavesExact_Instances()
     {
         var peers = CreatePeers();
         peers.Splits.AddSplitCommand.Execute(null);
@@ -30,7 +30,7 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
-    public void Invalid_split_updates_root_and_blocks_save_in_real_time()
+    public void TransactionPopupVMSplit_Invalid_SplitUpdatesRootAndBlocksSaveInReal_Time()
     {
         var peers = CreatePeers();
         peers.Splits.AddSplitCommand.Execute(null);
@@ -42,7 +42,7 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
-    public void Switching_split_expense_to_goal_update_shows_unavailable_placeholder()
+    public void TransactionPopupVMSplit_Switching_SplitExpenseToGoalUpdateShowsUnavailable_Placeholder()
     {
         var peers = CreatePeers();
         peers.Splits.AddSplitCommand.Execute(null);
@@ -54,7 +54,7 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
-    public void Root_account_and_date_changes_update_all_descendants()
+    public void TransactionPopupVMSplit_Root_AccountAndDateChangesUpdateAll_Descendants()
     {
         var peers = CreatePeers();
         peers.Splits.AddSplitCommand.Execute(null);
@@ -77,7 +77,7 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
-    public void Balance_update_uses_terminal_leaves_while_child_is_selected()
+    public void TransactionPopupVMSplit_Balance_UpdateUsesTerminalLeavesWhileChildIs_Selected()
     {
         var peers = CreatePeers();
         var root = peers.Splits.RootTransaction!;
@@ -108,7 +108,7 @@ public sealed class TransactionPopupVMSplitTests
     }
 
     [Fact]
-    public async Task Edit_mode_loads_tree_in_popup_and_allows_grandchild()
+    public async Task TransactionPopupVMSplit_Edit_ModeLoadsTreeInPopupAndAllows_Grandchild()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetTagsAsync(Arg.Any<CancellationToken>())

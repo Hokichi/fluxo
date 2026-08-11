@@ -18,7 +18,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public sealed class LedgerVMDateRangeTests
 {
     [Fact]
-    public async Task LoadAllTransactionsAsync_SetsEarliestDateThroughToday()
+    public async Task LedgerVMDateRange_LoadAllTransactionsAsync_SetsEarliestDateThroughToday()
     {
         var vm = CreateVm(
         [
@@ -33,7 +33,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task LoadAllTransactionsAsync_WithoutTransactions_UsesToday()
+    public async Task LedgerVMDateRange_LoadAllTransactionsAsync_WithoutTransactions_UsesToday()
     {
         var vm = CreateVm([]);
 
@@ -44,7 +44,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public void GlobalDashboardPeriodMessages_DoNotReplaceLedgerSelection()
+    public void LedgerVMDateRange_GlobalDashboardPeriodMessages_DoNotReplaceLedgerSelection()
     {
         var messenger = new WeakReferenceMessenger();
         var vm = CreateVm([], messenger);
@@ -58,7 +58,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task DedicatedDateRangeMessage_AppliesRangeOnNextLoad()
+    public async Task LedgerVMDateRange_DedicatedDateRangeMessage_AppliesRangeOnNextLoad()
     {
         var messenger = new WeakReferenceMessenger();
         var vm = CreateVm([], messenger);
@@ -71,7 +71,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task DedicatedAllTimeMessage_RunsAllTransactionsFlowOnNextLoad()
+    public async Task LedgerVMDateRange_DedicatedAllTimeMessage_RunsAllTransactionsFlowOnNextLoad()
     {
         var messenger = new WeakReferenceMessenger();
         var vm = CreateVm(
@@ -87,7 +87,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task CategoryFilter_Excluded_ShowsOnlyExcludedTransactions()
+    public async Task LedgerVMDateRange_CategoryFilter_Excluded_ShowsOnlyExcludedTransactions()
     {
         var vm = CreateVm(CreateCategoryFilterTransactions());
         await vm.LoadAsync();
@@ -102,7 +102,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task CategoryFilter_NeedsAndExcluded_UsesUnion()
+    public async Task LedgerVMDateRange_CategoryFilter_NeedsAndExcluded_UsesUnion()
     {
         var vm = CreateVm(CreateCategoryFilterTransactions());
         await vm.LoadAsync();
@@ -118,7 +118,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task LoadAsync_OrdersTransactionsByLoggedOn()
+    public async Task LedgerVMDateRange_LoadAsync_OrdersTransactionsByLoggedOn()
     {
         var vm = CreateVm(
         [
@@ -132,7 +132,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task LoadAsync_InitiallyShowsOnlyTodayTransactions()
+    public async Task LedgerVMDateRange_LoadAsync_InitiallyShowsOnlyTodayTransactions()
     {
         var vm = CreateVm(
         [
@@ -146,7 +146,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task ApplyFilters_ParentShowsOnlyMatchingChildrenAndVisibleCount()
+    public async Task LedgerVMDateRange_ApplyFilters_ParentShowsOnlyMatchingChildrenAndVisibleCount()
     {
         var vm = CreateVm(CreateParentWithChildren(), tags:
         [
@@ -165,7 +165,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task ApplyFilters_HidesParentWhenNoChildMatches()
+    public async Task LedgerVMDateRange_ApplyFilters_HidesParentWhenNoChildMatches()
     {
         var vm = CreateVm(CreateParentWithChildren());
         await vm.LoadAsync();
@@ -181,7 +181,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task FiltersAndBulkEdit_TrackDistinctSelectionStates()
+    public async Task LedgerVMDateRange_FiltersAndBulkEdit_TrackDistinctSelectionStates()
     {
         var vm = CreateVm(CreateParentWithChildren());
         await vm.LoadAsync();
@@ -202,7 +202,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task ReloadPeriod_PreservesAppliedTagFilter()
+    public async Task LedgerVMDateRange_ReloadPeriod_PreservesAppliedTagFilter()
     {
         var vm = CreateVm(CreateParentWithChildren(), tags:
         [
@@ -223,7 +223,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task SelectionMode_SelectedVisibleLeavesExposeSignedTotal()
+    public async Task LedgerVMDateRange_SelectionMode_SelectedVisibleLeavesExposeSignedTotal()
     {
         var vm = CreateVm(
         [
@@ -239,7 +239,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task GroupedByType_OrdersItemsByLoggedOnWithoutForcingGroupOrder()
+    public async Task LedgerVMDateRange_GroupedByType_OrdersItemsByLoggedOnWithoutForcingGroupOrder()
     {
         var vm = CreateVm(
         [
@@ -254,7 +254,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task GroupedByCategory_OrdersItemsByLoggedOnWithoutForcingGroupOrder()
+    public async Task LedgerVMDateRange_GroupedByCategory_OrdersItemsByLoggedOnWithoutForcingGroupOrder()
     {
         var vm = CreateVm(
         [
@@ -269,7 +269,7 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task LoadAllTransactionsAsync_ShowsLoadingToastUntilReloadSettles()
+    public async Task LedgerVMDateRange_LoadAllTransactionsAsync_ShowsLoadingToastUntilReloadSettles()
     {
         var dialogService = Substitute.For<IDialogService>();
         var uiSettleAwaiter = Substitute.For<IUiSettleAwaiter>();

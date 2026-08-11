@@ -20,7 +20,7 @@ namespace Fluxo.Tests.ViewModels.Popups.Settings;
 public sealed class SettingsIoUsTabVMTests
 {
     [Fact]
-    public async Task LoadAsync_ListsUnresolvedLendsAndDebts()
+    public async Task SettingsIoUsTabVM_LoadAsync_ListsUnresolvedLendsAndDebts()
     {
         var account = new Account { Id = 10, Name = "Checking", AccountType = AccountType.Checking };
         var appData = CreateAppData(
@@ -59,7 +59,7 @@ public sealed class SettingsIoUsTabVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_UpdatesTotalAmountText()
+    public async Task SettingsIoUsTabVM_LoadAsync_UpdatesTotalAmountText()
     {
         var account = new Account { Id = 10, Name = "Checking", AccountType = AccountType.Checking };
         var appData = CreateAppData(
@@ -96,7 +96,7 @@ public sealed class SettingsIoUsTabVMTests
     }
 
     [Fact]
-    public async Task ResolveAsync_LendCreatesIncomeAndClearsFlags()
+    public async Task SettingsIoUsTabVM_ResolveAsync_LendCreatesIncomeAndClearsFlags()
     {
         var account = new Account
         {
@@ -145,7 +145,7 @@ public sealed class SettingsIoUsTabVMTests
     }
 
     [Fact]
-    public async Task ResolveAsync_DebtCreatesBudgetReconciliationExpenseAndClearsFlag()
+    public async Task SettingsIoUsTabVM_ResolveAsync_DebtCreatesBudgetReconciliationExpenseAndClearsFlag()
     {
         var account = new Account
         {
@@ -195,7 +195,7 @@ public sealed class SettingsIoUsTabVMTests
     }
 
     [Fact]
-    public async Task ResolveAsync_UnpostedWithoutSelectedAccountFailsWithoutWrites()
+    public async Task SettingsIoUsTabVM_ResolveAsync_UnpostedWithoutSelectedAccountFailsWithoutWrites()
     {
         var account = new Account { Id = 10, Name = "Checking", Balance = 100m, IsEnabled = true };
         var transaction = new Transaction
@@ -222,7 +222,7 @@ public sealed class SettingsIoUsTabVMTests
     }
 
     [Fact]
-    public async Task ResolveAsync_UnpostedLendPostsAndSettlesSelectedAccount()
+    public async Task SettingsIoUsTabVM_ResolveAsync_UnpostedLendPostsAndSettlesSelectedAccount()
     {
         var originalAccount = new Account { Id = 10, Name = "Original", Balance = 100m, IsEnabled = true };
         var selectedAccount = new Account { Id = 20, Name = "Selected", Balance = 300m, IsEnabled = true };

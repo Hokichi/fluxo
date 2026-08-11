@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionSplitsVMTests
 {
     [Fact]
-    public void Child_selection_loads_child_and_leaving_tab_loads_root()
+    public void TransactionSplitsVM_Child_SelectionLoadsChildAndLeavingTabLoads_Root()
     {
         var messenger = new WeakReferenceMessenger();
         var loads = new List<TransactionVM>();
@@ -32,7 +32,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Child_cannot_be_selected_outside_split_tab()
+    public void TransactionSplitsVM_Child_CannotBeSelectedOutsideSplit_Tab()
     {
         var messenger = new WeakReferenceMessenger();
         var root = ValidRoot(100m);
@@ -49,7 +49,7 @@ public sealed class TransactionSplitsVMTests
     [Theory]
     [InlineData(40, "Split amounts must equal their parent amount.")]
     [InlineData(101, "Split amounts cannot exceed their parent amount.")]
-    public void Invalid_totals_fail_validation(decimal childAmount, string expectedMessage)
+    public void TransactionSplitsVM_Invalid_TotalsFailValidation(decimal childAmount, string expectedMessage)
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
@@ -66,7 +66,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Invalid_leaf_fails_validation_in_real_time()
+    public void TransactionSplitsVM_Invalid_LeafFailsValidationInReal_Time()
     {
         var messenger = new WeakReferenceMessenger();
         var changes = 0;
@@ -90,7 +90,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Validation_metadata_changes_do_not_publish_split_changes()
+    public void TransactionSplitsVM_Validation_MetadataChangesDoNotPublishSplit_Changes()
     {
         var messenger = new WeakReferenceMessenger();
         var changes = 0;
@@ -111,7 +111,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Balanced_tagless_expense_leaf_is_valid()
+    public void TransactionSplitsVM_Balanced_TaglessExpenseLeafIs_Valid()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
@@ -131,7 +131,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Invalid_split_tree_stays_editable_when_root_fields_are_valid()
+    public void TransactionSplitsVM_Invalid_SplitTreeStaysEditableWhenRootFieldsAre_Valid()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
@@ -146,7 +146,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Non_modifiable_split_context_shows_unavailable_placeholder()
+    public void TransactionSplitsVM_Non_ModifiableSplitContextShowsUnavailable_Placeholder()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
@@ -160,7 +160,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Add_delete_equal_and_reset_mutate_the_root_tree()
+    public void TransactionSplitsVM_Add_DeleteEqualAndResetMutateTheRoot_Tree()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);
@@ -183,7 +183,7 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
-    public void Grandchild_is_last_supported_level_and_parent_classification_is_cleared()
+    public void TransactionSplitsVM_Grandchild_IsLastSupportedLevelAndParentClassificationIs_Cleared()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionSplitsVM(messenger);

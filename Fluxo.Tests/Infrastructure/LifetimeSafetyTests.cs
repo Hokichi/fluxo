@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class LifetimeSafetyTests
 {
     [Fact]
-    public void SingletonUiRoots_DoNotDependOnUnitOfWorkOrRepositoryInterfaces()
+    public void LifetimeSafety_SingletonUiRoots_DoNotDependOnUnitOfWorkOrRepositoryInterfaces()
     {
         AssertConstructorIsSafe(typeof(MainVM));
         AssertConstructorIsSafe(typeof(BudgetAllocationPanelVM));

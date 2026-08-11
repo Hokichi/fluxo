@@ -12,7 +12,7 @@ namespace Fluxo.Tests.Services.Persistence;
 public sealed class CalendarServiceTests
 {
     [Fact]
-    public async Task GetCalendarDayAsync_FiltersSelectedDateAndBuildsSummaries()
+    public async Task CalendarService_GetCalendarDayAsync_FiltersSelectedDateAndBuildsSummaries()
     {
         var (sut, unitOfWork) = CreateSut();
         var selected = new DateOnly(2026, 6, 12);
@@ -154,7 +154,7 @@ public sealed class CalendarServiceTests
     [InlineData(RecurringPeriod.Monthly, 12, 2026, 6, 12, true)]
     [InlineData(RecurringPeriod.Monthly, 11, 2026, 6, 12, false)]
     [InlineData(RecurringPeriod.None, 0, 2026, 6, 12, false)]
-    public async Task GetCalendarDayAsync_FiltersRecurringTransactionsDueOnSelectedDate(
+    public async Task CalendarService_GetCalendarDayAsync_FiltersRecurringTransactionsDueOnSelectedDate(
         RecurringPeriod period,
         int recurringTime,
         int year,

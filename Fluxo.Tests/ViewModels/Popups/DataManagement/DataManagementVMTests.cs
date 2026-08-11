@@ -11,7 +11,7 @@ namespace Fluxo.Tests.ViewModels.Popups.DataManagement;
 public sealed class DataManagementVMTests
 {
     [Fact]
-    public void AccountsUnchecked_DisablesExpensesIncomesAndRecurringTransactions()
+    public void DataManagementVM_AccountsUnchecked_DisablesExpensesIncomesAndRecurringTransactions()
     {
         var vm = new DataManagementVM(Substitute.For<IUserBackupService>());
 
@@ -26,7 +26,7 @@ public sealed class DataManagementVMTests
     }
 
     [Fact]
-    public void AccountsUncheckedFromEntityToggle_DisablesExpensesIncomesAndRecurringTransactions()
+    public void DataManagementVM_AccountsUncheckedFromEntityToggle_DisablesExpensesIncomesAndRecurringTransactions()
     {
         var vm = new DataManagementVM(Substitute.For<IUserBackupService>());
 
@@ -41,7 +41,7 @@ public sealed class DataManagementVMTests
     }
 
     [Fact]
-    public void ApplyManifest_DisablesMissingEntityGroups()
+    public void DataManagementVM_ApplyManifest_DisablesMissingEntityGroups()
     {
         var vm = new DataManagementVM(Substitute.For<IUserBackupService>());
         var manifest = new UserBackupManifest(
@@ -58,7 +58,7 @@ public sealed class DataManagementVMTests
     }
 
     [Fact]
-    public void ApplyManifest_WithAccountsOnly_KeepsDependentsDisabledAndUnchecked()
+    public void DataManagementVM_ApplyManifest_WithAccountsOnly_KeepsDependentsDisabledAndUnchecked()
     {
         var vm = new DataManagementVM(Substitute.For<IUserBackupService>());
         var manifest = new UserBackupManifest(
@@ -79,7 +79,7 @@ public sealed class DataManagementVMTests
     }
 
     [Fact]
-    public void DecisionSetDirectly_RaisesSelectionPropertyNotifications()
+    public void DataManagementVM_DecisionSetDirectly_RaisesSelectionPropertyNotifications()
     {
         var item = new DataManagementConflictItemVM(
             new UserBackupConflict("conflict", DataManagementEntityKind.Expenses, "Sample"));
@@ -102,7 +102,7 @@ public sealed class DataManagementVMTests
     [Theory]
     [InlineData(DataManagementMode.Append)]
     [InlineData(DataManagementMode.Overwrite)]
-    public void ChangingFromBackupToRestoreMode_ClearsFilePath(DataManagementMode mode)
+    public void DataManagementVM_ChangingFromBackupToRestoreMode_ClearsFilePath(DataManagementMode mode)
     {
         var service = Substitute.For<IUserBackupService>();
         service.BuildDefaultBackupPath(Arg.Any<DateTime>()).Returns("backup.json");
@@ -116,7 +116,7 @@ public sealed class DataManagementVMTests
     [Theory]
     [InlineData(DataManagementMode.Append)]
     [InlineData(DataManagementMode.Overwrite)]
-    public void ChangingBackToBackupMode_RestoresPreviousBackupFilePath(DataManagementMode mode)
+    public void DataManagementVM_ChangingBackToBackupMode_RestoresPreviousBackupFilePath(DataManagementMode mode)
     {
         var service = Substitute.For<IUserBackupService>();
         service.BuildDefaultBackupPath(Arg.Any<DateTime>()).Returns("backup.json");
@@ -133,7 +133,7 @@ public sealed class DataManagementVMTests
     }
 
     [Fact]
-    public async Task LoadManifestAsync_InvalidJson_DisablesEntitiesAndShowsInvalidJsonFile()
+    public async Task DataManagementVM_LoadManifestAsync_InvalidJson_DisablesEntitiesAndShowsInvalidJsonFile()
     {
         var service = Substitute.For<IUserBackupService>();
         service.BuildDefaultBackupPath(Arg.Any<DateTime>()).Returns("backup.json");

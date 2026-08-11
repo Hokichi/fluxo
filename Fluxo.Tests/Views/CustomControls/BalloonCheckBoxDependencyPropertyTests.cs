@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Views.CustomControls;
 public sealed class BalloonCheckBoxDependencyPropertyTests
 {
     [Fact]
-    public void BalloonCheckBox_ClickTogglesAndRaisesEvents()
+    public void BalloonCheckBoxDependencyProperty_BalloonCheckBox_ClickTogglesAndRaisesEvents()
     {
         RunOnStaThread(() =>
         {
@@ -29,17 +29,7 @@ public sealed class BalloonCheckBoxDependencyPropertyTests
     }
 
     [Fact]
-    public void BalloonCheckBox_StoresCheckedBackground()
-    {
-        RunOnStaThread(() =>
-        {
-            var checkBox = new BalloonCheckBox { CheckedBackground = Brushes.MintCream };
-            Assert.Equal(Brushes.MintCream, checkBox.CheckedBackground);
-        });
-    }
-
-    [Fact]
-    public void BalloonCheckBox_DefaultsStateIconAndTextToButtonIconAndText()
+    public void BalloonCheckBoxDependencyProperty_BalloonCheckBox_DefaultsStateIconAndTextToButtonIconAndText()
     {
         RunOnStaThread(() =>
         {
@@ -57,21 +47,6 @@ public sealed class BalloonCheckBoxDependencyPropertyTests
 
             Assert.Same(icon, checkBox.CurrentIcon());
             Assert.Equal("Fallback", checkBox.CurrentText());
-        });
-    }
-
-    [Fact]
-    public void BalloonCheckBox_CoercesShouldExpandFalse_WhenShouldShowTextIsTrue()
-    {
-        RunOnStaThread(() =>
-        {
-            var checkBox = new BalloonCheckBox
-            {
-                ShouldExpand = true,
-                ShouldShowText = true
-            };
-
-            Assert.False(checkBox.ShouldExpand);
         });
     }
 

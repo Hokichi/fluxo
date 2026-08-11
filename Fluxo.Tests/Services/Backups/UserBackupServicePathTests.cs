@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Services.Backups;
 public sealed class UserBackupServicePathTests
 {
     [Fact]
-    public void BuildDefaultBackupFileName_UsesRequestedTimestamp()
+    public void UserBackupServicePath_BuildDefaultBackupFileName_UsesRequestedTimestamp()
     {
         var timestamp = new DateTime(2026, 5, 26, 7, 8, 9);
 
@@ -16,7 +16,7 @@ public sealed class UserBackupServicePathTests
     }
 
     [Fact]
-    public void BuildDefaultBackupDirectory_UsesLocalAppDataFluxoUserBackups()
+    public void UserBackupServicePath_BuildDefaultBackupDirectory_UsesLocalAppDataFluxoUserBackups()
     {
         var directory = UserBackupService.BuildDefaultBackupDirectory();
 

@@ -11,7 +11,7 @@ namespace Fluxo.Tests.ViewModels.Popups.Planning;
 public class PlanningReportVMTests
 {
     [Fact]
-    public async Task LoadAsync_UsesBudgetAllocationPercentages()
+    public async Task PlanningReportVM_LoadAsync_UsesBudgetAllocationPercentages()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>())
@@ -33,7 +33,7 @@ public class PlanningReportVMTests
     [Theory]
     [InlineData("Needs", 55, 55, 28, 17)]
     [InlineData("Wants", 21, 55, 21, 24)]
-    public async Task ChangingAllocation_RebalancesOtherBucketsByPriority(
+    public async Task PlanningReportVM_ChangingAllocation_RebalancesOtherBucketsByPriority(
         string bucket,
         int newValue,
         int expectedNeeds,
@@ -51,7 +51,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task ChangingAllocationSequentially_PreservesPrioritySplitAcrossSliderTicks()
+    public async Task PlanningReportVM_ChangingAllocationSequentially_PreservesPrioritySplitAcrossSliderTicks()
     {
         var report = await CreateLoadedReportAsync(50, 30, 20);
 
@@ -65,7 +65,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task DecreasingAllocationSequentially_PreservesPrioritySplitAcrossSliderTicks()
+    public async Task PlanningReportVM_DecreasingAllocationSequentially_PreservesPrioritySplitAcrossSliderTicks()
     {
         var report = await CreateLoadedReportAsync(50, 30, 20);
 
@@ -79,7 +79,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task ChangingAllocation_SpillsRemainderWhenAnotherBucketReachesZero()
+    public async Task PlanningReportVM_ChangingAllocation_SpillsRemainderWhenAnotherBucketReachesZero()
     {
         var report = await CreateLoadedReportAsync(98, 1, 1);
 
@@ -92,7 +92,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task InvalidAllocationMessage_NamesZeroBuckets()
+    public async Task PlanningReportVM_InvalidAllocationMessage_NamesZeroBuckets()
     {
         var report = await CreateLoadedReportAsync(98, 1, 1);
 
@@ -103,7 +103,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task PlanningReportVM_ComputesAllocationUsageAndOverflowPerCategory()
+    public async Task PlanningReportVM_ComputeAllocationUsage_PerCategory_ReturnsOverflow()
     {
         var report = await CreateLoadedReportAsync(50, 30, 20);
         report.AddIncome(CreateIncome(1, 1000m));
@@ -138,7 +138,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task LoadRecurringIncomesAsync_AddsOnlyEnabledRecurringIncomes()
+    public async Task PlanningReportVM_LoadRecurringIncomesAsync_AddsOnlyEnabledRecurringIncomes()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>())
@@ -159,7 +159,7 @@ public class PlanningReportVMTests
     }
 
     [Fact]
-    public async Task LoadRecurringExpensesAsync_AddsOnlyEnabledRecurringExpenses()
+    public async Task PlanningReportVM_LoadRecurringExpensesAsync_AddsOnlyEnabledRecurringExpenses()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>())

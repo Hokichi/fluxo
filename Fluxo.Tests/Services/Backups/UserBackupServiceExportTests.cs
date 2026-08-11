@@ -18,7 +18,7 @@ public sealed class UserBackupServiceExportTests
     };
 
     [Fact]
-    public async Task BackupAsync_WhenTagsAreNotSelected_MapsExpensesToDataRestorationTag()
+    public async Task UserBackupServiceExport_BackupAsync_WhenTagsAreNotSelected_MapsExpensesToDataRestorationTag()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetAccountsAsync(Arg.Any<CancellationToken>())
@@ -58,7 +58,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task BackupAsync_WhenTagsSelected_IncludesSpendingLimit()
+    public async Task UserBackupServiceExport_BackupAsync_WhenTagsSelected_IncludesSpendingLimit()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetTagsAsync(Arg.Any<CancellationToken>())
@@ -90,7 +90,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task BackupAsync_WhenExpenseLogsHaveParent_StoresParentLogBackupId()
+    public async Task UserBackupServiceExport_BackupAsync_WhenExpenseLogsHaveParent_StoresParentLogBackupId()
     {
         var appData = Substitute.For<IAppDataService>();
         var account = new Account { Id = 1, Name = "Checking", AccountType = AccountType.Checking };
@@ -151,7 +151,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task BackupAsync_WhenIoUFlagsSet_ExportsFlags()
+    public async Task UserBackupServiceExport_BackupAsync_WhenIoUFlagsSet_ExportsFlags()
     {
         var appData = Substitute.For<IAppDataService>();
         var account = new Account { Id = 1, Name = "Checking", AccountType = AccountType.Checking };
@@ -215,7 +215,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task BackupAsync_WhenDeductSourceAppearsAfterDependent_MapsDeductSourceByBackupId()
+    public async Task UserBackupServiceExport_BackupAsync_WhenDeductSourceAppearsAfterDependent_MapsDeductSourceByBackupId()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetAccountsAsync(Arg.Any<CancellationToken>())
@@ -265,7 +265,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task BackupAsync_WhenUserSettingsSelected_ExcludesLegacyBudgetAllocationSettings()
+    public async Task UserBackupServiceExport_BackupAsync_WhenUserSettingsSelected_ExcludesLegacyBudgetAllocationSettings()
     {
         var appData = Substitute.For<IAppDataService>();
         appData.GetUserSettingsAsync(Arg.Any<CancellationToken>())
@@ -310,7 +310,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task ReadManifestAsync_ReturnsIncludedEntityKinds()
+    public async Task UserBackupServiceExport_ReadManifestAsync_ReturnsIncludedEntityKinds()
     {
         var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
         await File.WriteAllTextAsync(tempFile, """
@@ -337,7 +337,7 @@ public sealed class UserBackupServiceExportTests
     }
 
     [Fact]
-    public async Task ReadManifestAsync_WhenIncludedEntitiesIsNull_ThrowsInvalidDataException()
+    public async Task UserBackupServiceExport_ReadManifestAsync_WhenIncludedEntitiesIsNull_ThrowsInvalidDataException()
     {
         var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
         await File.WriteAllTextAsync(tempFile, """

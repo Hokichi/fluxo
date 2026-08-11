@@ -19,7 +19,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class AppDatabaseMigrationTests
 {
     [Fact]
-    public async Task ShouldAffectBalanceMigration_BackfillsOnlyExistingIoUs()
+    public async Task AppDatabaseMigration_ShouldAffectBalanceMigration_BackfillsOnlyExistingIoUs()
     {
         var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         var databasePath = Path.Combine(directory, "fluxo.db");
@@ -73,7 +73,7 @@ public sealed class AppDatabaseMigrationTests
     }
 
     [Fact]
-    public async Task AddTransactionLinks_PreservesExistingSourceAccountId()
+    public async Task AppDatabaseMigration_AddTransactionLinks_PreservesExistingSourceAccountId()
     {
         var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         var databasePath = Path.Combine(directory, "fluxo.db");
@@ -124,7 +124,7 @@ public sealed class AppDatabaseMigrationTests
     }
 
     [Fact]
-    public async Task MigrateDatabaseAsync_CreatesCurrentTransactionSchema()
+    public async Task AppDatabaseMigration_MigrateDatabaseAsync_CreatesCurrentTransactionSchema()
     {
         var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         var databasePath = Path.Combine(directory, "fluxo.db");
@@ -157,7 +157,7 @@ public sealed class AppDatabaseMigrationTests
     }
 
     [Fact]
-    public async Task MigrateDatabaseAsync_RepairsMissingHistory_ForDatabaseWithoutNotificationsTable()
+    public async Task AppDatabaseMigration_MigrateDatabaseAsync_RepairsMissingHistory_ForDatabaseWithoutNotificationsTable()
     {
         var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         var databasePath = Path.Combine(directory, "fluxo.db");
@@ -192,7 +192,7 @@ public sealed class AppDatabaseMigrationTests
     }
 
     [Fact]
-    public async Task ClearParentTransactionCategoriesMigration_ClearsParentsButPreservesChildren()
+    public async Task AppDatabaseMigration_ClearParentTransactionCategoriesMigration_ClearsParentsButPreservesChildren()
     {
         var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         var databasePath = Path.Combine(directory, "fluxo.db");
@@ -247,7 +247,7 @@ public sealed class AppDatabaseMigrationTests
     }
 
     [Fact]
-    public async Task ExcludeIoUAndIncomeFromBudgetMigration_BackfillsAllRows()
+    public async Task AppDatabaseMigration_ExcludeIoUAndIncomeFromBudgetMigration_BackfillsAllRows()
     {
         var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
         var databasePath = Path.Combine(directory, "fluxo.db");

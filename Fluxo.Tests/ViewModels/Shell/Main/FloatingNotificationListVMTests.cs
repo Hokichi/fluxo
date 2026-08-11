@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public sealed class FloatingNotificationListVMTests
 {
     [Fact]
-    public async Task Receive_AppendsNewestAndExpiresIndependently()
+    public async Task FloatingNotificationListVM_Receive_AppendsNewestAndExpiresIndependently()
     {
         var messenger = new StrongReferenceMessenger();
         using var vm = new FloatingNotificationListVM(
@@ -29,7 +29,7 @@ public sealed class FloatingNotificationListVMTests
     }
 
     [Fact]
-    public async Task Activate_RunsCallbackOnceAndRemovesItem()
+    public async Task FloatingNotificationListVM_Activate_RunsCallbackOnceAndRemovesItem()
     {
         var messenger = new StrongReferenceMessenger();
         using var vm = new FloatingNotificationListVM(messenger, TimeSpan.FromSeconds(5), TimeSpan.Zero);
@@ -45,7 +45,7 @@ public sealed class FloatingNotificationListVMTests
     }
 
     [Fact]
-    public void Dismiss_RemovesOnlyMatchingItem()
+    public void FloatingNotificationListVM_Dismiss_RemovesOnlyMatchingItem()
     {
         var messenger = new StrongReferenceMessenger();
         using var vm = new FloatingNotificationListVM(messenger, TimeSpan.FromMinutes(1), TimeSpan.Zero);
@@ -60,7 +60,7 @@ public sealed class FloatingNotificationListVMTests
     }
 
     [Fact]
-    public void Receive_PreservesStructuredHeaderAction()
+    public void FloatingNotificationListVM_Receive_PreservesStructuredHeaderAction()
     {
         var messenger = new StrongReferenceMessenger();
         using var vm = new FloatingNotificationListVM(messenger, TimeSpan.FromMinutes(1), TimeSpan.Zero);

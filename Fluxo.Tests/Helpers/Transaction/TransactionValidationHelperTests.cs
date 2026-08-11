@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Helpers.Transaction;
 public sealed class TransactionValidationHelperTests
 {
     [Fact]
-    public void Non_positive_amount_is_invalid()
+    public void TransactionValidationHelper_Non_PositiveAmountIs_Invalid()
     {
         var result = TransactionValidationHelper.ValidateAmount(0m, false, true, false, null);
 
@@ -18,7 +18,7 @@ public sealed class TransactionValidationHelperTests
     }
 
     [Fact]
-    public void Required_relationships_keep_existing_messages()
+    public void TransactionValidationHelper_Required_RelationshipsKeepExisting_Messages()
     {
         Assert.Equal("Please choose a account.", TransactionValidationHelper.ValidateAccount(null).ErrorMessage);
         Assert.Equal("Please choose a tag.", TransactionValidationHelper.ValidateTag(null, true).ErrorMessage);
@@ -26,7 +26,7 @@ public sealed class TransactionValidationHelperTests
     }
 
     [Fact]
-    public void Amount_over_available_balance_is_invalid()
+    public void TransactionValidationHelper_Amount_OverAvailableBalanceIs_Invalid()
     {
         var account = new AccountVM { AccountType = AccountType.Checking, Balance = 20m };
 
@@ -37,7 +37,7 @@ public sealed class TransactionValidationHelperTests
     }
 
     [Fact]
-    public void Exhausted_category_hard_stops_expense()
+    public void TransactionValidationHelper_Exhausted_CategoryHardStops_Expense()
     {
         var category = new BudgetAllocationCategoryState(default, 0m, 0m, 0m, 10m, 10m, 0m, 0);
 

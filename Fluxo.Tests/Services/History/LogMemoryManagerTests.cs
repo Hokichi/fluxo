@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Services.History;
 public sealed class LogMemoryManagerTests
 {
     [Fact]
-    public async Task RevertTo_RevertsOnlyNewerActiveEntriesNewestFirst()
+    public async Task LogMemoryManager_RevertTo_RevertsOnlyNewerActiveEntriesNewestFirst()
     {
         var calls = new List<string>();
         var (manager, messenger, reloads) = CreateManager();
@@ -30,7 +30,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task RevertTo_BuildsOldestFirstRedoOrder()
+    public async Task LogMemoryManager_RevertTo_BuildsOldestFirstRedoOrder()
     {
         var calls = new List<string>();
         var (manager, messenger, _) = CreateManager();
@@ -46,7 +46,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task RevertTo_WhenBatchFails_PreservesHistoryAndStacks()
+    public async Task LogMemoryManager_RevertTo_WhenBatchFails_PreservesHistoryAndStacks()
     {
         var (manager, messenger, _) = CreateManager();
         messenger.Send(new RecordLogMemoryMessage(new RecordingAction("first", [])));
@@ -61,7 +61,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public void CanRevertToHere_IsTrueOnlyWithNewerActiveEntry()
+    public void LogMemoryManager_CanRevertToHere_IsTrueOnlyWithNewerActiveEntry()
     {
         var (manager, messenger, _) = CreateManager();
         messenger.Send(new RecordLogMemoryMessage(new RecordingAction("first", [])));
@@ -72,7 +72,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task UndoAndRedo_UseLifoOrderAndUpdateHistoryState()
+    public async Task LogMemoryManager_UndoAndRedo_UseLifoOrderAndUpdateHistoryState()
     {
         var calls = new List<string>();
         var (manager, messenger, reloads) = CreateManager();
@@ -90,7 +90,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task Undo_SkipsEntryAlreadyRevertedThroughHistory()
+    public async Task LogMemoryManager_Undo_SkipsEntryAlreadyRevertedThroughHistory()
     {
         var calls = new List<string>();
         var (manager, messenger, _) = CreateManager();
@@ -104,7 +104,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task Toggle_CurrentRedoEntry_MakesItUndoEligibleAgain()
+    public async Task LogMemoryManager_Toggle_CurrentRedoEntry_MakesItUndoEligibleAgain()
     {
         var (manager, messenger, _) = CreateManager();
         messenger.Send(new RecordLogMemoryMessage(new RecordingAction("only", [])));
@@ -117,7 +117,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task FailedUndo_PreservesHistoryAndAvailability()
+    public async Task LogMemoryManager_FailedUndo_PreservesHistoryAndAvailability()
     {
         var (manager, messenger, _) = CreateManager();
         messenger.Send(new RecordLogMemoryMessage(new RecordingAction("broken", [], true)));
@@ -130,7 +130,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public void Record_AppendsEntriesOldestFirst()
+    public void LogMemoryManager_Record_AppendsEntriesOldestFirst()
     {
         var (manager, messenger, _) = CreateManager();
 
@@ -141,7 +141,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task Toggle_RevertsOnlySelectedEntry_ThenReappliesIt()
+    public async Task LogMemoryManager_Toggle_RevertsOnlySelectedEntry_ThenReappliesIt()
     {
         var calls = new List<string>();
         var (manager, messenger, reloads) = CreateManager();
@@ -160,7 +160,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task Toggle_WhenOperationFails_PreservesEntryState()
+    public async Task LogMemoryManager_Toggle_WhenOperationFails_PreservesEntryState()
     {
         var (manager, messenger, _) = CreateManager();
         messenger.Send(new RecordLogMemoryMessage(new RecordingAction("broken", [], true)));
@@ -172,7 +172,7 @@ public sealed class LogMemoryManagerTests
     }
 
     [Fact]
-    public async Task Toggle_WithForeignEntry_ReturnsFalse()
+    public async Task LogMemoryManager_Toggle_WithForeignEntry_ReturnsFalse()
     {
         var (manager, _, _) = CreateManager();
         var foreign = new LogMemoryEntry(new RecordingAction("foreign", []));

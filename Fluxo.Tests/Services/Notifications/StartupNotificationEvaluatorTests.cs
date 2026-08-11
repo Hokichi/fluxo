@@ -12,7 +12,7 @@ namespace Fluxo.Tests.Services.Notifications;
 public sealed class StartupNotificationEvaluatorTests
 {
     [Fact]
-    public async Task EvaluateAsync_BuildsBudgetCreditAndBalanceCards_WhenTheirThresholdsAreReached()
+    public async Task StartupNotificationEvaluator_EvaluateAsync_BuildsBudgetCreditAndBalanceCards_WhenTheirThresholdsAreReached()
     {
         var result = await CreateEvaluator(
             accounts:
@@ -40,7 +40,7 @@ public sealed class StartupNotificationEvaluatorTests
     }
 
     [Fact]
-    public async Task EvaluateAsync_BuildsDailyAllowanceCard_AtConfiguredWarningPercentage()
+    public async Task StartupNotificationEvaluator_EvaluateAsync_BuildsDailyAllowanceCard_AtConfiguredWarningPercentage()
     {
         var result = await CreateEvaluator(
             accounts: [new() { Id = 1, Name = "Checking", AccountType = AccountType.Checking, IsEnabled = true }],
@@ -56,7 +56,7 @@ public sealed class StartupNotificationEvaluatorTests
     }
 
     [Fact]
-    public async Task EvaluateAsync_SkipsCards_WhileNotificationsAreSnoozed()
+    public async Task StartupNotificationEvaluator_EvaluateAsync_SkipsCards_WhileNotificationsAreSnoozed()
     {
         var now = DateTime.Now;
         var result = await CreateEvaluator(
@@ -82,7 +82,7 @@ public sealed class StartupNotificationEvaluatorTests
     }
 
     [Fact]
-    public async Task EvaluateAsync_ClearsCreditOverdue_WhenRepaymentExistsAfterDueDate()
+    public async Task StartupNotificationEvaluator_EvaluateAsync_ClearsCreditOverdue_WhenRepaymentExistsAfterDueDate()
     {
         var result = await CreateEvaluator(
             accounts:
@@ -106,7 +106,7 @@ public sealed class StartupNotificationEvaluatorTests
     }
 
     [Fact]
-    public async Task EvaluateAsync_FlagsRecurringTransaction_WhenOnlyOldOccurrenceIsLinked()
+    public async Task StartupNotificationEvaluator_EvaluateAsync_FlagsRecurringTransaction_WhenOnlyOldOccurrenceIsLinked()
     {
         var result = await CreateEvaluator(
             transactions:
@@ -130,7 +130,7 @@ public sealed class StartupNotificationEvaluatorTests
     }
 
     [Fact]
-    public async Task EvaluateAsync_DoesNotFlagGoalWithoutEndDate()
+    public async Task StartupNotificationEvaluator_EvaluateAsync_DoesNotFlagGoalWithoutEndDate()
     {
         var result = await CreateEvaluator(
             goals: [new() { Id = 3, Name = "Emergency", CurrentAmount = 20m, TargetAmount = 100m }])

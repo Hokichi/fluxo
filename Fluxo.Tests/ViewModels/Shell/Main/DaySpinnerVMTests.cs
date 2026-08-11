@@ -13,7 +13,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public class DaySpinnerVMTests
 {
     [Fact]
-    public void SelectedDay_InDailyMode_PublishesExpectedRange()
+    public void DaySpinnerVM_SelectedDay_InDailyMode_PublishesExpectedRange()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -38,7 +38,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void AllTimeMode_PublishesAllTimeViewModeMessageButKeepsSpinnerVisible()
+    public void DaySpinnerVM_AllTimeMode_PublishesAllTimeViewModeMessageButKeepsSpinnerVisible()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -59,7 +59,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void AllocationPeriodMode_DisablesSpinnerWithoutPublishingDateRange()
+    public void DaySpinnerVM_AllocationPeriodMode_DisablesSpinnerWithoutPublishingDateRange()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -82,7 +82,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void WeeklyMode_WhenSelectedSunday_PublishesMondayToSundayRange()
+    public void DaySpinnerVM_WeeklyMode_WhenSelectedSunday_PublishesMondayToSundayRange()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -111,7 +111,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void ComputeWeeklyPageOffset_AcrossIsoYearBoundary_UsesAbsoluteMondayWindows()
+    public void DaySpinnerVM_ComputeWeeklyPageOffset_AcrossIsoYearBoundary_UsesAbsoluteMondayWindows()
     {
         // 2021-01-04 (ISO week 1 of 2021) and 2020-12-28 (ISO week 53 of 2020) both
         // fall within the same 28-day absolute window (2020-12-14 to 2021-01-10), so
@@ -125,7 +125,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void MoveToCurrentPeriodRequestedMessage_MovesSpinnerToCurrentPeriodAndPublishesRange()
+    public void DaySpinnerVM_MoveToCurrentPeriodRequestedMessage_MovesSpinnerToCurrentPeriodAndPublishesRange()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -150,7 +150,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void NavigateSpinnerBack_WhenSelectedDateIsOutOfVisibleRange_ShowsNoHighlightedItemWithoutPublishingRange()
+    public void DaySpinnerVM_NavigateSpinnerBack_WhenSelectedDateIsOutOfVisibleRange_ShowsNoHighlightedItemWithoutPublishingRange()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -173,7 +173,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void NavigateSpinnerForward_WhenReturningToVisibleRange_RehighlightsCurrentSelectionWithoutPublishingRange()
+    public void DaySpinnerVM_NavigateSpinnerForward_WhenReturningToVisibleRange_RehighlightsCurrentSelectionWithoutPublishingRange()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -197,7 +197,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void NavigateSpinnerForward_WhenFutureNavigationAllowed_MovesIntoFuturePage()
+    public void DaySpinnerVM_NavigateSpinnerForward_WhenFutureNavigationAllowed_MovesIntoFuturePage()
     {
         var vm = new DaySpinnerVM
         {
@@ -214,7 +214,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void NavigateSpinnerForward_WhenFutureNavigationDisabled_DoesNotMoveIntoFuturePage()
+    public void DaySpinnerVM_NavigateSpinnerForward_WhenFutureNavigationDisabled_DoesNotMoveIntoFuturePage()
     {
         var vm = new DaySpinnerVM();
         var initialDates = vm.DaysOfWeek.Select(day => day.Date).ToArray();
@@ -226,7 +226,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public async Task SelectAdjacentVisibleDayFromUserAsync_WhenFutureNavigationDisabled_DoesNotSelectFuturePeriod()
+    public async Task DaySpinnerVM_SelectAdjacentVisibleDayFromUserAsync_WhenFutureNavigationDisabled_DoesNotSelectFuturePeriod()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -246,7 +246,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public async Task SelectAdjacentVisibleDayFromUserAsync_WhenFutureNavigationAllowed_SelectsNextFuturePageDay()
+    public async Task DaySpinnerVM_SelectAdjacentVisibleDayFromUserAsync_WhenFutureNavigationAllowed_SelectsNextFuturePageDay()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -269,7 +269,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public void SelectingNonCurrentDay_PublishesSpinnerStateWithIsAtCurrentPeriodFalse()
+    public void DaySpinnerVM_SelectingNonCurrentDay_PublishesSpinnerStateWithIsAtCurrentPeriodFalse()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -290,7 +290,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public async Task SelectAdjacentVisibleDayFromUserAsync_SelectsNextVisibleDayWithoutChangingPage()
+    public async Task DaySpinnerVM_SelectAdjacentVisibleDayFromUserAsync_SelectsNextVisibleDayWithoutChangingPage()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();
@@ -316,7 +316,7 @@ public class DaySpinnerVMTests
     }
 
     [Fact]
-    public async Task SelectAdjacentVisibleDayFromUserAsync_DoesNotNavigateOutsideVisibleItems()
+    public async Task DaySpinnerVM_SelectAdjacentVisibleDayFromUserAsync_DoesNotNavigateOutsideVisibleItems()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new MessageCaptureRecipient();

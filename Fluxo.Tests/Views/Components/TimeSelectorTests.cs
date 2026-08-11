@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Views.Components;
 public sealed class TimeSelectorTests
 {
     [Fact]
-    public void SelectedTime_formats_as_24_hour_hours_and_minutes_with_hours_active()
+    public void TimeSelector_SelectedTime_FormatsAs24HourHoursAndMinutesWithHours_Active()
     {
         RunOnStaThread(() =>
         {
@@ -21,7 +21,7 @@ public sealed class TimeSelectorTests
     }
 
     [Fact]
-    public void Typing_two_hour_digits_updates_hours_and_moves_to_minutes()
+    public void TimeSelector_Typing_TwoHourDigitsUpdatesHoursAndMovesTo_Minutes()
     {
         RunOnStaThread(() =>
         {
@@ -36,7 +36,7 @@ public sealed class TimeSelectorTests
     }
 
     [Fact]
-    public void Arrow_keys_select_segments_and_wrap_time_boundaries()
+    public void TimeSelector_Arrow_KeysSelectSegmentsAndWrapTime_Boundaries()
     {
         RunOnStaThread(() =>
         {
@@ -52,7 +52,7 @@ public sealed class TimeSelectorTests
     }
 
     [Fact]
-    public void Typed_minutes_carry_into_hour_without_exceeding_2359()
+    public void TimeSelector_Typed_MinutesCarryIntoHourWithoutExceeding_2359()
     {
         RunOnStaThread(() =>
         {

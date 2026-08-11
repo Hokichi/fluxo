@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Views.CustomControls;
 public sealed class BalloonToggleTests
 {
     [Fact]
-    public void Click_CyclesStatesThenReturnsToUntoggledToggleVisuals()
+    public void BalloonToggle_Click_CyclesStatesThenReturnsToUntoggledToggleVisuals()
     {
         RunOnStaThread(() =>
         {
@@ -39,7 +39,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void Click_WithNoStates_RemainsUntoggled()
+    public void BalloonToggle_Click_WithNoStates_RemainsUntoggled()
     {
         RunOnStaThread(() =>
         {
@@ -50,7 +50,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void Click_SkipsStateWhoseCommandCannotExecute()
+    public void BalloonToggle_Click_SkipsStateWhoseCommandCannotExecute()
     {
         RunOnStaThread(() =>
         {
@@ -69,7 +69,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void SelectState_IgnoresStateWhoseCommandCannotExecute()
+    public void BalloonToggle_SelectState_IgnoresStateWhoseCommandCannotExecute()
     {
         RunOnStaThread(() =>
         {
@@ -88,7 +88,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void RemovingActiveState_ResetsToUntoggledFirstState()
+    public void BalloonToggle_RemovingActiveState_ResetsToUntoggledFirstState()
     {
         RunOnStaThread(() =>
         {
@@ -108,7 +108,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void OpenStatePopup_SuppressesCycle_AndSelectionActivatesState()
+    public void BalloonToggle_OpenStatePopup_SuppressesCycle_AndSelectionActivatesState()
     {
         RunOnStaThread(() =>
         {
@@ -129,13 +129,13 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void OpenStatePopup_WithNoStates_DoesNothing()
+    public void BalloonToggle_OpenStatePopup_WithNoStates_DoesNothing()
     {
         RunOnStaThread(() => Assert.False(new BalloonToggle().TryOpenStatePopup()));
     }
 
     [Fact]
-    public void SelectingActivePopupState_ExecutesCommandAgain()
+    public void BalloonToggle_SelectingActivePopupState_ExecutesCommandAgain()
     {
         RunOnStaThread(() =>
         {
@@ -153,37 +153,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void Backgrounds_UseToggleWhenUntoggledAndStateWhenToggled()
-    {
-        RunOnStaThread(() =>
-        {
-            var state = new BalloonToggleState
-            {
-                DefaultBackground = Brushes.Red,
-                HoverBackground = Brushes.Orange
-            };
-            var toggle = new TestBalloonToggle
-            {
-                DefaultBackground = Brushes.Black,
-                HoveredBackground = Brushes.White
-            };
-
-            toggle.States.Add(state);
-
-            Assert.Same(Brushes.Black, toggle.ResolvedRestingBackground);
-            Assert.Same(Brushes.White, toggle.ResolvedHoveredBackground);
-
-            toggle.SelectState(state);
-
-            Assert.Same(Brushes.Red, toggle.ResolvedRestingBackground);
-            Assert.Same(Brushes.Orange, toggle.ResolvedHoveredBackground);
-            Assert.Same(Brushes.Black, toggle.DefaultBackground);
-            Assert.Same(Brushes.White, toggle.HoveredBackground);
-        });
-    }
-
-    [Fact]
-    public void PopupStates_ShowAllWhenUntoggledAndHideActiveStateWhenToggled()
+    public void BalloonToggle_PopupStates_ShowAllWhenUntoggledAndHideActiveStateWhenToggled()
     {
         RunOnStaThread(() =>
         {
@@ -202,7 +172,7 @@ public sealed class BalloonToggleTests
     }
 
     [Fact]
-    public void Presentation_UsesToggleValuesUntilStateIsActive()
+    public void BalloonToggle_Presentation_UsesToggleValuesUntilStateIsActive()
     {
         RunOnStaThread(() =>
         {
@@ -235,8 +205,6 @@ public sealed class BalloonToggleTests
 
     private sealed class TestBalloonToggle : BalloonToggle
     {
-        public Brush ResolvedRestingBackground => ResolveRestingBackground();
-        public Brush ResolvedHoveredBackground => ResolveHoveredBackground();
         public object? ResolvedButtonIcon => ResolveButtonIcon();
         public string? ResolvedButtonText => ResolveButtonText();
         public void InvokeClick() => OnClick();

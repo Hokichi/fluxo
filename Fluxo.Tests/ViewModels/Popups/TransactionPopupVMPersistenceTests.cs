@@ -23,7 +23,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMPersistenceTests
 {
     [Fact]
-    public void SaveAsync_without_initialize_saves_a_new_add_transaction()
+    public void TransactionPopupVMPersistence_SaveAsync_WithoutInitializeSavesANewAdd_Transaction()
     {
         RunInSta(() =>
         {
@@ -51,7 +51,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void SaveAsync_edit_returns_confirmation_then_succeeds_when_overflow_is_approved()
+    public void TransactionPopupVMPersistence_SaveAsync_EditReturnsConfirmationThenSucceedsWhenOverflowIs_Approved()
     {
         RunInSta(() =>
         {
@@ -90,7 +90,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Processing_next_does_not_persist()
+    public void TransactionPopupVMPersistence_Processing_NextDoesNot_Persist()
     {
         RunInSta(() =>
         {
@@ -149,7 +149,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void SaveAsync_Edit_updates_the_loaded_transaction_id()
+    public void TransactionPopupVMPersistence_SaveAsync_EditUpdatesTheLoadedTransaction_Id()
     {
         RunInSta(() =>
         {
@@ -173,7 +173,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public async Task Edit_same_account_applies_balance_delta_once_when_accounts_are_separate_instances()
+    public async Task TransactionPopupVMPersistence_Edit_SameAccountAppliesBalanceDeltaOnceWhenAccountsAreSeparate_Instances()
     {
         var loadedAccount = CreateAccount();
         loadedAccount.Balance = 90m;
@@ -196,7 +196,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public async Task Edit_same_credit_account_clamps_spent_amount_when_new_amount_is_smaller()
+    public async Task TransactionPopupVMPersistence_Edit_SameCreditAccountClampsSpentAmountWhenNewAmountIs_Smaller()
     {
         var loadedAccount = CreateAccount();
         loadedAccount.AccountType = AccountType.Credit;
@@ -219,7 +219,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public async Task Edit_same_credit_account_excludes_existing_transaction_from_maximum_spending_check()
+    public async Task TransactionPopupVMPersistence_Edit_SameCreditAccountExcludesExistingTransactionFromMaximumSpending_Check()
     {
         var loadedAccount = CreateAccount();
         loadedAccount.AccountType = AccountType.Credit;
@@ -246,7 +246,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public async Task Edit_repayment_composes_detached_account_instances_by_logical_id()
+    public async Task TransactionPopupVMPersistence_Edit_RepaymentComposesDetachedAccountInstancesByLogical_Id()
     {
         var source = CreateAccount();
         source.Balance = 480m;
@@ -305,7 +305,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public async Task Add_updates_account_balance_once_and_keeps_goal_tag_non_system()
+    public async Task TransactionPopupVMPersistence_Add_UpdatesAccountBalanceOnceAndKeepsGoalTagNon_System()
     {
         var account = CreateAccount();
         account.Balance = 100m;
@@ -343,7 +343,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public async Task Delete_reverts_balance_and_publishes_history_and_invalidation()
+    public async Task TransactionPopupVMPersistence_Delete_RevertsBalanceAndPublishesHistoryAnd_Invalidation()
     {
         var account = CreateAccount();
         account.Balance = 90m;
@@ -369,7 +369,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Initialize_clone_and_discard_processing_are_write_free()
+    public void TransactionPopupVMPersistence_Initialize_CloneAndDiscardProcessingAreWrite_Free()
     {
         RunInSta(() =>
         {
@@ -398,7 +398,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Clone_save_creates_a_new_transaction_id()
+    public void TransactionPopupVMPersistence_Clone_SaveCreatesANewTransaction_Id()
     {
         RunInSta(() =>
         {
@@ -425,7 +425,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Processing_back_after_next_restores_the_queued_item()
+    public void TransactionPopupVMPersistence_Processing_BackAfterNextRestoresTheQueued_Item()
     {
         RunInSta(() =>
         {
@@ -480,7 +480,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Processing_initializes_goal_repayment_and_recurring_state_before_async_initialization()
+    public void TransactionPopupVMPersistence_Processing_InitializesGoalRepaymentAndRecurringStateBeforeAsync_Initialization()
     {
         RunInSta(() =>
         {
@@ -514,7 +514,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Goal_processing_persists_queued_contributions_on_finish()
+    public void TransactionPopupVMPersistence_Goal_ProcessingPersistsQueuedContributionsOn_Finish()
     {
         RunInSta(() =>
         {
@@ -563,7 +563,7 @@ public sealed class TransactionPopupVMPersistenceTests
     }
 
     [Fact]
-    public void Repayment_processing_persists_queued_pairs_on_finish()
+    public void TransactionPopupVMPersistence_Repayment_ProcessingPersistsQueuedPairsOn_Finish()
     {
         RunInSta(() =>
         {

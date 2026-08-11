@@ -10,7 +10,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class RecurringTransactionRepositoryTests
 {
     [Fact]
-    public async Task Queries_ExcludeExpiredEndDates_IncludingTrackedRows()
+    public async Task RecurringTransactionRepository_Queries_ExcludeExpiredEndDates_IncludingTrackedRows()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
         await connection.OpenAsync();

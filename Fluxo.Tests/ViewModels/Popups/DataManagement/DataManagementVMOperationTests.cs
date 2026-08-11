@@ -9,7 +9,7 @@ namespace Fluxo.Tests.ViewModels.Popups.DataManagement;
 public sealed class DataManagementVMOperationTests
 {
     [Fact]
-    public async Task StartAsync_BackupSuccess_ShowsBackupReady()
+    public async Task DataManagementVMOperation_StartAsync_BackupSuccess_ShowsBackupReady()
     {
         var service = Substitute.For<IUserBackupService>();
         service.BuildDefaultBackupPath(Arg.Any<DateTime>()).Returns("backup.json");
@@ -25,7 +25,7 @@ public sealed class DataManagementVMOperationTests
     }
 
     [Fact]
-    public async Task StartAsync_AppendWithConflicts_ShowsConflictPageBeforeApply()
+    public async Task DataManagementVMOperation_StartAsync_AppendWithConflicts_ShowsConflictPageBeforeApply()
     {
         var service = Substitute.For<IUserBackupService>();
         service.BuildDefaultBackupPath(Arg.Any<DateTime>()).Returns("backup.json");
@@ -52,7 +52,7 @@ public sealed class DataManagementVMOperationTests
     }
 
     [Fact]
-    public async Task StartAsync_OverwriteFailure_ShowsOverwriteFailed()
+    public async Task DataManagementVMOperation_StartAsync_OverwriteFailure_ShowsOverwriteFailed()
     {
         var service = Substitute.For<IUserBackupService>();
         service.BuildDefaultBackupPath(Arg.Any<DateTime>()).Returns("backup.json");

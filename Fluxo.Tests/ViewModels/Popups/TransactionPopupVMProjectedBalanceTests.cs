@@ -12,7 +12,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMProjectedBalanceTests
 {
     [Fact]
-    public void Edit_amount_that_makes_checking_balance_negative_is_invalid()
+    public void TransactionPopupVMProjectedBalance_Edit_AmountThatMakesCheckingBalanceNegativeIs_Invalid()
     {
         RunInSta(() =>
         {

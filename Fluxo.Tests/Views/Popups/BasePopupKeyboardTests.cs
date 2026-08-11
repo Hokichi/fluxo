@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class BasePopupKeyboardTests
 {
     [Fact]
-    public void CtrlEnter_SkipsOnlyWhenNavigatePopupAllowsSkipping()
+    public void BasePopupKeyboard_CtrlEnter_SkipsOnlyWhenNavigatePopupAllowsSkipping()
     {
         RunInSta(() =>
         {
@@ -23,7 +23,7 @@ public sealed class BasePopupKeyboardTests
     }
 
     [Fact]
-    public void Enter_does_not_navigate_when_popup_cannot_go_next()
+    public void BasePopupKeyboard_Enter_DoesNotNavigateWhenPopupCannotGo_Next()
     {
         RunInSta(() =>
         {
@@ -35,7 +35,7 @@ public sealed class BasePopupKeyboardTests
     }
 
     [Fact]
-    public void Enter_does_not_finish_when_popup_cannot_finish()
+    public void BasePopupKeyboard_Enter_DoesNotFinishWhenPopupCannot_Finish()
     {
         RunInSta(() =>
         {

@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AccountDetailVMTests
 {
     [Fact]
-    public async Task LoadAsync_WhenNoHistory_SetsEmptyHistoryState()
+    public async Task AccountDetailVM_LoadAsync_WhenNoHistory_SetsEmptyHistoryState()
     {
         var source = CreateSource(1, "Checking", AccountType.Checking);
         var appData = CreateAppData([source], [], []);
@@ -22,7 +22,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_WhenHistoryExists_SetsNonEmptyHistoryState()
+    public async Task AccountDetailVM_LoadAsync_WhenHistoryExists_SetsNonEmptyHistoryState()
     {
         var source = CreateSource(1, "Checking", AccountType.Checking);
         var appData = CreateAppData(
@@ -37,7 +37,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_WhenNoTransferTarget_DisablesTransfer()
+    public async Task AccountDetailVM_LoadAsync_WhenNoTransferTarget_DisablesTransfer()
     {
         var source = CreateSource(1, "Checking", AccountType.Checking);
         var appData = CreateAppData([source], [], []);
@@ -49,7 +49,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_WhenTransferTargetExists_AllowsTransfer()
+    public async Task AccountDetailVM_LoadAsync_WhenTransferTargetExists_AllowsTransfer()
     {
         var source = CreateSource(1, "Checking", AccountType.Checking);
         var target = CreateSource(2, "Savings", AccountType.Saving);
@@ -62,7 +62,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task ShouldConfirmDisablingOnlyEnabledSourceAsync_WhenOnlyEnabledSource_ReturnsTrue()
+    public async Task AccountDetailVM_ShouldConfirmDisablingOnlyEnabledSourceAsync_WhenOnlyEnabledSource_ReturnsTrue()
     {
         var source = CreateSource(1, "Checking", AccountType.Checking);
         var disabled = CreateSource(2, "Cash", AccountType.Cash, isEnabled: false);
@@ -75,7 +75,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task ShouldConfirmDisablingOnlyEnabledSourceAsync_WhenAnotherEnabledSourceExists_ReturnsFalse()
+    public async Task AccountDetailVM_ShouldConfirmDisablingOnlyEnabledSourceAsync_WhenAnotherEnabledSourceExists_ReturnsFalse()
     {
         var source = CreateSource(1, "Checking", AccountType.Checking);
         var target = CreateSource(2, "Cash", AccountType.Cash);
@@ -88,7 +88,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task BuildDeleteConfirmationMessageAsync_WhenOnlyFunctioningSource_ReturnsLockWarningMessage()
+    public async Task AccountDetailVM_BuildDeleteConfirmationMessageAsync_WhenOnlyFunctioningSource_ReturnsLockWarningMessage()
     {
         var source = CreateSource(1, "Main", AccountType.Checking, balance: 200m);
         var nonFunctioning = CreateSource(2, "Zero", AccountType.Cash, balance: 0m);
@@ -104,7 +104,7 @@ public sealed class AccountDetailVMTests
     }
 
     [Fact]
-    public async Task BuildDeleteConfirmationMessageAsync_WhenNotOnlyFunctioningSource_ReturnsStandardMessage()
+    public async Task AccountDetailVM_BuildDeleteConfirmationMessageAsync_WhenNotOnlyFunctioningSource_ReturnsStandardMessage()
     {
         var source = CreateSource(1, "Main", AccountType.Checking, balance: 200m);
         var another = CreateSource(2, "Backup", AccountType.Cash, balance: 100m);

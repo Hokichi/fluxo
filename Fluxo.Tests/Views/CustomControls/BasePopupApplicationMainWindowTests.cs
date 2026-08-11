@@ -13,7 +13,7 @@ namespace Fluxo.Tests.Views.CustomControls;
 public sealed class BasePopupApplicationMainWindowTests
 {
     [Fact]
-    public void Popups_BubbleOnlyWhenTheyCanClose()
+    public void BasePopupApplicationMainWindow_Popups_BubbleOnlyWhenTheyCanClose()
     {
         RunSta(() =>
         {

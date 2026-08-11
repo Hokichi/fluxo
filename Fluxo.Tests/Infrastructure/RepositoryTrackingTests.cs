@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class RepositoryTrackingTests
 {
     [Fact]
-    public async Task AddTransactionAsync_TracksOnlyRoot_WhenNavigationsAreDetached()
+    public async Task RepositoryTracking_AddTransactionAsync_TracksOnlyRoot_WhenNavigationsAreDetached()
     {
         await using var fixture = await DatabaseFixture.CreateAsync();
         var account = new Account { Id = 1, Name = "Main" };
@@ -36,7 +36,7 @@ public sealed class RepositoryTrackingTests
     }
 
     [Fact]
-    public async Task AddRecurringTransactionAsync_TracksOnlyRoot_WhenNavigationsAreDetached()
+    public async Task RepositoryTracking_AddRecurringTransactionAsync_TracksOnlyRoot_WhenNavigationsAreDetached()
     {
         await using var fixture = await DatabaseFixture.CreateAsync();
         var account = new Account { Id = 1, Name = "Main" };
@@ -63,7 +63,7 @@ public sealed class RepositoryTrackingTests
     }
 
     [Fact]
-    public async Task Update_MergesDifferentInstanceWithSameKey()
+    public async Task RepositoryTracking_Update_MergesDifferentInstanceWithSameKey()
     {
         await using var fixture = await DatabaseFixture.CreateAsync();
         var tracked = new Account { Id = 7, Name = "Old" };
@@ -77,7 +77,7 @@ public sealed class RepositoryTrackingTests
     }
 
     [Fact]
-    public async Task SpecializedRepositories_MergeDifferentInstancesWithSameKey()
+    public async Task RepositoryTracking_SpecializedRepositories_MergeDifferentInstancesWithSameKey()
     {
         await using var fixture = await DatabaseFixture.CreateAsync();
         var settings = new UserSettings { Name = "theme", Value = "light" };

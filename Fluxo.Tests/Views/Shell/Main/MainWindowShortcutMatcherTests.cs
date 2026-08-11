@@ -12,7 +12,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.Z, ModifierKeys.None, false)]
     [InlineData(Key.Z, ModifierKeys.Control | ModifierKeys.Shift, false)]
     [InlineData(Key.Y, ModifierKeys.Control, false)]
-    public void IsUndoShortcut_MatchesOnlyCtrlZ(Key key, ModifierKeys modifiers, bool expected)
+    public void MainWindowShortcutMatcher_IsUndoShortcut_MatchesOnlyCtrlZ(Key key, ModifierKeys modifiers, bool expected)
     {
         Assert.Equal(expected, MainWindowShortcutMatcher.IsUndoShortcut(key, modifiers));
     }
@@ -22,13 +22,13 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.Y, ModifierKeys.None, false)]
     [InlineData(Key.Y, ModifierKeys.Control | ModifierKeys.Shift, false)]
     [InlineData(Key.Z, ModifierKeys.Control, false)]
-    public void IsRedoShortcut_MatchesOnlyCtrlY(Key key, ModifierKeys modifiers, bool expected)
+    public void MainWindowShortcutMatcher_IsRedoShortcut_MatchesOnlyCtrlY(Key key, ModifierKeys modifiers, bool expected)
     {
         Assert.Equal(expected, MainWindowShortcutMatcher.IsRedoShortcut(key, modifiers));
     }
 
     [Fact]
-    public void IsToggleHistoryShortcut_ReturnsTrueOnlyForCtrlH()
+    public void MainWindowShortcutMatcher_IsToggleHistoryShortcut_ReturnsTrueOnlyForCtrlH()
     {
         Assert.True(MainWindowShortcutMatcher.IsToggleHistoryShortcut(Key.H, ModifierKeys.Control));
         Assert.False(MainWindowShortcutMatcher.IsToggleHistoryShortcut(Key.H, ModifierKeys.None));
@@ -37,7 +37,7 @@ public class MainWindowShortcutMatcherTests
     }
 
     [Fact]
-    public void IsOpenNewTransactionShortcut_ReturnsTrue_ForCtrlN()
+    public void MainWindowShortcutMatcher_IsOpenNewTransactionShortcut_ReturnsTrue_ForCtrlN()
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenNewTransactionShortcut(Key.N, ModifierKeys.Control);
 
@@ -48,7 +48,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.N, ModifierKeys.None)]
     [InlineData(Key.N, ModifierKeys.Control | ModifierKeys.Shift)]
     [InlineData(Key.M, ModifierKeys.Control)]
-    public void IsOpenNewTransactionShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenNewTransactionShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenNewTransactionShortcut(key, modifiers);
 
@@ -56,7 +56,7 @@ public class MainWindowShortcutMatcherTests
     }
 
     [Fact]
-    public void IsOpenPlanningShortcut_ReturnsTrue_ForCtrlP()
+    public void MainWindowShortcutMatcher_IsOpenPlanningShortcut_ReturnsTrue_ForCtrlP()
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenPlanningShortcut(Key.P, ModifierKeys.Control);
 
@@ -67,7 +67,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.P, ModifierKeys.None)]
     [InlineData(Key.P, ModifierKeys.Control | ModifierKeys.Shift)]
     [InlineData(Key.O, ModifierKeys.Control)]
-    public void IsOpenPlanningShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenPlanningShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenPlanningShortcut(key, modifiers);
 
@@ -75,7 +75,7 @@ public class MainWindowShortcutMatcherTests
     }
 
     [Fact]
-    public void IsOpenBudgetForecastShortcut_ReturnsTrue_ForCtrlShiftP()
+    public void MainWindowShortcutMatcher_IsOpenBudgetForecastShortcut_ReturnsTrue_ForCtrlShiftP()
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenBudgetForecastShortcut(
             Key.P,
@@ -86,13 +86,13 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.P, ModifierKeys.Control)]
     [InlineData(Key.P, ModifierKeys.None)]
     [InlineData(Key.O, ModifierKeys.Control | ModifierKeys.Shift)]
-    public void IsOpenBudgetForecastShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenBudgetForecastShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         Assert.False(MainWindowShortcutMatcher.IsOpenBudgetForecastShortcut(key, modifiers));
     }
 
     [Fact]
-    public void IsOpenQuickAccessShortcut_ReturnsTrue_ForCtrlK()
+    public void MainWindowShortcutMatcher_IsOpenQuickAccessShortcut_ReturnsTrue_ForCtrlK()
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenQuickAccessShortcut(Key.K, ModifierKeys.Control);
 
@@ -104,7 +104,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.Q, ModifierKeys.None)]
     [InlineData(Key.Q, ModifierKeys.Control | ModifierKeys.Shift)]
     [InlineData(Key.W, ModifierKeys.Control)]
-    public void IsOpenQuickAccessShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenQuickAccessShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenQuickAccessShortcut(key, modifiers);
 
@@ -114,7 +114,7 @@ public class MainWindowShortcutMatcherTests
     [Theory]
     [InlineData(Key.OemQuestion, ModifierKeys.Control)]
     [InlineData(Key.Divide, ModifierKeys.Control)]
-    public void IsOpenHotkeysOverviewShortcut_ReturnsTrue_ForCtrlSlash(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenHotkeysOverviewShortcut_ReturnsTrueForCtrlSlash(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenHotkeysOverviewShortcut(key, modifiers);
 
@@ -125,7 +125,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.OemQuestion, ModifierKeys.None)]
     [InlineData(Key.OemQuestion, ModifierKeys.Control | ModifierKeys.Shift)]
     [InlineData(Key.H, ModifierKeys.Control)]
-    public void IsOpenHotkeysOverviewShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenHotkeysOverviewShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenHotkeysOverviewShortcut(key, modifiers);
 
@@ -133,7 +133,7 @@ public class MainWindowShortcutMatcherTests
     }
 
     [Fact]
-    public void IsOpenAnalyticsShortcut_ReturnsTrue_ForCtrl2()
+    public void MainWindowShortcutMatcher_IsOpenAnalyticsShortcut_ReturnsTrue_ForCtrl2()
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenAnalyticsShortcut(Key.D2, ModifierKeys.Control);
 
@@ -145,7 +145,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.A, ModifierKeys.Control | ModifierKeys.Shift)]
     [InlineData(Key.D2, ModifierKeys.None)]
     [InlineData(Key.D, ModifierKeys.Control)]
-    public void IsOpenAnalyticsShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenAnalyticsShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenAnalyticsShortcut(key, modifiers);
 
@@ -153,7 +153,7 @@ public class MainWindowShortcutMatcherTests
     }
 
     [Fact]
-    public void IsOpenSearchShortcut_ReturnsTrue_ForCtrlF()
+    public void MainWindowShortcutMatcher_IsOpenSearchShortcut_ReturnsTrue_ForCtrlF()
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenSearchShortcut(Key.F, ModifierKeys.Control);
 
@@ -164,7 +164,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.F, ModifierKeys.None)]
     [InlineData(Key.F, ModifierKeys.Control | ModifierKeys.Shift)]
     [InlineData(Key.S, ModifierKeys.Control)]
-    public void IsOpenSearchShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenSearchShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenSearchShortcut(key, modifiers);
 
@@ -172,7 +172,7 @@ public class MainWindowShortcutMatcherTests
     }
 
     [Fact]
-    public void IsOpenRecurringNewTransactionShortcut_ReturnsTrue_ForCtrlShiftN()
+    public void MainWindowShortcutMatcher_IsOpenRecurringNewTransactionShortcut_ReturnsTrue_ForCtrlShiftN()
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenRecurringNewTransactionShortcut(
             Key.N,
@@ -185,7 +185,7 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.N, ModifierKeys.None)]
     [InlineData(Key.N, ModifierKeys.Control)]
     [InlineData(Key.M, ModifierKeys.Control)]
-    public void IsOpenRecurringNewTransactionShortcut_ReturnsFalse_ForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenRecurringNewTransactionShortcut_ReturnsFalseForOtherKeysOrModifiers(Key key, ModifierKeys modifiers)
     {
         var isShortcut = MainWindowShortcutMatcher.IsOpenRecurringNewTransactionShortcut(key, modifiers);
 
@@ -194,7 +194,7 @@ public class MainWindowShortcutMatcherTests
 
     [Theory]
     [InlineData(Key.OemComma, ModifierKeys.Control)]
-    public void IsOpenSettingsShortcut_ReturnsTrue_ForCtrlComma(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenSettingsShortcut_ReturnsTrueForCtrlComma(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenSettingsShortcut(key, modifiers));
     }
@@ -202,7 +202,7 @@ public class MainWindowShortcutMatcherTests
     [Theory]
     [InlineData(Key.D1, ModifierKeys.Control)]
     [InlineData(Key.NumPad1, ModifierKeys.Control)]
-    public void IsOpenDashboardShortcut_ReturnsTrue_ForCtrl1(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenDashboardShortcut_ReturnsTrueForCtrl1(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenDashboardShortcut(key, modifiers));
     }
@@ -210,7 +210,7 @@ public class MainWindowShortcutMatcherTests
     [Theory]
     [InlineData(Key.D3, ModifierKeys.Control)]
     [InlineData(Key.NumPad3, ModifierKeys.Control)]
-    public void IsOpenCalendarShortcut_ReturnsTrue_ForCtrl3(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenCalendarShortcut_ReturnsTrueForCtrl3(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenCalendarShortcut(key, modifiers));
     }
@@ -218,35 +218,35 @@ public class MainWindowShortcutMatcherTests
     [Theory]
     [InlineData(Key.D4, ModifierKeys.Control)]
     [InlineData(Key.NumPad4, ModifierKeys.Control)]
-    public void IsOpenLedgerShortcut_ReturnsTrue_ForCtrl4(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenLedgerShortcut_ReturnsTrueForCtrl4(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenLedgerShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.N, ModifierKeys.Control | ModifierKeys.Alt)]
-    public void IsToggleNotificationsShortcut_ReturnsTrue_ForCtrlAltN(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsToggleNotificationsShortcut_ReturnsTrueForCtrlAltN(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsToggleNotificationsShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.Left, ModifierKeys.Control)]
-    public void IsNavigateDashboardPreviousPeriodShortcut_ReturnsTrue_ForCtrlLeft(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsNavigateDashboardPreviousPeriodShortcut_ReturnsTrueForCtrlLeft(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsNavigateDashboardPreviousPeriodShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.Right, ModifierKeys.Control)]
-    public void IsNavigateDashboardNextPeriodShortcut_ReturnsTrue_ForCtrlRight(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsNavigateDashboardNextPeriodShortcut_ReturnsTrueForCtrlRight(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsNavigateDashboardNextPeriodShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.Home, ModifierKeys.Control)]
-    public void IsNavigateDashboardCurrentPeriodShortcut_ReturnsTrue_ForCtrlHome(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsNavigateDashboardCurrentPeriodShortcut_ReturnsTrueForCtrlHome(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsNavigateDashboardCurrentPeriodShortcut(key, modifiers));
     }
@@ -256,40 +256,40 @@ public class MainWindowShortcutMatcherTests
     [InlineData(Key.D2, ModifierKeys.Control | ModifierKeys.Alt)]
     [InlineData(Key.D3, ModifierKeys.Control | ModifierKeys.Alt)]
     [InlineData(Key.D4, ModifierKeys.Control | ModifierKeys.Alt)]
-    public void TryGetViewModeShortcut_ReturnsTrue_ForCtrlAltNumber(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_TryGetViewModeShortcut_ReturnsTrueForCtrlAltNumber(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.TryGetViewModeShortcut(key, modifiers, out _));
     }
 
     [Fact]
-    public void TryGetViewModeShortcut_ReturnsFalse_ForAltOnlyNumber()
+    public void MainWindowShortcutMatcher_TryGetViewModeShortcut_ReturnsFalse_ForAltOnlyNumber()
     {
         Assert.False(MainWindowShortcutMatcher.TryGetViewModeShortcut(Key.D1, ModifierKeys.Alt, out _));
     }
 
     [Theory]
     [InlineData(Key.L, ModifierKeys.Control | ModifierKeys.Shift)]
-    public void IsOpenAddAccountShortcut_ReturnsFalse_ForCtrlShiftL(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenAddAccountShortcut_ReturnsFalseForCtrlShiftL(Key key, ModifierKeys modifiers)
     {
         Assert.False(MainWindowShortcutMatcher.IsOpenAddAccountShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.L, ModifierKeys.Control | ModifierKeys.Shift)]
-    public void IsToggleAppLockShortcut_ReturnsTrue_ForCtrlShiftL(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsToggleAppLockShortcut_ReturnsTrueForCtrlShiftL(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsToggleAppLockShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.G, ModifierKeys.Control | ModifierKeys.Shift)]
-    public void IsOpenAddSavingGoalShortcut_ReturnsTrue_ForCtrlShiftG(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenAddSavingGoalShortcut_ReturnsTrueForCtrlShiftG(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenAddSavingGoalShortcut(key, modifiers));
     }
 
     [Fact]
-    public void IsOpenAddSavingGoalShortcut_ReturnsFalse_ForCtrlShiftE()
+    public void MainWindowShortcutMatcher_IsOpenAddSavingGoalShortcut_ReturnsFalse_ForCtrlShiftE()
     {
         Assert.False(MainWindowShortcutMatcher.IsOpenAddSavingGoalShortcut(
             Key.E,
@@ -298,41 +298,41 @@ public class MainWindowShortcutMatcherTests
 
     [Theory]
     [InlineData(Key.E, ModifierKeys.Control)]
-    public void IsLedgerExportShortcut_ReturnsTrue_ForCtrlE(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsLedgerExportShortcut_ReturnsTrueForCtrlE(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsLedgerExportShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.R, ModifierKeys.Control | ModifierKeys.Shift)]
-    public void IsLedgerClearFiltersShortcut_ReturnsTrue_ForCtrlShiftR(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsLedgerClearFiltersShortcut_ReturnsTrueForCtrlShiftR(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsLedgerClearFiltersShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.Up, ModifierKeys.Control)]
-    public void IsLedgerAscendingSortShortcut_ReturnsTrue_ForCtrlUp(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsLedgerAscendingSortShortcut_ReturnsTrueForCtrlUp(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsLedgerAscendingSortShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.Down, ModifierKeys.Control)]
-    public void IsLedgerDescendingSortShortcut_ReturnsTrue_ForCtrlDown(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsLedgerDescendingSortShortcut_ReturnsTrueForCtrlDown(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsLedgerDescendingSortShortcut(key, modifiers));
     }
 
     [Theory]
     [InlineData(Key.B, ModifierKeys.Control | ModifierKeys.Shift)]
-    public void IsOpenDataManagementShortcut_ReturnsTrue_ForCtrlShiftB(Key key, ModifierKeys modifiers)
+    public void MainWindowShortcutMatcher_IsOpenDataManagementShortcut_ReturnsTrueForCtrlShiftB(Key key, ModifierKeys modifiers)
     {
         Assert.True(MainWindowShortcutMatcher.IsOpenDataManagementShortcut(key, modifiers));
     }
 
     [Fact]
-    public void RemovedShortcuts_ReturnFalse()
+    public void MainWindowShortcutMatcher_RemovedShortcuts_ReturnFalse()
     {
         Assert.False(MainWindowShortcutMatcher.IsOpenAnalyticsShortcut(
             Key.A,

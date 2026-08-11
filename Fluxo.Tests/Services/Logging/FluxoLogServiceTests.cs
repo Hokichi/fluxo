@@ -38,7 +38,7 @@ public sealed class FluxoLogServiceTests : IDisposable
     }
 
     [Fact]
-    public void Initialize_CreatesSplitLogFolders()
+    public void FluxoLogService_Initialize_CreatesSplitLogFolders()
     {
         FluxoLogManager.Initialize("User");
 
@@ -48,7 +48,7 @@ public sealed class FluxoLogServiceTests : IDisposable
     }
 
     [Fact]
-    public void LogInformation_RoutesEfCoreMessagesToDb_AndNormalMessagesToOthers()
+    public void FluxoLogService_LogInformation_RoutesEfCoreMessagesToDb_AndNormalMessagesToOthers()
     {
         FluxoLogManager.Initialize("User");
 
@@ -66,7 +66,7 @@ public sealed class FluxoLogServiceTests : IDisposable
     }
 
     [Fact]
-    public void LogError_WritesIssueLogAndFullExceptionFileWithRequestedName()
+    public void FluxoLogService_LogError_WritesIssueLogAndFullExceptionFileWithRequestedName()
     {
         FluxoLogManager.Initialize("User");
         var exception = CreateNestedException();
@@ -91,7 +91,7 @@ public sealed class FluxoLogServiceTests : IDisposable
     }
 
     [Fact]
-    public void LogError_CreatesOneExceptionFilePerFailure()
+    public void FluxoLogService_LogError_CreatesOneExceptionFilePerFailure()
     {
         FluxoLogManager.Initialize("User");
 

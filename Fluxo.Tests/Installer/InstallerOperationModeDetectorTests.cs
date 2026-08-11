@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class InstallerOperationModeDetectorTests
 {
     [Fact]
-    public void Detect_UsesRepairerOriginalBundleSourceBeforeExtractedProcessPath()
+    public void InstallerOperationModeDetector_Detect_UsesRepairerOriginalBundleSourceBeforeExtractedProcessPath()
     {
         var mode = InstallerOperationModeDetector.Detect(
             originalSourcePath: WindowsPathFixtures.RepairerExecutable,
@@ -18,7 +18,7 @@ public sealed class InstallerOperationModeDetectorTests
     }
 
     [Fact]
-    public void Detect_UsesRepairerSourceProcessPath_WhenOriginalSourceIsRegisteredInstaller()
+    public void InstallerOperationModeDetector_Detect_UsesRepairerSourceProcessPath_WhenOriginalSourceIsRegisteredInstaller()
     {
         var mode = InstallerOperationModeDetector.Detect(
             originalSourcePath: WindowsPathFixtures.BuildOutputInstaller,
@@ -29,7 +29,7 @@ public sealed class InstallerOperationModeDetectorTests
     }
 
     [Fact]
-    public void Detect_UsesRepairExecutableName_WhenInstalledNameHasDifferentCasing()
+    public void InstallerOperationModeDetector_Detect_UsesRepairExecutableName_WhenInstalledNameHasDifferentCasing()
     {
         var mode = InstallerOperationModeDetector.Detect(
             originalSourcePath: WindowsPathFixtures.UppercaseRepairerExecutable,
@@ -40,7 +40,7 @@ public sealed class InstallerOperationModeDetectorTests
     }
 
     [Fact]
-    public void SelectBundleExecutablePathForViewModel_PrefersSourceProcess_WhenOriginalIsInstaller()
+    public void InstallerOperationModeDetector_SelectBundleExecutablePathForViewModel_PrefersSourceProcess_WhenOriginalIsInstaller()
     {
         var path = InstallerOperationModeDetector.SelectBundleExecutablePathForViewModel(
             wixBundleSourceProcessPath: WindowsPathFixtures.AlternateRepairerExecutable,
@@ -51,7 +51,7 @@ public sealed class InstallerOperationModeDetectorTests
     }
 
     [Fact]
-    public void SelectBundleExecutablePathForViewModel_PrefersOriginal_WhenSourceProcessMissing()
+    public void InstallerOperationModeDetector_SelectBundleExecutablePathForViewModel_PrefersOriginal_WhenSourceProcessMissing()
     {
         var path = InstallerOperationModeDetector.SelectBundleExecutablePathForViewModel(
             wixBundleSourceProcessPath: null,
@@ -62,7 +62,7 @@ public sealed class InstallerOperationModeDetectorTests
     }
 
     [Fact]
-    public void SelectBundleExecutablePathForViewModel_UsesFallback_WhenNeitherIsRepairer()
+    public void InstallerOperationModeDetector_SelectBundleExecutablePathForViewModel_UsesFallback_WhenNeitherIsRepairer()
     {
         var fallback = WindowsPathFixtures.DownloadsInstaller;
         var path = InstallerOperationModeDetector.SelectBundleExecutablePathForViewModel(

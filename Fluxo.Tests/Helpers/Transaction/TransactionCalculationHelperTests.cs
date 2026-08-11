@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Helpers.Transaction;
 public sealed class TransactionCalculationHelperTests
 {
     [Fact]
-    public void Installment_amount_rounds_away_from_zero()
+    public void TransactionCalculationHelper_Installment_AmountRoundsAwayFrom_Zero()
     {
         Assert.Equal(3.34m, TransactionCalculationHelper.CalculateInstallmentAmount(10.005m, 3));
     }
@@ -18,7 +18,7 @@ public sealed class TransactionCalculationHelperTests
     [InlineData(AccountType.Checking, 100, 0, true, 25, 125)]
     [InlineData(AccountType.Credit, 0, 40, false, 25, 65)]
     [InlineData(AccountType.Credit, 0, 40, true, 25, 15)]
-    public void Account_projection_respects_account_and_transaction_type(
+    public void TransactionCalculationHelper_Account_ProjectionRespectsAccountAndTransactionType(
         AccountType accountType,
         decimal balance,
         decimal spent,

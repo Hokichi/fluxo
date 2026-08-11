@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Views.Infrastructure;
 public sealed class DependencyObjectTreeTests
 {
     [Fact]
-    public void GetParent_UsesVisualTreeForVisualElement()
+    public void DependencyObjectTree_GetParent_UsesVisualTreeForVisualElement()
     {
         RunOnStaThread(() =>
         {
@@ -22,7 +22,7 @@ public sealed class DependencyObjectTreeTests
     }
 
     [Fact]
-    public void GetParent_UsesLogicalTreeForNonVisualElement()
+    public void DependencyObjectTree_GetParent_UsesLogicalTreeForNonVisualElement()
     {
         RunOnStaThread(() =>
         {
@@ -35,7 +35,7 @@ public sealed class DependencyObjectTreeTests
     }
 
     [Fact]
-    public void GetChildren_UsesVisualTreeForVisualElement()
+    public void DependencyObjectTree_GetChildren_UsesVisualTreeForVisualElement()
     {
         RunOnStaThread(() =>
         {
@@ -48,7 +48,7 @@ public sealed class DependencyObjectTreeTests
     }
 
     [Fact]
-    public void GetChildren_UsesLogicalTreeForNonVisualElement()
+    public void DependencyObjectTree_GetChildren_UsesLogicalTreeForNonVisualElement()
     {
         RunOnStaThread(() =>
         {
@@ -61,7 +61,7 @@ public sealed class DependencyObjectTreeTests
     }
 
     [Fact]
-    public void IsDescendantOf_WalksSharedParentChain()
+    public void DependencyObjectTree_IsDescendantOf_WalksSharedParentChain()
     {
         RunOnStaThread(() =>
         {
@@ -76,7 +76,7 @@ public sealed class DependencyObjectTreeTests
     }
 
     [Fact]
-    public void FindAncestor_WalksFromRunInlineWithoutVisualParentException()
+    public void DependencyObjectTree_FindAncestor_WalksFromRunInlineWithoutVisualParentException()
     {
         RunOnStaThread(() =>
         {

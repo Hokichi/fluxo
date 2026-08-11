@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public class DateRangeResolverTests
 {
     [Fact]
-    public void ResolveAllTransactions_UsesEarliestDateThroughToday()
+    public void DateRangeResolver_ResolveAllTransactions_UsesEarliestDateThroughToday()
     {
         var today = new DateTime(2026, 6, 30);
 
@@ -23,7 +23,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void ResolveAllTransactions_WithoutPastTransactions_UsesTodayForBothBounds()
+    public void DateRangeResolver_ResolveAllTransactions_WithoutPastTransactions_UsesTodayForBothBounds()
     {
         var today = new DateTime(2026, 6, 30);
 
@@ -34,7 +34,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void Resolve_Daily_ReturnsSameFromAndTo()
+    public void DateRangeResolver_Resolve_Daily_ReturnsSameFromAndTo()
     {
         var selected = new DateTime(2026, 4, 16);
 
@@ -45,7 +45,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void Resolve_Weekly_ReturnsMondayToSunday()
+    public void DateRangeResolver_Resolve_Weekly_ReturnsMondayToSunday()
     {
         var selected = new DateTime(2026, 4, 19, 14, 30, 0, DateTimeKind.Local);
         var expectedFrom = new DateTime(2026, 4, 13, 0, 0, 0, DateTimeKind.Local);
@@ -60,7 +60,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void Resolve_Monthly_ReturnsFirstToLastDay()
+    public void DateRangeResolver_Resolve_Monthly_ReturnsFirstToLastDay()
     {
         var selected = new DateTime(2024, 2, 15, 9, 45, 0, DateTimeKind.Utc);
         var expectedFrom = new DateTime(2024, 2, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -75,7 +75,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void Resolve_Weekly_WhenSelectedDayIsSunday_ReturnsMondayToSunday()
+    public void DateRangeResolver_Resolve_WeeklyWhenSelectedDayIsSunday_ReturnsMondayToSunday()
     {
         var selected = new DateTime(2026, 4, 19, 8, 0, 0, DateTimeKind.Unspecified);
         var expectedFrom = new DateTime(2026, 4, 13, 0, 0, 0, DateTimeKind.Unspecified);
@@ -88,7 +88,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void Resolve_Monthly_PreservesKind()
+    public void DateRangeResolver_Resolve_Monthly_PreservesKind()
     {
         var selected = new DateTime(2025, 11, 3, 18, 0, 0, DateTimeKind.Local);
 
@@ -99,7 +99,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void Resolve_AllTime_ThrowsInvalidOperationException()
+    public void DateRangeResolver_Resolve_AllTime_ThrowsInvalidOperationException()
     {
         var selected = new DateTime(2026, 4, 16);
 
@@ -108,7 +108,7 @@ public class DateRangeResolverTests
     }
 
     [Fact]
-    public void ResolveAllocationPeriod_UsesCurrentBudgetAllocationPeriod()
+    public void DateRangeResolver_ResolveAllocationPeriod_UsesCurrentBudgetAllocationPeriod()
     {
         var today = new DateTime(2026, 6, 18);
         var budgetAllocation = new BudgetAllocation

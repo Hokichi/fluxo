@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public sealed class CalendarVMTests
 {
     [Fact]
-    public void Constructor_LoadsCurrentMonthWithBufferedWeeks()
+    public void CalendarVM_Constructor_LoadsCurrentMonthWithBufferedWeeks()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -29,7 +29,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void ShiftDown_DropsFirstFrameWeekAndAppendsNextFrameWeek()
+    public void CalendarVM_ShiftDown_DropsFirstFrameWeekAndAppendsNextFrameWeek()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -42,7 +42,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void ShiftUp_PrependsPreviousFrameWeekAndDropsLastFrameWeek()
+    public void CalendarVM_ShiftUp_PrependsPreviousFrameWeekAndDropsLastFrameWeek()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -55,7 +55,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void ShiftDown_WhenNextMonthHasMoreVisibleDates_SwitchesBrightMonth()
+    public void CalendarVM_ShiftDown_WhenNextMonthHasMoreVisibleDates_SwitchesBrightMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -70,7 +70,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void ShiftDown_WhenNextMonthStaysDominant_KeepsBrightMonth()
+    public void CalendarVM_ShiftDown_WhenNextMonthStaysDominant_KeepsBrightMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -85,7 +85,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void ShiftUp_WhenPreviousMonthHasMoreVisibleDates_SwitchesBrightMonth()
+    public void CalendarVM_ShiftUp_WhenPreviousMonthHasMoreVisibleDates_SwitchesBrightMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -101,7 +101,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void ShiftDown_WhenVisibleDatesAreTied_KeepsCurrentBrightMonth()
+    public void CalendarVM_ShiftDown_WhenVisibleDatesAreTied_KeepsCurrentBrightMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 2, 12));
 
@@ -115,7 +115,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task NavigateToNextMonth_FillsGridFromFirstWeekOfNextMonth()
+    public async Task CalendarVM_NavigateToNextMonth_FillsGridFromFirstWeekOfNextMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -129,7 +129,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task NavigateToPreviousMonth_FillsGridFromFirstWeekOfPreviousMonth()
+    public async Task CalendarVM_NavigateToPreviousMonth_FillsGridFromFirstWeekOfPreviousMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -143,7 +143,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task NavigateToNextMonth_ScrollsThroughIntermediateWeekStartsBeforeSettlingOnTargetMonth()
+    public async Task CalendarVM_NavigateToNextMonth_ScrollsThroughIntermediateWeekStartsBeforeSettlingOnTargetMonth()
     {
         CalendarVM? vm = null;
         var observedWeekStarts = new List<DateOnly>();
@@ -169,7 +169,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_LoadsCalendarDataAndUpdatesSummaryAndEmptyStates()
+    public async Task CalendarVM_SelectDate_LoadsCalendarDataAndUpdatesSummaryAndEmptyStates()
     {
         var service = Substitute.For<ICalendarService>();
         service.GetCalendarDayAsync(new DateOnly(2026, 6, 12), Arg.Any<CancellationToken>())
@@ -197,7 +197,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_ListItemAmountTextDoesNotIncludeCurrencySymbol()
+    public async Task CalendarVM_SelectDate_ListItemAmountTextDoesNotIncludeCurrencySymbol()
     {
         var service = Substitute.For<ICalendarService>();
         service.GetCalendarDayAsync(new DateOnly(2026, 6, 12), Arg.Any<CancellationToken>())
@@ -224,7 +224,7 @@ public sealed class CalendarVMTests
     [InlineData(1, 2026, 6, 13)]
     [InlineData(-7, 2026, 6, 5)]
     [InlineData(7, 2026, 6, 19)]
-    public async Task SelectRelativeDateAsync_SelectsDateRelativeToCurrentSelection(
+    public async Task CalendarVM_SelectRelativeDateAsync_SelectsDateRelativeToCurrentSelection(
         int dayOffset,
         int expectedYear,
         int expectedMonth,
@@ -239,7 +239,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectCurrentDateAsync_SelectsTodayAndRestoresCurrentMonthFrame()
+    public async Task CalendarVM_SelectCurrentDateAsync_SelectsTodayAndRestoresCurrentMonthFrame()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
         await vm.SelectDateAsync(new DateOnly(2026, 7, 15));
@@ -252,7 +252,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public void Constructor_WhenSelectedDateIsCurrentDate_IsAtCurrentDay()
+    public void CalendarVM_Constructor_WhenSelectedDateIsCurrentDate_IsAtCurrentDay()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -260,7 +260,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_WhenSelectedDateChanges_UpdatesIsAtCurrentDay()
+    public async Task CalendarVM_SelectDate_WhenSelectedDateChanges_UpdatesIsAtCurrentDay()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 12));
 
@@ -274,7 +274,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectCurrentDateAsync_WhenAlreadyCurrent_DoesNotReloadCalendarData()
+    public async Task CalendarVM_SelectCurrentDateAsync_WhenAlreadyCurrent_DoesNotReloadCalendarData()
     {
         var service = Substitute.For<ICalendarService>();
         service.GetCalendarDayAsync(Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())
@@ -289,7 +289,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_WhenSelectedDateIsInDifferentMonth_BrightensSelectedMonth()
+    public async Task CalendarVM_SelectDate_WhenSelectedDateIsInDifferentMonth_BrightensSelectedMonth()
     {
         var vm = CreateVm(currentDate: new DateTime(2026, 6, 5));
 
@@ -303,7 +303,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_WhenOlderLoadCompletesAfterNewerLoad_KeepsNewerDetails()
+    public async Task CalendarVM_SelectDate_WhenOlderLoadCompletesAfterNewerLoad_KeepsNewerDetails()
     {
         var olderDate = new DateOnly(2026, 6, 12);
         var newerDate = new DateOnly(2026, 6, 13);
@@ -327,7 +327,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_WhenNewerLoadCancelsOlderLoad_DoesNotDisposeOlderTokenBeforeItFinishes()
+    public async Task CalendarVM_SelectDate_WhenNewerLoadCancelsOlderLoad_DoesNotDisposeOlderTokenBeforeItFinishes()
     {
         var olderDate = new DateOnly(2026, 6, 12);
         var newerDate = new DateOnly(2026, 6, 13);
@@ -356,7 +356,7 @@ public sealed class CalendarVMTests
     }
 
     [Fact]
-    public async Task SelectDate_WhenCurrentLoadIsCanceled_ClearsLoadingState()
+    public async Task CalendarVM_SelectDate_WhenCurrentLoadIsCanceled_ClearsLoadingState()
     {
         using var cts = new CancellationTokenSource();
         var service = Substitute.For<ICalendarService>();

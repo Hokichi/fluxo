@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public class TransactionPopupVMOrderingTests
 {
     [Fact]
-    public void ProjectNonSystemTags_FiltersSystemTags_AndOrdersByName()
+    public void TransactionPopupVMOrdering_ProjectNonSystemTags_FiltersSystemTags_AndOrdersByName()
     {
         var tags = new[]
         {
@@ -37,7 +37,7 @@ public class TransactionPopupVMOrderingTests
     }
 
     [Fact]
-    public void Accounts_AreOrderedByTypeThenConfiguredMetric()
+    public void TransactionPopupVMOrdering_Accounts_AreOrderedByTypeThenConfiguredMetric()
     {
         var sources = new[]
         {
@@ -62,7 +62,7 @@ public class TransactionPopupVMOrderingTests
     }
 
     [Fact]
-    public void BuildTransactionNameSuggestions_MatchesExpenseNamesAnywhere_AndLoadsExpenseData()
+    public void TransactionPopupVMOrdering_BuildTransactionNameSuggestions_MatchesExpenseNamesAnywhere_AndLoadsExpenseData()
     {
         var checking = new Account { Id = 3, Name = "Checking", IsEnabled = true };
         var groceries = new Tag { Id = 7, Name = "Groceries", HexCode = "#22C55E" };
@@ -111,7 +111,7 @@ public class TransactionPopupVMOrderingTests
     }
 
     [Fact]
-    public void BuildTransactionNameSuggestions_MatchesIncomeNamesAnywhere_AndLoadsIncomeData()
+    public void TransactionPopupVMOrdering_BuildTransactionNameSuggestions_MatchesIncomeNamesAnywhere_AndLoadsIncomeData()
     {
         var checking = new Account { Id = 5, Name = "Checking", IsEnabled = true };
         var logs = new[]
@@ -153,7 +153,7 @@ public class TransactionPopupVMOrderingTests
     }
 
     [Fact]
-    public void BuildTransactionNameSuggestions_RequiresAtLeastThreeCharacters()
+    public void TransactionPopupVMOrdering_BuildTransactionNameSuggestions_RequiresAtLeastThreeCharacters()
     {
         var logs = new[]
         {
@@ -179,7 +179,7 @@ public class TransactionPopupVMOrderingTests
     [InlineData(RecurringPeriod.Weekly, "7", 7)]
     [InlineData(RecurringPeriod.Biweekly, "7", 7)]
     [InlineData(RecurringPeriod.Monthly, "28", 28)]
-    public void TryNormalizeRecurringTime_AcceptsValidValues(RecurringPeriod period, string text, int expected)
+    public void TransactionPopupVMOrdering_TryNormalizeRecurringTime_AcceptsValidValues(RecurringPeriod period, string text, int expected)
     {
         var result = TransactionPopupVM.TryNormalizeRecurringTime(period, text, out var recurringTime);
 
@@ -192,7 +192,7 @@ public class TransactionPopupVMOrderingTests
     [InlineData(RecurringPeriod.Biweekly, "8")]
     [InlineData(RecurringPeriod.Monthly, "29")]
     [InlineData(RecurringPeriod.Monthly, "0")]
-    public void TryNormalizeRecurringTime_RejectsInvalidValues(RecurringPeriod period, string text)
+    public void TransactionPopupVMOrdering_TryNormalizeRecurringTime_RejectsInvalidValues(RecurringPeriod period, string text)
     {
         var result = TransactionPopupVM.TryNormalizeRecurringTime(period, text, out _);
 

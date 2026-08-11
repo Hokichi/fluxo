@@ -8,7 +8,7 @@ public sealed class TransactionsListVisibleItemLimitTests
     [Theory]
     [InlineData(5)]
     [InlineData(8)]
-    public void LimitItems_ReturnsRequestedPrefixWithoutMutatingSource(int limit)
+    public void TransactionsListVisibleItemLimit_LimitItems_ReturnsRequestedPrefixWithoutMutatingSource(int limit)
     {
         var source = Enumerable.Range(1, 10).Cast<object>().ToList();
 

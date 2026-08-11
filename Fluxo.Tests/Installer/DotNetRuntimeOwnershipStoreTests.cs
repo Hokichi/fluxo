@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class DotNetRuntimeOwnershipStoreTests
 {
     [Fact]
-    public void SaveAndRead_RoundTripsMarker()
+    public void DotNetRuntimeOwnershipStore_SaveAndRead_RoundTripsMarker()
     {
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var store = CreateStore(values);
@@ -26,7 +26,7 @@ public sealed class DotNetRuntimeOwnershipStoreTests
     }
 
     [Fact]
-    public void Read_ReturnsNull_WhenInstalledByFluxoMissing()
+    public void DotNetRuntimeOwnershipStore_Read_ReturnsNull_WhenInstalledByFluxoMissing()
     {
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -42,7 +42,7 @@ public sealed class DotNetRuntimeOwnershipStoreTests
     [Theory]
     [InlineData("false")]
     [InlineData("not-bool")]
-    public void Read_ReturnsNull_WhenInstalledByFluxoIsNotTrue(string installedByFluxo)
+    public void DotNetRuntimeOwnershipStore_Read_ReturnsNullWhenInstalledByFluxoIsNotTrue(string installedByFluxo)
     {
         var store = CreateStore(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -59,7 +59,7 @@ public sealed class DotNetRuntimeOwnershipStoreTests
     [InlineData("Version")]
     [InlineData("Rid")]
     [InlineData("InstallerUrl")]
-    public void Read_ReturnsNull_WhenRequiredMarkerFieldIsMissing(string missingField)
+    public void DotNetRuntimeOwnershipStore_Read_ReturnsNullWhenRequiredMarkerFieldIsMissing(string missingField)
     {
         var values = CreateValidValues();
         values.Remove(missingField);
@@ -72,7 +72,7 @@ public sealed class DotNetRuntimeOwnershipStoreTests
     [InlineData("Version")]
     [InlineData("Rid")]
     [InlineData("InstallerUrl")]
-    public void Read_ReturnsNull_WhenRequiredMarkerFieldIsBlank(string blankField)
+    public void DotNetRuntimeOwnershipStore_Read_ReturnsNullWhenRequiredMarkerFieldIsBlank(string blankField)
     {
         var values = CreateValidValues();
         values[blankField] = " ";
@@ -86,7 +86,7 @@ public sealed class DotNetRuntimeOwnershipStoreTests
     [InlineData("10.0.8", "", "https://example.test/runtime.exe", true)]
     [InlineData("10.0.8", "win-x64", "", true)]
     [InlineData("10.0.8", "win-x64", "https://example.test/runtime.exe", false)]
-    public void Save_Throws_WhenMarkerIsInvalid(
+    public void DotNetRuntimeOwnershipStore_Save_ThrowsWhenMarkerIsInvalid(
         string version,
         string rid,
         string installerUrl,
@@ -103,7 +103,7 @@ public sealed class DotNetRuntimeOwnershipStoreTests
     }
 
     [Fact]
-    public void Clear_RemovesMarkerValues()
+    public void DotNetRuntimeOwnershipStore_Clear_RemovesMarkerValues()
     {
         var values = CreateValidValues();
         var store = CreateStore(values);

@@ -10,7 +10,7 @@ public sealed class InstalledVersionRegistryReaderTests : IDisposable
     private readonly string testRootPath = $@"SOFTWARE\Fluxo.Tests\{Guid.NewGuid():N}";
 
     [Fact]
-    public void ReadInstalledVersion_ReturnsInstalledVersionFromConfiguredFluxoKey()
+    public void InstalledVersionRegistryReader_ReadInstalledVersion_ReturnsInstalledVersionFromConfiguredFluxoKey()
     {
         using var testRoot = Registry.CurrentUser.CreateSubKey(testRootPath);
         using var fluxoKey = testRoot.CreateSubKey(@"Microsoft\Windows\CurrentVersion\fluxo");
@@ -24,7 +24,7 @@ public sealed class InstalledVersionRegistryReaderTests : IDisposable
     }
 
     [Fact]
-    public void ReadInstallLocation_ReturnsInstallLocationFromConfiguredFluxoKey()
+    public void InstalledVersionRegistryReader_ReadInstallLocation_ReturnsInstallLocationFromConfiguredFluxoKey()
     {
         using var testRoot = Registry.CurrentUser.CreateSubKey(testRootPath);
         using var fluxoKey = testRoot.CreateSubKey(@"Microsoft\Windows\CurrentVersion\fluxo");
@@ -38,7 +38,7 @@ public sealed class InstalledVersionRegistryReaderTests : IDisposable
     }
 
     [Fact]
-    public void ReadInstalledVersion_IgnoresLegacyUninstallDisplayVersionEntries()
+    public void InstalledVersionRegistryReader_ReadInstalledVersion_IgnoresLegacyUninstallDisplayVersionEntries()
     {
         using var testRoot = Registry.CurrentUser.CreateSubKey(testRootPath);
         using var legacyUninstallKey = testRoot.CreateSubKey(

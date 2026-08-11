@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionBulkQueueVMTests
 {
     [Fact]
-    public void Queue_groups_dates_descending_and_times_ascending()
+    public void TransactionBulkQueueVM_Queue_GroupsDatesDescendingAndTimes_Ascending()
     {
         var messenger = new WeakReferenceMessenger();
         var oldDay = new TransactionVM { Name = "Old day", OccurredOn = new DateTime(2026, 8, 9, 23, 0, 0) };
@@ -31,7 +31,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Changing_queued_occurrence_reorders_grouped_view()
+    public void TransactionBulkQueueVM_Changing_QueuedOccurrenceReordersGrouped_View()
     {
         var messenger = new WeakReferenceMessenger();
         var first = new TransactionVM { Name = "First", OccurredOn = new DateTime(2026, 8, 10, 8, 0, 0) };
@@ -47,7 +47,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Adding_and_switching_preserves_exact_instances()
+    public void TransactionBulkQueueVM_Adding_AndSwitchingPreservesExact_Instances()
     {
         var messenger = new WeakReferenceMessenger();
         var loads = new List<TransactionVM>();
@@ -78,7 +78,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Adding_queue_item_uses_current_local_date_and_time()
+    public void TransactionBulkQueueVM_Adding_QueueItemUsesCurrentLocalDateAnd_Time()
     {
         var messenger = new WeakReferenceMessenger();
         using var vm = new TransactionBulkQueueVM(messenger);
@@ -94,7 +94,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Empty_queue_adopts_exact_draft_without_requesting_form_reload()
+    public void TransactionBulkQueueVM_Empty_QueueAdoptsExactDraftWithoutRequestingForm_Reload()
     {
         var messenger = new WeakReferenceMessenger();
         var loads = new List<TransactionVM>();
@@ -118,7 +118,7 @@ public sealed class TransactionBulkQueueVMTests
     [InlineData("", 0, false)]
     [InlineData("Named", 0, true)]
     [InlineData("", 1, true)]
-    public void Queue_reports_exact_bulk_change_rule(string name, decimal amount, bool expected)
+    public void TransactionBulkQueueVM_Queue_ReportsExactBulkChangeRule(string name, decimal amount, bool expected)
     {
         var messenger = new WeakReferenceMessenger();
         TransactionBulkQueueStateChangedMessage? state = null;
@@ -134,7 +134,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Select_and_remove_requests_operate_on_exact_instances()
+    public void TransactionBulkQueueVM_Select_AndRemoveRequestsOperateOnExact_Instances()
     {
         var messenger = new WeakReferenceMessenger();
         var first = new TransactionVM { Name = "First" };
@@ -151,7 +151,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Selection_uses_reference_identity_for_equal_transactions()
+    public void TransactionBulkQueueVM_Selection_UsesReferenceIdentityForEqual_Transactions()
     {
         var messenger = new WeakReferenceMessenger();
         var first = new TransactionVM { Name = "Same", Amount = 1m };
@@ -171,7 +171,7 @@ public sealed class TransactionBulkQueueVMTests
     }
 
     [Fact]
-    public void Removing_any_item_selects_and_loads_displayed_top_item()
+    public void TransactionBulkQueueVM_Removing_AnyItemSelectsAndLoadsDisplayedTop_Item()
     {
         var messenger = new WeakReferenceMessenger();
         var loads = new List<TransactionVM>();

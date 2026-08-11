@@ -12,13 +12,13 @@ public class HeaderQuickSearchEngineTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("abc")]
-    public void Search_ReturnsEmpty_ForShortQuery(string? query)
+    public void HeaderQuickSearchEngine_Search_ReturnsEmptyForShortQuery(string? query)
     {
         Assert.Empty(HeaderQuickSearchEngine.Search([Create(1, "Groceries")], query));
     }
 
     [Fact]
-    public void Search_SearchesBothTypes_AndOrdersByOccurredThenLogged()
+    public void HeaderQuickSearchEngine_Search_SearchesBothTypes_AndOrdersByOccurredThenLogged()
     {
         var today = DateTime.Today;
         var transactions = new[]

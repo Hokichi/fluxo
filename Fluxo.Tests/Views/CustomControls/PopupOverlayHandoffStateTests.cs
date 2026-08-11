@@ -5,7 +5,7 @@ namespace Fluxo.Tests.Views.CustomControls;
 public sealed class PopupOverlayHandoffStateTests
 {
     [Fact]
-    public void OnPopupShown_FirstShow_ReturnsShowOverlayAndCountIsOne()
+    public void PopupOverlayHandoffState_OnPopupShown_FirstShow_ReturnsShowOverlayAndCountIsOne()
     {
         var state = new PopupOverlayHandoffState();
 
@@ -16,7 +16,7 @@ public sealed class PopupOverlayHandoffStateTests
     }
 
     [Fact]
-    public void OnPopupHidden_LastHideWithoutHandoff_ReturnsHideOverlayAndCountIsZero()
+    public void PopupOverlayHandoffState_OnPopupHidden_LastHideWithoutHandoff_ReturnsHideOverlayAndCountIsZero()
     {
         var state = new PopupOverlayHandoffState();
         state.OnPopupShown();
@@ -28,7 +28,7 @@ public sealed class PopupOverlayHandoffStateTests
     }
 
     [Fact]
-    public void HandoffCloseThenOpen_DefersHide_ConsumesHandoff_AndDoesNotRestartShow()
+    public void PopupOverlayHandoffState_HandoffCloseThenOpen_DefersHideConsumesHandoff_AndDoesNotRestartShow()
     {
         var state = new PopupOverlayHandoffState();
         state.OnPopupShown();
@@ -44,7 +44,7 @@ public sealed class PopupOverlayHandoffStateTests
     }
 
     [Fact]
-    public void ResolveDeferredHide_WhenNoReopen_ReturnsHideOverlayAndClearsStaleHandoff()
+    public void PopupOverlayHandoffState_ResolveDeferredHide_WhenNoReopen_ReturnsHideOverlayAndClearsStaleHandoff()
     {
         var state = new PopupOverlayHandoffState();
         state.OnPopupShown();
@@ -59,7 +59,7 @@ public sealed class PopupOverlayHandoffStateTests
     }
 
     [Fact]
-    public void OnPopupHidden_ExtraHideCalls_DoNotGoNegative()
+    public void PopupOverlayHandoffState_OnPopupHidden_ExtraHideCalls_DoNotGoNegative()
     {
         var state = new PopupOverlayHandoffState();
 
@@ -74,7 +74,7 @@ public sealed class PopupOverlayHandoffStateTests
     }
 
     [Fact]
-    public void ResolveDeferredHide_StaleGeneration_DoesNotHideDuringNewerHandoffWindow()
+    public void PopupOverlayHandoffState_ResolveDeferredHide_StaleGeneration_DoesNotHideDuringNewerHandoffWindow()
     {
         var state = new PopupOverlayHandoffState();
         state.OnPopupShown();

@@ -22,7 +22,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMModeTests
 {
     [Fact]
-    public void InitializeAsync_add_mode_defaults_selected_time_to_current_time()
+    public void TransactionPopupVMMode_InitializeAsync_AddModeDefaultsSelectedTimeToCurrent_Time()
     {
         RunInSta(() =>
         {
@@ -38,7 +38,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void InitializeView_separates_transaction_date_and_time()
+    public void TransactionPopupVMMode_InitializeView_SeparatesTransactionDateAnd_Time()
     {
         RunInSta(() =>
         {
@@ -54,7 +54,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Editing_viewed_transaction_combines_selected_date_and_time()
+    public void TransactionPopupVMMode_Editing_ViewedTransactionCombinesSelectedDateAnd_Time()
     {
         RunInSta(() =>
         {
@@ -71,7 +71,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void InitializeAsync_add_mode_creates_two_distinct_equal_entities_once()
+    public void TransactionPopupVMMode_InitializeAsync_AddModeCreatesTwoDistinctEqualEntities_Once()
     {
         RunInSta(() =>
         {
@@ -96,7 +96,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void InitializeView_retains_loaded_identity_and_clears_pending_identity()
+    public void TransactionPopupVMMode_InitializeView_RetainsLoadedIdentityAndClearsPending_Identity()
     {
         RunInSta(() =>
         {
@@ -117,7 +117,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Discarding_viewed_transaction_notifies_split_tree_is_read_only()
+    public void TransactionPopupVMMode_Discarding_ViewedTransactionNotifiesSplitTreeIsRead_Only()
     {
         RunInSta(() =>
         {
@@ -142,7 +142,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void View_mapping_is_isolated_from_the_supplied_entity()
+    public void TransactionPopupVMMode_View_MappingIsIsolatedFromTheSupplied_Entity()
     {
         RunInSta(() =>
         {
@@ -162,7 +162,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Clone_reuses_pending_entity_and_keeps_loaded_baseline_unchanged()
+    public void TransactionPopupVMMode_Clone_ReusesPendingEntityAndKeepsLoadedBaseline_Unchanged()
     {
         RunInSta(() =>
         {
@@ -191,7 +191,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Goal_update_add_mode_seeds_generated_baseline_and_later_goal_change_updates_only_pending()
+    public void TransactionPopupVMMode_Goal_UpdateAddModeSeedsGeneratedBaselineAndLaterGoalChangeUpdatesOnly_Pending()
     {
         RunInSta(() =>
         {
@@ -220,7 +220,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Repayment_add_mode_seeds_generated_baseline_and_later_account_change_updates_only_pending()
+    public void TransactionPopupVMMode_Repayment_AddModeSeedsGeneratedBaselineAndLaterAccountChangeUpdatesOnly_Pending()
     {
         RunInSta(() =>
         {
@@ -270,7 +270,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Bulk_type_round_trip_keeps_queued_identity_and_later_field_updates()
+    public void TransactionPopupVMMode_Bulk_TypeRoundTripKeepsQueuedIdentityAndLaterField_Updates()
     {
         RunInSta(() =>
         {
@@ -310,7 +310,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Removing_only_bulk_item_resets_form_and_typing_adopts_fresh_transaction()
+    public void TransactionPopupVMMode_Removing_OnlyBulkItemResetsFormAndTypingAdoptsFresh_Transaction()
     {
         RunInSta(() =>
         {
@@ -348,7 +348,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void View_edit_mode_starts_with_equal_loaded_and_pending_transactions()
+    public void TransactionPopupVMMode_View_EditModeStartsWithEqualLoadedAndPending_Transactions()
     {
         RunInSta(() =>
         {
@@ -362,7 +362,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void View_edit_mode_without_form_changes_has_no_pending_transaction_changes()
+    public void TransactionPopupVMMode_View_EditModeWithoutFormChangesHasNoPendingTransaction_Changes()
     {
         RunInSta(() =>
         {
@@ -375,7 +375,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void View_without_subtransactions_hides_side_panel()
+    public void TransactionPopupVMMode_View_WithoutSubtransactionsHidesSide_Panel()
     {
         RunInSta(() =>
         {
@@ -387,7 +387,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Edit_mode_shows_split_without_history_pinned_or_toggle()
+    public void TransactionPopupVMMode_Edit_ModeShowsSplitWithoutHistoryPinnedOr_Toggle()
     {
         RunInSta(() =>
         {
@@ -410,7 +410,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void View_mode_keeps_pending_equal_when_the_loaded_goal_is_not_available()
+    public void TransactionPopupVMMode_View_ModeKeepsPendingEqualWhenTheLoadedGoalIsNot_Available()
     {
         RunInSta(() =>
         {
@@ -428,7 +428,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Begin_editing_goal_with_unavailable_generated_tag_keeps_loaded_relationships_unchanged()
+    public void TransactionPopupVMMode_Begin_EditingGoalWithUnavailableGeneratedTagKeepsLoadedRelationships_Unchanged()
     {
         RunInSta(() =>
         {
@@ -454,7 +454,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Begin_editing_repayment_with_unavailable_generated_tag_keeps_loaded_relationships_unchanged()
+    public void TransactionPopupVMMode_Begin_EditingRepaymentWithUnavailableGeneratedTagKeepsLoadedRelationships_Unchanged()
     {
         RunInSta(() =>
         {
@@ -479,7 +479,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Form_edits_update_pending_without_mutating_loaded_transaction()
+    public void TransactionPopupVMMode_Form_EditsUpdatePendingWithoutMutatingLoaded_Transaction()
     {
         RunInSta(() =>
         {
@@ -509,7 +509,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void HasChanges_uses_pending_entity_equality_after_form_synchronization()
+    public void TransactionPopupVMMode_HasChanges_UsesPendingEntityEqualityAfterForm_Synchronization()
     {
         RunInSta(() =>
         {
@@ -527,7 +527,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Add_mode_starts_unchanged_and_tracks_a_real_form_edit()
+    public void TransactionPopupVMMode_Add_ModeStartsUnchangedAndTracksARealForm_Edit()
     {
         RunInSta(() =>
         {
@@ -546,7 +546,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void InitializeAsync_add_mode_overrides_draft_date_with_dashboard_daily_date()
+    public void TransactionPopupVMMode_InitializeAsync_AddModeOverridesDraftDateWithDashboardDaily_Date()
     {
         RunInSta(() =>
         {
@@ -567,7 +567,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Form_synchronization_does_not_call_app_data()
+    public void TransactionPopupVMMode_Form_SynchronizationDoesNotCallApp_Data()
     {
         RunInSta(() =>
         {
@@ -583,7 +583,7 @@ public sealed class TransactionPopupVMModeTests
     }
 
     [Fact]
-    public void Removing_queued_transaction_sends_the_exact_transaction_instance()
+    public void TransactionPopupVMMode_Removing_QueuedTransactionSendsTheExactTransaction_Instance()
     {
         var messenger = new WeakReferenceMessenger();
         var recipient = new object();

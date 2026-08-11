@@ -23,7 +23,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMValidationTests
 {
     [Fact]
-    public void UnpostedIoU_ForcesBudgetExclusion_AndRegularModeClearsIt()
+    public void TransactionPopupVMValidation_UnpostedIoU_ForcesBudgetExclusion_AndRegularModeClearsIt()
     {
         RunInSta(() =>
         {
@@ -44,7 +44,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Constructor_UsesAddNewTransactionPurposeByDefault()
+    public void TransactionPopupVMValidation_Constructor_UsesAddNewTransactionPurposeByDefault()
     {
         RunInSta(() =>
         {
@@ -58,7 +58,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void BulkMode_UsesPersistMode()
+    public void TransactionPopupVMValidation_BulkMode_UsesPersistMode()
     {
         RunInSta(() =>
         {
@@ -73,7 +73,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void BulkMode_queue_selection_loads_selected_transaction()
+    public void TransactionPopupVMValidation_BulkMode_QueueSelectionLoadsSelected_Transaction()
     {
         RunInSta(() =>
         {
@@ -95,7 +95,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void BulkMode_change_tracking_only_uses_queue_name_or_amount()
+    public void TransactionPopupVMValidation_BulkMode_ChangeTrackingOnlyUsesQueueNameOr_Amount()
     {
         RunInSta(() =>
         {
@@ -118,7 +118,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Bulk_split_add_and_switch_preserves_root_and_child()
+    public void TransactionPopupVMValidation_Bulk_SplitAddAndSwitchPreservesRootAnd_Child()
     {
         RunInSta(() =>
         {
@@ -149,7 +149,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Activating_selected_queue_item_reopens_root_from_split_child()
+    public void TransactionPopupVMValidation_Activating_SelectedQueueItemReopensRootFromSplit_Child()
     {
         RunInSta(() =>
         {
@@ -171,7 +171,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Popup_peer_messages_are_isolated_by_token()
+    public void TransactionPopupVMValidation_Popup_PeerMessagesAreIsolatedBy_Token()
     {
         RunInSta(() =>
         {
@@ -191,7 +191,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Invalid_split_marks_queue_root_invalid_and_blocks_save()
+    public void TransactionPopupVMValidation_Invalid_SplitMarksQueueRootInvalidAndBlocks_Save()
     {
         RunInSta(() =>
         {
@@ -211,7 +211,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Warning_only_split_shows_warning_state_without_blocking_save()
+    public void TransactionPopupVMValidation_Warning_OnlySplitShowsWarningStateWithoutBlocking_Save()
     {
         RunInSta(() =>
         {
@@ -242,7 +242,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void PostedIoU_ForcesBudgetExclusion()
+    public void TransactionPopupVMValidation_PostedIoU_ForcesBudgetExclusion()
     {
         RunInSta(() =>
         {
@@ -258,7 +258,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Constructor_WithCreditAccount_LeavesNameEmpty()
+    public void TransactionPopupVMValidation_Constructor_WithCreditAccount_LeavesNameEmpty()
     {
         RunInSta(() =>
         {
@@ -280,7 +280,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void InitializeRecurringMode_UsesRecurringCreatePurposeAndDisablesPin()
+    public void TransactionPopupVMValidation_InitializeRecurringMode_UsesRecurringCreatePurposeAndDisablesPin()
     {
         RunInSta(() =>
         {
@@ -295,7 +295,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void InitializeRepayment_FiltersSources_DefaultsTargetAndLocksRequestedTarget()
+    public void TransactionPopupVMValidation_InitializeRepayment_FiltersSources_DefaultsTargetAndLocksRequestedTarget()
     {
         RunInSta(() =>
         {
@@ -345,7 +345,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void SwitchingToRepayment_GeneratesNameAndDisablesEditing(bool startFromGoalUpdate)
+    public void TransactionPopupVMValidation_SwitchingToRepayment_GeneratesNameAndDisablesEditing(bool startFromGoalUpdate)
     {
         RunInSta(() =>
         {
@@ -373,7 +373,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ChangingRepaymentAccount_RefreshesGeneratedName()
+    public void TransactionPopupVMValidation_ChangingRepaymentAccount_RefreshesGeneratedName()
     {
         RunInSta(() =>
         {
@@ -407,7 +407,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void RejectRepaymentOverpayment_MarksAmountInvalid()
+    public void TransactionPopupVMValidation_RejectRepaymentOverpayment_MarksAmountInvalid()
     {
         RunInSta(() =>
         {
@@ -425,7 +425,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AcceptRepaymentOverpayment_UsesSpentAmountAndClearsError()
+    public void TransactionPopupVMValidation_AcceptRepaymentOverpayment_UsesSpentAmountAndClearsError()
     {
         RunInSta(() =>
         {
@@ -441,7 +441,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Repayment_CreatesExcludedBalanceUpdatePair()
+    public void TransactionPopupVMValidation_SaveAsync_Repayment_CreatesExcludedBalanceUpdatePair()
     {
         RunInSta(() =>
         {
@@ -501,7 +501,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Repayment_CreatesBalanceUpdateTag_WhenMissing()
+    public void TransactionPopupVMValidation_SaveAsync_RepaymentCreatesBalanceUpdateTag_WhenMissing()
     {
         RunInSta(() =>
         {
@@ -565,7 +565,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void InitializeFromRecurringTransaction_UsesEditPurposeAndLocksTransactionType()
+    public void TransactionPopupVMValidation_InitializeFromRecurringTransaction_UsesEditPurposeAndLocksTransactionType()
     {
         RunInSta(() =>
         {
@@ -598,7 +598,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SwitchingToGoalUpdate_AutoSetsNameFromSelectedGoal()
+    public void TransactionPopupVMValidation_SwitchingToGoalUpdate_AutoSetsNameFromSelectedGoal()
     {
         RunInSta(() =>
         {
@@ -611,7 +611,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ChangingSelectedGoal_RefreshesGoalUpdateName()
+    public void TransactionPopupVMValidation_ChangingSelectedGoal_RefreshesGoalUpdateName()
     {
         RunInSta(() =>
         {
@@ -627,7 +627,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void SwitchingFromGoalUpdateToRegularMode_ClearsName(bool switchToExpense)
+    public void TransactionPopupVMValidation_SwitchingFromGoalUpdateToRegularMode_ClearsName(bool switchToExpense)
     {
         RunInSta(() =>
         {
@@ -650,7 +650,7 @@ public sealed class TransactionPopupVMValidationTests
     [InlineData(true, "Manually assigned")]
     [InlineData(false, "Repayment to Visa")]
     [InlineData(false, "Manually assigned")]
-    public void SwitchingFromRepaymentToRegularMode_ClearsName(
+    public void TransactionPopupVMValidation_SwitchingFromRepaymentToRegularMode_ClearsName(
         bool switchToExpense,
         string repaymentName)
     {
@@ -669,7 +669,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void InitializeFromDraft_LockedGoalUpdateLocksTypeAndKeepsGoalSelectionEditable()
+    public void TransactionPopupVMValidation_InitializeFromDraft_LockedGoalUpdateLocksTypeAndKeepsGoalSelectionEditable()
     {
         RunInSta(() =>
         {
@@ -709,7 +709,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Expense_Name_IsRequired(bool isRecurring)
+    public void TransactionPopupVMValidation_Expense_NameIsRequired(bool isRecurring)
     {
         RunInSta(() =>
         {
@@ -726,7 +726,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Income_Name_IsRequired(bool isRecurring)
+    public void TransactionPopupVMValidation_Income_NameIsRequired(bool isRecurring)
     {
         RunInSta(() =>
         {
@@ -741,7 +741,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void GoalUpdate_Name_IsNotRequired()
+    public void TransactionPopupVMValidation_GoalUpdate_Name_IsNotRequired()
     {
         RunInSta(() =>
         {
@@ -754,7 +754,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Constructor_DoesNotValidateNameOrAmountBeforeFieldsLoseFocus()
+    public void TransactionPopupVMValidation_Constructor_DoesNotValidateNameOrAmountBeforeFieldsLoseFocus()
     {
         RunInSta(() =>
         {
@@ -768,7 +768,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CanPersist_BecomesEnabled_WhenInitialRequiredFieldsAreValid()
+    public void TransactionPopupVMValidation_CanPersist_BecomesEnabled_WhenInitialRequiredFieldsAreValid()
     {
         RunInSta(() =>
         {
@@ -785,7 +785,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ValidateAmountField_DoesNotValidateNameField()
+    public void TransactionPopupVMValidation_ValidateAmountField_DoesNotValidateNameField()
     {
         RunInSta(() =>
         {
@@ -801,7 +801,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ActivateAmountValidation_ActivatesOnceAndAmountChangesRevalidate()
+    public void TransactionPopupVMValidation_ActivateAmountValidation_ActivatesOnceAndAmountChangesRevalidate()
     {
         RunInSta(() =>
         {
@@ -830,7 +830,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidation_ForExpenseWarnsWhenTagSpendingLimitWouldBeExceeded()
+    public void TransactionPopupVMValidation_AmountValidation_ForExpenseWarnsWhenTagSpendingLimitWouldBeExceeded()
     {
         RunInSta(() =>
         {
@@ -858,7 +858,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidation_ForExpenseClearsTagLimitErrorWhenAmountFitsLimit()
+    public void TransactionPopupVMValidation_AmountValidation_ForExpenseClearsTagLimitErrorWhenAmountFitsLimit()
     {
         RunInSta(() =>
         {
@@ -886,7 +886,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidation_ForExcludedExpense_IgnoresTagSpendingLimit()
+    public void TransactionPopupVMValidation_AmountValidation_ForExcludedExpense_IgnoresTagSpendingLimit()
     {
         RunInSta(() =>
         {
@@ -913,7 +913,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountWarning_UsesSelectedDateAndIgnoresExcludedTransactions()
+    public void TransactionPopupVMValidation_AmountWarning_UsesSelectedDateAndIgnoresExcludedTransactions()
     {
         RunInSta(() =>
         {
@@ -947,7 +947,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void FieldFeedback_AssignsValidationErrorsToTheirFields()
+    public void TransactionPopupVMValidation_FieldFeedback_AssignsValidationErrorsToTheirFields()
     {
         RunInSta(() =>
         {
@@ -969,7 +969,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void FieldFeedback_AssignsAmountWarningsWithoutErrors()
+    public void TransactionPopupVMValidation_FieldFeedback_AssignsAmountWarningsWithoutErrors()
     {
         RunInSta(() =>
         {
@@ -996,7 +996,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ShowInvalidSplitPlaceholder_IsAddModeOnly()
+    public void TransactionPopupVMValidation_ShowInvalidSplitPlaceholder_IsAddModeOnly()
     {
         RunInSta(() =>
         {
@@ -1010,7 +1010,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountWarning_ExcludedCandidate_HasNoWarning()
+    public void TransactionPopupVMValidation_AmountWarning_ExcludedCandidate_HasNoWarning()
     {
         RunInSta(() =>
         {
@@ -1036,7 +1036,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ValidateNameField_DoesNotValidateAmountField()
+    public void TransactionPopupVMValidation_ValidateNameField_DoesNotValidateAmountField()
     {
         RunInSta(() =>
         {
@@ -1052,7 +1052,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionModeChange_ClearsNameValidation()
+    public void TransactionPopupVMValidation_TransactionModeChange_ClearsNameValidation()
     {
         RunInSta(() =>
         {
@@ -1071,7 +1071,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidation_WhenActive_RevalidatesWhenAccountChanges()
+    public void TransactionPopupVMValidation_AmountValidation_WhenActive_RevalidatesWhenAccountChanges()
     {
         RunInSta(() =>
         {
@@ -1099,7 +1099,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasChanges_TracksEntityChanges()
+    public void TransactionPopupVMValidation_HasChanges_TracksEntityChanges()
     {
         RunInSta(() =>
         {
@@ -1119,7 +1119,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidationHint_MapsSpendingCapacityFailuresToShortText()
+    public void TransactionPopupVMValidation_AmountValidationHint_MapsSpendingCapacityFailuresToShortText()
     {
         RunInSta(() =>
         {
@@ -1134,7 +1134,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(TransactionKind.Expense)]
     [InlineData(TransactionKind.Income)]
-    public void Name_RejectsControlCharacters(TransactionKind kind)
+    public void TransactionPopupVMValidation_Name_RejectsControlCharacters(TransactionKind kind)
     {
         RunInSta(() =>
         {
@@ -1151,7 +1151,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(TransactionKind.Expense)]
     [InlineData(TransactionKind.Income)]
-    public void Name_RejectsLengthOver256(TransactionKind kind)
+    public void TransactionPopupVMValidation_Name_RejectsLengthOver256(TransactionKind kind)
     {
         RunInSta(() =>
         {
@@ -1172,7 +1172,7 @@ public sealed class TransactionPopupVMValidationTests
     [InlineData(TransactionKind.Income, true)]
     [InlineData(TransactionKind.Goal, false)]
     [InlineData(TransactionKind.Goal, true)]
-    public void Amount_Zero_IsInvalid_ForAllTypes(TransactionKind kind, bool isRecurring)
+    public void TransactionPopupVMValidation_Amount_ZeroIsInvalidForAllTypes(TransactionKind kind, bool isRecurring)
     {
         RunInSta(() =>
         {
@@ -1186,7 +1186,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SelectedSource_IsRequired()
+    public void TransactionPopupVMValidation_SelectedSource_IsRequired()
     {
         RunInSta(() =>
         {
@@ -1201,7 +1201,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SelectedTag_IsOptional_ForExpense()
+    public void TransactionPopupVMValidation_SelectedTag_IsOptional_ForExpense()
     {
         RunInSta(() =>
         {
@@ -1215,7 +1215,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void EnsureTagsLoadedAsync_KeepsNewTransactionTagless()
+    public void TransactionPopupVMValidation_EnsureTagsLoadedAsync_KeepsNewTransactionTagless()
     {
         RunInSta(() =>
         {
@@ -1235,7 +1235,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ResetForm_ClearsSelectedTag()
+    public void TransactionPopupVMValidation_ResetForm_ClearsSelectedTag()
     {
         RunInSta(() =>
         {
@@ -1249,7 +1249,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ExcludedCategory_TracksBudgetExclusion()
+    public void TransactionPopupVMValidation_ExcludedCategory_TracksBudgetExclusion()
     {
         RunInSta(() =>
         {
@@ -1268,7 +1268,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CreateTransactionEditInput_AllowsTaglessExpense()
+    public void TransactionPopupVMValidation_CreateTransactionEditInput_AllowsTaglessExpense()
     {
         RunInSta(() =>
         {
@@ -1294,7 +1294,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SelectedGoal_IsRequired_ForGoalUpdate()
+    public void TransactionPopupVMValidation_SelectedGoal_IsRequired_ForGoalUpdate()
     {
         RunInSta(() =>
         {
@@ -1313,7 +1313,7 @@ public sealed class TransactionPopupVMValidationTests
     [InlineData(TransactionKind.Expense, true)]
     [InlineData(TransactionKind.Goal, false)]
     [InlineData(TransactionKind.Goal, true)]
-    public void Spending_OverflowOverMaximumSpending_IsInvalid(TransactionKind kind, bool isRecurring)
+    public void TransactionPopupVMValidation_Spending_OverflowOverMaximumSpendingIsInvalid(TransactionKind kind, bool isRecurring)
     {
         RunInSta(() =>
         {
@@ -1330,7 +1330,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(TransactionKind.Expense)]
     [InlineData(TransactionKind.Goal)]
-    public void Spending_OverflowOverBalance_IsInvalid(TransactionKind kind)
+    public void TransactionPopupVMValidation_Spending_OverflowOverBalanceIsInvalid(TransactionKind kind)
     {
         RunInSta(() =>
         {
@@ -1345,7 +1345,7 @@ public sealed class TransactionPopupVMValidationTests
 
     [Theory]
     [InlineData(TransactionKind.Expense)]
-    public void Spending_OverflowOverAccountLimit_IsInvalid(TransactionKind kind)
+    public void TransactionPopupVMValidation_Spending_OverflowOverAccountLimitIsInvalid(TransactionKind kind)
     {
         RunInSta(() =>
         {
@@ -1360,7 +1360,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Income_IsExempt_FromSpendingOverflowChecks()
+    public void TransactionPopupVMValidation_Income_IsExempt_FromSpendingOverflowChecks()
     {
         RunInSta(() =>
         {
@@ -1373,7 +1373,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void RecurringTime_UsesSameValidationFlow()
+    public void TransactionPopupVMValidation_RecurringTime_UsesSameValidationFlow()
     {
         RunInSta(() =>
         {
@@ -1393,7 +1393,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_KeepsStaleSpendingCapacityCheck()
+    public void TransactionPopupVMValidation_SaveAsync_KeepsStaleSpendingCapacityCheck()
     {
         RunInSta(() =>
         {
@@ -1423,7 +1423,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_ResetAfterSave_RetainsCurrentValuesAndClearsEntryFields()
+    public void TransactionPopupVMValidation_SaveAsync_ResetAfterSave_RetainsCurrentValuesAndClearsEntryFields()
     {
         RunInSta(() =>
         {
@@ -1462,7 +1462,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_KeepsStaleMaximumSpendingCheck_ForNonCreditSource()
+    public void TransactionPopupVMValidation_SaveAsync_KeepsStaleMaximumSpendingCheck_ForNonCreditSource()
     {
         RunInSta(() =>
         {
@@ -1495,7 +1495,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_FindsExpense_OnSelectedDate()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_FindsExpense_OnSelectedDate()
     {
         RunInSta(() =>
         {
@@ -1518,7 +1518,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Persisted_duplicate_warns_name_and_time_in_real_time_without_blocking_save()
+    public void TransactionPopupVMValidation_Persisted_DuplicateWarnsNameAndTimeInRealTimeWithoutBlocking_Save()
     {
         RunInSta(() =>
         {
@@ -1577,7 +1577,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Queue_peer_duplicates_warn_both_items_and_self_is_excluded()
+    public void TransactionPopupVMValidation_Queue_PeerDuplicatesWarnBothItemsAndSelfIs_Excluded()
     {
         RunInSta(() =>
         {
@@ -1614,7 +1614,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Queue_duplicate_preflight_refreshes_persisted_candidates()
+    public void TransactionPopupVMValidation_Queue_DuplicatePreflightRefreshesPersisted_Candidates()
     {
         RunInSta(() =>
         {
@@ -1639,7 +1639,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_IgnoresExpense_OutsideSelectedDate()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_IgnoresExpense_OutsideSelectedDate()
     {
         RunInSta(() =>
         {
@@ -1662,7 +1662,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_IgnoresExpense_WhenAmountDiffersByMoreThanFivePercent()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_IgnoresExpense_WhenAmountDiffersByMoreThanFivePercent()
     {
         RunInSta(() =>
         {
@@ -1683,7 +1683,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_IgnoresExpense_WhenSourceDiffers()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_IgnoresExpense_WhenSourceDiffers()
     {
         RunInSta(() =>
         {
@@ -1704,7 +1704,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_FindsIncome_WithSameNameTypeSourceAndNearAmount()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_FindsIncome_WithSameNameTypeSourceAndNearAmount()
     {
         RunInSta(() =>
         {
@@ -1732,7 +1732,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_SeparatesGoalUpdatesFromExpenses()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_SeparatesGoalUpdatesFromExpenses()
     {
         RunInSta(() =>
         {
@@ -1754,7 +1754,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasSimilarTransactionAsync_FindsGoalUpdate_WithSameGoalSourceAndNearAmount()
+    public void TransactionPopupVMValidation_HasSimilarTransactionAsync_FindsGoalUpdate_WithSameGoalSourceAndNearAmount()
     {
         RunInSta(() =>
         {
@@ -1781,7 +1781,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Constructor_UsesAccountsOverride_WhenProvided()
+    public void TransactionPopupVMValidation_Constructor_UsesAccountsOverride_WhenProvided()
     {
         RunInSta(() =>
         {
@@ -1807,7 +1807,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_RecurringDraftMode_UsesDraftCallback_ForTemporarySource()
+    public void TransactionPopupVMValidation_SaveAsync_RecurringDraftModeUsesDraftCallback_ForTemporarySource()
     {
         RunInSta(() =>
         {
@@ -1856,7 +1856,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void RecurringDraft_HardStopExhaustedCategory_StillSavesDraft()
+    public void TransactionPopupVMValidation_RecurringDraft_HardStopExhaustedCategory_StillSavesDraft()
     {
         RunInSta(() =>
         {
@@ -1899,7 +1899,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void RecurringDraft_SoftDebt_DoesNotAddBudgetDebt()
+    public void TransactionPopupVMValidation_RecurringDraft_SoftDebt_DoesNotAddBudgetDebt()
     {
         RunInSta(() =>
         {
@@ -1935,7 +1935,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Expense_HardStop_BlocksOverspendingCategory()
+    public void TransactionPopupVMValidation_Expense_HardStop_BlocksOverspendingCategory()
     {
         RunInSta(() =>
         {
@@ -1962,7 +1962,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ExcludedExpense_HardStop_DoesNotBlockOrAddDebt()
+    public void TransactionPopupVMValidation_ExcludedExpense_HardStop_DoesNotBlockOrAddDebt()
     {
         RunInSta(() =>
         {
@@ -1989,7 +1989,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Expense_HardStop_UsesExpenseDateAllocationPeriod()
+    public void TransactionPopupVMValidation_Expense_HardStop_UsesExpenseDateAllocationPeriod()
     {
         RunInSta(() =>
         {
@@ -2019,7 +2019,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Expense_SoftDebt_AddsCategoryDebt()
+    public void TransactionPopupVMValidation_Expense_SoftDebt_AddsCategoryDebt()
     {
         RunInSta(() =>
         {
@@ -2046,7 +2046,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void GoalUpdate_HardStop_DoesNotBlockExcludedTransaction()
+    public void TransactionPopupVMValidation_GoalUpdate_HardStop_DoesNotBlockExcludedTransaction()
     {
         RunInSta(() =>
         {
@@ -2071,7 +2071,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_GoalUpdate_IncrementsCurrentAmount()
+    public void TransactionPopupVMValidation_SaveAsync_GoalUpdate_IncrementsCurrentAmount()
     {
         RunInSta(() =>
         {
@@ -2105,7 +2105,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Expense_PersistsPinnedState()
+    public void TransactionPopupVMValidation_SaveAsync_Expense_PersistsPinnedState()
     {
         RunInSta(() =>
         {
@@ -2128,7 +2128,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Expense_PersistsSelectedDateWithCurrentTime()
+    public void TransactionPopupVMValidation_SaveAsync_Expense_PersistsSelectedDateWithCurrentTime()
     {
         RunInSta(() =>
         {
@@ -2154,7 +2154,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Expense_PersistsLendState()
+    public void TransactionPopupVMValidation_SaveAsync_Expense_PersistsLendState()
     {
         RunInSta(() =>
         {
@@ -2177,7 +2177,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_RecurringExpense_PersistsCategory()
+    public void TransactionPopupVMValidation_SaveAsync_RecurringExpense_PersistsCategory()
     {
         RunInSta(() =>
         {
@@ -2200,7 +2200,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_RecurringIncome_ClearsCategory()
+    public void TransactionPopupVMValidation_SaveAsync_RecurringIncome_ClearsCategory()
     {
         RunInSta(() =>
         {
@@ -2222,7 +2222,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HandleRecurringModeClick_SelectsRecurring()
+    public void TransactionPopupVMValidation_HandleRecurringModeClick_SelectsRecurring()
     {
         RunInSta(() =>
         {
@@ -2239,7 +2239,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HandleInstallmentsModeClick_SelectsInstallments()
+    public void TransactionPopupVMValidation_HandleInstallmentsModeClick_SelectsInstallments()
     {
         RunInSta(() =>
         {
@@ -2255,7 +2255,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HandleIoUModeClick_SelectsIoU()
+    public void TransactionPopupVMValidation_HandleIoUModeClick_SelectsIoU()
     {
         RunInSta(() =>
         {
@@ -2271,7 +2271,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void IoUModes_SelectPostedStateAndDescription()
+    public void TransactionPopupVMValidation_IoUModes_SelectPostedStateAndDescription()
     {
         RunInSta(() =>
         {
@@ -2292,7 +2292,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(false, 500)]
     [InlineData(true, 475)]
-    public void SaveAsync_IoUBalanceImpactMatchesPostedMode(bool posted, decimal expectedBalance)
+    public void TransactionPopupVMValidation_SaveAsync_IoUBalanceImpactMatchesPostedMode(bool posted, decimal expectedBalance)
     {
         RunInSta(() =>
         {
@@ -2327,7 +2327,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HandleExcludeModeClick_SelectsExclusionOnly()
+    public void TransactionPopupVMValidation_HandleExcludeModeClick_SelectsExclusionOnly()
     {
         RunInSta(() =>
         {
@@ -2344,7 +2344,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HandleExcludedIoUModeClick_SelectsIoUAndExclusion()
+    public void TransactionPopupVMValidation_HandleExcludedIoUModeClick_SelectsIoUAndExclusion()
     {
         RunInSta(() =>
         {
@@ -2360,7 +2360,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HandleInstallmentsModeClick_ForGoalUpdate_KeepsRecurringSelected()
+    public void TransactionPopupVMValidation_HandleInstallmentsModeClick_ForGoalUpdate_KeepsRecurringSelected()
     {
         RunInSta(() =>
         {
@@ -2374,7 +2374,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SwitchingToGoalUpdate_ClearsInstallments()
+    public void TransactionPopupVMValidation_SwitchingToGoalUpdate_ClearsInstallments()
     {
         RunInSta(() =>
         {
@@ -2392,7 +2392,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(TransactionKind.Expense, "paid")]
     [InlineData(TransactionKind.Income, "earned")]
-    public void InstallmentSummaryText_UsesSplitAmountRecurrenceLabelAndKindVerb(
+    public void TransactionPopupVMValidation_InstallmentSummaryText_UsesSplitAmountRecurrenceLabelAndKindVerb(
         TransactionKind kind,
         string expectedVerb)
     {
@@ -2410,7 +2410,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void Installments_UseClosestMatchingStartDate_WhenNextOccurrenceIsClosest()
+    public void TransactionPopupVMValidation_Installments_UseClosestMatchingStartDate_WhenNextOccurrenceIsClosest()
     {
         RunInSta(() =>
         {
@@ -2438,7 +2438,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CanPersist_Installments_ValidatesSplitAmountAgainstSourceCapacity()
+    public void TransactionPopupVMValidation_CanPersist_Installments_ValidatesSplitAmountAgainstSourceCapacity()
     {
         RunInSta(() =>
         {
@@ -2454,7 +2454,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CanPersist_Installments_ValidatesSplitAmountAgainstMaximumSpending()
+    public void TransactionPopupVMValidation_CanPersist_Installments_ValidatesSplitAmountAgainstMaximumSpending()
     {
         RunInSta(() =>
         {
@@ -2474,7 +2474,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Installments_ValidatesSplitAmountAgainstPersistedMaximumSpending()
+    public void TransactionPopupVMValidation_SaveAsync_Installments_ValidatesSplitAmountAgainstPersistedMaximumSpending()
     {
         RunInSta(() =>
         {
@@ -2509,7 +2509,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidation_Installments_DoesNotValidateTotalWhenRecurrenceCountIsPending()
+    public void TransactionPopupVMValidation_AmountValidation_Installments_DoesNotValidateTotalWhenRecurrenceCountIsPending()
     {
         RunInSta(() =>
         {
@@ -2529,7 +2529,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void AmountValidation_WhenActive_RevalidatesAfterSwitchingToInstallments()
+    public void TransactionPopupVMValidation_AmountValidation_WhenActive_RevalidatesAfterSwitchingToInstallments()
     {
         RunInSta(() =>
         {
@@ -2551,7 +2551,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void CanPersist_Installments_ValidatesSplitAmountUsingClosestMatchingStartDate()
+    public void TransactionPopupVMValidation_CanPersist_Installments_ValidatesSplitAmountUsingClosestMatchingStartDate()
     {
         RunInSta(() =>
         {
@@ -2573,7 +2573,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(TransactionKind.Expense, RecurringTransactionType.Expense)]
     [InlineData(TransactionKind.Income, RecurringTransactionType.Income)]
-    public void SaveAsync_Installments_CreatesRecurringWithInstallmentNameAndSplitAmount(
+    public void TransactionPopupVMValidation_SaveAsync_InstallmentsCreatesRecurringWithInstallmentNameAndSplitAmount(
         TransactionKind kind,
         RecurringTransactionType expectedType)
     {
@@ -2606,7 +2606,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Income_PersistsPinnedState()
+    public void TransactionPopupVMValidation_SaveAsync_Income_PersistsPinnedState()
     {
         RunInSta(() =>
         {
@@ -2629,7 +2629,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Income_PersistsSelectedDateWithCurrentTime()
+    public void TransactionPopupVMValidation_SaveAsync_Income_PersistsSelectedDateWithCurrentTime()
     {
         RunInSta(() =>
         {
@@ -2655,7 +2655,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Income_PersistsDebtState()
+    public void TransactionPopupVMValidation_SaveAsync_Income_PersistsDebtState()
     {
         RunInSta(() =>
         {
@@ -2678,7 +2678,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void GoalUpdate_KeepsHistoryAvailableAndOpen()
+    public void TransactionPopupVMValidation_GoalUpdate_KeepsHistoryAvailableAndOpen()
     {
         RunInSta(() =>
         {
@@ -2693,7 +2693,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void LoadHistoryAsync_ForGoalUpdateKeepsPinnedEmptyAndLoadsSameGoalHistory()
+    public void TransactionPopupVMValidation_LoadHistoryAsync_ForGoalUpdateKeepsPinnedEmptyAndLoadsSameGoalHistory()
     {
         RunInSta(() =>
         {
@@ -2717,7 +2717,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SelectingHistoryItem_FillsFieldsAndKeepsRecurringToggle()
+    public void TransactionPopupVMValidation_SelectingHistoryItem_FillsFieldsAndKeepsRecurringToggle()
     {
         RunInSta(() =>
         {
@@ -2751,7 +2751,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ModeBindings_DefaultToRegular_AndGoalForcesBudgetExclusion()
+    public void TransactionPopupVMValidation_ModeBindings_DefaultToRegular_AndGoalForcesBudgetExclusion()
     {
         RunInSta(() =>
         {
@@ -2769,7 +2769,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void HasChanges_TracksGeneratedGoalName()
+    public void TransactionPopupVMValidation_HasChanges_TracksGeneratedGoalName()
     {
         RunInSta(() =>
         {
@@ -2783,7 +2783,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ExpensePreview_ShowsCategoryAndAccountAmounts()
+    public void TransactionPopupVMValidation_ExpensePreview_ShowsCategoryAndAccountAmounts()
     {
         RunInSta(() =>
         {
@@ -2804,7 +2804,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void IncomePreview_HidesCategoryAndIncreasesAccount()
+    public void TransactionPopupVMValidation_IncomePreview_HidesCategoryAndIncreasesAccount()
     {
         RunInSta(() =>
         {
@@ -2818,7 +2818,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void UnpostedIoUPreview_HidesBothImpacts()
+    public void TransactionPopupVMValidation_UnpostedIoUPreview_HidesBothImpacts()
     {
         RunInSta(() =>
         {
@@ -3128,7 +3128,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingQueue_selection_restores_selected_transaction_edits()
+    public void TransactionPopupVMValidation_ProcessingQueue_SelectionRestoresSelectedTransaction_Edits()
     {
         RunInSta(() =>
         {
@@ -3168,7 +3168,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingQueue_InvalidItem_DisablesPersistence()
+    public void TransactionPopupVMValidation_ProcessingQueue_InvalidItem_DisablesPersistence()
     {
         RunInSta(() =>
         {
@@ -3191,7 +3191,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingFinish_PersistsAndDequeuesAllTransactions()
+    public void TransactionPopupVMValidation_ProcessingFinish_PersistsAndDequeuesAllTransactions()
     {
         RunInSta(() =>
         {
@@ -3215,7 +3215,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ProcessingFinish_KeepsOnlyFailedTransactionsQueued()
+    public void TransactionPopupVMValidation_ProcessingFinish_KeepsOnlyFailedTransactionsQueued()
     {
         RunInSta(() =>
         {
@@ -3245,7 +3245,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void InitializeView_UsesFunctionalReadOnlyMode()
+    public void TransactionPopupVMValidation_InitializeView_UsesFunctionalReadOnlyMode()
     {
         RunInSta(() =>
         {
@@ -3273,7 +3273,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_RecurringIncome_PersistsBudgetExclusion()
+    public void TransactionPopupVMValidation_SaveAsync_RecurringIncome_PersistsBudgetExclusion()
     {
         RunInSta(() =>
         {
@@ -3296,7 +3296,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void SaveAsync_Income_PersistsBudgetExclusion()
+    public void TransactionPopupVMValidation_SaveAsync_Income_PersistsBudgetExclusion()
     {
         RunInSta(() =>
         {
@@ -3319,7 +3319,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ViewedTransactionTags_SwitchBetweenSelectedOnlyAndEditableTagList()
+    public void TransactionPopupVMValidation_ViewedTransactionTags_SwitchBetweenSelectedOnlyAndEditableTagList()
     {
         RunInSta(() =>
         {
@@ -3363,7 +3363,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void ViewMode_ClearsFeedbackAndRestoresTheSavedTagSelection()
+    public void TransactionPopupVMValidation_ViewMode_ClearsFeedbackAndRestoresTheSavedTagSelection()
     {
         RunInSta(() =>
         {
@@ -3402,7 +3402,7 @@ public sealed class TransactionPopupVMValidationTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void EnsureTagsLoadedAsync_AddAndEditModes_LoadAllTagsAndPromoteSelectedTag(bool editMode)
+    public void TransactionPopupVMValidation_EnsureTagsLoadedAsync_AddAndEditModesLoadAllTagsAndPromoteSelectedTag(bool editMode)
     {
         RunInSta(() =>
         {

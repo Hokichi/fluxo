@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class InstallerLaunchCommandTests
 {
     [Fact]
-    public void LaunchApp_UsesInstalledExePath()
+    public void InstallerLaunchCommand_LaunchApp_UsesInstalledExePath()
     {
         string? launchedPath = null;
         var vm = new InstallerViewModel(
@@ -30,7 +30,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void LaunchApp_Disabled_WhenInstallFailed()
+    public void InstallerLaunchCommand_LaunchApp_Disabled_WhenInstallFailed()
     {
         var launchCalls = 0;
         var vm = new InstallerViewModel(
@@ -51,7 +51,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void LaunchApp_Enabled_WhenVersionIsUpToDate()
+    public void InstallerLaunchCommand_LaunchApp_Enabled_WhenVersionIsUpToDate()
     {
         string? launchedPath = null;
         var vm = new InstallerViewModel(
@@ -72,7 +72,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void LaunchApp_UsesResolvedInstallFolder_WhenVersionIsUpToDate()
+    public void InstallerLaunchCommand_LaunchApp_UsesResolvedInstallFolder_WhenVersionIsUpToDate()
     {
         string? launchedPath = null;
         var vm = new InstallerViewModel(
@@ -93,7 +93,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void Constructor_UsesRequestedInstallFolder_WhenPathIsValid()
+    public void InstallerLaunchCommand_Constructor_UsesRequestedInstallFolder_WhenPathIsValid()
     {
         var vm = new InstallerViewModel(
             requestedInstallFolder: WindowsPathFixtures.AppsFluxoFolder,
@@ -105,7 +105,7 @@ public sealed class InstallerLaunchCommandTests
     [Theory]
     [InlineData("")]
     [InlineData("relative\\fluxo")]
-    public void Constructor_IgnoresRequestedInstallFolder_WhenPathIsInvalid(string requestedInstallFolder)
+    public void InstallerLaunchCommand_Constructor_IgnoresRequestedInstallFolderWhenPathIsInvalid(string requestedInstallFolder)
     {
         var vm = new InstallerViewModel(
             requestedInstallFolder: requestedInstallFolder,
@@ -115,7 +115,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void LaunchApp_DoesNotCloseInstaller_WhenExecutableCannotBeFound()
+    public void InstallerLaunchCommand_LaunchApp_DoesNotCloseInstaller_WhenExecutableCannotBeFound()
     {
         var closeCalls = 0;
         var launchCalls = 0;
@@ -137,7 +137,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void LaunchApp_DoesNotCloseInstaller_WhenLaunchFails()
+    public void InstallerLaunchCommand_LaunchApp_DoesNotCloseInstaller_WhenLaunchFails()
     {
         var closeCalls = 0;
         var vm = new InstallerViewModel(
@@ -157,7 +157,7 @@ public sealed class InstallerLaunchCommandTests
     }
 
     [Fact]
-    public void LaunchApp_Disabled_WhenUninstallCompleted()
+    public void InstallerLaunchCommand_LaunchApp_Disabled_WhenUninstallCompleted()
     {
         var launchCalls = 0;
         var vm = new InstallerViewModel(

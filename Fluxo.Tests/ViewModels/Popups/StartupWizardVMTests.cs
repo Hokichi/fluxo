@@ -19,7 +19,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class QuickSetupWizardVMTests
 {
     [Fact]
-    public void CurrentStepTitle_AtStep1_AsksForPreferredName()
+    public void QuickSetupWizardVM_CurrentStepTitle_AtStep1_AsksForPreferredName()
     {
         var viewModel = CreateViewModel();
         viewModel.CurrentStepIndex = 1;
@@ -28,7 +28,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public void CurrentStepDescription_AtStep1_DoesNotMentionSalary()
+    public void QuickSetupWizardVM_CurrentStepDescription_AtStep1_DoesNotMentionSalary()
     {
         var viewModel = CreateViewModel();
         viewModel.CurrentStepIndex = 1;
@@ -37,7 +37,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task GoNextAsync_OnStep1_DoesNotOverwriteExistingSalarySetting()
+    public async Task QuickSetupWizardVM_GoNextAsync_OnStep1_DoesNotOverwriteExistingSalarySetting()
     {
         var userSettingsRepository = new TestUserSettingsRepository(
         [
@@ -61,7 +61,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task ExecuteLoadingFlowAsync_UserDeclinesAfterFiveFailures_ReturnsAbandoned()
+    public async Task QuickSetupWizardVM_ExecuteLoadingFlowAsync_UserDeclinesAfterFiveFailures_ReturnsAbandoned()
     {
         var viewModel = CreateViewModel();
         var attempts = 0;
@@ -86,7 +86,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public void GoBack_FromPreferencesWithoutAccounts_ReturnsToAccounts()
+    public void QuickSetupWizardVM_GoBack_FromPreferencesWithoutAccounts_ReturnsToAccounts()
     {
         var viewModel = CreateViewModel();
         viewModel.CurrentStepIndex = 6;
@@ -98,7 +98,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task BudgetAllocation_LoadAndApply_PersistsConfigurationFields()
+    public async Task QuickSetupWizardVM_BudgetAllocation_LoadAndApply_PersistsConfigurationFields()
     {
         var unitOfWork = new TestUnitOfWork(
             new TestUserSettingsRepository([]),
@@ -143,7 +143,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task BudgetAllocation_AllocationAmountText_UsesAllocationLimit()
+    public async Task QuickSetupWizardVM_BudgetAllocation_AllocationAmountText_UsesAllocationLimit()
     {
         var unitOfWork = new TestUnitOfWork(
             new TestUserSettingsRepository([]),
@@ -174,7 +174,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task BudgetAllocation_ApplyAsync_InvalidTotal_ReturnsFailureWithoutPersisting()
+    public async Task QuickSetupWizardVM_BudgetAllocation_ApplyAsyncInvalidTotal_ReturnsFailureWithoutPersisting()
     {
         var allocation = new BudgetAllocation
         {
@@ -212,7 +212,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task BudgetAllocation_SettingAllocation_BalancesOtherBuckets()
+    public async Task QuickSetupWizardVM_BudgetAllocation_SettingAllocation_BalancesOtherBuckets()
     {
         var unitOfWork = new TestUnitOfWork(new TestUserSettingsRepository([]));
         var viewModel = new QuickSetupWizardBudgetAllocationVM(
@@ -229,7 +229,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task Personalization_LoadAsync_DefaultsAutoLockIntervalToThirtySecondPreset()
+    public async Task QuickSetupWizardVM_Personalization_LoadAsync_DefaultsAutoLockIntervalToThirtySecondPreset()
     {
         var unitOfWork = new TestUnitOfWork(new TestUserSettingsRepository([]));
         var appData = new AppDataService(unitOfWork);
@@ -243,7 +243,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public void Personalization_SelectingFixedAutoLockPreset_UpdatesInterval()
+    public void QuickSetupWizardVM_Personalization_SelectingFixedAutoLockPreset_UpdatesInterval()
     {
         var unitOfWork = new TestUnitOfWork(new TestUserSettingsRepository([]));
         var appData = new AppDataService(unitOfWork);
@@ -256,7 +256,7 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public async Task Personalization_LoadAsync_SelectsCustomPresetForNonPresetInterval()
+    public async Task QuickSetupWizardVM_Personalization_LoadAsync_SelectsCustomPresetForNonPresetInterval()
     {
         var unitOfWork = new TestUnitOfWork(new TestUserSettingsRepository(
         [

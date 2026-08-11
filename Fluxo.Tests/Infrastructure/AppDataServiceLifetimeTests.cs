@@ -14,7 +14,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class AppDataServiceLifetimeTests
 {
     [Fact]
-    public async Task ScopedServices_SaveWritesQueuedByAnotherResolution()
+    public async Task AppDataServiceLifetime_ScopedServices_SaveWritesQueuedByAnotherResolution()
     {
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var settings = new InMemoryUserSettingsRepository();

@@ -8,7 +8,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public class MainVMSpendingAmountGateTests
 {
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenNoSources_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenNoSources_ReturnsTrue()
     {
         var isLocked = DashboardVM.ShouldLockDashboardForSpendingAmount([], []);
 
@@ -16,7 +16,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenEnabledNonCreditSourcesHaveNoPositiveBalance_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenEnabledNonCreditSourcesHaveNoPositiveBalance_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -31,7 +31,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenAnyNonCreditSourceHasPositiveBalance_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenAnyNonCreditSourceHasPositiveBalance_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -45,7 +45,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenEnabledCreditHasNoPositiveLimit_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenEnabledCreditHasNoPositiveLimit_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -58,7 +58,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenAnyCreditHasPositiveLimit_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenAnyCreditHasPositiveLimit_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -71,7 +71,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenNoSourcesButHasExpenseLog_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenNoSourcesButHasExpenseLog_ReturnsTrue()
     {
         var logs = new[]
         {
@@ -84,7 +84,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenNonCreditSourcesHaveNoPositiveBalanceButHasExpenseLog_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenNonCreditSourcesHaveNoPositiveBalanceButHasExpenseLog_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -101,7 +101,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenEnabledSourceHasExpenseLogMarkedForDeletion_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenEnabledSourceHasExpenseLogMarkedForDeletion_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -118,7 +118,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockDashboardForSpendingAmount_WhenOnlyPositiveSourceIsDisabled_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockDashboardForSpendingAmount_WhenOnlyPositiveSourceIsDisabled_ReturnsTrue()
     {
         var sources = new[]
         {
@@ -136,7 +136,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenNoSources_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenNoSources_ReturnsTrue()
     {
         var isLocked = DashboardVM.ShouldLockActionsForSufficientFunds([], []);
 
@@ -144,7 +144,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenEnabledSourcesHaveNoPositiveFunds_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenEnabledSourcesHaveNoPositiveFunds_ReturnsTrue()
     {
         var sources = new[]
         {
@@ -160,7 +160,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenAnyEnabledNonCreditSourceHasPositiveBalance_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenAnyEnabledNonCreditSourceHasPositiveBalance_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -174,7 +174,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenAnyEnabledCreditHasPositiveLimit_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenAnyEnabledCreditHasPositiveLimit_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -187,7 +187,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenOnlyFundedSourceIsDisabled_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenOnlyFundedSourceIsDisabled_ReturnsTrue()
     {
         var sources = new[]
         {
@@ -205,7 +205,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenEnabledSourcesHaveNoPositiveFundsButHasExpenseLog_ReturnsFalse()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenEnabledSourcesHaveNoPositiveFundsButHasExpenseLog_ReturnsFalse()
     {
         var sources = new[]
         {
@@ -222,7 +222,7 @@ public class MainVMSpendingAmountGateTests
     }
 
     [Fact]
-    public void ShouldLockActionsForSufficientFunds_WhenEnabledSourcesHaveNoPositiveFundsAndOnlyDeletedExpenseLog_ReturnsTrue()
+    public void MainVMSpendingAmountGate_ShouldLockActionsForSufficientFunds_WhenEnabledSourcesHaveNoPositiveFundsAndOnlyDeletedExpenseLog_ReturnsTrue()
     {
         var sources = new[]
         {

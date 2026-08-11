@@ -6,7 +6,7 @@ namespace Fluxo.Tests.ViewModels.CustomControls;
 public sealed class StepNavigatorControlTests
 {
     [Fact]
-    public void UpdateDotStates_CurrentStep1_FirstDotActiveOthersUpcoming()
+    public void StepNavigatorControl_UpdateDotStates_CurrentStep1_FirstDotActiveOthersUpcoming()
     {
         var dots = MakeDots(3);
         StepNavigatorControl.UpdateDotStates(dots, currentStep: 1);
@@ -20,7 +20,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void UpdateDotStates_CurrentStep2_FirstCompletedSecondActive()
+    public void StepNavigatorControl_UpdateDotStates_CurrentStep2_FirstCompletedSecondActive()
     {
         var dots = MakeDots(3);
         StepNavigatorControl.UpdateDotStates(dots, currentStep: 2);
@@ -34,7 +34,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void UpdateDotStates_CurrentStep3_TwoCompletedLastActive()
+    public void StepNavigatorControl_UpdateDotStates_CurrentStep3_TwoCompletedLastActive()
     {
         var dots = MakeDots(3);
         StepNavigatorControl.UpdateDotStates(dots, currentStep: 3);
@@ -48,7 +48,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void UpdateDotStates_NavigateBackward_PreviousCompletedBecomesUpcoming()
+    public void StepNavigatorControl_UpdateDotStates_NavigateBackward_PreviousCompletedBecomesUpcoming()
     {
         var dots = MakeDots(3);
         StepNavigatorControl.UpdateDotStates(dots, currentStep: 3);
@@ -63,7 +63,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void UpdateDotStates_ExactlyOneDotIsActive()
+    public void StepNavigatorControl_UpdateDotStates_ExactlyOneDotIsActive()
     {
         var dots = MakeDots(5);
         StepNavigatorControl.UpdateDotStates(dots, currentStep: 3);
@@ -72,7 +72,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void UpdateDotStates_ActiveDotIsNeverCompleted()
+    public void StepNavigatorControl_UpdateDotStates_ActiveDotIsNeverCompleted()
     {
         var dots = MakeDots(5);
         StepNavigatorControl.UpdateDotStates(dots, currentStep: 3);
@@ -81,7 +81,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void CalculateVisibleWindow_PaginationDisabled_ShowsAllDots()
+    public void StepNavigatorControl_CalculateVisibleWindow_PaginationDisabled_ShowsAllDots()
     {
         var window = StepNavigatorControl.CalculateVisibleWindow(
             stepCount: 12,
@@ -94,7 +94,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void CalculateVisibleWindow_CurrentStepInFirstCycle_ShowsFirstPage()
+    public void StepNavigatorControl_CalculateVisibleWindow_CurrentStepInFirstCycle_ShowsFirstPage()
     {
         var window = StepNavigatorControl.CalculateVisibleWindow(
             stepCount: 12,
@@ -107,7 +107,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void CalculateVisibleWindow_CurrentStepInSecondCycle_ShowsSecondPage()
+    public void StepNavigatorControl_CalculateVisibleWindow_CurrentStepInSecondCycle_ShowsSecondPage()
     {
         var window = StepNavigatorControl.CalculateVisibleWindow(
             stepCount: 12,
@@ -120,7 +120,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void CalculateVisibleWindow_CurrentStepInLastCycle_ShowsRemainingDots()
+    public void StepNavigatorControl_CalculateVisibleWindow_CurrentStepInLastCycle_ShowsRemainingDots()
     {
         var window = StepNavigatorControl.CalculateVisibleWindow(
             stepCount: 12,
@@ -133,7 +133,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void UpdateDotStates_WithWindowOffset_UsesAbsoluteStepIndexForCycle()
+    public void StepNavigatorControl_UpdateDotStates_WithWindowOffset_UsesAbsoluteStepIndexForCycle()
     {
         var dots = MakeDots(5);
 
@@ -153,7 +153,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void BuildStepCounterText_ValidStepAndCount_ReturnsCurrentAndTotal()
+    public void StepNavigatorControl_BuildStepCounterText_ValidStepAndCount_ReturnsCurrentAndTotal()
     {
         var text = StepNavigatorControl.BuildStepCounterText(stepCount: 8, currentStep: 3);
 
@@ -161,7 +161,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void BuildStepCounterText_CurrentStepOutOfRange_ClampsToValidBounds()
+    public void StepNavigatorControl_BuildStepCounterText_CurrentStepOutOfRange_ClampsToValidBounds()
     {
         var lower = StepNavigatorControl.BuildStepCounterText(stepCount: 8, currentStep: 0);
         var upper = StepNavigatorControl.BuildStepCounterText(stepCount: 8, currentStep: 42);
@@ -171,7 +171,7 @@ public sealed class StepNavigatorControlTests
     }
 
     [Fact]
-    public void BuildStepCounterText_NoSteps_ReturnsZeroOverZero()
+    public void StepNavigatorControl_BuildStepCounterText_NoSteps_ReturnsZeroOverZero()
     {
         var text = StepNavigatorControl.BuildStepCounterText(stepCount: 0, currentStep: 1);
 

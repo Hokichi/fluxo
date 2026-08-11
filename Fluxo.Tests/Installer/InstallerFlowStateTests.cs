@@ -14,7 +14,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class InstallerFlowStateTests
 {
     [Fact]
-    public async Task InstallCommand_TriggersDetect_AndMovesToInstalling()
+    public async Task InstallerFlowState_InstallCommand_TriggersDetect_AndMovesToInstalling()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -29,7 +29,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task InstallCommand_SetsInstallFolderBeforeDetect()
+    public async Task InstallerFlowState_InstallCommand_SetsInstallFolderBeforeDetect()
     {
         var folderVariableValues = new List<string>();
         var vm = CreateViewModel(
@@ -45,7 +45,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task InstallCommand_InstallsRuntimeInsideInstallingStep_BeforeDetect()
+    public async Task InstallerFlowState_InstallCommand_InstallsRuntimeInsideInstallingStep_BeforeDetect()
     {
         var events = new List<string>();
         var vm = CreateViewModel(
@@ -68,7 +68,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task InstallCommand_RollsBackAppInstallation_WhenRuntimeInstallFails()
+    public async Task InstallerFlowState_InstallCommand_RollsBackAppInstallation_WhenRuntimeInstallFails()
     {
         var rollbackCalls = 0;
         var vm = CreateViewModel(
@@ -93,7 +93,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void PlanComplete_Success_TransitionsToApplying()
+    public void InstallerFlowState_PlanComplete_Success_TransitionsToApplying()
     {
         var applyCalls = 0;
         var folderVariableValues = new List<string>();
@@ -112,7 +112,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task DetectComplete_Success_RequestsPlan_AndKeepsInstallingState()
+    public async Task InstallerFlowState_DetectComplete_SuccessRequestsPlan_AndKeepsInstallingState()
     {
         var detectCalls = 0;
         var planCalls = 0;
@@ -135,7 +135,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void DetectComplete_Failure_ContinuesToPlanning()
+    public void InstallerFlowState_DetectComplete_Failure_ContinuesToPlanning()
     {
         var planCalls = 0;
         var folderVariableValues = new List<string>();
@@ -154,7 +154,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void CloseInstaller_OnWelcome_DeclineCancellation_KeepsInstallerOpen()
+    public void InstallerFlowState_CloseInstaller_OnWelcomeDeclineCancellation_KeepsInstallerOpen()
     {
         var closeCalls = 0;
         var vm = CreateViewModel(
@@ -169,7 +169,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void CloseInstaller_OnWelcome_ConfirmCancellation_TransitionsToFinishedCancelled()
+    public void InstallerFlowState_CloseInstaller_OnWelcomeConfirmCancellation_TransitionsToFinishedCancelled()
     {
         var closeCalls = 0;
         var vm = CreateViewModel(
@@ -187,7 +187,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task CloseInstaller_DuringInstall_ConfirmCancellation_RunsRollback_AndShowsRollbackChecklistOnly()
+    public async Task InstallerFlowState_CloseInstaller_DuringInstallConfirmCancellationRunsRollback_AndShowsRollbackChecklistOnly()
     {
         var rollbackCalls = 0;
         var runtimeCancellationCalls = 0;
@@ -224,7 +224,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task DetectComplete_Failure_AfterInstallStart_ContinuesToPlanning()
+    public async Task InstallerFlowState_DetectComplete_FailureAfterInstallStart_ContinuesToPlanning()
     {
         var planCalls = 0;
         var vm = CreateViewModel(
@@ -242,7 +242,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void DetectedUpToDateVersion_TransitionsToFinishedPage_WithExpectedSubtitle()
+    public void InstallerFlowState_DetectedUpToDateVersion_TransitionsToFinishedPage_WithExpectedSubtitle()
     {
         var vm = CreateViewModel(fileExists: static _ => true);
 
@@ -256,7 +256,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void DetectedNewerVersion_TransitionsToFinishedPage_WithNewerVersionSubtitle()
+    public void InstallerFlowState_DetectedNewerVersion_TransitionsToFinishedPage_WithNewerVersionSubtitle()
     {
         var vm = CreateViewModel(fileExists: static _ => true);
 
@@ -268,7 +268,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_TransitionsToVerifying_ThenSuccess()
+    public void InstallerFlowState_ApplyComplete_SuccessTransitionsToVerifying_ThenSuccess()
     {
         var observedStates = new List<InstallerState>();
         var cleanupCalls = 0;
@@ -301,7 +301,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task ApplyComplete_CleanupFailure_TransitionsToFailed()
+    public async Task InstallerFlowState_ApplyComplete_CleanupFailure_TransitionsToFailed()
     {
         var vm = CreateViewModel(
             requestRollback: static () => true,
@@ -318,7 +318,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_UninstallMode_SkipsWelcome_AndStartsDetection()
+    public void InstallerFlowState_Begin_UninstallModeSkipsWelcome_AndStartsDetection()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -334,7 +334,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_RepairerBundlePath_SkipsWelcome_EvenWhenOperationModeDefaultsToInstall()
+    public void InstallerFlowState_Begin_RepairerBundlePathSkipsWelcome_EvenWhenOperationModeDefaultsToInstall()
     {
         var vm = new InstallerViewModel(
             dotNetRuntimeDetector: new FixedRuntimeDetector(true),
@@ -351,7 +351,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_MaintenanceMode_ShowsAppFoundPage()
+    public void InstallerFlowState_Begin_MaintenanceMode_ShowsAppFoundPage()
     {
         var vm = CreateViewModel(operationMode: InstallerOperationMode.Maintenance);
 
@@ -364,7 +364,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_RepairerBundlePath_ShowsAppFoundPage()
+    public void InstallerFlowState_Begin_RepairerBundlePath_ShowsAppFoundPage()
     {
         var vm = new InstallerViewModel(
             dotNetRuntimeDetector: new FixedRuntimeDetector(true),
@@ -380,7 +380,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_InstallMode_WhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeAnyAction()
+    public void InstallerFlowState_Begin_InstallModeWhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeAnyAction()
     {
         var vm = CreateViewModel(
             getRunningFluxoProcessIds: static () => [1234],
@@ -397,7 +397,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_MaintenanceMode_WhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeActionSelection()
+    public void InstallerFlowState_Begin_MaintenanceModeWhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeActionSelection()
     {
         var vm = CreateViewModel(
             operationMode: InstallerOperationMode.Maintenance,
@@ -415,7 +415,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_UninstallMode_WhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeDetect()
+    public void InstallerFlowState_Begin_UninstallModeWhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeDetect()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -435,7 +435,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_DefaultRepair_RequestsDetectAndSetsRepairOperation()
+    public void InstallerFlowState_ContinueMaintenance_DefaultRepair_RequestsDetectAndSetsRepairOperation()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -452,7 +452,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Uninstall_RequestsDetectAndSetsUninstallOperation()
+    public void InstallerFlowState_ContinueMaintenance_Uninstall_RequestsDetectAndSetsUninstallOperation()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -470,7 +470,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task Install_WhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeDetect()
+    public async Task InstallerFlowState_Install_WhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeDetect()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -490,7 +490,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Repair_WhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeDetect()
+    public void InstallerFlowState_ContinueMaintenance_RepairWhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeDetect()
     {
         var detectCalls = 0;
         var processCheckCalls = 0;
@@ -519,7 +519,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task Install_WhenFluxoRunning_RequestsInstallSpecificTerminationConfirmation()
+    public async Task InstallerFlowState_Install_WhenFluxoRunning_RequestsInstallSpecificTerminationConfirmation()
     {
         InstallerRequestedOperation? requestedOperation = null;
         var vm = CreateViewModel(
@@ -537,7 +537,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Repair_WhenFluxoRunning_RequestsRepairSpecificTerminationConfirmation()
+    public void InstallerFlowState_ContinueMaintenance_RepairWhenFluxoRunning_RequestsRepairSpecificTerminationConfirmation()
     {
         InstallerRequestedOperation? requestedOperation = null;
         var processCheckCalls = 0;
@@ -563,7 +563,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Uninstall_WhenFluxoRunning_RequestsUninstallSpecificTerminationConfirmation()
+    public void InstallerFlowState_ContinueMaintenance_UninstallWhenFluxoRunning_RequestsUninstallSpecificTerminationConfirmation()
     {
         InstallerRequestedOperation? requestedOperation = null;
         var processCheckCalls = 0;
@@ -588,7 +588,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task Install_WhenTerminationFails_BlocksBeforeDetect()
+    public async Task InstallerFlowState_Install_WhenTerminationFails_BlocksBeforeDetect()
     {
         var detectCalls = 0;
         var terminateCalls = 0;
@@ -615,7 +615,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Repair_WhenTerminationFails_BlocksBeforeDetect()
+    public void InstallerFlowState_ContinueMaintenance_RepairWhenTerminationFails_BlocksBeforeDetect()
     {
         var detectCalls = 0;
         var terminateCalls = 0;
@@ -651,7 +651,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Uninstall_WhenFluxoRunningAndUserDeclines_ShowsRetryMessage()
+    public void InstallerFlowState_ContinueMaintenance_UninstallWhenFluxoRunningAndUserDeclines_ShowsRetryMessage()
     {
         var detectCalls = 0;
         var processCheckCalls = 0;
@@ -679,7 +679,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Uninstall_WhenTerminationFails_ShowsRetryMessage()
+    public void InstallerFlowState_ContinueMaintenance_UninstallWhenTerminationFails_ShowsRetryMessage()
     {
         var detectCalls = 0;
         var terminateCalls = 0;
@@ -714,7 +714,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void DetectComplete_RepairOperation_RequestsPlan()
+    public void InstallerFlowState_DetectComplete_RepairOperation_RequestsPlan()
     {
         var planCalls = 0;
         var vm = CreateViewModel(
@@ -731,7 +731,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void DetectComplete_UninstallMode_RequestsPlan()
+    public void InstallerFlowState_DetectComplete_UninstallMode_RequestsPlan()
     {
         var planCalls = 0;
         var vm = CreateViewModel(
@@ -746,7 +746,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_UninstallMode_TransitionsToFinishedUninstalled()
+    public void InstallerFlowState_ApplyComplete_SuccessUninstallMode_TransitionsToFinishedUninstalled()
     {
         var deletedFiles = new List<string>();
         var deletedDirectories = new List<string>();
@@ -826,7 +826,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_UninstallMode_Fails_WhenOwnedRuntimeUninstallFails()
+    public void InstallerFlowState_ApplyComplete_SuccessUninstallModeFails_WhenOwnedRuntimeUninstallFails()
     {
         var vm = CreateViewModel(
             operationMode: InstallerOperationMode.Uninstall,
@@ -846,7 +846,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void MaintenanceUninstall_UsesRepairerParentDirectory_ForCleanupTarget()
+    public void InstallerFlowState_MaintenanceUninstall_UsesRepairerParentDirectory_ForCleanupTarget()
     {
         var deletedFiles = new List<string>();
         var deletedDirectories = new List<string>();
@@ -888,7 +888,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ContinueMaintenance_Uninstall_WhenUninstallConfirmationDeclined_CancelsWithoutStarting()
+    public void InstallerFlowState_ContinueMaintenance_UninstallWhenUninstallConfirmationDeclined_CancelsWithoutStarting()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -908,7 +908,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void Begin_UninstallMode_WhenUninstallConfirmationDeclined_TransitionsToFinishedCancelled()
+    public void InstallerFlowState_Begin_UninstallModeWhenUninstallConfirmationDeclined_TransitionsToFinishedCancelled()
     {
         var detectCalls = 0;
         var vm = CreateViewModel(
@@ -925,7 +925,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Failure_MaintenanceUninstall_ShowsUninstallFailureCopy()
+    public void InstallerFlowState_ApplyComplete_FailureMaintenanceUninstall_ShowsUninstallFailureCopy()
     {
         var vm = CreateViewModel(operationMode: InstallerOperationMode.Maintenance);
 
@@ -940,7 +940,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_Uninstall_Fails_WhenDeferredCleanupCannotBeScheduled()
+    public void InstallerFlowState_ApplyComplete_SuccessUninstallFails_WhenDeferredCleanupCannotBeScheduled()
     {
         var vm = CreateViewModel(
             operationMode: InstallerOperationMode.Uninstall,
@@ -956,7 +956,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_CopiesRepairerExecutable()
+    public void InstallerFlowState_ApplyComplete_Success_CopiesRepairerExecutable()
     {
         string? copiedSource = null;
         string? copiedDestination = null;
@@ -982,7 +982,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_DoesNotCopyRepairerOverItself()
+    public void InstallerFlowState_ApplyComplete_Success_DoesNotCopyRepairerOverItself()
     {
         var copyCalls = 0;
         var vm = new InstallerViewModel(
@@ -1002,7 +1002,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ApplyComplete_Success_TransitionsToFailed_When_ExeMissing()
+    public void InstallerFlowState_ApplyComplete_SuccessTransitionsToFailedWhen_ExeMissing()
     {
         var vm = CreateViewModel(fileExists: static _ => false);
 
@@ -1014,7 +1014,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void ExitCode_DefaultsToCancel_When_NotInTerminalState()
+    public void InstallerFlowState_ExitCode_DefaultsToCancelWhen_NotInTerminalState()
     {
         var vm = CreateViewModel(fileExists: static _ => true);
 

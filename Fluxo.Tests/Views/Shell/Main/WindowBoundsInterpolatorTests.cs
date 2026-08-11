@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Views.Shell.Main;
 public class WindowBoundsInterpolatorTests
 {
     [Fact]
-    public void Interpolate_Halfway_AnimatesWidthAndHeightTogether()
+    public void WindowBoundsInterpolator_Interpolate_Halfway_AnimatesWidthAndHeightTogether()
     {
         var from = new Rect(0, 0, 200, 100);
         var to = new Rect(100, 50, 300, 200);
@@ -21,7 +21,7 @@ public class WindowBoundsInterpolatorTests
     }
 
     [Fact]
-    public void Interpolate_Halfway_AnimatesBottomEdgeSmoothly()
+    public void WindowBoundsInterpolator_Interpolate_Halfway_AnimatesBottomEdgeSmoothly()
     {
         var from = new Rect(0, 0, 200, 100);
         var to = new Rect(100, 50, 300, 200);
@@ -35,7 +35,7 @@ public class WindowBoundsInterpolatorTests
     [Theory]
     [InlineData(-1, 0)]
     [InlineData(2, 1)]
-    public void Interpolate_ClampsProgressToSupportedRange(double inputProgress, double expectedProgress)
+    public void WindowBoundsInterpolator_Interpolate_ClampsProgressToSupportedRange(double inputProgress, double expectedProgress)
     {
         var from = new Rect(0, 10, 200, 100);
         var to = new Rect(100, 50, 300, 200);

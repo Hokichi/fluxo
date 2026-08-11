@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Views.Shell.Main;
 public class MainWindowDragStateDeciderTests
 {
     [Fact]
-    public void DecideRestoreMode_MaximizedEligibleAndNotTransitioning_ReturnsInstantRestoreAndDrag()
+    public void MainWindowDragStateDecider_DecideRestoreMode_MaximizedEligibleAndNotTransitioning_ReturnsInstantRestoreAndDrag()
     {
         var result = MainWindowDragStateDecider.DecideRestoreMode(
             isMaximized: true,
@@ -17,7 +17,7 @@ public class MainWindowDragStateDeciderTests
     }
 
     [Fact]
-    public void DecideRestoreMode_NotMaximizedEligibleAndNotTransitioning_ReturnsDragOnly()
+    public void MainWindowDragStateDecider_DecideRestoreMode_NotMaximizedEligibleAndNotTransitioning_ReturnsDragOnly()
     {
         var result = MainWindowDragStateDecider.DecideRestoreMode(
             isMaximized: false,
@@ -28,7 +28,7 @@ public class MainWindowDragStateDeciderTests
     }
 
     [Fact]
-    public void DecideRestoreMode_TransitioningAndEligible_ReturnsNoop()
+    public void MainWindowDragStateDecider_DecideRestoreMode_TransitioningAndEligible_ReturnsNoop()
     {
         var result = MainWindowDragStateDecider.DecideRestoreMode(
             isMaximized: true,
@@ -39,7 +39,7 @@ public class MainWindowDragStateDeciderTests
     }
 
     [Fact]
-    public void DecideRestoreMode_NotEligibleAndNotTransitioning_ReturnsNoop()
+    public void MainWindowDragStateDecider_DecideRestoreMode_NotEligibleAndNotTransitioning_ReturnsNoop()
     {
         var result = MainWindowDragStateDecider.DecideRestoreMode(
             isMaximized: true,

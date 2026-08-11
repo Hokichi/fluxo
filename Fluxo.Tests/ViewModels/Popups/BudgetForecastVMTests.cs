@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class BudgetForecastVMTests
 {
     [Fact]
-    public void CountOccurrences_Monthly_CountsEveryDueDateThroughTarget()
+    public void BudgetForecastVM_CountOccurrences_Monthly_CountsEveryDueDateThroughTarget()
     {
         var count = BudgetForecastVM.CountRecurringOccurrences(
             RecurringPeriod.Monthly,
@@ -22,7 +22,7 @@ public sealed class BudgetForecastVMTests
     }
 
     [Fact]
-    public void CountOccurrences_Weekly_CountsMatchingWeekdaysThroughTarget()
+    public void BudgetForecastVM_CountOccurrences_Weekly_CountsMatchingWeekdaysThroughTarget()
     {
         var count = BudgetForecastVM.CountRecurringOccurrences(
             RecurringPeriod.Weekly,
@@ -34,19 +34,19 @@ public sealed class BudgetForecastVMTests
     }
 
     [Fact]
-    public void CountAllocationPeriods_RoundsUp()
+    public void BudgetForecastVM_CountAllocationPeriods_RoundsUp()
     {
         Assert.Equal(2, BudgetForecastVM.CountAllocationPeriods(dayCount: 12, allocationPeriodDays: 7));
     }
 
     [Fact]
-    public void CalculateCategoryBudget_MultipliesBaseAllocationByRoundedPeriodCount()
+    public void BudgetForecastVM_CalculateCategoryBudget_MultipliesBaseAllocationByRoundedPeriodCount()
     {
         Assert.Equal(2_000m, BudgetForecastVM.CalculateCategoryBudget(1_000m, dayCount: 12, allocationPeriodDays: 7));
     }
 
     [Fact]
-    public void GetAvailableBalance_ForCredit_ReturnsLimitMinusSpent()
+    public void BudgetForecastVM_GetAvailableBalance_ForCredit_ReturnsLimitMinusSpent()
     {
         var account = new Account
         {
@@ -60,7 +60,7 @@ public sealed class BudgetForecastVMTests
     }
 
     [Fact]
-    public void PurchaseCategoryRadioButtons_SelectCategory()
+    public void BudgetForecastVM_PurchaseCategoryRadioButtons_SelectCategory()
     {
         var vm = new BudgetForecastVM(Substitute.For<IAppDataService>());
 
@@ -74,7 +74,7 @@ public sealed class BudgetForecastVMTests
     }
 
     [Fact]
-    public void TestTransactionVisibility_DefaultsToHidden()
+    public void BudgetForecastVM_TestTransactionVisibility_DefaultsToHidden()
     {
         var vm = new BudgetForecastVM(Substitute.For<IAppDataService>());
 
@@ -82,7 +82,7 @@ public sealed class BudgetForecastVMTests
     }
 
     [Fact]
-    public void ForecastBalance_ReportsDirectionAgainstCurrentBalance()
+    public void BudgetForecastVM_ForecastBalance_ReportsDirectionAgainstCurrentBalance()
     {
         var account = new BudgetForecastAccountRowVM(1, "Cash", 100m);
 
@@ -103,7 +103,7 @@ public sealed class BudgetForecastVMTests
     [InlineData(100, 500, "Affordable")]
     [InlineData(600, 1000, "Not recommended")]
     [InlineData(1200, 1000, "Not affordable")]
-    public void BuildPurchaseResult_ReturnsExpectedSeverity(decimal purchase, decimal accountRemaining, string expectedStart)
+    public void BudgetForecastVM_BuildPurchaseResult_ReturnsExpectedSeverity(decimal purchase, decimal accountRemaining, string expectedStart)
     {
         var result = BudgetForecastVM.BuildPurchaseResult(
             purchaseAmount: purchase,

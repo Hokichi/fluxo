@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class DotNetRuntimeDetectorTests
 {
     [Fact]
-    public void ReturnsFalse_When_RuntimeMissing()
+    public void DotNetRuntimeDetector_ReturnsFalse_When_RuntimeMissing()
     {
         var detector = new DotNetRuntimeDetector(
             requiredMajorVersion: 10,
@@ -21,7 +21,7 @@ public sealed class DotNetRuntimeDetectorTests
     }
 
     [Fact]
-    public void ReturnsTrue_When_WindowsDesktopRuntimePresent()
+    public void DotNetRuntimeDetector_ReturnsTrue_When_WindowsDesktopRuntimePresent()
     {
         var detector = new DotNetRuntimeDetector(
             requiredMajorVersion: 10,
@@ -33,7 +33,7 @@ public sealed class DotNetRuntimeDetectorTests
     }
 
     [Fact]
-    public void ReturnsFalse_When_OnlyBaseRuntimePresent()
+    public void DotNetRuntimeDetector_ReturnsFalse_When_OnlyBaseRuntimePresent()
     {
         var detector = new DotNetRuntimeDetector(
             requiredMajorVersion: 10,
@@ -45,7 +45,7 @@ public sealed class DotNetRuntimeDetectorTests
     }
 
     [Fact]
-    public async Task InstallCommand_Continues_When_RuntimeInstallerInstallsRuntime()
+    public async Task DotNetRuntimeDetector_InstallCommand_ContinuesWhen_RuntimeInstallerInstallsRuntime()
     {
         var detectCalls = 0;
         var vm = new InstallerViewModel(
@@ -66,7 +66,7 @@ public sealed class DotNetRuntimeDetectorTests
     }
 
     [Fact]
-    public void ReturnsFalse_When_RuntimeListProviderReturnsNull()
+    public void DotNetRuntimeDetector_ReturnsFalse_When_RuntimeListProviderReturnsNull()
     {
         var detector = new DotNetRuntimeDetector(
             requiredMajorVersion: 10,
@@ -78,7 +78,7 @@ public sealed class DotNetRuntimeDetectorTests
     }
 
     [Fact]
-    public void ReturnsFalse_When_RuntimeListProviderThrows()
+    public void DotNetRuntimeDetector_ReturnsFalse_When_RuntimeListProviderThrows()
     {
         var detector = new DotNetRuntimeDetector(
             requiredMajorVersion: 10,

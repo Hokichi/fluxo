@@ -10,7 +10,7 @@ public sealed class StartupTrayPopupDisplayPolicyTests
     [InlineData(false, false, true, false)]
     [InlineData(true, true, true, false)]
     [InlineData(true, false, false, false)]
-    public void ShouldShow_ReturnsExpectedDecision(
+    public void StartupTrayPopupDisplayPolicy_ShouldShow_ReturnsExpectedDecision(
         bool launchInTrayMode,
         bool alreadyShownThisProcess,
         bool hasSummary,

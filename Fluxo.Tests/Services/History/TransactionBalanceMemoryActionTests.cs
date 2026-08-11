@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Services.History;
 public sealed class TransactionBalanceMemoryActionTests
 {
     [Fact]
-    public async Task RevertAddedUnpostedIoU_DoesNotChangeAccountBalance()
+    public async Task TransactionBalanceMemoryAction_RevertAddedUnpostedIoU_DoesNotChangeAccountBalance()
     {
         var account = new Account { Id = 1, Name = "Checking", Balance = 100m };
         var transaction = new Transaction

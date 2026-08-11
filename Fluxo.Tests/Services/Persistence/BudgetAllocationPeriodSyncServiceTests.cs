@@ -11,7 +11,7 @@ namespace Fluxo.Tests.Services.Persistence;
 public sealed class BudgetAllocationPeriodSyncServiceTests
 {
     [Fact]
-    public async Task SyncAsync_UpdatesCurrentPeriodIndex()
+    public async Task BudgetAllocationPeriodSyncService_SyncAsync_UpdatesCurrentPeriodIndex()
     {
         var unitOfWork = new TestUnitOfWork
         {
@@ -31,7 +31,7 @@ public sealed class BudgetAllocationPeriodSyncServiceTests
     }
 
     [Fact]
-    public async Task SyncAsync_ClampsPeriodStartForPeriod()
+    public async Task BudgetAllocationPeriodSyncService_SyncAsync_ClampsPeriodStartForPeriod()
     {
         var unitOfWork = new TestUnitOfWork
         {
@@ -50,7 +50,7 @@ public sealed class BudgetAllocationPeriodSyncServiceTests
     }
 
     [Fact]
-    public async Task SyncAsync_WhenCurrentIndexEqualsPeriodStart_DoesNotMoveRolloverPeriodMarker()
+    public async Task BudgetAllocationPeriodSyncService_SyncAsync_WhenCurrentIndexEqualsPeriodStart_DoesNotMoveRolloverPeriodMarker()
     {
         var unitOfWork = new TestUnitOfWork
         {

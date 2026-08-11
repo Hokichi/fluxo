@@ -17,7 +17,7 @@ namespace Fluxo.Tests.Infrastructure;
 public sealed class DataOperationRunnerTests
 {
     [Fact]
-    public async Task RunInTransactionAsync_ReturnsOperationResult()
+    public async Task DataOperationRunner_RunInTransactionAsync_ReturnsOperationResult()
     {
         using var serviceProvider = CreateServiceProvider();
         var runner = serviceProvider.GetRequiredService<IDataOperationRunner>();
@@ -28,7 +28,7 @@ public sealed class DataOperationRunnerTests
     }
 
     [Fact]
-    public async Task RunInTransactionAsync_WhenLaterSaveFails_RollsBackEarlierSave()
+    public async Task DataOperationRunner_RunInTransactionAsync_WhenLaterSaveFails_RollsBackEarlierSave()
     {
         var options = new DbContextOptionsBuilder<FluxoDbContext>()
             .UseSqlite("Data Source=:memory:")
@@ -60,7 +60,7 @@ public sealed class DataOperationRunnerTests
     }
 
     [Fact]
-    public async Task RunAsync_UsesSharedScopedInstancesWithinSingleOperation()
+    public async Task DataOperationRunner_RunAsync_UsesSharedScopedInstancesWithinSingleOperation()
     {
         using var serviceProvider = CreateServiceProvider();
 
@@ -82,7 +82,7 @@ public sealed class DataOperationRunnerTests
     }
 
     [Fact]
-    public async Task RunAsync_CreatesDifferentUnitOfWorkForDifferentOperations()
+    public async Task DataOperationRunner_RunAsync_CreatesDifferentUnitOfWorkForDifferentOperations()
     {
         using var serviceProvider = CreateServiceProvider();
 

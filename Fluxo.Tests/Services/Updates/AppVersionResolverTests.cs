@@ -6,7 +6,7 @@ namespace Fluxo.Tests.Services.Updates;
 public sealed class AppVersionResolverTests
 {
     [Fact]
-    public void ResolveCurrentVersion_ReturnsNonEmptyAndNotUnknown()
+    public void AppVersionResolver_ResolveCurrentVersion_ReturnsNonEmptyAndNotUnknown()
     {
         var version = AppVersionResolver.ResolveCurrentVersion();
 
@@ -15,7 +15,7 @@ public sealed class AppVersionResolverTests
     }
 
     [Fact]
-    public void ResolveVersion_StripsInformationalMetadataSuffixAfterPlus()
+    public void AppVersionResolver_ResolveVersion_StripsInformationalMetadataSuffixAfterPlus()
     {
         var version = AppVersionResolver.ResolveVersion("1.2.3+abc123", new Version(9, 9, 9));
 
@@ -23,7 +23,7 @@ public sealed class AppVersionResolverTests
     }
 
     [Fact]
-    public void ResolveVersion_FallsBackToMajorMinorBuild()
+    public void AppVersionResolver_ResolveVersion_FallsBackToMajorMinorBuild()
     {
         var version = AppVersionResolver.ResolveVersion(null, new Version(2, 4, 6, 8));
 
@@ -31,7 +31,7 @@ public sealed class AppVersionResolverTests
     }
 
     [Fact]
-    public void ResolveVersion_ReturnsUnknown_WhenNoInformationalAndNoAssemblyVersion()
+    public void AppVersionResolver_ResolveVersion_ReturnsUnknown_WhenNoInformationalAndNoAssemblyVersion()
     {
         var version = AppVersionResolver.ResolveVersion(null, null);
 

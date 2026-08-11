@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Services.Dialogs;
 public sealed class DialogServiceTests
 {
     [Fact]
-    public void ShowWarning_UsesWarningIcon()
+    public void DialogService_ShowWarning_UsesWarningIcon()
     {
         var (sut, state) = CreateSut();
 
@@ -19,7 +19,7 @@ public sealed class DialogServiceTests
     }
 
     [Fact]
-    public void ShowError_UsesErrorIcon()
+    public void DialogService_ShowError_UsesErrorIcon()
     {
         var (sut, state) = CreateSut();
 
@@ -30,7 +30,7 @@ public sealed class DialogServiceTests
     }
 
     [Fact]
-    public void ShowInformation_UsesInformationIcon()
+    public void DialogService_ShowInformation_UsesInformationIcon()
     {
         var (sut, state) = CreateSut();
 
@@ -41,7 +41,7 @@ public sealed class DialogServiceTests
     }
 
     [Fact]
-    public void ShowQuestion_UsesQuestionIcon()
+    public void DialogService_ShowQuestion_UsesQuestionIcon()
     {
         var (sut, state) = CreateSut();
 

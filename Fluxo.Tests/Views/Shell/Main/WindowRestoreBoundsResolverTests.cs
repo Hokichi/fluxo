@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Views.Shell.Main;
 public class WindowRestoreBoundsResolverTests
 {
     [Fact]
-    public void ResolveCenteredRestoreBounds_CentersOnSecondaryMonitorWorkArea()
+    public void WindowRestoreBoundsResolver_ResolveCenteredRestoreBounds_CentersOnSecondaryMonitorWorkArea()
     {
         var workArea = new Rect(1920, 0, 1920, 1040);
 
@@ -20,7 +20,7 @@ public class WindowRestoreBoundsResolverTests
     }
 
     [Fact]
-    public void ResolveCenteredRestoreBounds_UsesWorkAreaOriginForExactFit()
+    public void WindowRestoreBoundsResolver_ResolveCenteredRestoreBounds_UsesWorkAreaOriginForExactFit()
     {
         var workArea = new Rect(2560, 1440, 1600, 900);
 

@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class AddNewTransactionHistoryBuilderTests
 {
     [Fact]
-    public void BuildPinnedExpenses_CollapsesDuplicatePinnedItemsKeepingNewest()
+    public void AddNewTransactionHistoryBuilder_BuildPinnedExpenses_CollapsesDuplicatePinnedItemsKeepingNewest()
     {
         var older = CreateExpenseLog(id: 1, name: "Coffee", amount: 5m, date: DateTime.Today.AddDays(-2), isPinned: true);
         var newer = CreateExpenseLog(id: 2, name: "Coffee", amount: 5m, date: DateTime.Today, isPinned: true);
@@ -23,7 +23,7 @@ public sealed class AddNewTransactionHistoryBuilderTests
     }
 
     [Fact]
-    public void BuildExpenseHistory_ExcludesPinnedAndCollapsesRepeatingItemsKeepingNewest()
+    public void AddNewTransactionHistoryBuilder_BuildExpenseHistory_ExcludesPinnedAndCollapsesRepeatingItemsKeepingNewest()
     {
         var pinned = CreateExpenseLog(id: 1, name: "Coffee", amount: 5m, date: DateTime.Today.AddDays(-3), isPinned: true);
         var older = CreateExpenseLog(id: 2, name: "Coffee", amount: 5m, date: DateTime.Today.AddDays(-2), isPinned: false);
@@ -37,7 +37,7 @@ public sealed class AddNewTransactionHistoryBuilderTests
     }
 
     [Fact]
-    public void BuildExpenseHistory_ExcludesSystemTaggedLogs()
+    public void AddNewTransactionHistoryBuilder_BuildExpenseHistory_ExcludesSystemTaggedLogs()
     {
         var log = CreateExpenseLog(
             id: 1,
@@ -53,7 +53,7 @@ public sealed class AddNewTransactionHistoryBuilderTests
     }
 
     [Fact]
-    public void BuildPinnedIncomes_CollapsesDuplicatePinnedItemsKeepingNewest()
+    public void AddNewTransactionHistoryBuilder_BuildPinnedIncomes_CollapsesDuplicatePinnedItemsKeepingNewest()
     {
         var older = CreateIncomeLog(id: 1, name: "Salary", amount: 100m, date: DateTime.Today.AddDays(-2), isPinned: true);
         var newer = CreateIncomeLog(id: 2, name: "Salary", amount: 100m, date: DateTime.Today, isPinned: true);
@@ -66,7 +66,7 @@ public sealed class AddNewTransactionHistoryBuilderTests
     }
 
     [Fact]
-    public void BuildIncomeHistory_ExcludesPinnedAndCollapsesRepeatingItemsKeepingNewest()
+    public void AddNewTransactionHistoryBuilder_BuildIncomeHistory_ExcludesPinnedAndCollapsesRepeatingItemsKeepingNewest()
     {
         var pinned = CreateIncomeLog(id: 1, name: "Salary", amount: 100m, date: DateTime.Today.AddDays(-3), isPinned: true);
         var older = CreateIncomeLog(id: 2, name: "Salary", amount: 100m, date: DateTime.Today.AddDays(-2), isPinned: false);
@@ -80,7 +80,7 @@ public sealed class AddNewTransactionHistoryBuilderTests
     }
 
     [Fact]
-    public void BuildGoalUpdateHistory_ReturnsOnlyPastUpdatesForSelectedGoalNewestFirst()
+    public void AddNewTransactionHistoryBuilder_BuildGoalUpdateHistory_ReturnsOnlyPastUpdatesForSelectedGoalNewestFirst()
     {
         var selectedOlder = CreateGoalUpdateLog(id: 1, goalName: "Vacation", amount: 10m, date: DateTime.Today.AddDays(-2));
         var selectedNewer = CreateGoalUpdateLog(id: 2, goalName: "Vacation", amount: 15m, date: DateTime.Today);

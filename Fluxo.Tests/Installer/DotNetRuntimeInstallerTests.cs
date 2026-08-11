@@ -7,7 +7,7 @@ namespace Fluxo.Tests.Installer;
 public sealed class DotNetRuntimeInstallerTests
 {
     [Fact]
-    public async Task EnsureInstalledAsync_ReturnsInstalled_WhenRuntimeAlreadyPresent()
+    public async Task DotNetRuntimeInstaller_EnsureInstalledAsync_ReturnsInstalled_WhenRuntimeAlreadyPresent()
     {
         var service = CreateService(isRuntimeInstalled: () => true);
 
@@ -17,7 +17,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task EnsureInstalledAsync_DownloadsInstallsVerifiesAndSavesMarker_WhenRuntimeMissing()
+    public async Task DotNetRuntimeInstaller_EnsureInstalledAsync_DownloadsInstallsVerifiesAndSavesMarker_WhenRuntimeMissing()
     {
         var runtimeInstalled = false;
         var downloads = new List<string>();
@@ -51,7 +51,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task EnsureInstalledAsync_DeletesTempInstaller_WhenInstallVerificationFails()
+    public async Task DotNetRuntimeInstaller_EnsureInstalledAsync_DeletesTempInstaller_WhenInstallVerificationFails()
     {
         var deletedFiles = new List<string>();
         var service = CreateService(
@@ -65,7 +65,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task RollbackAsync_UninstallsRuntimeInstalledByFluxo()
+    public async Task DotNetRuntimeInstaller_RollbackAsync_UninstallsRuntimeInstalledByFluxo()
     {
         var processStarts = new List<(string FileName, string Arguments)>();
         var markerCleared = false;
@@ -86,7 +86,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task UninstallOwnedRuntimeAsync_Skips_WhenMarkerMissing()
+    public async Task DotNetRuntimeInstaller_UninstallOwnedRuntimeAsync_Skips_WhenMarkerMissing()
     {
         var processCalls = 0;
         var service = CreateService(
@@ -104,7 +104,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task UninstallOwnedRuntimeAsync_DownloadsAndRunsSilentUninstall_WhenMarkerExists()
+    public async Task DotNetRuntimeInstaller_UninstallOwnedRuntimeAsync_DownloadsAndRunsSilentUninstall_WhenMarkerExists()
     {
         var processStarts = new List<(string FileName, string Arguments)>();
         var markerCleared = false;
@@ -126,7 +126,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task UninstallOwnedRuntimeAsync_DoesNotClearMarker_WhenSilentUninstallFails()
+    public async Task DotNetRuntimeInstaller_UninstallOwnedRuntimeAsync_DoesNotClearMarker_WhenSilentUninstallFails()
     {
         var markerCleared = false;
         var service = CreateService(
@@ -141,7 +141,7 @@ public sealed class DotNetRuntimeInstallerTests
     }
 
     [Fact]
-    public async Task RollbackRuntimeInstalledByFluxoAsync_DoesNotClearMarker_WhenSilentUninstallFails()
+    public async Task DotNetRuntimeInstaller_RollbackRuntimeInstalledByFluxoAsync_DoesNotClearMarker_WhenSilentUninstallFails()
     {
         var markerCleared = false;
         var service = CreateService(

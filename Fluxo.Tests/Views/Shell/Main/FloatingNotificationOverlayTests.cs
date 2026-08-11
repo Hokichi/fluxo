@@ -9,7 +9,7 @@ public sealed class FloatingNotificationOverlayTests
     [InlineData(42u, 42, true)]
     [InlineData(7u, 42, false)]
     [InlineData(0u, 42, false)]
-    public void IsForegroundProcess_MatchesCurrentProcess(
+    public void FloatingNotificationOverlay_IsForegroundProcess_MatchesCurrentProcess(
         uint foregroundProcessId, int currentProcessId, bool expected)
     {
         Assert.Equal(expected,

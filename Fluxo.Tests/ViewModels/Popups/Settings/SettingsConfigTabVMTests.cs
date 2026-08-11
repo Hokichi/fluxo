@@ -17,7 +17,7 @@ namespace Fluxo.Tests.ViewModels.Popups.Settings;
 public sealed class SettingsConfigTabVMTests
 {
     [Fact]
-    public void BudgetTab_ChangingAllocation_PublishesPendingState()
+    public void SettingsConfigTabVM_BudgetTab_ChangingAllocation_PublishesPendingState()
     {
         var messenger = new WeakReferenceMessenger();
         var captured = new List<SettingsPendingChangesChangedMessage>();
@@ -34,7 +34,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_InvalidAllocation_BlocksConfigurationSave()
+    public async Task SettingsConfigTabVM_BudgetTab_InvalidAllocation_BlocksConfigurationSave()
     {
         var unitOfWork = new NullUnitOfWork
         {
@@ -56,7 +56,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_SettingAllocation_BalancesOtherBuckets()
+    public async Task SettingsConfigTabVM_BudgetTab_SettingAllocation_BalancesOtherBuckets()
     {
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(new NullUnitOfWork()));
         await vm.LoadAsync();
@@ -70,7 +70,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void BudgetTab_SelectedPage_DefaultsToAllocation()
+    public void SettingsConfigTabVM_BudgetTab_SelectedPage_DefaultsToAllocation()
     {
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(new NullUnitOfWork()));
 
@@ -80,7 +80,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void BudgetTab_SelectedPage_WhenConfigurationSelected_UpdatesVisibilityState()
+    public void SettingsConfigTabVM_BudgetTab_SelectedPageWhenConfigurationSelected_UpdatesVisibilityState()
     {
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(new NullUnitOfWork()));
 
@@ -91,7 +91,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void BudgetTab_RevertChanges_RestoresLastSavedAllocation()
+    public void SettingsConfigTabVM_BudgetTab_RevertChanges_RestoresLastSavedAllocation()
     {
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(new NullUnitOfWork()));
 
@@ -109,7 +109,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_LoadAsync_LoadsTypedBudgetAllocation()
+    public async Task SettingsConfigTabVM_BudgetTab_LoadAsync_LoadsTypedBudgetAllocation()
     {
         var unitOfWork = new NullUnitOfWork
         {
@@ -138,7 +138,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_LoadAsync_LoadsPeriodStart()
+    public async Task SettingsConfigTabVM_BudgetTab_LoadAsync_LoadsPeriodStart()
     {
         var unitOfWork = new NullUnitOfWork
         {
@@ -156,7 +156,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void BudgetTab_ChangingAllocationPeriod_ClampsPeriodStart()
+    public void SettingsConfigTabVM_BudgetTab_ChangingAllocationPeriod_ClampsPeriodStart()
     {
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(new NullUnitOfWork()))
         {
@@ -169,7 +169,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_AllocationAmountText_UsesAllocationLimit()
+    public async Task SettingsConfigTabVM_BudgetTab_AllocationAmountText_UsesAllocationLimit()
     {
         var unitOfWork = new NullUnitOfWork
         {
@@ -197,7 +197,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_LoadAsync_DoesNotPublishTransientPendingState()
+    public async Task SettingsConfigTabVM_BudgetTab_LoadAsync_DoesNotPublishTransientPendingState()
     {
         var messenger = new WeakReferenceMessenger();
         var captured = new List<SettingsPendingChangesChangedMessage>();
@@ -229,7 +229,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_BuildApplyChangesAsync_UpdatesTypedBudgetAllocation()
+    public async Task SettingsConfigTabVM_BudgetTab_BuildApplyChangesAsync_UpdatesTypedBudgetAllocation()
     {
         var unitOfWork = new NullUnitOfWork();
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(unitOfWork));
@@ -252,7 +252,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_BuildApplyChangesAsync_UpdatesPeriodStart()
+    public async Task SettingsConfigTabVM_BudgetTab_BuildApplyChangesAsync_UpdatesPeriodStart()
     {
         var unitOfWork = new NullUnitOfWork();
         var vm = new SettingsBudgetTabVM(() => 1000m, new AppDataService(unitOfWork));
@@ -268,7 +268,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_BuildApplyChangesAsync_WhenRolloverPolicyChangesToEnabled_MarksCurrentPeriod()
+    public async Task SettingsConfigTabVM_BudgetTab_BuildApplyChangesAsyncWhenRolloverPolicyChangesToEnabled_MarksCurrentPeriod()
     {
         var unitOfWork = new NullUnitOfWork
         {
@@ -295,7 +295,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void BudgetTab_ChangingConfiguration_PublishesPendingState()
+    public void SettingsConfigTabVM_BudgetTab_ChangingConfiguration_PublishesPendingState()
     {
         var messenger = new WeakReferenceMessenger();
         var captured = new List<SettingsPendingChangesChangedMessage>();
@@ -328,7 +328,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void PersonalizationTab_ChangingStartupToggle_PublishesPendingState()
+    public void SettingsConfigTabVM_PersonalizationTab_ChangingStartupToggle_PublishesPendingState()
     {
         var messenger = new WeakReferenceMessenger();
         var captured = new List<SettingsPendingChangesChangedMessage>();
@@ -345,7 +345,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public void PersonalizationTab_ChangingLockUiWhenAway_PublishesPendingState()
+    public void SettingsConfigTabVM_PersonalizationTab_ChangingLockUiWhenAway_PublishesPendingState()
     {
         var messenger = new WeakReferenceMessenger();
         var captured = new List<SettingsPendingChangesChangedMessage>();
@@ -366,7 +366,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_LoadAsync_DefaultsAutoLockIntervalToThirtySecondPreset()
+    public async Task SettingsConfigTabVM_PersonalizationTab_LoadAsync_DefaultsAutoLockIntervalToThirtySecondPreset()
     {
         var unitOfWork = new TestSettingsUnitOfWork([]);
         var vm = new SettingsPersonalizationTabVM(
@@ -381,7 +381,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_SelectingFixedAutoLockPreset_UpdatesIntervalAndPublishesPendingState()
+    public async Task SettingsConfigTabVM_PersonalizationTab_SelectingFixedAutoLockPreset_UpdatesIntervalAndPublishesPendingState()
     {
         var messenger = new WeakReferenceMessenger();
         var captured = new List<SettingsPendingChangesChangedMessage>();
@@ -405,7 +405,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_LoadAsync_SelectsCustomPresetForNonPresetInterval()
+    public async Task SettingsConfigTabVM_PersonalizationTab_LoadAsync_SelectsCustomPresetForNonPresetInterval()
     {
         var unitOfWork = new TestSettingsUnitOfWork(
         [
@@ -423,7 +423,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_LoadAsync_DecryptsUiLockPassword()
+    public async Task SettingsConfigTabVM_PersonalizationTab_LoadAsync_DecryptsUiLockPassword()
     {
         var unitOfWork = new TestSettingsUnitOfWork(
         [
@@ -439,7 +439,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_BuildApplyChangesAsync_ProtectsPasswordBeforePersisting()
+    public async Task SettingsConfigTabVM_PersonalizationTab_BuildApplyChangesAsync_ProtectsPasswordBeforePersisting()
     {
         var unitOfWork = new TestSettingsUnitOfWork([]);
         var vm = new SettingsPersonalizationTabVM(
@@ -455,7 +455,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_BuildApplyChangesAsync_RemovesBlankPassword()
+    public async Task SettingsConfigTabVM_PersonalizationTab_BuildApplyChangesAsync_RemovesBlankPassword()
     {
         var unitOfWork = new TestSettingsUnitOfWork(
         [
@@ -474,7 +474,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_ReportsPendingPasswordSeparately()
+    public async Task SettingsConfigTabVM_PersonalizationTab_ReportsPendingPasswordSeparately()
     {
         var vm = new SettingsPersonalizationTabVM(
             new AppDataService(new TestSettingsUnitOfWork([])),
@@ -488,7 +488,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_ReportsPendingNotificationsSeparately()
+    public async Task SettingsConfigTabVM_PersonalizationTab_ReportsPendingNotificationsSeparately()
     {
         var vm = new SettingsPersonalizationTabVM(
             new AppDataService(new TestSettingsUnitOfWork([])),
@@ -502,7 +502,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_ReportsPendingAutoLockToggleSeparately()
+    public async Task SettingsConfigTabVM_PersonalizationTab_ReportsPendingAutoLockToggleSeparately()
     {
         var vm = new SettingsPersonalizationTabVM(
             new AppDataService(new TestSettingsUnitOfWork([])),
@@ -516,7 +516,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task PersonalizationTab_ReportsPendingAutoLockIntervalSeparately()
+    public async Task SettingsConfigTabVM_PersonalizationTab_ReportsPendingAutoLockIntervalSeparately()
     {
         var vm = new SettingsPersonalizationTabVM(
             new AppDataService(new TestSettingsUnitOfWork([])),
@@ -530,7 +530,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_ReportsConfigurationChangesSeparately()
+    public async Task SettingsConfigTabVM_BudgetTab_ReportsConfigurationChangesSeparately()
     {
         var vm = new SettingsBudgetTabVM(
             () => 1000m,
@@ -544,7 +544,7 @@ public sealed class SettingsConfigTabVMTests
     }
 
     [Fact]
-    public async Task BudgetTab_ReportsAllocationChangesSeparately()
+    public async Task SettingsConfigTabVM_BudgetTab_ReportsAllocationChangesSeparately()
     {
         var vm = new SettingsBudgetTabVM(
             () => 1000m,

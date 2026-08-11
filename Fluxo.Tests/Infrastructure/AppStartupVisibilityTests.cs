@@ -11,7 +11,7 @@ public sealed class AppStartupVisibilityTests
     [InlineData("--startup--tray", AppCloseBehavior.MinimizeToTray, false, false)]
     [InlineData(null, AppCloseBehavior.MinimizeToTray, false, false)]
     [InlineData("--startup-tray", AppCloseBehavior.MinimizeToTray, true, false)]
-    public void ShouldHideMainWindowAtStartup_UsesLaunchCloseBehaviorAndActivation(
+    public void AppStartupVisibility_ShouldHideMainWindowAtStartup_UsesLaunchCloseBehaviorAndActivation(
         string? argument,
         AppCloseBehavior closeBehavior,
         bool isPrimaryActivationPending,

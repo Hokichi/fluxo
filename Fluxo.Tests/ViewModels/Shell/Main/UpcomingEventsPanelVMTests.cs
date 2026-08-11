@@ -16,7 +16,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public class UpcomingEventsPanelVMTests
 {
     [Fact]
-    public void UpcomingEventItemVM_FormatsMonthAndDay()
+    public void UpcomingEventsPanelVM_UpcomingEventItemVM_FormatsMonthAndDay()
     {
         var item = new UpcomingEventItemVM(
             new DateOnly(2026, 6, 5),
@@ -32,7 +32,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_IncludesRecurringTransactionsDueWithinNext14Days()
+    public async Task UpcomingEventsPanelVM_LoadAsync_IncludesRecurringTransactionsDueWithinNext14Days()
     {
         var today = new DateTime(2026, 6, 14);
         var dueDate = today.AddDays(3);
@@ -67,7 +67,7 @@ public class UpcomingEventsPanelVMTests
     [InlineData(RecurringTransactionType.Income, "Income")]
     [InlineData(RecurringTransactionType.Expense, "Expense")]
     [InlineData(RecurringTransactionType.GoalUpdate, "Goal")]
-    public async Task LoadAsync_RecurringTransactionTypeText_UsesTransactionType(
+    public async Task UpcomingEventsPanelVM_LoadAsync_RecurringTransactionTypeTextUsesTransactionType(
         RecurringTransactionType transactionType,
         string expectedTypeText)
     {
@@ -96,7 +96,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_CreditRecurringExpenseTypeText_UsesPayment()
+    public async Task UpcomingEventsPanelVM_LoadAsync_CreditRecurringExpenseTypeText_UsesPayment()
     {
         var today = new DateTime(2026, 6, 14);
         var vm = CreateVm(
@@ -124,7 +124,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_ExcludesDisabledAndOutOfWindowRecurringTransactions()
+    public async Task UpcomingEventsPanelVM_LoadAsync_ExcludesDisabledAndOutOfWindowRecurringTransactions()
     {
         var today = new DateTime(2026, 6, 14);
         var vm = CreateVm(
@@ -161,7 +161,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_IncludesCreditPaymentDueWithinNext14Days()
+    public async Task UpcomingEventsPanelVM_LoadAsync_IncludesCreditPaymentDueWithinNext14Days()
     {
         var today = new DateTime(2026, 6, 14);
         var vm = CreateVm(
@@ -192,7 +192,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_ExcludesIneligibleCreditPayments()
+    public async Task UpcomingEventsPanelVM_LoadAsync_ExcludesIneligibleCreditPayments()
     {
         var today = new DateTime(2026, 6, 14);
         var vm = CreateVm(
@@ -215,7 +215,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_IncludesGoalDeadlineWithAmountLeftText()
+    public async Task UpcomingEventsPanelVM_LoadAsync_IncludesGoalDeadlineWithAmountLeftText()
     {
         var today = new DateTime(2026, 6, 14);
         var deadline = today.AddDays(10);
@@ -244,7 +244,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_WhenGoalHasRecurringAndDeadlineInWindow_ShowsBothRows()
+    public async Task UpcomingEventsPanelVM_LoadAsync_WhenGoalHasRecurringAndDeadlineInWindow_ShowsBothRows()
     {
         var today = new DateTime(2026, 6, 14);
         var recurringDate = today.AddDays(4);
@@ -290,7 +290,7 @@ public class UpcomingEventsPanelVMTests
     }
 
     [Fact]
-    public async Task LoadAsync_OrdersEventsByDateThenTitle()
+    public async Task UpcomingEventsPanelVM_LoadAsync_OrdersEventsByDateThenTitle()
     {
         var today = new DateTime(2026, 6, 14);
         var sameDay = today.AddDays(2);

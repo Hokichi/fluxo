@@ -8,7 +8,7 @@ namespace Fluxo.Tests.Services.History;
 public sealed class LogMemoryDisplayTests
 {
     [Fact]
-    public void AddExpense_IdentifiesTransactionAndSummarizesSnapshot()
+    public void LogMemoryDisplay_AddExpense_IdentifiesTransactionAndSummarizesSnapshot()
     {
         var action = new AddTransactionMemoryAction(Transaction("Grocery", 450m));
 
@@ -19,7 +19,7 @@ public sealed class LogMemoryDisplayTests
     }
 
     [Fact]
-    public void EditExpense_ListsOnlyChangedDisplayFields()
+    public void LogMemoryDisplay_EditExpense_ListsOnlyChangedDisplayFields()
     {
         var before = Transaction("Grocery", 400m);
         var after = before with { Amount = 450m, Notes = "Weekly shop" };
@@ -33,7 +33,7 @@ public sealed class LogMemoryDisplayTests
     }
 
     [Fact]
-    public void DeleteAccount_IdentifiesAccountAndUsefulValues()
+    public void LogMemoryDisplay_DeleteAccount_IdentifiesAccountAndUsefulValues()
     {
         var action = new DeleteAccountMemoryAction(new AccountMemorySnapshot(
             1, "Checking", AccountType.Checking, 0m, 0m, null, 0m, 1250m,
@@ -46,7 +46,7 @@ public sealed class LogMemoryDisplayTests
     }
 
     [Fact]
-    public void CompositeAction_SummarizesOperationAndChildren()
+    public void LogMemoryDisplay_CompositeAction_SummarizesOperationAndChildren()
     {
         var action = new CompositeLogMemoryAction("Transfer funds",
         [
@@ -63,7 +63,7 @@ public sealed class LogMemoryDisplayTests
     }
 
     [Fact]
-    public void LogEntry_ForwardsActionDisplayText()
+    public void LogMemoryDisplay_LogEntry_ForwardsActionDisplayText()
     {
         var entry = new LogMemoryEntry(new AddTransactionMemoryAction(Transaction("Grocery", 450m)));
 

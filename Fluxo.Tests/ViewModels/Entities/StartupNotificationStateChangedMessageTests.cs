@@ -9,7 +9,7 @@ namespace Fluxo.Tests.ViewModels.Entities;
 public sealed class StartupNotificationStateChangedMessageTests
 {
     [Fact]
-    public void Account_UpdatesOverdueState_FromNotificationEvaluation()
+    public void StartupNotificationStateChangedMessage_Account_UpdatesOverdueState_FromNotificationEvaluation()
     {
         var account = new AccountVM { Id = 1 };
 
@@ -20,7 +20,7 @@ public sealed class StartupNotificationStateChangedMessageTests
     }
 
     [Fact]
-    public void RecurringTransaction_UpdatesOverdueState_FromNotificationEvaluation()
+    public void StartupNotificationStateChangedMessage_RecurringTransaction_UpdatesOverdueState_FromNotificationEvaluation()
     {
         var recurring = new RecurringTransactionVM { Id = 2 };
 
@@ -31,7 +31,7 @@ public sealed class StartupNotificationStateChangedMessageTests
     }
 
     [Fact]
-    public void SavingGoal_UpdatesOverdueState_FromNotificationEvaluation()
+    public void StartupNotificationStateChangedMessage_SavingGoal_UpdatesOverdueState_FromNotificationEvaluation()
     {
         var goal = new SavingGoalVM { Id = 3 };
 

@@ -9,7 +9,7 @@ namespace Fluxo.Tests.Views.Popups;
 public sealed class FluxoMessageBoxOwnerTests
 {
     [Fact]
-    public void ResolveOwnerForDialog_ReturnsNullWhenResolvedOwnerIsDialogItself()
+    public void FluxoMessageBoxOwner_ResolveOwnerForDialog_ReturnsNullWhenResolvedOwnerIsDialogItself()
     {
         RunInSta(() =>
         {
@@ -22,7 +22,7 @@ public sealed class FluxoMessageBoxOwnerTests
     }
 
     [Fact]
-    public void ResolveOwnerForDialog_UsesFallbackOwnerWhenRequestedOwnerIsNull()
+    public void FluxoMessageBoxOwner_ResolveOwnerForDialog_UsesFallbackOwnerWhenRequestedOwnerIsNull()
     {
         RunInSta(() =>
         {

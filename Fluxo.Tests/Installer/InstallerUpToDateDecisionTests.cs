@@ -8,7 +8,7 @@ public sealed class InstallerUpToDateDecisionTests
     [Theory]
     [InlineData("1.0.0.0", "1.0.0.0", 0)]
     [InlineData("1.0.0.0", "1.1.0.0", 1)]
-    public void Install_WhenDetectedVersionIsSameOrHigher_ShouldSkip_AndCompareUsesInstalledThenCurrent(
+    public void InstallerUpToDateDecision_Install_WhenDetectedVersionIsSameOrHigherShouldSkipAndCompareUsesInstalledThenCurrent(
         string currentBundleVersion,
         string highestDetectedInstalledVersion,
         int compareResult)
@@ -36,7 +36,7 @@ public sealed class InstallerUpToDateDecisionTests
     [Theory]
     [InlineData(InstallerOperationMode.Maintenance, "1.0.0.0")]
     [InlineData(InstallerOperationMode.Uninstall, "2.0.0.0")]
-    public void MaintenanceOrUninstall_ShouldNotSkip(
+    public void InstallerUpToDateDecision_MaintenanceOrUninstall_ShouldNotSkip(
         InstallerOperationMode operationMode,
         string highestDetectedInstalledVersion)
     {
@@ -57,7 +57,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenInstalledExecutableVersionIsHigher_ShouldSkip()
+    public void InstallerUpToDateDecision_Install_WhenInstalledExecutableVersionIsHigher_ShouldSkip()
     {
         var decision = InstallerUpToDateDecision.Evaluate(
             InstallerOperationMode.Install,
@@ -74,7 +74,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenInstalledExecutableVersionIsLower_ShouldNotSkip()
+    public void InstallerUpToDateDecision_Install_WhenInstalledExecutableVersionIsLower_ShouldNotSkip()
     {
         var skip = InstallerUpToDateDecision.ShouldSkipInstall(
             InstallerOperationMode.Install,
@@ -88,7 +88,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenBundleAndExecutableVersionsExist_ShouldCompareHighestDetectedCandidate()
+    public void InstallerUpToDateDecision_Install_WhenBundleAndExecutableVersionsExist_ShouldCompareHighestDetectedCandidate()
     {
         string? comparedInstalledVersion = null;
 
@@ -114,7 +114,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenRegistryVersionIsHigher_ShouldSkipAndReportRegistryVersion()
+    public void InstallerUpToDateDecision_Install_WhenRegistryVersionIsHigher_ShouldSkipAndReportRegistryVersion()
     {
         var decision = InstallerUpToDateDecision.Evaluate(
             InstallerOperationMode.Install,
@@ -131,7 +131,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenRegistryAndExecutableVersionsExist_ShouldReportHighestCandidate()
+    public void InstallerUpToDateDecision_Install_WhenRegistryAndExecutableVersionsExist_ShouldReportHighestCandidate()
     {
         var decision = InstallerUpToDateDecision.Evaluate(
             InstallerOperationMode.Install,
@@ -148,7 +148,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenInstalledExecutableVersionIsSame_ShouldSkipWithoutNewerFlag()
+    public void InstallerUpToDateDecision_Install_WhenInstalledExecutableVersionIsSame_ShouldSkipWithoutNewerFlag()
     {
         var decision = InstallerUpToDateDecision.Evaluate(
             InstallerOperationMode.Install,
@@ -165,7 +165,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void Install_WhenOlderRelatedBundleNeedsCleanup_ShouldNotSkip()
+    public void InstallerUpToDateDecision_Install_WhenOlderRelatedBundleNeedsCleanup_ShouldNotSkip()
     {
         var decision = InstallerUpToDateDecision.Evaluate(
             InstallerOperationMode.Install,

@@ -10,7 +10,7 @@ public sealed class SettingsSignedAmountTests
     [Theory]
     [InlineData(RecurringTransactionType.Income, "+")]
     [InlineData(RecurringTransactionType.Expense, "-")]
-    public void RecurringTransaction_AmountSignMatchesType(RecurringTransactionType type, string expected)
+    public void SettingsSignedAmount_RecurringTransaction_AmountSignMatchesType(RecurringTransactionType type, string expected)
     {
         var item = new SettingsRecurringTransactionItemVM(new RecurringTransaction
         {
@@ -25,7 +25,7 @@ public sealed class SettingsSignedAmountTests
     [Theory]
     [InlineData(IoUKind.Debt, "+")]
     [InlineData(IoUKind.Lend, "-")]
-    public void DebtIoU_AmountSignMatchesKind(IoUKind kind, string expected)
+    public void SettingsSignedAmount_DebtIoU_AmountSignMatchesKind(IoUKind kind, string expected)
     {
         var item = new IoUItemVM { Kind = kind, Amount = 25m };
 

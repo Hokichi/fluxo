@@ -10,7 +10,7 @@ namespace Fluxo.Tests.ViewModels.Shell.Main;
 public sealed class AllocationDataVMOverflowTests
 {
     [Fact]
-    public void RemainingPresentation_UsesPositiveMagnitudeAndCorrectLabel()
+    public void AllocationDataVMOverflow_RemainingPresentation_UsesPositiveMagnitudeAndCorrectLabel()
     {
         var vm = CreateViewModel();
         vm.NeedsRemaining = -25m;
@@ -29,7 +29,7 @@ public sealed class AllocationDataVMOverflowTests
     }
 
     [Fact]
-    public void RemainingChange_NotifiesDerivedProperties()
+    public void AllocationDataVMOverflow_RemainingChange_NotifiesDerivedProperties()
     {
         var vm = CreateViewModel();
         var changes = new List<string?>();

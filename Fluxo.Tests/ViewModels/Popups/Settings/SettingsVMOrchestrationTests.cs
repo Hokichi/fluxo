@@ -19,7 +19,7 @@ namespace Fluxo.Tests.ViewModels.Popups.Settings;
 public sealed class SettingsVMOrchestrationTests
 {
     [Fact]
-    public void MessageContracts_AreAccessible()
+    public void SettingsVMOrchestration_MessageContracts_AreAccessible()
     {
         var operation = new SettingsOperationCorrelation(Guid.Parse("11111111-1111-1111-1111-111111111111"));
         var loadRequested = new SettingsLoadRequestedMessage(operation);
@@ -66,7 +66,7 @@ public sealed class SettingsVMOrchestrationTests
     }
 
     [Fact]
-    public void AccountDataChanged_RefreshesSufficientFundsActionGateState()
+    public void SettingsVMOrchestration_AccountDataChanged_RefreshesSufficientFundsActionGateState()
     {
         RunInSta(() =>
         {

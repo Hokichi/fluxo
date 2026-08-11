@@ -9,7 +9,7 @@ public sealed class RecurringTransactionValidationHelperTests
     [Theory]
     [InlineData(RecurringPeriod.Weekly, "8", "Recurring weekday must be between Monday and Sunday.")]
     [InlineData(RecurringPeriod.Monthly, "29", "Recurring day must be between 1 and 28.")]
-    public void Invalid_recurring_time_returns_existing_message(
+    public void RecurringTransactionValidationHelper_Invalid_RecurringTimeReturnsExistingMessage(
         RecurringPeriod period,
         string value,
         string expectedMessage)
@@ -21,7 +21,7 @@ public sealed class RecurringTransactionValidationHelperTests
     }
 
     [Fact]
-    public void Installments_require_at_least_one_occurrence()
+    public void RecurringTransactionValidationHelper_Installments_RequireAtLeastOneOccurrence()
     {
         var result = RecurringTransactionValidationHelper.ValidateInstallments(
             RecurringPeriod.Weekly, "1", new DateTime(2026, 7, 18), new DateTime(2026, 7, 19));
