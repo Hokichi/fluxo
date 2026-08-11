@@ -60,17 +60,16 @@ public sealed class RepaymentTransactionSupportTests
         Assert.Equal(125m, credit.SpentAmount);
         Assert.Equal(TransactionType.Expense, pair.Expense.Type);
         Assert.Equal("Repayment to Visa", pair.Expense.Name);
-        Assert.Equal(ExpenseCategory.Savings, pair.Expense.ExpenseCategory);
+        Assert.Equal(ExpenseCategory.Excluded, pair.Expense.ExpenseCategory);
         Assert.Equal(3, pair.Expense.TagId);
         Assert.Equal(2, pair.Expense.RepaymentAccountId);
-        Assert.True(pair.Expense.IsExcludedFromBudget);
         Assert.Equal(TransactionType.Income, pair.Income.Type);
         Assert.Equal("Repayment from Checking", pair.Income.Name);
         Assert.Equal(3, pair.Income.TagId);
         Assert.Equal(2, pair.Income.SourceAccountId);
         Assert.Equal(2, pair.Income.RepaymentAccountId);
         Assert.Equal(new DateTime(2026, 6, 28), pair.Income.OccurredOn);
-        Assert.True(pair.Income.IsExcludedFromBudget);
+        Assert.Equal(ExpenseCategory.Excluded, pair.Income.ExpenseCategory);
     }
 
     [Theory]

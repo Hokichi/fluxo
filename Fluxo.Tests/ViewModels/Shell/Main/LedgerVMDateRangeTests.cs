@@ -289,8 +289,8 @@ public sealed class LedgerVMDateRangeTests
     private static IReadOnlyList<TransactionDto> CreateCategoryFilterTransactions() =>
     [
         new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Needs expense", ExpenseCategory = ExpenseCategory.Needs, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-        new TransactionDto { Id = 2, Type = TransactionType.Expense, Name = "Excluded expense", ExpenseCategory = ExpenseCategory.Wants, IsExcludedFromBudget = true, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-        new TransactionDto { Id = 3, Type = TransactionType.Income, Name = "Excluded income", IsExcludedFromBudget = true, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+        new TransactionDto { Id = 2, Type = TransactionType.Expense, Name = "Excluded expense", ExpenseCategory = ExpenseCategory.Excluded, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+        new TransactionDto { Id = 3, Type = TransactionType.Income, Name = "Excluded income", ExpenseCategory = ExpenseCategory.Excluded, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
         new TransactionDto { Id = 4, Type = TransactionType.Income, Name = "Included income", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
     ];
 

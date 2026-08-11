@@ -223,19 +223,17 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         ApplyAccountEditBalance(oldAccount, transaction, newAccount, pending, newAffectsBalance);
 
         var sourceChanged = transaction.SourceAccountId != newAccount.Id;
-        var exclusionChanged = transaction.IsExcludedFromBudget != pending.IsExcludedFromBudget;
         ApplyPending(transaction, pending, newAccount, tag,
             options.RelatedRecurringTransactionId ?? transaction.RelatedRecurringTransactionId);
         appData.UpdateTransaction(transaction);
 
-        if (sourceChanged || exclusionChanged)
+        if (sourceChanged)
         {
             foreach (var child in (await appData.GetTransactionsAsync(cancellationToken))
                          .Where(item => item.ParentTransactionId == transaction.Id && !item.IsForDeletion))
             {
                 child.Account = newAccount;
                 child.SourceAccountId = newAccount.Id;
-                child.IsExcludedFromBudget = pending.IsExcludedFromBudget;
                 appData.UpdateTransaction(child);
             }
         }
@@ -298,7 +296,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             options.RelatedRecurringTransactionId ?? transaction.RelatedRecurringTransactionId);
         transaction.Name = BuildGoalUpdateName(goal.Name);
         transaction.Notes = $"Goal update for {goal.Name}";
-        transaction.ExpenseCategory = ExpenseCategory.Savings;
+        transaction.ExpenseCategory = ExpenseCategory.Excluded;
         transaction.IsPinned = false;
         appData.UpdateTransaction(transaction);
 
@@ -392,8 +390,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
 
         ApplyPending(transaction, pending, source, tag, transaction.RelatedRecurringTransactionId);
         transaction.Name = pending.Name.Trim();
-        transaction.ExpenseCategory = ExpenseCategory.Savings;
-        transaction.IsExcludedFromBudget = true;
+        transaction.ExpenseCategory = ExpenseCategory.Excluded;
         transaction.IsPinned = false;
         income.Type = TransactionType.Income;
         income.SourceAccountId = target.Id;
@@ -403,10 +400,9 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         income.Amount = pending.Amount;
         income.OccurredOn = pending.OccurredOn;
         income.Notes = string.Empty;
-        income.ExpenseCategory = null;
+        income.ExpenseCategory = ExpenseCategory.Excluded;
         income.Tag = tag;
         income.TagId = tag.Id;
-        income.IsExcludedFromBudget = true;
         appData.UpdateTransaction(transaction);
         appData.UpdateTransaction(income);
         await appData.SaveChangesAsync(cancellationToken);
@@ -607,7 +603,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         {
             transaction.Name = BuildGoalUpdateName(goal.Name);
             transaction.Notes = $"Goal update for {goal.Name}";
-            transaction.ExpenseCategory = ExpenseCategory.Savings;
+            transaction.ExpenseCategory = ExpenseCategory.Excluded;
             transaction.Tag = tag;
             transaction.TagId = tag?.Id;
             transaction.IsPinned = false;
@@ -634,13 +630,12 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         transaction.Amount = pending.Amount;
         transaction.OccurredOn = pending.OccurredOn;
         transaction.Notes = pending.Notes;
-        transaction.ExpenseCategory = pending.Type == TransactionType.Expense ? pending.ExpenseCategory : null;
+        transaction.ExpenseCategory = pending.ExpenseCategory;
         transaction.Tag = tag;
         transaction.TagId = tag?.Id;
         transaction.IsPinned = pending.IsPinned;
         transaction.IsIoU = pending.IsIoU;
         transaction.ShouldAffectBalance = pending.ShouldAffectBalance;
-        transaction.IsExcludedFromBudget = pending.IsExcludedFromBudget;
     }
 
     internal static string BuildTransactionName(string name, string note, string fallbackName)
@@ -672,8 +667,6 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         if (loaded.IsPinned != pending.IsPinned) fields |= TransactionDetailChangedFields.Pin;
         if (loaded.IsIoU != pending.IsIoU || loaded.ShouldAffectBalance != pending.ShouldAffectBalance)
             fields |= TransactionDetailChangedFields.IoU;
-        if (loaded.IsExcludedFromBudget != pending.IsExcludedFromBudget)
-            fields |= TransactionDetailChangedFields.BudgetExclusion;
         return fields;
     }
 

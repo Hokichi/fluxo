@@ -23,7 +23,7 @@ namespace Fluxo.Tests.ViewModels.Popups;
 public sealed class TransactionPopupVMValidationTests
 {
     [Fact]
-    public void TransactionPopupVMValidation_UnpostedIoU_ForcesBudgetExclusion_AndRegularModeClearsIt()
+    public void TransactionPopupVMValidation_UnpostedIoU_SelectsExcludedCategory_AndRegularModeClearsIt()
     {
         RunInSta(() =>
         {
@@ -33,13 +33,11 @@ public sealed class TransactionPopupVMValidationTests
 
             vm.IsUnpostedIoUMode = true;
 
-            Assert.True(vm.IsBudgetExcluded);
-            Assert.False(vm.CanToggleBudgetExclusion);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
 
             vm.IsRegularMode = true;
 
-            Assert.False(vm.IsBudgetExcluded);
-            Assert.True(vm.CanToggleBudgetExclusion);
+            Assert.Equal(ExpenseCategory.Needs, vm.SelectedExpenseCategory);
         });
     }
 
@@ -242,7 +240,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionPopupVMValidation_PostedIoU_ForcesBudgetExclusion()
+    public void TransactionPopupVMValidation_PostedIoU_SelectsExcludedCategory()
     {
         RunInSta(() =>
         {
@@ -252,8 +250,7 @@ public sealed class TransactionPopupVMValidationTests
 
             vm.IsPostedIoUMode = true;
 
-            Assert.True(vm.IsBudgetExcluded);
-            Assert.False(vm.CanToggleBudgetExclusion);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
         });
     }
 
@@ -495,8 +492,9 @@ public sealed class TransactionPopupVMValidationTests
             Assert.Equal(2, saved.Count);
             var expense = Assert.Single(saved, transaction => transaction.Type == TransactionType.Expense);
             Assert.Equal(9, expense.TagId);
-            Assert.True(expense.IsExcludedFromBudget);
-            Assert.Single(saved, transaction => transaction.Type == TransactionType.Income);
+            Assert.Equal(ExpenseCategory.Excluded, expense.ExpenseCategory);
+            Assert.Single(saved, transaction =>
+                transaction.Type == TransactionType.Income && transaction.ExpenseCategory == ExpenseCategory.Excluded);
         });
     }
 
@@ -903,7 +901,7 @@ public sealed class TransactionPopupVMValidationTests
                 HexCode = "#22C55E",
                 SpendingLimit = 100m
             };
-            vm.IsExcludedFromBudget = true;
+            vm.SelectedExpenseCategory = ExpenseCategory.Excluded;
 
             vm.ValidateAmountField();
 
@@ -922,7 +920,7 @@ public sealed class TransactionPopupVMValidationTests
             included.OccurredOn = selectedDate;
             var excluded = CreateTransaction("Transfer", 100m, sourceId: 1);
             excluded.OccurredOn = selectedDate;
-            excluded.IsExcludedFromBudget = true;
+            excluded.ExpenseCategory = ExpenseCategory.Excluded;
             var otherDay = CreateTransaction("Yesterday", 100m, sourceId: 1);
             otherDay.OccurredOn = selectedDate.AddDays(-1);
             var allocation = new BudgetAllocation
@@ -1029,7 +1027,7 @@ public sealed class TransactionPopupVMValidationTests
                 amount: 1m,
                 appData: CreateAppData(allocation, [included]));
             vm.SelectedDate = selectedDate;
-            vm.IsExcludedFromBudget = true;
+            vm.SelectedExpenseCategory = ExpenseCategory.Excluded;
 
             Assert.Equal(string.Empty, vm.AmountWarningHint);
         });
@@ -1249,7 +1247,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionPopupVMValidation_ExcludedCategory_TracksBudgetExclusion()
+    public void TransactionPopupVMValidation_ExcludedCategory_TracksSelectedCategory()
     {
         RunInSta(() =>
         {
@@ -1257,12 +1255,11 @@ public sealed class TransactionPopupVMValidationTests
 
             vm.IsExcludedCategory = true;
 
-            Assert.True(vm.IsExcludedFromBudget);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
             Assert.True(vm.IsExcludedCategory);
 
             vm.IsWantsCategory = true;
 
-            Assert.False(vm.IsExcludedFromBudget);
             Assert.Equal(ExpenseCategory.Wants, vm.SelectedExpenseCategory);
         });
     }
@@ -1441,7 +1438,7 @@ public sealed class TransactionPopupVMValidationTests
             vm.SelectedDate = new DateTime(2026, 7, 24);
             vm.SelectedExpenseCategory = ExpenseCategory.Wants;
             vm.IsPinned = true;
-            vm.IsExcludedFromBudget = true;
+            vm.SelectedExpenseCategory = ExpenseCategory.Excluded;
             vm.NameText = "Groceries";
             vm.AmountText = 10m;
             vm.NoteText = "Weekly shop";
@@ -1455,9 +1452,9 @@ public sealed class TransactionPopupVMValidationTests
             Assert.Same(source, vm.SelectedAccount);
             Assert.Null(vm.SelectedTag);
             Assert.Equal(new DateTime(2026, 7, 24), vm.SelectedDate);
-            Assert.Equal(ExpenseCategory.Wants, vm.SelectedExpenseCategory);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
             Assert.True(vm.IsPinned);
-            Assert.True(vm.IsExcludedFromBudget);
+            Assert.True(vm.IsExcludedCategory);
         });
     }
 
@@ -1586,14 +1583,14 @@ public sealed class TransactionPopupVMValidationTests
             peers.Popup.InitializeAsync().GetAwaiter().GetResult();
             peers.Popup.NameText = "Lunch";
             peers.Popup.AmountText = 10m;
-            peers.Popup.IsExcludedFromBudget = true;
+            peers.Popup.SelectedExpenseCategory = ExpenseCategory.Excluded;
             peers.Popup.IsBulkMode = true;
             var first = Assert.Single(peers.Bulk.QueuedTransactions);
 
             Assert.False(first.HasWarnings);
 
             peers.Bulk.AddQueuedTransactionCommand.Execute(null);
-            peers.Popup.IsExcludedFromBudget = true;
+            peers.Popup.SelectedExpenseCategory = ExpenseCategory.Excluded;
             peers.Popup.NameText = "Lunch";
             peers.Popup.AmountText = 10m;
             var second = peers.Bulk.SelectedQueuedTransaction!;
@@ -1979,7 +1976,7 @@ public sealed class TransactionPopupVMValidationTests
             var appData = CreateAppData(allocation, CreateTransactionsForBudget(ExpenseCategory.Wants, 30m));
             var vm = CreateVm(TransactionKind.Expense, source, isRecurring: false, amount: 10m, appData: appData);
             vm.SelectedExpenseCategory = ExpenseCategory.Wants;
-            vm.IsExcludedFromBudget = true;
+            vm.SelectedExpenseCategory = ExpenseCategory.Excluded;
 
             var result = vm.SaveAsync(resetAfterSave: false).GetAwaiter().GetResult();
 
@@ -2200,7 +2197,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionPopupVMValidation_SaveAsync_RecurringIncome_ClearsCategory()
+    public void TransactionPopupVMValidation_SaveAsync_RecurringIncome_SelectsExcludedCategory()
     {
         RunInSta(() =>
         {
@@ -2216,7 +2213,7 @@ public sealed class TransactionPopupVMValidationTests
 
             Assert.True(result.IsSuccess);
             appData.Received(1).AddRecurringTransactionAsync(
-                Arg.Is<RecurringTransaction>(transaction => transaction.Category == null),
+                Arg.Is<RecurringTransaction>(transaction => transaction.Category == ExpenseCategory.Excluded),
                 Arg.Any<CancellationToken>());
         });
     }
@@ -2339,7 +2336,7 @@ public sealed class TransactionPopupVMValidationTests
             Assert.False(vm.IsRecurring);
             Assert.False(vm.IsInstallments);
             Assert.False(vm.IsIoU);
-            Assert.True(vm.IsExcludedFromBudget);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
         });
     }
 
@@ -2355,7 +2352,7 @@ public sealed class TransactionPopupVMValidationTests
             Assert.False(vm.IsRecurring);
             Assert.False(vm.IsInstallments);
             Assert.True(vm.IsIoU);
-            Assert.True(vm.IsExcludedFromBudget);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
         });
     }
 
@@ -2751,20 +2748,18 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionPopupVMValidation_ModeBindings_DefaultToRegular_AndGoalForcesBudgetExclusion()
+    public void TransactionPopupVMValidation_ModeBindings_DefaultToRegular_AndGoalSelectsExcludedCategory()
     {
         RunInSta(() =>
         {
             var vm = CreateVm(TransactionKind.Expense, CreateCheckingSource(balance: 500m), isRecurring: false);
             Assert.True(vm.IsRegularMode);
             vm.IsGoal = true;
-            Assert.True(vm.IsBudgetExcluded);
-            Assert.False(vm.CanToggleBudgetExclusion);
+            Assert.Equal(ExpenseCategory.Excluded, vm.SelectedExpenseCategory);
             Assert.False(vm.CanUseInstallments);
             Assert.False(vm.CanUseIoU);
             vm.IsExpense = true;
-            Assert.False(vm.IsBudgetExcluded);
-            Assert.True(vm.CanToggleBudgetExclusion);
+            Assert.Equal(ExpenseCategory.Needs, vm.SelectedExpenseCategory);
         });
     }
 
@@ -3273,7 +3268,7 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
-    public void TransactionPopupVMValidation_SaveAsync_RecurringIncome_PersistsBudgetExclusion()
+    public void TransactionPopupVMValidation_SaveAsync_RecurringIncome_PersistsExcludedCategory()
     {
         RunInSta(() =>
         {
@@ -3290,13 +3285,14 @@ public sealed class TransactionPopupVMValidationTests
             Assert.True(result.IsSuccess, result.ErrorMessage);
             appData.Received(1).AddRecurringTransactionAsync(
                 Arg.Is<RecurringTransaction>(transaction =>
-                    transaction.Type == RecurringTransactionType.Income && transaction.IsExcludedFromBudget),
+                    transaction.Type == RecurringTransactionType.Income &&
+                    transaction.Category == ExpenseCategory.Excluded),
                 Arg.Any<CancellationToken>());
         });
     }
 
     [Fact]
-    public void TransactionPopupVMValidation_SaveAsync_Income_PersistsBudgetExclusion()
+    public void TransactionPopupVMValidation_SaveAsync_Income_PersistsExcludedCategory()
     {
         RunInSta(() =>
         {
@@ -3313,7 +3309,8 @@ public sealed class TransactionPopupVMValidationTests
             Assert.True(result.IsSuccess, result.ErrorMessage);
             appData.Received(1).AddTransactionAsync(
                 Arg.Is<Transaction>(transaction =>
-                    transaction.Type == TransactionType.Income && transaction.IsExcludedFromBudget),
+                    transaction.Type == TransactionType.Income &&
+                    transaction.ExpenseCategory == ExpenseCategory.Excluded),
                 Arg.Any<CancellationToken>());
         });
     }

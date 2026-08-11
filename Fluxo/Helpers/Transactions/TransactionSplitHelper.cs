@@ -31,7 +31,7 @@ public static class TransactionSplitHelper
             OccurredOn = root.OccurredOn,
             IsIoU = root.IsIoU,
             ShouldAffectBalance = root.ShouldAffectBalance,
-            IsExcludedFromBudget = root.IsExcludedFromBudget
+            ExpenseCategory = parentNode.ExpenseCategory
         };
         parentNode.ExpenseCategory = null;
         parentNode.Tag = null;

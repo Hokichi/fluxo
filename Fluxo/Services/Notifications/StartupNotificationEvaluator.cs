@@ -191,7 +191,10 @@ public sealed class StartupNotificationEvaluator(
 
     private static IEnumerable<Transaction> SelectBudgetTransactions(IEnumerable<Transaction> transactions)
     {
-        var included = transactions.Where(transaction => !transaction.IsForDeletion && !transaction.IsExcludedFromBudget).ToList();
+        var included = transactions
+            .Where(transaction => !transaction.IsForDeletion &&
+                                  transaction.ExpenseCategory != ExpenseCategory.Excluded)
+            .ToList();
         var parentIds = included.Where(transaction => transaction.ParentTransactionId.HasValue)
             .Select(transaction => transaction.ParentTransactionId!.Value).ToHashSet();
         return included.Where(transaction => !parentIds.Contains(transaction.Id));

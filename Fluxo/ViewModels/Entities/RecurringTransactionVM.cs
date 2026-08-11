@@ -25,7 +25,6 @@ public partial class RecurringTransactionVM : ObservableRecipient, IRecipient<St
     [ObservableProperty] private AccountVM _source = new();
     [ObservableProperty] private TagVM? _tag;
     [ObservableProperty] private SavingGoalVM? _goal;
-    [ObservableProperty] private bool _isExcludedFromBudget;
     [ObservableProperty] private bool _isEnabled = true;
     [ObservableProperty] private DateTime? _endDate;
     [ObservableProperty] private bool _isOverdue;

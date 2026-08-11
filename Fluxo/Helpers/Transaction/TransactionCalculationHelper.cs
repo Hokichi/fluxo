@@ -31,7 +31,7 @@ public static class TransactionCalculationHelper
         IEnumerable<Fluxo.Core.Entities.Transaction> expenseLogs,
         BudgetAllocationPeriod period) => expenseLogs
             .Where(log => !log.IsForDeletion)
-            .Where(log => !log.IsExcludedFromBudget)
+            .Where(log => log.ExpenseCategory != ExpenseCategory.Excluded)
             .Where(log => log.OccurredOn.Date >= period.Start && log.OccurredOn.Date <= period.End)
             .Where(log => log.ExpenseCategory.HasValue)
             .GroupBy(log => log.ExpenseCategory!.Value)
@@ -43,14 +43,17 @@ public static class TransactionCalculationHelper
         {
             ExpenseCategory.Wants => snapshot.Wants,
             ExpenseCategory.Savings => snapshot.Invest,
-            _ => snapshot.Needs
+            ExpenseCategory.Needs => snapshot.Needs,
+            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
         };
 
     public static string GetExpenseCategoryLabel(ExpenseCategory category) => category switch
     {
         ExpenseCategory.Wants => "Wants",
         ExpenseCategory.Savings => "Invest",
-        _ => "Needs"
+        ExpenseCategory.Needs => "Needs",
+        ExpenseCategory.Excluded => "Excluded",
+        _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
     };
 
     public static void AddDebtDelta(BudgetAllocation allocation, ExpenseCategory category, decimal debtDelta)
@@ -59,7 +62,9 @@ public static class TransactionCalculationHelper
             allocation.WantsDebt += debtDelta;
         else if (category == ExpenseCategory.Savings)
             allocation.InvestDebt += debtDelta;
-        else
+        else if (category == ExpenseCategory.Needs)
             allocation.NeedsDebt += debtDelta;
+        else
+            throw new ArgumentOutOfRangeException(nameof(category), category, null);
     }
 }

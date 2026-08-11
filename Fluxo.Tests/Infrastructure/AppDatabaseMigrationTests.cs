@@ -142,8 +142,10 @@ public sealed class AppDatabaseMigrationTests
             Assert.True(await ColumnExistsAsync(connection, "Transactions", "GoalId"));
             Assert.True(await ColumnExistsAsync(connection, "Transactions", "RepaymentAccountId"));
             Assert.True(await ColumnExistsAsync(connection, "Transactions", "RelatedRecurringTransactionId"));
+            Assert.False(await ColumnExistsAsync(connection, "Transactions", "IsExcludedFromBudget"));
             Assert.False(await ColumnExistsAsync(connection, "Transactions", "AccountId"));
             Assert.True(await ColumnExistsAsync(connection, "RecurringTransactions", "EndDate"));
+            Assert.False(await ColumnExistsAsync(connection, "RecurringTransactions", "IsExcludedFromBudget"));
             Assert.False(await TableExistsAsync(connection, "Expenses"));
             Assert.False(await TableExistsAsync(connection, "ExpenseLogs"));
             Assert.False(await TableExistsAsync(connection, "IncomeLogs"));
@@ -224,7 +226,7 @@ public sealed class AppDatabaseMigrationTests
                         (41, 0, 7, 'Parent', 10, '2026-07-01', '2026-07-01 12:00:00', '', 0, 0, 0, 0, 0, 0, NULL),
                         (42, 0, 7, 'Child', 10, '2026-07-01', '2026-07-01 12:00:00', '', 1, 0, 0, 0, 0, 0, 41);
                     """);
-                await migrator.MigrateAsync();
+                await migrator.MigrateAsync("20260713144114_ClearParentTransactionCategories");
             }
 
             await using var connection = new SqliteConnection($"Data Source={databasePath}");
@@ -280,7 +282,7 @@ public sealed class AppDatabaseMigrationTests
                         (43, 1, 7, 'Income', 10, '2026-07-01', '2026-07-01 12:00:00', '', 0, 0, 0, 0, 0),
                         (44, 1, 7, 'Deleted income', 10, '2026-07-01', '2026-07-01 12:00:00', '', 0, 1, 0, 0, 0);
                     """);
-                await migrator.MigrateAsync();
+                await migrator.MigrateAsync("20260713151010_ExcludeIoUAndIncomeFromBudget");
             }
 
             await using var connection = new SqliteConnection($"Data Source={databasePath}");
@@ -300,6 +302,94 @@ public sealed class AppDatabaseMigrationTests
             Assert.True(await reader.ReadAsync());
             Assert.Equal(44, reader.GetInt32(0));
             Assert.True(reader.GetBoolean(1));
+        }
+        finally
+        {
+            SqliteConnection.ClearAllPools();
+            Directory.Delete(directory, true);
+        }
+    }
+
+    [Fact]
+    public async Task AppDatabaseMigration_ExcludedCategoryMigration_MapsFlagsAndKeepsSplitParentsCategoryless()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "fluxo-tests", Guid.NewGuid().ToString("N"));
+        var databasePath = Path.Combine(directory, "fluxo.db");
+        Directory.CreateDirectory(directory);
+
+        try
+        {
+            using var services = CreateServiceProvider(databasePath);
+            await App.MigrateDatabaseAsync(
+                services.GetRequiredService<IDataOperationRunner>(),
+                () => databasePath);
+            await using (var scope = services.CreateAsyncScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<FluxoDbContext>();
+                var migrator = context.GetService<IMigrator>();
+                await migrator.MigrateAsync("20260713151010_ExcludeIoUAndIncomeFromBudget");
+                await context.Database.ExecuteSqlRawAsync("""
+                    INSERT INTO Accounts
+                        (Id, Name, AccountType, Balance, IsDefault, IsEnabled, IsForDeletion,
+                         MaximumSpending, PinnedOnUI, SpentAmount, AccountLimit)
+                    VALUES (7, 'Checking', 0, 100, 0, 1, 0, 0, 0, 0, 0);
+
+                    INSERT INTO SavingGoals
+                        (Id, Name, TargetAmount, CurrentAmount, CreatedOn)
+                    VALUES (9, 'Trip', 100, 10, '2026-07-01');
+
+                    INSERT INTO Transactions
+                        (Id, Type, SourceAccountId, Name, Amount, OccurredOn, LoggedOn, Notes,
+                         ExpenseCategory, IsPinned, IsForDeletion, IsIoU, ShouldAffectBalance,
+                         IsExcludedFromBudget, ParentTransactionId, GoalId, RepaymentAccountId)
+                    VALUES
+                        (41, 0, 7, 'Parent', 20, '2026-07-01', '2026-07-01 12:00:00', '', 2, 0, 0, 0, 0, 1, NULL, NULL, NULL),
+                        (42, 0, 7, 'Child', 10, '2026-07-01', '2026-07-01 12:00:00', '', 2, 0, 0, 0, 0, 1, 41, NULL, NULL),
+                        (43, 0, 7, 'Regular', 10, '2026-07-01', '2026-07-01 12:00:00', '', 1, 0, 0, 0, 0, 0, NULL, NULL, NULL),
+                        (44, 1, 7, 'Income', 10, '2026-07-01', '2026-07-01 12:00:00', '', NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL),
+                        (45, 0, 7, 'IoU', 10, '2026-07-01', '2026-07-01 12:00:00', '', 2, 0, 0, 1, 1, 0, NULL, NULL, NULL),
+                        (46, 0, 7, 'Goal', 10, '2026-07-01', '2026-07-01 12:00:00', '', 3, 0, 0, 0, 0, 0, NULL, 9, NULL),
+                        (47, 0, 7, 'Repayment', 10, '2026-07-01', '2026-07-01 12:00:00', '', 3, 0, 0, 0, 0, 0, NULL, NULL, 7);
+
+                    INSERT INTO RecurringTransactions
+                        (Id, Name, Amount, RecurringPeriod, RecurringTime, Type, Category, SourceId,
+                         IsEnabled, IsExcludedFromBudget)
+                    VALUES
+                        (51, 'Excluded recurring', 10, 1, 1, 1, 1, 7, 1, 1),
+                        (52, 'Regular recurring', 10, 1, 1, 1, 2, 7, 1, 0);
+                    """);
+                await migrator.MigrateAsync();
+            }
+
+            await using var connection = new SqliteConnection($"Data Source={databasePath}");
+            await connection.OpenAsync();
+            Assert.False(await ColumnExistsAsync(connection, "Transactions", "IsExcludedFromBudget"));
+            Assert.False(await ColumnExistsAsync(connection, "RecurringTransactions", "IsExcludedFromBudget"));
+
+            await using var transactionCommand = connection.CreateCommand();
+            transactionCommand.CommandText = "SELECT Id, ExpenseCategory FROM Transactions ORDER BY Id";
+            await using var transactionReader = await transactionCommand.ExecuteReaderAsync();
+            Assert.True(await transactionReader.ReadAsync());
+            Assert.True(transactionReader.IsDBNull(1));
+            Assert.True(await transactionReader.ReadAsync());
+            Assert.Equal(4, transactionReader.GetInt32(1));
+            Assert.True(await transactionReader.ReadAsync());
+            Assert.Equal(1, transactionReader.GetInt32(1));
+            for (var id = 44; id <= 47; id++)
+            {
+                Assert.True(await transactionReader.ReadAsync());
+                Assert.Equal(id, transactionReader.GetInt32(0));
+                Assert.Equal(4, transactionReader.GetInt32(1));
+            }
+
+            await transactionReader.DisposeAsync();
+            await using var recurringCommand = connection.CreateCommand();
+            recurringCommand.CommandText = "SELECT Id, Category FROM RecurringTransactions ORDER BY Id";
+            await using var recurringReader = await recurringCommand.ExecuteReaderAsync();
+            Assert.True(await recurringReader.ReadAsync());
+            Assert.Equal(4, recurringReader.GetInt32(1));
+            Assert.True(await recurringReader.ReadAsync());
+            Assert.Equal(2, recurringReader.GetInt32(1));
         }
         finally
         {

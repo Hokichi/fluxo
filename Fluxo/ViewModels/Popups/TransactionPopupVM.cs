@@ -103,7 +103,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     [ObservableProperty] private bool _isPinned;
     [ObservableProperty] private bool _isIoU;
     [ObservableProperty] private bool _shouldAffectBalance;
-    [ObservableProperty] private bool _isExcludedFromBudget;
     [ObservableProperty] private bool _isHistoryOpen = true;
     [ObservableProperty] private AddNewTransactionHistoryItemVM? _selectedPinnedHistoryItem;
     [ObservableProperty] private AddNewTransactionHistoryItemVM? _selectedHistoryItem;
@@ -225,54 +224,51 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public AddNewTransactionHistoryListVM TransactionHistory { get; } = new();
     public bool IsNeedsCategory
     {
-        get => CanEditCategory && !IsExcludedFromBudget && SelectedExpenseCategory == ExpenseCategory.Needs;
+        get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Needs;
         set
         {
             if (!value)
                 return;
 
-            IsExcludedFromBudget = false;
             SelectedExpenseCategory = ExpenseCategory.Needs;
         }
     }
 
     public bool IsWantsCategory
     {
-        get => CanEditCategory && !IsExcludedFromBudget && SelectedExpenseCategory == ExpenseCategory.Wants;
+        get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Wants;
         set
         {
             if (!value)
                 return;
 
-            IsExcludedFromBudget = false;
             SelectedExpenseCategory = ExpenseCategory.Wants;
         }
     }
 
     public bool IsInvestCategory
     {
-        get => CanEditCategory && !IsExcludedFromBudget && SelectedExpenseCategory == ExpenseCategory.Savings;
+        get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Savings;
         set
         {
             if (!value)
                 return;
 
-            IsExcludedFromBudget = false;
             SelectedExpenseCategory = ExpenseCategory.Savings;
         }
     }
 
     public bool IsExcludedCategory
     {
-        get => CanEditCategory && IsExcludedFromBudget;
+        get => CanEditCategory && SelectedExpenseCategory == ExpenseCategory.Excluded;
         set
         {
-            if (value)
-                IsExcludedFromBudget = true;
+            if (value && CanEditCategory)
+                SelectedExpenseCategory = ExpenseCategory.Excluded;
         }
     }
     public bool ShowCategoryImpact => !IsEditingSplitNode && !IsViewOnly && !IsRecurringTransactionMode && AmountText > 0m && !IsUnpostedIoUMode &&
-                                       (IsRepayment || (IsExpense && !IsExcludedFromBudget));
+                                       (IsRepayment || (IsExpense && SelectedExpenseCategory != ExpenseCategory.Excluded));
     public bool ShowAccountImpact => !IsEditingSplitNode && !IsViewOnly && !IsRecurringTransactionMode && AmountText > 0m && !IsUnpostedIoUMode && SelectedAccount is not null;
     public decimal CategoryCurrent => IsRepayment
         ? SelectedRepaymentAccount?.SpentAmount ?? 0m
@@ -281,7 +277,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public decimal AccountCurrent => TransactionCalculationHelper.GetAccountCurrent(SelectedAccount);
     public decimal AccountToBe => TransactionCalculationHelper.CalculateAccountToBe(SelectedAccount, IsIncome, AmountText);
     public bool ShowBalanceUpdate => _isTransactionStateInitialized && !IsViewOnly && !IsRecurringTransactionMode && !IsUnpostedIoUMode;
-    public bool ShowBalanceUpdateCategories => ShowBalanceUpdate && CanEditCategory && !IsExcludedFromBudget &&
+    public bool ShowBalanceUpdateCategories => ShowBalanceUpdate && CanEditCategory && SelectedExpenseCategory != ExpenseCategory.Excluded &&
                                                !(_currentRootTransaction.IsIoU && _currentRootTransaction.ShouldAffectBalance);
     public bool ShowBalanceUpdateTags => ShowBalanceUpdate && CanEditTags && SelectedTag is not null;
     public string BalanceUpdateAccountName => _isTransactionStateInitialized ? _currentRootTransaction.Account.Name : string.Empty;
@@ -341,7 +337,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             if (!value) return;
             ClearTransactionModes();
             IsIoU = true;
-            IsExcludedFromBudget = true;
+            SelectedExpenseCategory = ExpenseCategory.Excluded;
         }
     }
     public bool IsPostedIoUMode
@@ -353,7 +349,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             ClearTransactionModes();
             IsIoU = true;
             ShouldAffectBalance = true;
-            IsExcludedFromBudget = true;
+            SelectedExpenseCategory = ExpenseCategory.Excluded;
         }
     }
     public string TransactionModeDescription =>
@@ -370,12 +366,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public bool ShowInstallmentEndDate => IsInstallments;
     public bool CanUseInstallments => !IsGoal && CanToggleRecurring;
     public bool CanUseIoU => !IsGoal && CanToggleRecurring;
-    public bool CanToggleBudgetExclusion => !IsGoal && !IsRepayment && !IsIoU && !IsIncome;
-    public bool IsBudgetExcluded
-    {
-        get => IsGoal || IsRepayment || IsIoU || IsIncome || IsExcludedFromBudget;
-        set { if (CanToggleBudgetExclusion) IsExcludedFromBudget = value; }
-    }
     public string DateOrRecurrenceLabel => IsRecurringTransactionMode ? "Recurrence" : "Date";
     public string InstallmentSummaryText => BuildInstallmentSummaryText();
     public bool CanToggleRecurring => !IsRecurringModeLocked && !IsRepayment;
@@ -493,15 +483,16 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 IsGoal = false;
                 IsExpense = false;
                 IsRepayment = false;
+                SelectedExpenseCategory = ExpenseCategory.Excluded;
                 if (resetGoalOrRepayment)
                 {
-                    IsExcludedFromBudget = false;
                     AmountText = 0m;
                 }
             }
             else if (IsIncome)
             {
                 IsExpense = true;
+                SelectedExpenseCategory = ExpenseCategory.Needs;
             }
         }
     }
@@ -601,7 +592,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private decimal GetCurrentTagSpending(TransactionVM transaction, TransactionFormOptions options)
     {
         if (transaction.Type != TransactionType.Expense || options.IsRecurring || options.IsInstallments ||
-            transaction.IsExcludedFromBudget || transaction.Tag is not { SpendingLimit: > 0m } tag)
+            transaction.ExpenseCategory == ExpenseCategory.Excluded || transaction.Tag is not { SpendingLimit: > 0m } tag)
             return 0m;
 
         try
@@ -610,7 +601,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             var period = BudgetAllocationCalculator.ResolveCurrentPeriod(
                 allocation.AllocationPeriod, transaction.OccurredOn.Date, allocation.PeriodStart);
             return _appData.GetTransactionsAsync().GetAwaiter().GetResult()
-                .Where(log => log.Type == TransactionType.Expense && !log.IsForDeletion && !log.IsExcludedFromBudget)
+                .Where(log => log.Type == TransactionType.Expense && !log.IsForDeletion &&
+                              log.ExpenseCategory != ExpenseCategory.Excluded)
                 .Where(log => log.OccurredOn.Date >= period.Start && log.OccurredOn.Date <= period.End)
                 .Where(log => log.TagId == tag.Id || log.Tag?.Id == tag.Id)
                 .Sum(log => log.Amount);
@@ -885,9 +877,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(TransactionModeDescription));
     }
 
-    partial void OnIsExcludedFromBudgetChanged(bool value)
+    partial void OnSelectedExpenseCategoryChanged(ExpenseCategory value)
     {
-        OnPropertyChanged(nameof(IsBudgetExcluded));
         OnPropertyChanged(nameof(IsNeedsCategory));
         OnPropertyChanged(nameof(IsWantsCategory));
         OnPropertyChanged(nameof(IsInvestCategory));
@@ -938,6 +929,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
         if (value)
         {
+            SelectedExpenseCategory = ExpenseCategory.Excluded;
             if (IsRecurring)
                 IsRecurring = false;
             if (IsInstallments)
@@ -948,7 +940,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsUnpostedIoUMode));
         OnPropertyChanged(nameof(IsPostedIoUMode));
         OnPropertyChanged(nameof(TransactionModeDescription));
-        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
         NotifyFormStateChanged();
     }
 
@@ -963,7 +954,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsUnpostedIoUMode));
         OnPropertyChanged(nameof(IsPostedIoUMode));
         OnPropertyChanged(nameof(TransactionModeDescription));
-        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
         NotifyFormStateChanged();
     }
 
@@ -992,8 +982,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         _ = RefreshExpenseCategoryAvailabilityAsync();
         NotifyFormStateChanged();
     }
-
-    partial void OnSelectedExpenseCategoryChanged(ExpenseCategory value) => NotifyFormStateChanged();
 
     partial void OnSelectedGoalChanged(SavingGoalVM? value)
     {
@@ -1070,7 +1058,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     public void HandleExcludeModeClick()
     {
         ClearTransactionModes();
-        IsExcludedFromBudget = true;
+        SelectedExpenseCategory = ExpenseCategory.Excluded;
     }
 
     [RelayCommand]
@@ -1078,7 +1066,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         ClearTransactionModes();
         IsIoU = true;
-        IsExcludedFromBudget = true;
+        SelectedExpenseCategory = ExpenseCategory.Excluded;
     }
 
     private void ClearTransactionModes()
@@ -1086,7 +1074,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         IsRecurring = false;
         IsInstallments = false;
         IsIoU = false;
-        IsExcludedFromBudget = false;
+        if (SelectedExpenseCategory == ExpenseCategory.Excluded)
+            SelectedExpenseCategory = ExpenseCategory.Needs;
     }
 
     public void InitializeFromDraft(TransactionPopupDraft draft)
@@ -1095,7 +1084,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             new AddTransactionHelper.Input(
                 draft.IsExpense, draft.IsGoal, draft.Name, draft.AmountText, draft.AccountId,
                 draft.Date, draft.Note, draft.Category, draft.TagId, draft.GoalId, draft.IsIoU,
-                draft.ShouldAffectBalance, draft.IsExcludedFromBudget, draft.LockTransactionType),
+                draft.ShouldAffectBalance, draft.LockTransactionType),
             Accounts, _orderedTags, Goals);
 
         IsExpense = state.Input.IsExpense;
@@ -1105,7 +1094,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         NoteText = state.Input.Note;
         IsIoU = state.Input.IsIoU;
         ShouldAffectBalance = state.Input.ShouldAffectBalance;
-        IsExcludedFromBudget = state.Input.IsExcludedFromBudget;
         SetSelectedOccurredOn(state.Input.Date);
         SelectedExpenseCategory = state.Input.Category ?? ExpenseCategory.Needs;
         SelectedAccount = state.SelectedAccount;
@@ -1142,7 +1130,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             IsPinned = loaded.IsPinned;
             IsIoU = loaded.IsIoU;
             ShouldAffectBalance = loaded.ShouldAffectBalance;
-            IsExcludedFromBudget = loaded.IsExcludedFromBudget;
             SelectedAccount = state.SelectedAccount;
             SelectedTag = state.SelectedTag;
             SelectedGoal = state.SelectedGoal;
@@ -1207,8 +1194,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         SyncPendingTransactionFromForm();
         var input = EditTransactionHelper.CreateInput(_currentRootTransaction);
         return new TransactionEditInput(input.Name, input.Amount, input.IsPinned, input.Note, input.Date,
-            input.Category, input.AccountId, input.TagId, input.IsIoU, input.ShouldAffectBalance,
-            input.IsExcludedFromBudget);
+            input.Category, input.AccountId, input.TagId, input.IsIoU, input.ShouldAffectBalance);
     }
 
     public TransactionPopupDraft CreateViewedTransactionDraft()
@@ -1217,7 +1203,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         var draft = EditTransactionHelper.CreateDraft(transaction);
         return new TransactionPopupDraft(draft.IsExpense, draft.Name, draft.Amount, draft.AccountId,
             draft.Date, draft.Note, draft.Category, draft.TagId, draft.IsGoal, draft.GoalId, draft.IsIoU,
-            draft.IsExcludedFromBudget, ShouldAffectBalance: draft.ShouldAffectBalance);
+            ShouldAffectBalance: draft.ShouldAffectBalance);
     }
 
     partial void OnIsExpenseChanged(bool value)
@@ -1229,7 +1215,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             IsRepayment = false;
             if (resetExclusion)
             {
-                IsExcludedFromBudget = false;
+                SelectedExpenseCategory = ExpenseCategory.Needs;
                 AmountText = 0m;
             }
         }
@@ -1252,6 +1238,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         {
             IsExpense = false;
             IsRepayment = false;
+            SelectedExpenseCategory = ExpenseCategory.Excluded;
         }
         else if (IsIncome || IsExpense)
         {
@@ -1277,6 +1264,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             IsExpense = false;
             IsGoal = false;
             ClearTransactionModes();
+            SelectedExpenseCategory = ExpenseCategory.Excluded;
             IsPinned = false;
             SelectedRepaymentAccount ??= RepaymentAccounts.FirstOrDefault();
             LoadRepaymentAmount();
@@ -1299,8 +1287,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(ShowRepaymentAccountField));
         NotifyLayoutStateChanged();
         OnPropertyChanged(nameof(CategoryFieldLabel));
-        OnPropertyChanged(nameof(IsBudgetExcluded));
-        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
         RefreshAccounts();
         if (value)
             SeedGeneratedAddBaseline();
@@ -1329,8 +1315,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(CanUseIoU));
         OnPropertyChanged(nameof(InstallmentSummaryText));
         OnPropertyChanged(nameof(IoUTooltip));
-        OnPropertyChanged(nameof(IsBudgetExcluded));
-        OnPropertyChanged(nameof(CanToggleBudgetExclusion));
         OnPropertyChanged(nameof(CanUseSplit));
         OnPropertyChanged(nameof(ShowSplitPanel));
         OnPropertyChanged(nameof(ShowSidePanel));
@@ -1509,7 +1493,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                         return TransactionPopupSubmissionResult.Failure("Please choose a goal.");
                     if (!GoalUpdateTransactionSupport.IsEligibleGoalSourceType(account.AccountType))
                         return TransactionPopupSubmissionResult.Failure("Goal updates can only be taken from Cash or Checking.");
-                    if (!input.IsEffectivelyExcludedFromBudget)
+                    if (input.Category != ExpenseCategory.Excluded)
                     {
                         var budgetPolicyResult = await ApplyExpenseBudgetPolicyAsync(
                             ExpenseCategory.Savings, input.Amount, input.Date);
@@ -1517,7 +1501,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                             return budgetPolicyResult;
                     }
                 }
-                else if (LoadedTransaction.Id == 0 && input.IsExpense && !input.IsEffectivelyExcludedFromBudget)
+                else if (LoadedTransaction.Id == 0 && input.IsExpense && input.Category != ExpenseCategory.Excluded)
                 {
                     var budgetPolicyResult = await ApplyExpenseBudgetPolicyAsync(
                         input.Category!.Value, input.Amount, input.Date);
@@ -1568,11 +1552,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 recurring.RecurringPeriod = input.RecurringPeriod;
                 recurring.RecurringTime = recurringTime;
                 recurring.Type = recurringType;
-                recurring.Category = input.IsExpense ? input.Category : null;
+                recurring.Category = input.Category;
                 recurring.SourceId = input.AccountId;
                 recurring.TagId = input.IsGoal ? null : input.TagId;
                 recurring.GoalId = input.IsGoal ? input.GoalId : null;
-                recurring.IsExcludedFromBudget = input.IsEffectivelyExcludedFromBudget;
                 recurring.IsEnabled = true;
                 recurring.EndDate = input.IsInstallments ? input.InstallmentEndDate : null;
 
@@ -1817,7 +1800,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         IsPinned = false;
         IsIoU = false;
         ShouldAffectBalance = false;
-        IsExcludedFromBudget = false;
         IsRecurringModeLocked = false;
         CanChangeRepaymentAccount = true;
         _isTransactionTypeLocked = false;
@@ -1906,9 +1888,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         }
         else if (!IsRepayment && !IsCurrentSplitParent)
         {
-            category = IsExpense ? SelectedExpenseCategory : null;
             tagId = SelectedTag?.Id;
         }
+
+        if (!IsCurrentSplitParent)
+            category = IsGoal || IsRepayment || IsIoU || IsIncome
+                ? ExpenseCategory.Excluded
+                : SelectedExpenseCategory;
 
         if (SelectedAccount is null)
         {
@@ -1942,7 +1928,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             !IsRepayment && IsPinned,
             !IsRepayment && IsIoU,
             !IsRepayment && ShouldAffectBalance,
-            IsBudgetExcluded,
             _editingRecurringTransactionId,
             SelectedRecurringPeriod,
             NameText.Trim(),
@@ -2019,7 +2004,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
     private async Task RefreshExpenseCategoryAvailabilityAsync()
     {
-        if (IsExcludedFromBudget)
+        if (SelectedExpenseCategory == ExpenseCategory.Excluded)
         {
             SetAllExpenseCategoriesEnabled(true);
             return;
@@ -2571,7 +2556,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         transaction.ParentTransactionId = parentTransactionId;
         transaction.IsIoU = node.IsIoU;
         transaction.ShouldAffectBalance = node.ShouldAffectBalance;
-        transaction.IsExcludedFromBudget = node.IsExcludedFromBudget;
         transaction.IsForDeletion = false;
 
         if (transaction.Id > 0)
@@ -2633,8 +2617,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         Tag = transaction.Tag is null ? null : new TagVM { Id = transaction.Tag.Id, Name = transaction.Tag.Name, HexCode = transaction.Tag.HexCode },
         ParentTransactionId = transaction.ParentTransactionId,
         IsIoU = transaction.IsIoU,
-        ShouldAffectBalance = transaction.ShouldAffectBalance,
-        IsExcludedFromBudget = transaction.IsExcludedFromBudget
+        ShouldAffectBalance = transaction.ShouldAffectBalance
     };
 
     partial void OnSelectedSidePanelChanged(TransactionPopupSidePanel value)
@@ -2679,7 +2662,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         ReplaceCollection(
             CategoryBalanceUpdates,
             leaves
-                .Where(leaf => leaf is { Type: TransactionType.Expense, IsExcludedFromBudget: false, ExpenseCategory: not null })
+                .Where(leaf => leaf is { Type: TransactionType.Expense, ExpenseCategory: not null and not ExpenseCategory.Excluded })
                 .GroupBy(leaf => leaf.ExpenseCategory!.Value)
                 .OrderBy(group => group.Key)
                 .Select(group => new BalanceUpdateItem(
@@ -2737,7 +2720,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             var allocation = await _appData.GetBudgetAllocationAsync(cancellationToken);
             var snapshot = await BuildBudgetAllocationSnapshotAsync(allocation, SelectedDate);
             _balanceUpdateCategoryCurrentAmounts = leaves
-                .Where(leaf => leaf is { Type: TransactionType.Expense, IsExcludedFromBudget: false, ExpenseCategory: not null })
+                .Where(leaf => leaf is { Type: TransactionType.Expense, ExpenseCategory: not null and not ExpenseCategory.Excluded })
                 .Select(leaf => leaf.ExpenseCategory!.Value)
                 .Distinct()
                 .ToDictionary(category => category, category => TransactionCalculationHelper.GetCategoryState(snapshot, category).Spent);
@@ -2825,18 +2808,18 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private string GetDailyAllowanceWarning() => GetDailyAllowanceWarning(
         IsExpense,
         IsRecurringTransactionMode,
-        IsExcludedFromBudget,
+        SelectedExpenseCategory,
         AmountText,
         SelectedDate);
 
     private string GetDailyAllowanceWarning(
         bool isExpense,
         bool isRecurring,
-        bool isExcludedFromBudget,
+        ExpenseCategory? category,
         decimal amount,
         DateTime occurredOn)
     {
-        if (!isExpense || isRecurring || isExcludedFromBudget || amount <= 0m)
+        if (!isExpense || isRecurring || category == ExpenseCategory.Excluded || amount <= 0m)
             return string.Empty;
 
         try
@@ -2866,7 +2849,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         var hasDailyAllowanceWarning = !string.IsNullOrWhiteSpace(GetDailyAllowanceWarning(
             transaction.Type == TransactionType.Expense,
             isRecurring,
-            transaction.IsExcludedFromBudget,
+            transaction.ExpenseCategory,
             transaction.Amount,
             transaction.OccurredOn));
         transaction.HasWarnings = hasDailyAllowanceWarning || HasRealtimeDuplicate(transaction);
@@ -2955,7 +2938,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             IsPinned = transaction.IsPinned;
             IsIoU = transaction.IsIoU;
             ShouldAffectBalance = transaction.ShouldAffectBalance;
-            IsExcludedFromBudget = transaction.IsExcludedFromBudget;
         }
         finally
         {
@@ -3049,12 +3031,13 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                              transaction.ChildTransactions.Count > 0);
         transaction.ExpenseCategory = isSplitParent
             ? null
-            : IsGoal ? ExpenseCategory.Savings : IsExpense ? SelectedExpenseCategory : null;
+            : IsGoal || IsRepayment || IsIoU || IsIncome
+                ? ExpenseCategory.Excluded
+                : SelectedExpenseCategory;
         transaction.Tag = isSplitParent || IsGoal || IsRepayment ? null : SelectedTag;
         transaction.IsPinned = IsPinned;
         transaction.IsIoU = IsIoU;
         transaction.ShouldAffectBalance = ShouldAffectBalance;
-        transaction.IsExcludedFromBudget = IsBudgetExcluded;
         if (ReferenceEquals(transaction, _currentRootTransaction))
             SyncSplitDescendantContext();
     }
@@ -3093,8 +3076,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         Amount = AmountText,
         OccurredOn = SelectedDate.Date.Add(SelectedTime),
         Notes = NoteText,
-        ExpenseCategory = IsGoal ? ExpenseCategory.Savings : null,
-        IsExcludedFromBudget = IsBudgetExcluded
+        ExpenseCategory = ExpenseCategory.Excluded
     };
 
     [RelayCommand]
@@ -3385,7 +3367,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     {
         validationMessage = string.Empty;
 
-        if (!IsExpense || IsRecurringTransactionMode || IsExcludedFromBudget ||
+        if (!IsExpense || IsRecurringTransactionMode || SelectedExpenseCategory == ExpenseCategory.Excluded ||
             SelectedTag is not { SpendingLimit: > 0m } tag)
             return true;
 
@@ -3397,14 +3379,15 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 SelectedDate.Date,
                 allocation.PeriodStart);
             var currentTagSpending = _appData.GetTransactionsAsync().GetAwaiter().GetResult()
-                .Where(log => log.Type == TransactionType.Expense && !log.IsForDeletion && !log.IsExcludedFromBudget)
+                .Where(log => log.Type == TransactionType.Expense && !log.IsForDeletion &&
+                              log.ExpenseCategory != ExpenseCategory.Excluded)
                 .Where(log => !IsLoadedTransaction(log))
                 .Where(log => log.OccurredOn.Date >= currentPeriod.Start && log.OccurredOn.Date <= currentPeriod.End)
                 .Where(log => log.TagId == tag.Id || log.Tag?.Id == tag.Id)
                 .Sum(log => log.Amount);
 
             var result = TransactionValidationHelper.ValidateTagSpending(
-                IsExpense, IsRecurringTransactionMode, IsExcludedFromBudget, tag, currentTagSpending, amount);
+                IsExpense, IsRecurringTransactionMode, SelectedExpenseCategory, tag, currentTagSpending, amount);
             validationMessage = result.ErrorMessage ?? string.Empty;
             return result.IsValid;
         }
@@ -3544,7 +3527,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             SelectedAccount = Accounts.FirstOrDefault(account => account.Id == recurring.Source.Id);
             SelectedTag = recurring.Tag;
             SetSelectedOccurredOn(DateTime.Now);
-            IsExcludedFromBudget = recurring.IsExcludedFromBudget;
         }
 
         SetPopupPurpose(TransactionPopupPurpose.Processing);
@@ -3618,11 +3600,10 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             new EditRecurringTransactionHelper.Input(
                 recurring.Id, recurring.Type, recurring.Name, recurring.Amount, recurring.RecurringPeriod,
                 recurring.RecurringTime, recurring.SourceId, recurring.Category, recurring.TagId,
-                recurring.GoalId, recurring.IsExcludedFromBudget),
+                recurring.GoalId),
             Accounts, _orderedTags, Goals);
         SetPopupPurpose(TransactionPopupPurpose.EditRecurringTransaction);
         ApplyRecurringState(state);
-        IsExcludedFromBudget = state.IsExcludedFromBudget;
         return true;
     }
 
@@ -3632,7 +3613,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             new EditRecurringTransactionHelper.Input(
                 draft.EditingRecurringTransactionId, draft.Type, draft.Name, draft.Amount,
                 draft.RecurringPeriod, draft.RecurringTime, draft.AccountId, draft.Category,
-                draft.TagId, draft.GoalId, false),
+                draft.TagId, draft.GoalId),
             Accounts, _orderedTags, Goals);
         SetPopupPurpose(draft.EditingRecurringTransactionId is > 0
             ? TransactionPopupPurpose.EditRecurringTransaction

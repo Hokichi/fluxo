@@ -38,7 +38,7 @@ public sealed class ModelSchemaTests
         Assert.Equal("Transactions", transaction.GetTableName());
         Assert.Equal(false, transaction.FindProperty(nameof(Transaction.IsIoU))!.GetDefaultValue());
         Assert.Equal(false, transaction.FindProperty(nameof(Transaction.ShouldAffectBalance))!.GetDefaultValue());
-        Assert.Equal(false, transaction.FindProperty(nameof(Transaction.IsExcludedFromBudget))!.GetDefaultValue());
+        Assert.Null(transaction.FindProperty("IsExcludedFromBudget"));
         Assert.True(transaction.FindProperty(nameof(Transaction.ParentTransactionId))!.IsNullable);
         var relatedRecurringTransaction = transaction.FindProperty(nameof(Transaction.RelatedRecurringTransactionId));
         Assert.NotNull(relatedRecurringTransaction);
@@ -61,7 +61,7 @@ public sealed class ModelSchemaTests
         Assert.False(recurringTransaction.FindProperty("RecurringPeriod")!.IsNullable);
         Assert.False(recurringTransaction.FindProperty("RecurringTime")!.IsNullable);
         Assert.True(recurringTransaction.FindProperty(nameof(RecurringTransaction.Category))!.IsNullable);
-        Assert.Equal(false, recurringTransaction.FindProperty("IsExcludedFromBudget")!.GetDefaultValue());
+        Assert.Null(recurringTransaction.FindProperty("IsExcludedFromBudget"));
         Assert.Null(recurringTransaction.FindProperty("RecurringDate"));
 
         var budgetAllocation = model.FindEntityType(typeof(BudgetAllocation))!;
@@ -130,8 +130,8 @@ public sealed class ModelSchemaTests
             dbContext.Database.ExecuteSqlRawAsync("""
                 INSERT INTO Transactions
                     (Type, SourceAccountId, Name, Amount, OccurredOn, LoggedOn, Notes,
-                     IsPinned, IsForDeletion, IsIoU, ShouldAffectBalance, IsExcludedFromBudget)
-                VALUES (0, 7, 'Invalid', 10, '2026-07-01', '2026-07-01 12:00:00', '', 0, 0, 0, 1, 0);
+                     IsPinned, IsForDeletion, IsIoU, ShouldAffectBalance)
+                VALUES (0, 7, 'Invalid', 10, '2026-07-01', '2026-07-01 12:00:00', '', 0, 0, 0, 1);
                 """));
     }
 

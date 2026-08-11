@@ -883,7 +883,13 @@ public partial class App : Application
         if (await ColumnExistsAsync(dbContext, "RecurringTransactions", "IsExcludedFromBudget", cancellationToken))
             return "20260713093244_AddRecurringBudgetExclusionAndRepairTransactionTags";
 
-        if (await ColumnExistsAsync(dbContext, "Transactions", "RelatedRecurringTransactionId", cancellationToken))
+        var hasRelatedRecurringTransaction = await ColumnExistsAsync(
+            dbContext, "Transactions", "RelatedRecurringTransactionId", cancellationToken);
+        if (hasRelatedRecurringTransaction &&
+            !await ColumnExistsAsync(dbContext, "Transactions", "IsExcludedFromBudget", cancellationToken))
+            return allMigrations[^1];
+
+        if (hasRelatedRecurringTransaction)
             return "20260710233033_RemoveNotificationsAndAddRelatedRecurringTransaction";
 
         var hasCreatedOnColumn = await ColumnExistsAsync(dbContext, "SavingGoals", "CreatedOn", cancellationToken);

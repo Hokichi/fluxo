@@ -34,7 +34,6 @@ public readonly record struct QuickTransactionInput(
         bool IsPinned,
         bool IsIoU,
         bool ShouldAffectBalance,
-        bool IsExcludedFromBudget,
         int? EditingRecurringTransactionId,
         RecurringPeriod RecurringPeriod,
         string Name,
@@ -48,8 +47,4 @@ public readonly record struct QuickTransactionInput(
         int? TagId,
         int? GoalId,
         int? RepaymentAccountId,
-        int? RelatedRecurringTransactionId)
-    {
-        public bool IsEffectivelyExcludedFromBudget =>
-            IsExcludedFromBudget || IsIoU || (!IsExpense && !IsGoal && !IsRepayment);
-    }
+        int? RelatedRecurringTransactionId);

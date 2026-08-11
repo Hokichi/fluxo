@@ -39,8 +39,7 @@ public static class TransactionMappingHelper
             IsPinned = source.IsPinned,
             IsForDeletion = source.IsForDeletion,
             IsIoU = source.IsIoU,
-            ShouldAffectBalance = source.ShouldAffectBalance,
-            IsExcludedFromBudget = source.IsExcludedFromBudget
+            ShouldAffectBalance = source.ShouldAffectBalance
         };
         foreach (var child in source.ChildTransactions)
             copy.ChildTransactions.Add(Copy(child));

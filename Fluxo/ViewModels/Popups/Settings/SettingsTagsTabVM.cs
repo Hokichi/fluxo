@@ -99,7 +99,7 @@ public partial class SettingsTagsTabVM : ObservableObject
             .Where(transaction =>
                 transaction.Type == TransactionType.Expense &&
                 !transaction.IsForDeletion &&
-                !transaction.IsExcludedFromBudget &&
+                transaction.ExpenseCategory != ExpenseCategory.Excluded &&
                 transaction.OccurredOn.Date >= period.Start &&
                 transaction.OccurredOn.Date <= period.End)
             .Select(transaction => new

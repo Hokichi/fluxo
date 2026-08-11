@@ -19,7 +19,7 @@ public sealed class TransactionSplitHelperTests
             OccurredOn = new DateTime(2026, 7, 27),
             IsIoU = true,
             ShouldAffectBalance = true,
-            IsExcludedFromBudget = true
+            ExpenseCategory = ExpenseCategory.Excluded
         };
 
         var child = TransactionSplitHelper.AddChild(root, null);
@@ -31,7 +31,8 @@ public sealed class TransactionSplitHelperTests
         Assert.Equal(root.OccurredOn, child.OccurredOn);
         Assert.True(child.IsIoU);
         Assert.True(child.ShouldAffectBalance);
-        Assert.True(child.IsExcludedFromBudget);
+        Assert.Null(root.ExpenseCategory);
+        Assert.Equal(ExpenseCategory.Excluded, child.ExpenseCategory);
         Assert.Equal([child], root.ChildTransactions);
     }
 

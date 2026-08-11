@@ -258,14 +258,14 @@ public sealed class TransactionPopupVMPersistenceTests
         {
             Id = 77, Type = TransactionType.Expense, SourceAccountId = 1, Account = detachedSource,
             RepaymentAccountId = 2, RepaymentAccount = detachedTarget, Name = "Repayment to Visa",
-            Amount = 20m, OccurredOn = DateTime.Today, ExpenseCategory = ExpenseCategory.Savings,
-            Tag = tag, TagId = tag.Id, IsExcludedFromBudget = true
+            Amount = 20m, OccurredOn = DateTime.Today, ExpenseCategory = ExpenseCategory.Excluded,
+            Tag = tag, TagId = tag.Id
         };
         var income = new Transaction
         {
             Id = 78, Type = TransactionType.Income, SourceAccountId = 2, Account = detachedTarget,
             RepaymentAccountId = 2, Name = "Repayment from Checking", Amount = 20m,
-            OccurredOn = expense.OccurredOn, Tag = tag, TagId = tag.Id, IsExcludedFromBudget = true
+            OccurredOn = expense.OccurredOn, ExpenseCategory = ExpenseCategory.Excluded, Tag = tag, TagId = tag.Id
         };
         var appData = Substitute.For<IAppDataService>();
         appData.GetTransactionByIdAsync(77, Arg.Any<CancellationToken>()).Returns(expense);
@@ -278,7 +278,7 @@ public sealed class TransactionPopupVMPersistenceTests
         {
             Id = 77, Type = TransactionType.Expense, SourceAccountId = 1, RepaymentAccountId = 2,
             Name = expense.Name, Amount = 20m, OccurredOn = expense.OccurredOn,
-            ExpenseCategory = ExpenseCategory.Savings
+            ExpenseCategory = ExpenseCategory.Excluded
         };
         var pending = TransactionMappingHelper.CreatePending(loaded);
         pending.Amount = 30m;
@@ -337,6 +337,9 @@ public sealed class TransactionPopupVMPersistenceTests
         Assert.True(result.IsSuccess, result.ErrorMessage);
         Assert.Equal(90m, account.Balance);
         Assert.Equal(110m, goal.CurrentAmount);
+        _ = appData.Received(1).AddTransactionAsync(
+            Arg.Is<Transaction>(transaction => transaction.ExpenseCategory == ExpenseCategory.Excluded),
+            Arg.Any<CancellationToken>());
         await appData.Received(1).AddTagAsync(Arg.Is<Tag>(tag => !tag.IsSystemTag), Arg.Any<CancellationToken>());
         Assert.Contains(DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.SavingGoals |
                         DashboardDataInvalidationScope.Notifications, scopes);

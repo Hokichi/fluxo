@@ -14,7 +14,6 @@ public sealed class RecurringTransactionDto
     public int SourceId { get; set; }
     public int? TagId { get; set; }
     public int? GoalId { get; set; }
-    public bool IsExcludedFromBudget { get; set; }
     public bool IsEnabled { get; set; }
     public DateTime? EndDate { get; set; }
     public AccountDto Source { get; set; } = new();

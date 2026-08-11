@@ -1,4 +1,5 @@
 using Fluxo.Core.Entities;
+using Fluxo.Core.Enums;
 using Fluxo.ViewModels.Entities;
 using TransactionEntity = Fluxo.Core.Entities.Transaction;
 
@@ -9,7 +10,8 @@ internal static class BudgetEffectiveTransactionFilter
     internal static IEnumerable<TransactionVM> Select(IEnumerable<TransactionVM> transactions)
     {
         var included = transactions
-            .Where(transaction => !transaction.IsForDeletion && !transaction.IsExcludedFromBudget)
+            .Where(transaction => !transaction.IsForDeletion &&
+                                  transaction.ExpenseCategory != ExpenseCategory.Excluded)
             .ToList();
         var parentIds = included
             .Select(transaction => transaction.ParentTransactionId)
@@ -23,7 +25,8 @@ internal static class BudgetEffectiveTransactionFilter
     internal static IEnumerable<TransactionEntity> Select(IEnumerable<TransactionEntity> transactions)
     {
         var included = transactions
-            .Where(transaction => !transaction.IsForDeletion && !transaction.IsExcludedFromBudget)
+            .Where(transaction => !transaction.IsForDeletion &&
+                                  transaction.ExpenseCategory != ExpenseCategory.Excluded)
             .ToList();
         var parentIds = included
             .Select(transaction => transaction.ParentTransactionId)

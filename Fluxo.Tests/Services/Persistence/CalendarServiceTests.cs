@@ -85,7 +85,7 @@ public sealed class CalendarServiceTests
                 Name = "Excluded expense",
                 Amount = 30m,
                 OccurredOn = new DateTime(2026, 6, 12, 15, 0, 0),
-                IsExcludedFromBudget = true,
+                ExpenseCategory = ExpenseCategory.Excluded,
                 Account = new Account { Name = "Checking" }
             },
             new Transaction
@@ -95,7 +95,7 @@ public sealed class CalendarServiceTests
                 Name = "Excluded income",
                 Amount = 100m,
                 OccurredOn = new DateTime(2026, 6, 12, 16, 0, 0),
-                IsExcludedFromBudget = true,
+                ExpenseCategory = ExpenseCategory.Excluded,
                 Account = new Account { Name = "Checking" }
             }
         ]);

@@ -370,7 +370,9 @@ public sealed partial class BudgetForecastVM : ObservableObject
 
     private static IReadOnlyList<Transaction> SelectBudgetEffectiveLogs(IReadOnlyList<Transaction> expenseLogs)
     {
-        var activeLogs = expenseLogs.Where(log => !log.IsForDeletion && !log.IsExcludedFromBudget).ToList();
+        var activeLogs = expenseLogs
+            .Where(log => !log.IsForDeletion && log.ExpenseCategory != ExpenseCategory.Excluded)
+            .ToList();
         var parentLogIds = activeLogs
             .Where(log => log.ParentTransactionId is > 0)
             .Select(log => log.ParentTransactionId!.Value)

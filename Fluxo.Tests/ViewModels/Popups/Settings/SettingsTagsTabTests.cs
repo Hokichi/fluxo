@@ -107,7 +107,7 @@ public sealed class SettingsTagsTabTests
             Amount = amount,
             OccurredOn = occurredOn,
             TagId = tagId,
-            IsExcludedFromBudget = excluded,
+            ExpenseCategory = excluded ? ExpenseCategory.Excluded : ExpenseCategory.Needs,
             IsForDeletion = deleted
         };
 }

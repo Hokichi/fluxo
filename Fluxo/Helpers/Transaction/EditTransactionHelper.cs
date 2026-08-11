@@ -21,8 +21,7 @@ public static class EditTransactionHelper
             transaction.SourceAccountId,
             transaction.Tag?.Id,
             transaction.IsIoU,
-            transaction.ShouldAffectBalance,
-            transaction.IsExcludedFromBudget);
+            transaction.ShouldAffectBalance);
     }
 
     public static Draft CreateDraft(TransactionVM transaction)
@@ -40,7 +39,6 @@ public static class EditTransactionHelper
             transaction.GoalId is not null,
             transaction.GoalId,
             transaction.IsIoU,
-            transaction.IsExcludedFromBudget,
             transaction.ShouldAffectBalance);
     }
 
@@ -54,8 +52,7 @@ public static class EditTransactionHelper
         int AccountId,
         int? TagId,
         bool IsIoU,
-        bool ShouldAffectBalance,
-        bool IsExcludedFromBudget);
+        bool ShouldAffectBalance);
 
     public readonly record struct Draft(
         bool IsExpense,
@@ -69,6 +66,5 @@ public static class EditTransactionHelper
         bool IsGoal,
         int? GoalId,
         bool IsIoU,
-        bool IsExcludedFromBudget,
         bool ShouldAffectBalance);
 }

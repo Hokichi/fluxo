@@ -60,11 +60,10 @@ public static class RepaymentTransactionSupport
             Amount = amount,
             OccurredOn = occurredOn,
             Notes = string.Empty,
-            ExpenseCategory = ExpenseCategory.Savings,
+            ExpenseCategory = ExpenseCategory.Excluded,
             SourceAccountId = source.Id,
             RepaymentAccountId = target.Id,
-            TagId = balanceUpdateTag.Id,
-            IsExcludedFromBudget = true
+            TagId = balanceUpdateTag.Id
         };
         var income = new Transaction
         {
@@ -73,10 +72,10 @@ public static class RepaymentTransactionSupport
             Amount = amount,
             OccurredOn = occurredOn,
             Notes = string.Empty,
+            ExpenseCategory = ExpenseCategory.Excluded,
             SourceAccountId = target.Id,
             RepaymentAccountId = target.Id,
-            TagId = balanceUpdateTag.Id,
-            IsExcludedFromBudget = true
+            TagId = balanceUpdateTag.Id
         };
 
         source.Balance -= amount;

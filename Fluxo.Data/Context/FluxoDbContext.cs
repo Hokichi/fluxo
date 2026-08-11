@@ -100,7 +100,6 @@ public sealed class FluxoDbContext(DbContextOptions<FluxoDbContext> options) : D
         entity.Property(transaction => transaction.RecurringTime);
         entity.Property(transaction => transaction.Type);
         entity.Property(transaction => transaction.Category);
-        entity.Property(transaction => transaction.IsExcludedFromBudget).HasDefaultValue(false);
         entity.Property(transaction => transaction.IsEnabled);
         entity.Property(transaction => transaction.EndDate);
 
@@ -149,7 +148,6 @@ public sealed class FluxoDbContext(DbContextOptions<FluxoDbContext> options) : D
         entity.Property(transaction => transaction.IsForDeletion).HasDefaultValue(false);
         entity.Property(transaction => transaction.IsIoU).HasDefaultValue(false);
         entity.Property(transaction => transaction.ShouldAffectBalance).HasDefaultValue(false);
-        entity.Property(transaction => transaction.IsExcludedFromBudget).HasDefaultValue(false);
         entity.HasOne(transaction => transaction.Account).WithMany().HasForeignKey(transaction => transaction.SourceAccountId).OnDelete(DeleteBehavior.Restrict);
         entity.HasOne(transaction => transaction.Goal).WithMany().HasForeignKey(transaction => transaction.GoalId).OnDelete(DeleteBehavior.SetNull);
         entity.HasOne(transaction => transaction.RepaymentAccount).WithMany().HasForeignKey(transaction => transaction.RepaymentAccountId).OnDelete(DeleteBehavior.SetNull);

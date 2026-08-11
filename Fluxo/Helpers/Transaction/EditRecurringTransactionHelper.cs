@@ -21,8 +21,7 @@ public static class EditRecurringTransactionHelper
             input.RecurringPeriod == RecurringPeriod.None ? string.Empty : input.RecurringTime.ToString(CultureInfo.InvariantCulture),
             accounts.FirstOrDefault(account => account.Id == input.AccountId) ?? accounts.FirstOrDefault(),
             input.TagId is > 0 ? tags.FirstOrDefault(tag => tag.Id == input.TagId) : tags.FirstOrDefault(),
-            input.GoalId is > 0 ? goals.FirstOrDefault(goal => goal.Id == input.GoalId) : goals.FirstOrDefault(),
-            input.IsExcludedFromBudget);
+            input.GoalId is > 0 ? goals.FirstOrDefault(goal => goal.Id == input.GoalId) : goals.FirstOrDefault());
 
     public readonly record struct Input(
         int? EditingRecurringTransactionId,
@@ -34,8 +33,7 @@ public static class EditRecurringTransactionHelper
         int AccountId,
         ExpenseCategory? Category,
         int? TagId,
-        int? GoalId,
-        bool IsExcludedFromBudget);
+        int? GoalId);
 
     public sealed record State(
         int? EditingRecurringTransactionId,
@@ -48,6 +46,5 @@ public static class EditRecurringTransactionHelper
         string RecurringTimeText,
         AccountVM? SelectedAccount,
         TagVM? SelectedTag,
-        SavingGoalVM? SelectedGoal,
-        bool IsExcludedFromBudget);
+        SavingGoalVM? SelectedGoal);
 }

@@ -817,7 +817,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
 
     private IEnumerable<TransactionVM> EnumerateVisibleIncomeLogs()
     {
-        var included = _allIncomeLogs.Where(log => !log.IsExcludedFromBudget);
+        var included = _allIncomeLogs.Where(log => log.ExpenseCategory != ExpenseCategory.Excluded);
         if (_selectedRange is not { } range)
             return included;
 
@@ -1017,7 +1017,6 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
         transaction.IsPinned,
         transaction.IsForDeletion,
         transaction.IsIoU,
-        transaction.IsExcludedFromBudget,
         transaction.LoggedOn,
         transaction.ShouldAffectBalance);
 

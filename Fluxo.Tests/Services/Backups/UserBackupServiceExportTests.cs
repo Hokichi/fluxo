@@ -167,7 +167,8 @@ public sealed class UserBackupServiceExportTests
             Tag = tag,
             Account = account,
             IsIoU = true,
-            ShouldAffectBalance = true
+            ShouldAffectBalance = true,
+            ExpenseCategory = ExpenseCategory.Excluded
         };
         var incomeLog = new Transaction
         {
@@ -178,7 +179,8 @@ public sealed class UserBackupServiceExportTests
             Name = "Borrowed cash",
             Amount = 50m,
             Notes = string.Empty,
-            IsIoU = true
+            IsIoU = true,
+            ExpenseCategory = ExpenseCategory.Excluded
         };
 
         appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns([account]);
@@ -202,8 +204,12 @@ public sealed class UserBackupServiceExportTests
             var json = await File.ReadAllTextAsync(tempFile);
             var document = JsonSerializer.Deserialize<FluxoUserBackupDocument>(json, BackupJsonOptions);
             Assert.NotNull(document);
+            Assert.Equal(3, document.SchemaVersion);
 
             Assert.All(document.Entities.Transactions, transaction => Assert.True(transaction.IsIoU));
+            Assert.All(document.Entities.Transactions,
+                transaction => Assert.Equal(nameof(ExpenseCategory.Excluded), transaction.ExpenseCategory));
+            Assert.DoesNotContain("isExcludedFromBudget", json, StringComparison.OrdinalIgnoreCase);
             Assert.True(document.Entities.Transactions.Single(transaction => transaction.BackupId == 1).ShouldAffectBalance);
             Assert.False(document.Entities.Transactions.Single(transaction => transaction.BackupId == 2).ShouldAffectBalance);
         }
@@ -327,6 +333,7 @@ public sealed class UserBackupServiceExportTests
             var service = new UserBackupService(Substitute.For<IAppDataService>());
             var manifest = await service.ReadManifestAsync(tempFile);
 
+            Assert.Equal(3, manifest.SchemaVersion);
             Assert.Contains(DataManagementEntityKind.Expenses, manifest.IncludedEntities);
             Assert.Contains(DataManagementEntityKind.Accounts, manifest.IncludedEntities);
         }

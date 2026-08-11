@@ -78,14 +78,14 @@ public sealed class CalendarService(IDataOperationRunner dataOperationRunner) : 
                 transactions.Where(transaction =>
                         transaction.Type == TransactionType.Expense &&
                         !transaction.IsForDeletion &&
-                        !transaction.IsExcludedFromBudget &&
+                        transaction.ExpenseCategory != ExpenseCategory.Excluded &&
                         transaction.ParentTransactionId is null &&
                         transaction.OccurredOn.Date == selectedDate)
                     .Sum(transaction => transaction.Amount),
                 transactions.Where(transaction =>
                         transaction.Type == TransactionType.Income &&
                         !transaction.IsForDeletion &&
-                        !transaction.IsExcludedFromBudget &&
+                        transaction.ExpenseCategory != ExpenseCategory.Excluded &&
                         transaction.OccurredOn.Date == selectedDate)
                     .Sum(transaction => transaction.Amount),
                 expenses,

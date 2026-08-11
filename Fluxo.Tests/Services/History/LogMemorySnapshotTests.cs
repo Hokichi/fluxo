@@ -26,10 +26,9 @@ public sealed class LogMemorySnapshotTests
             Name = "Lend",
             Amount = 10m,
             LoggedOn = new DateTime(2026, 6, 28, 12, 30, 0),
-            ExpenseCategory = ExpenseCategory.Needs,
+            ExpenseCategory = ExpenseCategory.Excluded,
             IsIoU = true,
-            ShouldAffectBalance = true,
-            IsExcludedFromBudget = true
+            ShouldAffectBalance = true
         };
 
         var snapshot = TransactionMemorySnapshot.Create(transaction);
@@ -38,9 +37,30 @@ public sealed class LogMemorySnapshotTests
         Assert.True(snapshot.IsIoU);
         Assert.True(snapshot.ShouldAffectBalance);
         Assert.True(snapshot.AffectsAccountBalance);
-        Assert.True(snapshot.IsExcludedFromBudget);
+        Assert.Equal(ExpenseCategory.Excluded, snapshot.ExpenseCategory);
         Assert.Equal(transaction.LoggedOn, snapshot.LoggedOn);
         Assert.Equal(goal.Id, snapshot.GoalId);
         Assert.Equal(5, snapshot.RepaymentAccountId);
+    }
+
+    [Fact]
+    public void LogMemorySnapshot_EditTransactionMemoryAction_ReportsExclusionAsCategoryOnly()
+    {
+        var before = TransactionMemorySnapshot.Create(new Transaction
+        {
+            Name = "Lunch",
+            ExpenseCategory = ExpenseCategory.Needs
+        });
+        var after = TransactionMemorySnapshot.Create(new Transaction
+        {
+            Name = "Lunch",
+            ExpenseCategory = ExpenseCategory.Excluded
+        });
+
+        var details = new EditTransactionMemoryAction(before, after).Details;
+
+        Assert.Contains("Category", details);
+        Assert.Contains("Excluded", details);
+        Assert.DoesNotContain("Excluded from budget", details);
     }
 }

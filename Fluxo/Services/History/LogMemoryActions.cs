@@ -124,7 +124,6 @@ public sealed record TransactionMemorySnapshot(
     bool IsPinned,
     bool IsForDeletion,
     bool IsIoU,
-    bool IsExcludedFromBudget,
     DateTime LoggedOn = default,
     bool ShouldAffectBalance = false)
 {
@@ -151,7 +150,6 @@ public sealed record TransactionMemorySnapshot(
             transaction.IsPinned,
             transaction.IsForDeletion,
             transaction.IsIoU,
-            transaction.IsExcludedFromBudget,
             transaction.LoggedOn,
             transaction.ShouldAffectBalance);
     }
@@ -221,8 +219,7 @@ public sealed class AddTransactionMemoryAction(
         IsPinned = value.IsPinned,
         IsForDeletion = value.IsForDeletion,
         IsIoU = value.IsIoU,
-        ShouldAffectBalance = value.ShouldAffectBalance,
-        IsExcludedFromBudget = value.IsExcludedFromBudget
+        ShouldAffectBalance = value.ShouldAffectBalance
     };
 }
 
@@ -242,8 +239,7 @@ public sealed class EditTransactionMemoryAction(
         ("Date", LogMemoryDisplay.Date(before.OccurredOn), LogMemoryDisplay.Date(after.OccurredOn)),
         ("Category", before.ExpenseCategory?.ToString() ?? "None", after.ExpenseCategory?.ToString() ?? "None"),
         ("Notes", LogMemoryDisplay.Text(before.Notes), LogMemoryDisplay.Text(after.Notes)),
-        ("Pinned", LogMemoryDisplay.YesNo(before.IsPinned), LogMemoryDisplay.YesNo(after.IsPinned)),
-        ("Excluded from budget", LogMemoryDisplay.YesNo(before.IsExcludedFromBudget), LogMemoryDisplay.YesNo(after.IsExcludedFromBudget)));
+        ("Pinned", LogMemoryDisplay.YesNo(before.IsPinned), LogMemoryDisplay.YesNo(after.IsPinned)));
     public Task RevertAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken = default) =>
         ApplyAsync(unitOfWork, before, cancellationToken);
     public Task ReapplyAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken = default) =>
@@ -281,7 +277,6 @@ public sealed class EditTransactionMemoryAction(
         transaction.IsForDeletion = snapshot.IsForDeletion;
         transaction.IsIoU = snapshot.IsIoU;
         transaction.ShouldAffectBalance = snapshot.ShouldAffectBalance;
-        transaction.IsExcludedFromBudget = snapshot.IsExcludedFromBudget;
 
         unitOfWork.Transactions.Update(transaction);
         if (oldAffectsBalance)

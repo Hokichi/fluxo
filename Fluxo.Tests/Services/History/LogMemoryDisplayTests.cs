@@ -75,5 +75,5 @@ public sealed class LogMemoryDisplayTests
     private static TransactionMemorySnapshot Transaction(string name, decimal amount) => new(
         1, TransactionType.Expense, 2, name, amount, new DateTime(2026, 7, 4),
         string.Empty, ExpenseCategory.Needs, null, null, null, null,
-        false, false, false, false);
+        false, false, false);
 }

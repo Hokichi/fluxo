@@ -51,7 +51,6 @@ internal static class TransactionDetailTargetResolver
             IsPinned = transaction.IsPinned,
             IsIoU = transaction.IsIoU,
             ShouldAffectBalance = transaction.ShouldAffectBalance,
-            IsExcludedFromBudget = transaction.IsExcludedFromBudget,
             ExpenseCategory = transaction.ExpenseCategory,
             ParentTransactionId = transaction.ParentTransactionId,
             Account = new AccountVM

@@ -23,7 +23,6 @@ public sealed partial class LedgerTransactionItemVM : ObservableObject
     public DateTime OccurredOn { get; init; }
     public DateTime LoggedOn { get; init; }
     public ExpenseCategory? Category { get; init; }
-    public bool IsExcludedFromBudget { get; init; }
     public int? ParentTransactionId { get; init; }
     public bool IsChildTransaction { get; init; }
     public bool IsGoal { get; init; }
@@ -40,6 +39,7 @@ public sealed partial class LedgerTransactionItemVM : ObservableObject
         ExpenseCategory.Needs => "Needs",
         ExpenseCategory.Wants => "Wants",
         ExpenseCategory.Savings => "Invest",
+        ExpenseCategory.Excluded => "Excluded",
         _ => "Uncategorized"
     };
 

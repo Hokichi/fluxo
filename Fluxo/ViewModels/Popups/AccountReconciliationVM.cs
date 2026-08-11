@@ -122,7 +122,9 @@ public partial class AccountReconciliationVM : ObservableObject
                     Amount = decimal.Abs(difference),
                     OccurredOn = DateTime.Today,
                     Notes = string.Empty,
-                    ExpenseCategory = transactionType == TransactionType.Expense ? ExpenseCategory.Needs : null,
+                    ExpenseCategory = transactionType == TransactionType.Expense
+                        ? ExpenseCategory.Needs
+                        : ExpenseCategory.Excluded,
                     SourceAccountId = account.Id,
                     TagId = reconciliationTag.Id
                 };

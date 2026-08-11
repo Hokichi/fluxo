@@ -136,6 +136,7 @@ public partial class SettingsIoUsTabVM : ObservableObject
             Amount = source.Amount,
             OccurredOn = _todayProvider().Date,
             Notes = $"Resolved lend from expense #{source.Id}",
+            ExpenseCategory = ExpenseCategory.Excluded,
             SourceAccountId = account.Id,
             Account = account,
             IsIoU = false

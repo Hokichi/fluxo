@@ -943,17 +943,18 @@ public partial class LedgerVM : ObservableRecipient,
         if (selected.Any(option => option.IsAll))
             return true;
 
-        if (transaction.IsExcludedFromBudget)
+        if (transaction.Category == ExpenseCategory.Excluded)
             return selected.Any(option => option.Value == LedgerCategoryFilter.Excluded);
 
-        if (transaction.Kind != LedgerTransactionKind.Expense)
+        if (transaction.Kind != LedgerTransactionKind.Expense || transaction.Category is null)
             return false;
 
         var category = transaction.Category switch
         {
             ExpenseCategory.Wants => LedgerCategoryFilter.Wants,
             ExpenseCategory.Savings => LedgerCategoryFilter.Invest,
-            _ => LedgerCategoryFilter.Needs
+            ExpenseCategory.Needs => LedgerCategoryFilter.Needs,
+            _ => throw new ArgumentOutOfRangeException()
         };
         return selected.Any(option => option.Value == category);
     }
@@ -975,8 +976,7 @@ public partial class LedgerVM : ObservableRecipient,
             Amount = log.Amount,
             OccurredOn = log.OccurredOn,
             LoggedOn = log.LoggedOn,
-            Category = log.ExpenseCategory ?? ExpenseCategory.Needs,
-            IsExcludedFromBudget = log.IsExcludedFromBudget,
+            Category = log.ExpenseCategory,
             ParentTransactionId = log.ParentTransactionId,
             IsChildTransaction = isChildTransaction,
             AccountId = log.Account?.Id ?? 0,
@@ -999,7 +999,7 @@ public partial class LedgerVM : ObservableRecipient,
             Amount = log.Amount,
             OccurredOn = log.OccurredOn,
             LoggedOn = log.LoggedOn,
-            IsExcludedFromBudget = log.IsExcludedFromBudget,
+            Category = log.ExpenseCategory,
             AccountId = log.Account?.Id ?? 0,
             AccountName = log.Account?.Name ?? string.Empty
         };

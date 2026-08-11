@@ -22,7 +22,9 @@ public sealed record QuickSetupWizardRecurringTransactionItemVM(
         {
             ExpenseCategory.Needs => "Needs",
             ExpenseCategory.Wants => "Wants",
-            _ => "Invest"
+            ExpenseCategory.Savings => "Invest",
+            ExpenseCategory.Excluded => "Excluded",
+            _ => "Uncategorized"
         },
         accountName,
         expense.RecurringPeriod,

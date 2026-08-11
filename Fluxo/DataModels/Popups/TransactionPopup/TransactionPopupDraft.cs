@@ -14,6 +14,5 @@ public readonly record struct TransactionPopupDraft(
     bool IsGoal = false,
     int? GoalId = null,
     bool IsIoU = false,
-    bool IsExcludedFromBudget = false,
     bool LockTransactionType = false,
     bool ShouldAffectBalance = false);

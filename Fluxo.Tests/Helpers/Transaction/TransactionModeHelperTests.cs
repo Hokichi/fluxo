@@ -15,7 +15,7 @@ public sealed class TransactionModeHelperTests
         var goal = new SavingGoalVM { Id = 4, Name = "Trip" };
         var input = new AddTransactionHelper.Input(
             false, true, "Goal Update", 25m, account.Id, new DateTime(2026, 7, 19), "Note",
-            ExpenseCategory.Savings, tag.Id, goal.Id, false, false, true, true);
+            ExpenseCategory.Excluded, tag.Id, goal.Id, false, false, true);
 
         var state = AddTransactionHelper.CreateState(input, [account], [tag], [goal]);
 
@@ -45,7 +45,7 @@ public sealed class TransactionModeHelperTests
         var goal = new SavingGoalVM { Id = 4 };
         var input = new EditRecurringTransactionHelper.Input(
             42, RecurringTransactionType.GoalUpdate, "Goal", 10m, RecurringPeriod.Monthly, 5,
-            account.Id, ExpenseCategory.Savings, tag.Id, goal.Id, true);
+            account.Id, ExpenseCategory.Excluded, tag.Id, goal.Id);
 
         var state = EditRecurringTransactionHelper.CreateState(input, [account], [tag], [goal]);
 

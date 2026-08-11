@@ -5,7 +5,7 @@ namespace Fluxo.Services.Backups;
 
 public sealed class FluxoUserBackupDocument
 {
-    public int SchemaVersion { get; set; } = 2;
+    public int SchemaVersion { get; set; } = 3;
     public DateTime CreatedAt { get; set; }
     public List<DataManagementEntityKind> IncludedEntities { get; set; } = [];
     public FluxoUserBackupEntities Entities { get; set; } = new();
@@ -109,7 +109,6 @@ public sealed record BackupTransaction(
     bool IsPinned,
     bool IsForDeletion,
     bool IsIoU,
-    bool IsExcludedFromBudget,
     bool? ShouldAffectBalance = null)
 {
     [JsonIgnore]
@@ -123,11 +122,11 @@ public sealed record BackupRecurringTransaction(
     string RecurringPeriod,
     int RecurringTime,
     string Type,
+    string? Category,
     int SourceBackupId,
     int? TagBackupId,
     int? GoalBackupId,
     bool IsEnabled,
-    bool IsExcludedFromBudget = false,
     DateTime? EndDate = null);
 
 public sealed record BackupUserSetting(string Name, string Value);

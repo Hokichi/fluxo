@@ -24,5 +24,4 @@ public sealed class TransactionDto
     public bool IsForDeletion { get; set; }
     public bool IsIoU { get; set; }
     public bool ShouldAffectBalance { get; set; }
-    public bool IsExcludedFromBudget { get; set; }
 }

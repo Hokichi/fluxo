@@ -35,5 +35,4 @@ public readonly record struct TransactionEditInput(
         int AccountId,
         int? TagId,
         bool IsIoU,
-        bool ShouldAffectBalance,
-        bool IsExcludedFromBudget);
+        bool ShouldAffectBalance);

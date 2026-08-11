@@ -14,7 +14,6 @@ public sealed class RecurringTransaction
     public int SourceId { get; set; }
     public int? TagId { get; set; }
     public int? GoalId { get; set; }
-    public bool IsExcludedFromBudget { get; set; }
     public bool IsEnabled { get; set; }
     public DateTime? EndDate { get; set; }
     public Account Source { get; set; } = null!;

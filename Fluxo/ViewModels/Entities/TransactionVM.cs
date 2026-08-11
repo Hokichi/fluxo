@@ -35,7 +35,6 @@ public partial class TransactionVM : ObservableObject
     [ObservableProperty] private bool _isForDeletion;
     [ObservableProperty] private bool _isIoU;
     [ObservableProperty] private bool _shouldAffectBalance;
-    [ObservableProperty] private bool _isExcludedFromBudget;
     [ObservableProperty] private bool _isValid;
     [ObservableProperty] private bool _hasWarnings;
 
@@ -80,7 +79,7 @@ public partial class TransactionVM : ObservableObject
                       context.IsGoal, context.AmountValidationAccount, context.IgnoreMaximumSpending).IsValid &&
                   TransactionValidationHelper.ValidateTagSpending(
                       Type == TransactionType.Expense, context.IsRecurring || context.IsInstallments,
-                      IsExcludedFromBudget, Tag, context.CurrentTagSpending, amount).IsValid;
+                      ExpenseCategory, Tag, context.CurrentTagSpending, amount).IsValid;
     }
 
     partial void OnAmountChanged(decimal value) => NotifyChildStateChanged();
@@ -153,8 +152,7 @@ public partial class TransactionVM : ObservableObject
             Tag?.Id == other.Tag?.Id &&
             IsPinned == other.IsPinned &&
             IsIoU == other.IsIoU &&
-            ShouldAffectBalance == other.ShouldAffectBalance &&
-            IsExcludedFromBudget == other.IsExcludedFromBudget;
+            ShouldAffectBalance == other.ShouldAffectBalance;
     }
 
 }

@@ -152,7 +152,7 @@ public sealed class AccountReconciliationVMTests
         Assert.NotNull(savedTransaction);
         Assert.Equal(TransactionType.Income, savedTransaction.Type);
         Assert.Equal(25m, savedTransaction.Amount);
-        Assert.Null(savedTransaction.ExpenseCategory);
+        Assert.Equal(ExpenseCategory.Excluded, savedTransaction.ExpenseCategory);
         Assert.Equal(525m, persistedSource.Balance);
     }
 

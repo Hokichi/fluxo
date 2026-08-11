@@ -1495,8 +1495,7 @@ public partial class MainWindow : Window, IPopupHost
             var recurring = (await appData.GetRecurringTransactionsAsync()).Where(item => entityIds.Contains(item.Id)).Select(item => new RecurringTransactionVM
             {
                 Id = item.Id, Name = item.Name, Amount = item.Amount, Type = item.Type, Category = item.Category,
-                Source = new AccountVM { Id = item.SourceId }, Tag = item.TagId is null ? null : new TagVM { Id = item.TagId.Value },
-                IsExcludedFromBudget = item.IsExcludedFromBudget
+                Source = new AccountVM { Id = item.SourceId }, Tag = item.TagId is null ? null : new TagVM { Id = item.TagId.Value }
             }).ToList();
             request = new TransactionPopupRequest { Kind = TransactionPopupRequestKind.RecurringProcessing, RecurringTransactions = recurring };
         }

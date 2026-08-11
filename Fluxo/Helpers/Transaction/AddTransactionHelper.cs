@@ -39,7 +39,6 @@ public static class AddTransactionHelper
         int? GoalId,
         bool IsIoU,
         bool ShouldAffectBalance,
-        bool IsExcludedFromBudget,
         bool LockTransactionType);
 
     public sealed record State(

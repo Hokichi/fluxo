@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
@@ -11,7 +12,7 @@ namespace Fluxo.Services.Backups;
 
 public sealed class UserBackupService(IAppDataService appData) : IUserBackupService
 {
-    internal const int CurrentSchemaVersion = 2;
+    internal const int CurrentSchemaVersion = 3;
     private const string DataRestorationTagName = "Data Restoration";
     private const string DataRestorationTagHex = "#e9c178";
     private static readonly HashSet<string> LegacyBudgetAllocationUserSettingNames = new(StringComparer.OrdinalIgnoreCase)
@@ -55,8 +56,7 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
     public async Task<UserBackupManifest> ReadManifestAsync(string filePath, CancellationToken cancellationToken = default)
     {
         await using var stream = File.OpenRead(filePath);
-        var document = await JsonSerializer.DeserializeAsync<FluxoUserBackupDocument>(
-            stream, JsonOptions, cancellationToken);
+        var document = await DeserializeDocumentAsync(stream, cancellationToken);
 
         if (document is null)
             throw new InvalidDataException("Backup file is empty or invalid.");
@@ -490,8 +490,7 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
         CancellationToken cancellationToken)
     {
         await using var stream = File.OpenRead(filePath);
-        var document = await JsonSerializer.DeserializeAsync<FluxoUserBackupDocument>(
-            stream, JsonOptions, cancellationToken);
+        var document = await DeserializeDocumentAsync(stream, cancellationToken);
 
         if (document is null)
             throw new InvalidDataException("Backup file is empty or invalid.");
@@ -506,6 +505,63 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
             throw new InvalidDataException("Backup file is missing entities.");
 
         return document;
+    }
+
+    private static async Task<FluxoUserBackupDocument?> DeserializeDocumentAsync(
+        Stream stream,
+        CancellationToken cancellationToken)
+    {
+        var root = await JsonNode.ParseAsync(stream, cancellationToken: cancellationToken) as JsonObject;
+        if (root is null)
+            return null;
+
+        if (root["schemaVersion"]?.GetValue<int>() == 2)
+            UpgradeVersionTwoBackup(root);
+
+        return root.Deserialize<FluxoUserBackupDocument>(JsonOptions);
+    }
+
+    private static void UpgradeVersionTwoBackup(JsonObject root)
+    {
+        var entities = root["entities"] as JsonObject;
+        var transactions = entities?["transactions"] as JsonArray;
+        var parentIds = transactions?
+            .OfType<JsonObject>()
+            .Select(transaction => transaction["parentTransactionBackupId"]?.GetValue<int?>())
+            .Where(parentId => parentId.HasValue)
+            .Select(parentId => parentId!.Value)
+            .ToHashSet() ?? [];
+
+        foreach (var transaction in transactions?.OfType<JsonObject>() ?? [])
+        {
+            var backupId = transaction["backupId"]?.GetValue<int>() ?? 0;
+            var isLeaf = !parentIds.Contains(backupId);
+            var isExcluded = transaction["isExcludedFromBudget"]?.GetValue<bool>() == true;
+            var isIncome = string.Equals(transaction["type"]?.GetValue<string>(), nameof(TransactionType.Income),
+                StringComparison.OrdinalIgnoreCase);
+            var isIoU = transaction["isIoU"]?.GetValue<bool>() == true;
+
+            if (!isLeaf)
+                transaction["expenseCategory"] = null;
+            else if (isExcluded || isIncome || isIoU)
+                transaction["expenseCategory"] = nameof(ExpenseCategory.Excluded);
+
+            transaction.Remove("isExcludedFromBudget");
+        }
+
+        foreach (var recurring in (entities?["recurringTransactions"] as JsonArray)?.OfType<JsonObject>() ?? [])
+        {
+            var isExcluded = recurring["isExcludedFromBudget"]?.GetValue<bool>() == true;
+            var isIncome = string.Equals(recurring["type"]?.GetValue<string>(),
+                nameof(RecurringTransactionType.Income), StringComparison.OrdinalIgnoreCase);
+            var isGoal = recurring["goalBackupId"] is not null;
+            recurring["category"] = isExcluded || isIncome || isGoal
+                ? nameof(ExpenseCategory.Excluded)
+                : nameof(ExpenseCategory.Needs);
+            recurring.Remove("isExcludedFromBudget");
+        }
+
+        root["schemaVersion"] = CurrentSchemaVersion;
     }
 
     private async Task AppendTagsAsync(
@@ -790,18 +846,24 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
                 goalId = mappedGoalId;
             }
 
+            var recurringType = ParseEnumValue<RecurringTransactionType>(backupRecurring.Type, "type");
+            var category = ParseOptionalExpenseCategory(backupRecurring.Category);
+
             await appData.AddRecurringTransactionAsync(new RecurringTransaction
             {
                 Name = backupRecurring.Name,
                 Amount = backupRecurring.Amount,
                 RecurringPeriod = ParseEnumValue<RecurringPeriod>(backupRecurring.RecurringPeriod, "recurringPeriod"),
                 RecurringTime = backupRecurring.RecurringTime,
-                Type = ParseEnumValue<RecurringTransactionType>(backupRecurring.Type, "type"),
+                Type = recurringType,
+                Category = recurringType is RecurringTransactionType.Income or RecurringTransactionType.GoalUpdate ||
+                           goalId is not null
+                    ? ExpenseCategory.Excluded
+                    : category ?? ExpenseCategory.Needs,
                 SourceId = sourceId,
                 TagId = tagId,
                 GoalId = goalId,
                 IsEnabled = backupRecurring.IsEnabled,
-                IsExcludedFromBudget = backupRecurring.IsExcludedFromBudget,
                 EndDate = backupRecurring.EndDate
             }, cancellationToken);
         }
@@ -884,10 +946,17 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
     private static TEnum ParseEnumValue<TEnum>(string value, string fieldName)
         where TEnum : struct, Enum
     {
-        if (Enum.TryParse<TEnum>(value, true, out var parsed))
+        if (Enum.TryParse<TEnum>(value, true, out var parsed) && Enum.IsDefined(parsed))
             return parsed;
 
         throw new InvalidDataException($"Invalid {fieldName} value '{value}'.");
+    }
+
+    private static ExpenseCategory? ParseOptionalExpenseCategory(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? null
+            : ParseEnumValue<ExpenseCategory>(value, "expenseCategory");
     }
 
     private async Task AddSelectedTagsAsync(
@@ -985,7 +1054,6 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
                 transaction.IsPinned,
                 transaction.IsForDeletion,
                 transaction.IsIoU,
-                transaction.IsExcludedFromBudget,
                 transaction.ShouldAffectBalance));
         }
     }
@@ -998,13 +1066,24 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
         CancellationToken cancellationToken)
     {
         var restored = new Dictionary<int, Transaction>();
+        var parentBackupIds = document.Entities.Transactions
+            .Where(transaction => transaction.ParentTransactionBackupId.HasValue)
+            .Select(transaction => transaction.ParentTransactionBackupId!.Value)
+            .ToHashSet();
         foreach (var backup in document.Entities.Transactions)
         {
-            if (!Enum.TryParse<TransactionType>(backup.Type, out var type) ||
-                (type == TransactionType.Expense && !selection.Includes(DataManagementEntityKind.Expenses)) ||
+            var type = ParseEnumValue<TransactionType>(backup.Type, "type");
+            if ((type == TransactionType.Expense && !selection.Includes(DataManagementEntityKind.Expenses)) ||
                 (type == TransactionType.Income && !selection.Includes(DataManagementEntityKind.Incomes)) ||
                 !sourceIdMap.TryGetValue(backup.AccountBackupId, out var accountId))
                 continue;
+
+            var category = ParseOptionalExpenseCategory(backup.ExpenseCategory);
+            ExpenseCategory? normalizedCategory = parentBackupIds.Contains(backup.BackupId)
+                ? null
+                : type == TransactionType.Income || backup.IsIoU
+                    ? ExpenseCategory.Excluded
+                    : category ?? ExpenseCategory.Needs;
 
             var transaction = new Transaction
             {
@@ -1014,13 +1093,12 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
                 Amount = backup.Amount,
                 OccurredOn = backup.OccurredOn,
                 Notes = backup.Notes,
-                ExpenseCategory = Enum.TryParse<ExpenseCategory>(backup.ExpenseCategory, out var category) ? category : null,
+                ExpenseCategory = normalizedCategory,
                 TagId = backup.TagBackupId is { } tagBackupId && tagIdMap.TryGetValue(tagBackupId, out var tagId) ? tagId : null,
                 IsPinned = backup.IsPinned,
                 IsForDeletion = backup.IsForDeletion,
                 IsIoU = backup.IsIoU,
-                ShouldAffectBalance = backup.RestoredShouldAffectBalance,
-                IsExcludedFromBudget = backup.IsExcludedFromBudget
+                ShouldAffectBalance = backup.RestoredShouldAffectBalance
             };
             await appData.AddTransactionAsync(transaction, cancellationToken);
             restored[backup.BackupId] = transaction;
@@ -1084,11 +1162,11 @@ public sealed class UserBackupService(IAppDataService appData) : IUserBackupServ
                 transaction.RecurringPeriod.ToString(),
                 transaction.RecurringTime,
                 transaction.Type.ToString(),
+                transaction.Category?.ToString(),
                 sourceBackupId,
                 tagBackupId,
                 goalBackupId,
                 transaction.IsEnabled,
-                transaction.IsExcludedFromBudget,
                 transaction.EndDate));
         }
     }

@@ -66,12 +66,12 @@ public static class TransactionValidationHelper
     public static Result ValidateTagSpending(
         bool isExpense,
         bool isRecurring,
-        bool isExcludedFromBudget,
+        ExpenseCategory? category,
         TagVM? tag,
         decimal currentSpending,
         decimal amount)
     {
-        if (!isExpense || isRecurring || isExcludedFromBudget || tag is not { SpendingLimit: > 0m })
+        if (!isExpense || isRecurring || category == ExpenseCategory.Excluded || tag is not { SpendingLimit: > 0m })
             return Result.Success();
 
         return currentSpending + amount <= tag.SpendingLimit.Value

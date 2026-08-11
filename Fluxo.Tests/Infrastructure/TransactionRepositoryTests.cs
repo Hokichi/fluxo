@@ -25,7 +25,7 @@ public sealed class TransactionRepositoryTests
             var parent = new Transaction
             {
                 Type = TransactionType.Expense, Account = account, Tag = tag, Name = "Lunch",
-                Amount = 10m, OccurredOn = DateTime.Today, Notes = "", IsExcludedFromBudget = true
+                Amount = 10m, OccurredOn = DateTime.Today, Notes = "", ExpenseCategory = ExpenseCategory.Excluded
             };
             setup.Transactions.AddRange(parent, new Transaction
             {

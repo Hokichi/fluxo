@@ -147,6 +147,9 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
                 persisted.RecurringPeriod = draft.RecurringPeriod;
                 persisted.RecurringTime = draft.RecurringTime;
                 persisted.EndDate = draft.EndDate;
+                persisted.Category = draft.Type == RecurringTransactionType.Income
+                    ? ExpenseCategory.Excluded
+                    : draft.Category;
                 appData.UpdateRecurringTransaction(persisted);
             }
             else
@@ -158,7 +161,9 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
                     RecurringPeriod = draft.RecurringPeriod,
                     RecurringTime = draft.RecurringTime,
                     Type = draft.Type,
-                    Category = draft.Type == RecurringTransactionType.Expense ? draft.Category : null,
+                    Category = draft.Type == RecurringTransactionType.Income
+                        ? ExpenseCategory.Excluded
+                        : draft.Category,
                     SourceId = mappedSourceId,
                     TagId = tagId,
                     IsEnabled = true,
@@ -209,7 +214,9 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
                 expense.Type,
                 expense.Name,
                 expense.Amount,
-                expense.Category,
+                expense.Type == RecurringTransactionType.Income
+                    ? ExpenseCategory.Excluded
+                    : expense.Category,
                 expense.SourceId,
                 expense.RecurringPeriod,
                 expense.RecurringTime,
@@ -244,7 +251,9 @@ public partial class QuickSetupWizardRecurringTransactionsVM : ObservableObject,
             input.Type,
             input.Name,
             input.Amount,
-            input.Type == RecurringTransactionType.Expense ? input.Category ?? ExpenseCategory.Needs : null,
+            input.Type == RecurringTransactionType.Income
+                ? ExpenseCategory.Excluded
+                : input.Category ?? ExpenseCategory.Needs,
             input.AccountId,
             input.RecurringPeriod,
             input.RecurringTime,

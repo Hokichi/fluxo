@@ -103,6 +103,7 @@ public partial class TransferFundsVM : ObservableObject
                 Amount = input.Amount,
                 OccurredOn = input.Date,
                 Notes = input.Note,
+                ExpenseCategory = ExpenseCategory.Excluded,
                 SourceAccountId = target.Id
             };
 

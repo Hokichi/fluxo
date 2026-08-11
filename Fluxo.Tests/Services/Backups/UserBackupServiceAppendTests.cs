@@ -10,11 +10,137 @@ namespace Fluxo.Tests.Services.Backups;
 public sealed class UserBackupServiceAppendTests
 {
     [Fact]
+    public async Task UserBackupServiceAppend_VersionThree_NormalizesStructuralCategories()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns((IReadOnlyList<Account>)[]);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns((IReadOnlyList<Tag>)[]);
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns((IReadOnlyList<SavingGoal>)[]);
+        appData.AddAccountAsync(Arg.Any<Account>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            call.Arg<Account>().Id = 10;
+            return Task.CompletedTask;
+        });
+
+        var transactions = new List<Transaction>();
+        appData.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            var transaction = call.Arg<Transaction>();
+            transaction.Id = 100 + transactions.Count;
+            transactions.Add(transaction);
+            return Task.CompletedTask;
+        });
+        var recurringTransactions = new List<RecurringTransaction>();
+        appData.AddRecurringTransactionAsync(Arg.Any<RecurringTransaction>(), Arg.Any<CancellationToken>())
+            .Returns(call =>
+            {
+                recurringTransactions.Add(call.Arg<RecurringTransaction>());
+                return Task.CompletedTask;
+            });
+
+        var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
+        await File.WriteAllTextAsync(tempFile, """
+        {
+          "schemaVersion": 3,
+          "createdAt": "2026-08-11T00:00:00Z",
+          "includedEntities": [ "accounts", "expenses", "incomes", "recurringTransactions" ],
+          "entities": {
+            "accounts": [ { "backupId": 1, "name": "Wallet", "accountType": "Cash" } ],
+            "transactions": [
+              { "backupId": 1, "type": "Expense", "accountBackupId": 1, "name": "Parent", "amount": 20, "occurredOn": "2026-08-11", "notes": "", "expenseCategory": "Excluded", "parentTransactionBackupId": null },
+              { "backupId": 2, "type": "Expense", "accountBackupId": 1, "name": "Child", "amount": 10, "occurredOn": "2026-08-11", "notes": "", "expenseCategory": "Wants", "parentTransactionBackupId": 1 },
+              { "backupId": 3, "type": "Income", "accountBackupId": 1, "name": "Income", "amount": 10, "occurredOn": "2026-08-11", "notes": "", "expenseCategory": "Needs" },
+              { "backupId": 4, "type": "Expense", "accountBackupId": 1, "name": "IoU", "amount": 10, "occurredOn": "2026-08-11", "notes": "", "expenseCategory": "Savings", "isIoU": true }
+            ],
+            "recurringTransactions": [
+              { "backupId": 1, "name": "Salary", "amount": 100, "recurringPeriod": "Monthly", "recurringTime": 1, "type": "Income", "category": "Needs", "sourceBackupId": 1, "isEnabled": true },
+              { "backupId": 2, "name": "Goal", "amount": 10, "recurringPeriod": "Monthly", "recurringTime": 1, "type": "GoalUpdate", "category": "Savings", "sourceBackupId": 1, "isEnabled": true }
+            ]
+          }
+        }
+        """);
+
+        try
+        {
+            var result = await new UserBackupService(appData).AppendAsync(
+                tempFile,
+                new UserBackupSelection(new HashSet<DataManagementEntityKind>
+                {
+                    DataManagementEntityKind.Accounts,
+                    DataManagementEntityKind.Expenses,
+                    DataManagementEntityKind.Incomes,
+                    DataManagementEntityKind.RecurringTransactions
+                }),
+                new Dictionary<string, DataManagementConflictDecision>());
+
+            Assert.True(result.IsSuccess, result.ErrorMessage);
+            Assert.Null(transactions.Single(transaction => transaction.Name == "Parent").ExpenseCategory);
+            Assert.Equal(ExpenseCategory.Wants,
+                transactions.Single(transaction => transaction.Name == "Child").ExpenseCategory);
+            Assert.Equal(ExpenseCategory.Excluded,
+                transactions.Single(transaction => transaction.Name == "Income").ExpenseCategory);
+            Assert.Equal(ExpenseCategory.Excluded,
+                transactions.Single(transaction => transaction.Name == "IoU").ExpenseCategory);
+            Assert.All(recurringTransactions,
+                transaction => Assert.Equal(ExpenseCategory.Excluded, transaction.Category));
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    [Fact]
+    public async Task UserBackupServiceAppend_VersionThree_RejectsUndefinedCategory()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns((IReadOnlyList<Account>)[]);
+        appData.AddAccountAsync(Arg.Any<Account>(), Arg.Any<CancellationToken>()).Returns(call =>
+        {
+            call.Arg<Account>().Id = 10;
+            return Task.CompletedTask;
+        });
+        var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.json");
+        await File.WriteAllTextAsync(tempFile, """
+        {
+          "schemaVersion": 3,
+          "createdAt": "2026-08-11T00:00:00Z",
+          "includedEntities": [ "accounts", "expenses" ],
+          "entities": {
+            "accounts": [ { "backupId": 1, "name": "Wallet", "accountType": "Cash" } ],
+            "transactions": [
+              { "backupId": 1, "type": "Expense", "accountBackupId": 1, "name": "Invalid", "amount": 10, "occurredOn": "2026-08-11", "notes": "", "expenseCategory": "999" }
+            ]
+          }
+        }
+        """);
+
+        try
+        {
+            var result = await new UserBackupService(appData).AppendAsync(
+                tempFile,
+                new UserBackupSelection(new HashSet<DataManagementEntityKind>
+                {
+                    DataManagementEntityKind.Accounts,
+                    DataManagementEntityKind.Expenses
+                }),
+                new Dictionary<string, DataManagementConflictDecision>());
+
+            Assert.False(result.IsSuccess);
+            Assert.Contains("Invalid expenseCategory value '999'.", result.ErrorMessage);
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    [Fact]
     public void UserBackupServiceAppend_LegacyIoUWithoutBalanceFlag_RestoresAsPosted()
     {
         var backup = new BackupTransaction(
             1, "Expense", 2, "Loan", 10m, DateTime.Today, string.Empty,
-            nameof(ExpenseCategory.Needs), 3, null, false, false, true, false);
+            nameof(ExpenseCategory.Needs), 3, null, false, false, true, null);
 
         Assert.True(backup.RestoredShouldAffectBalance);
     }
@@ -150,10 +276,10 @@ public sealed class UserBackupServiceAppendTests
               { "backupId": 2, "name": "Missing Tag", "hexCode": "#123456", "isSystemTag": false }
             ],
             "transactions": [
-              { "backupId": 3, "type": "Expense", "accountBackupId": 1, "tagBackupId": 2, "name": "Lunch", "amount": 10, "occurredOn": "2026-05-26T00:00:00Z", "notes": "", "expenseCategory": "Needs", "isPinned": false, "isForDeletion": false, "isIoU": false, "isExcludedFromBudget": false }
+              { "backupId": 3, "type": "Expense", "accountBackupId": 1, "tagBackupId": 2, "name": "Lunch", "amount": 10, "occurredOn": "2026-05-26T00:00:00Z", "notes": "", "expenseCategory": "Needs", "isPinned": false, "isForDeletion": false, "isIoU": false, "isExcludedFromBudget": true }
             ],
             "recurringTransactions": [
-              { "backupId": 4, "name": "Gym", "amount": 40, "recurringPeriod": "Monthly", "recurringTime": 1, "type": "Expense", "sourceBackupId": 1, "tagBackupId": 2, "goalBackupId": null, "isEnabled": true }
+              { "backupId": 4, "name": "Gym", "amount": 40, "recurringPeriod": "Monthly", "recurringTime": 1, "type": "Expense", "sourceBackupId": 1, "tagBackupId": 2, "goalBackupId": null, "isEnabled": true, "isExcludedFromBudget": true }
             ]
           }
         }
@@ -175,9 +301,11 @@ public sealed class UserBackupServiceAppendTests
             Assert.True(result.IsSuccess, result.ErrorMessage);
             var appendedExpense = Assert.Single(appendedExpenses);
             Assert.Equal(77, appendedExpense.TagId);
+            Assert.Equal(ExpenseCategory.Excluded, appendedExpense.ExpenseCategory);
 
             var recurring = Assert.Single(appendedRecurring);
             Assert.Equal(77, recurring.TagId);
+            Assert.Equal(ExpenseCategory.Excluded, recurring.Category);
         }
         finally
         {

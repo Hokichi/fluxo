@@ -239,7 +239,6 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
             IsPinned = snapshot.IsPinned,
             IsIoU = snapshot.IsIoU,
             ShouldAffectBalance = snapshot.ShouldAffectBalance,
-            IsExcludedFromBudget = snapshot.IsExcludedFromBudget,
             Account = new AccountVM
             {
                 Id = snapshot.SourceAccountId,

@@ -136,6 +136,7 @@ public sealed class SettingsIoUsTabVMTests
                 income.Type == TransactionType.Income &&
                 income.Amount == 25m &&
                 income.SourceAccountId == 10 &&
+                income.ExpenseCategory == ExpenseCategory.Excluded &&
                 !income.IsIoU &&
                 income.Name == "Lunch lend - IOU resolved"),
             Arg.Any<CancellationToken>());
