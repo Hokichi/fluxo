@@ -87,6 +87,31 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
+    public void Clicking_selected_tag_clears_transaction_tag()
+    {
+        RunOnStaThread(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
+            var tag = new TagVM { Id = 1, Name = "General", HexCode = "#111111" };
+            viewModel.Tags.Add(tag);
+            var popup = CreatePopup(viewModel);
+            popup.Measure(new Size(800, 600));
+            popup.Arrange(new Rect(0, 0, 800, 600));
+            popup.UpdateLayout();
+            var tags = Assert.IsType<ListBox>(popup.FindName("TagsListBox"));
+            var scrollViewer = Assert.IsType<FadingScrollViewer>(popup.FindName("TagsScrollViewer"));
+            tags.SelectedItem = tag;
+            viewModel.SelectedTag = tag;
+
+            RaisePreviewTagClick(popup, scrollViewer, tag);
+
+            Assert.Null(tags.SelectedItem);
+            Assert.Null(viewModel.SelectedTag);
+        });
+    }
+
+    [Fact]
     public void Shift_wheel_is_the_only_horizontal_tag_scroll_gesture()
     {
         Assert.True(TransactionPopup.IsHorizontalTagScroll(ModifierKeys.Shift));

@@ -29,6 +29,7 @@ public partial class TransactionPopup : BasePopup
     private Point _tagScrollStartPoint;
     private double _tagScrollStartOffset;
     private TagVM? _tagPointerDownTag;
+    private bool _wasSelectedTagPointerDown;
     private bool _isDraggingTags;
 
     public TransactionPopup(
@@ -595,6 +596,7 @@ public partial class TransactionPopup : BasePopup
         _tagScrollStartPoint = e.GetPosition(scrollViewer);
         _tagScrollStartOffset = scrollViewer.HorizontalOffset;
         _tagPointerDownTag = GetTagFromSource((e.OriginalSource ?? e.Source) as DependencyObject);
+        _wasSelectedTagPointerDown = ReferenceEquals(_tagPointerDownTag, _viewModel.SelectedTag);
         _isDraggingTags = false;
         scrollViewer.CaptureMouse();
     }
@@ -628,10 +630,19 @@ public partial class TransactionPopup : BasePopup
             return;
 
         var selectedTag = !_isDraggingTags ? _tagPointerDownTag : null;
+        var shouldDeselect = selectedTag is not null && _wasSelectedTagPointerDown;
         ResetTagPointerState(scrollViewer);
 
         if (selectedTag is null)
             return;
+
+        if (shouldDeselect)
+        {
+            TagsListBox.SelectedItem = null;
+            _viewModel.SelectedTag = null;
+            e.Handled = true;
+            return;
+        }
 
         TagsListBox.SelectedItem = selectedTag;
         _viewModel.SelectedTag = selectedTag;
@@ -672,6 +683,7 @@ public partial class TransactionPopup : BasePopup
             scrollViewer.ReleaseMouseCapture();
 
         _tagPointerDownTag = null;
+        _wasSelectedTagPointerDown = false;
         _isDraggingTags = false;
     }
 
