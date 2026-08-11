@@ -586,6 +586,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 options.StartDate, options.InstallmentEndDate, transaction.Account,
                 GetCurrentTagSpending(transaction, options), LoadedTransaction?.Id > 0,
                 splitValidation.IsSuccess));
+            RefreshWarningStates(transaction, options.IsRecurring);
         }
 
         OnPropertyChanged(nameof(CanPersist));
@@ -717,6 +718,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(InstallmentSummaryText));
         RefreshAmountWarning();
         NotifyFormStateChanged();
+        TryAdoptCurrentBulkTransaction();
     }
 
     partial void OnIsRecurringChanged(bool value)
@@ -739,7 +741,6 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         RefreshActiveValidation(nameof(AmountText));
         RefreshAmountWarning();
         NotifyFormStateChanged();
-        TryAdoptCurrentBulkTransaction();
     }
 
     public async Task<bool> InitializeAsync(CancellationToken cancellationToken = default)
@@ -2691,9 +2692,21 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         OnPropertyChanged(nameof(IsAmountWarning));
     }
 
-    private string GetDailyAllowanceWarning()
+    private string GetDailyAllowanceWarning() => GetDailyAllowanceWarning(
+        IsExpense,
+        IsRecurringTransactionMode,
+        IsExcludedFromBudget,
+        AmountText,
+        SelectedDate);
+
+    private string GetDailyAllowanceWarning(
+        bool isExpense,
+        bool isRecurring,
+        bool isExcludedFromBudget,
+        decimal amount,
+        DateTime occurredOn)
     {
-        if (!IsExpense || IsRecurringTransactionMode || IsExcludedFromBudget || AmountText <= 0m)
+        if (!isExpense || isRecurring || isExcludedFromBudget || amount <= 0m)
             return string.Empty;
 
         try
@@ -2703,19 +2716,32 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 .Select(_appData.GetTransactionsAsync().GetAwaiter().GetResult())
                 .Where(transaction => !IsLoadedTransaction(transaction))
                 .Where(transaction => transaction.Type == TransactionType.Expense &&
-                                      transaction.OccurredOn.Date == SelectedDate.Date)
+                                      transaction.OccurredOn.Date == occurredOn.Date)
                 .Sum(transaction => transaction.Amount);
             var allowance = BudgetAllocationCalculator.CalculateDailyAllowance(
                 allocation,
-                SelectedDate.Date,
+                occurredOn.Date,
                 CalculateBudgetAvailableBaseAsync(allocation).GetAwaiter().GetResult());
 
-            return spent + AmountText > allowance ? "Over Daily Allowance" : string.Empty;
+            return spent + amount > allowance ? "Over Daily Allowance" : string.Empty;
         }
         catch
         {
             return string.Empty;
         }
+    }
+
+    private void RefreshWarningStates(TransactionVM transaction, bool isRecurring)
+    {
+        transaction.HasWarnings = !string.IsNullOrWhiteSpace(GetDailyAllowanceWarning(
+            transaction.Type == TransactionType.Expense,
+            isRecurring,
+            transaction.IsExcludedFromBudget,
+            transaction.Amount,
+            transaction.OccurredOn));
+
+        foreach (var child in transaction.ChildTransactions)
+            RefreshWarningStates(child, isRecurring);
     }
 
     private bool IsLoadedTransaction(Transaction transaction) =>

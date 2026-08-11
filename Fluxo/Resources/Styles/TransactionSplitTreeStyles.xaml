@@ -2,7 +2,31 @@
     x:Class="Fluxo.Resources.Styles.TransactionSplitTreeStyles"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
+
+    <Style x:Key="TransactionCardStatusIconStyle" TargetType="components:Icon">
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Height" Value="12" />
+        <Setter Property="Margin" Value="0,3,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+        <Setter Property="Path" Value="{StaticResource ExclamationTriangle}" />
+        <Setter Property="Visibility" Value="Collapsed" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
+                <Setter Property="Visibility" Value="Visible" />
+            </DataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsValid, Mode=OneWay}" Value="True" />
+                    <Condition Binding="{Binding HasWarnings, Mode=OneWay}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Color" Value="{StaticResource Brush.Warning}" />
+                <Setter Property="Visibility" Value="Visible" />
+            </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
 
     <Style x:Key="SplitTransactionTreeViewStyle" TargetType="TreeView">
         <Setter Property="Background" Value="Transparent" />
@@ -50,9 +74,6 @@
             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" Value="True">
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
-            </DataTrigger>
         </Style.Triggers>
     </Style>
 
@@ -63,9 +84,6 @@
         <Style.Triggers>
             <DataTrigger Binding="{Binding SelectedSplitTransaction, Mode=OneWay}" Value="{x:Null}">
                 <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -119,12 +137,16 @@
                         Foreground="{StaticResource Brush.Text.Primary}"
                         Text="{Binding Name, Mode=OneWay}"
                         TextTrimming="CharacterEllipsis" />
-                    <TextBlock
+                    <StackPanel
                         Grid.Column="1"
-                        Margin="12,0,0,0"
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
-                        Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                        Margin="12,0,0,0">
+                        <TextBlock
+                            HorizontalAlignment="Right"
+                            FontFamily="{StaticResource Bold}"
+                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                        <components:Icon Style="{StaticResource TransactionCardStatusIconStyle}" />
+                    </StackPanel>
                 </Grid>
             </Button>
         </Grid>
@@ -182,12 +204,16 @@
                                 Foreground="{StaticResource Brush.Text.Primary}"
                                 Text="{Binding Name, Mode=OneWay}"
                                 TextTrimming="CharacterEllipsis" />
-                            <TextBlock
+                            <StackPanel
                                 Grid.Column="1"
-                                Margin="12,0,0,0"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
-                                Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                Margin="12,0,0,0">
+                                <TextBlock
+                                    HorizontalAlignment="Right"
+                                    FontFamily="{StaticResource Bold}"
+                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                <components:Icon Style="{StaticResource TransactionCardStatusIconStyle}" />
+                            </StackPanel>
                         </Grid>
                         <ProgressBar
                             Height="12"

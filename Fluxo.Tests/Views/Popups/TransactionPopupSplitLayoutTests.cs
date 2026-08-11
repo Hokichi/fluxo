@@ -263,6 +263,77 @@ public sealed class TransactionPopupSplitLayoutTests
     }
 
     [Fact]
+    public void Queue_border_only_marks_active_item_and_status_icon_distinguishes_errors_from_warnings()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var popup = CreatePopup();
+            var transaction = new TransactionVM { IsValid = false };
+            var item = new ListBoxItem
+            {
+                DataContext = transaction,
+                Style = Assert.IsType<Style>(popup.FindResource("TransactionQueueListBoxItemStyle"))
+            };
+            item.ApplyTemplate();
+            var border = Assert.IsType<Border>(item.Template.FindName("ItemBackground", item));
+            var defaultBorder = popup.FindResource("Brush.Border.Default");
+
+            Assert.Equal(defaultBorder, border.BorderBrush);
+
+            item.IsSelected = true;
+
+            Assert.Equal(popup.FindResource("Brush.Border.Focus"), border.BorderBrush);
+
+            var icon = new Icon
+            {
+                DataContext = transaction,
+                Style = Assert.IsType<Style>(popup.FindResource("TransactionCardStatusIconStyle"))
+            };
+            Assert.Equal(Visibility.Visible, icon.Visibility);
+            Assert.Equal(popup.FindResource("Brush.Danger"), icon.Color);
+
+            transaction.IsValid = true;
+            transaction.HasWarnings = true;
+
+            Assert.Equal(Visibility.Visible, icon.Visibility);
+            Assert.Equal(popup.FindResource("Brush.Warning"), icon.Color);
+
+            transaction.HasWarnings = false;
+
+            Assert.Equal(Visibility.Collapsed, icon.Visibility);
+        });
+    }
+
+    [Fact]
+    public void Queue_and_split_templates_place_status_icon_below_amount()
+    {
+        RunOnStaThread(() =>
+        {
+            EnsureApplicationResources();
+            var popup = CreatePopup();
+            var transaction = new TransactionVM { Name = "Lunch", Amount = 10m, IsValid = false };
+
+            foreach (var resourceName in new[] { "TransactionQueueItemTemplate", "SplitTransactionLeafTemplate" })
+            {
+                var template = Assert.IsType<DataTemplate>(popup.FindResource(resourceName));
+                var root = Assert.IsAssignableFrom<FrameworkElement>(template.LoadContent());
+                root.DataContext = transaction;
+                root.Measure(new Size(400, 200));
+                root.Arrange(new Rect(0, 0, 400, 200));
+                root.UpdateLayout();
+                var icon = Assert.Single(FindControls<Icon>(root));
+                var amount = FindControls<TextBlock>(root).Single(textBlock =>
+                    textBlock.GetBindingExpression(TextBlock.TextProperty)?.ParentBinding.Path.Path ==
+                    nameof(TransactionVM.Amount));
+
+                Assert.IsType<StackPanel>(LogicalTreeHelper.GetParent(icon));
+                Assert.Same(LogicalTreeHelper.GetParent(amount), LogicalTreeHelper.GetParent(icon));
+            }
+        });
+    }
+
+    [Fact]
     public void SplitPanel_without_subtransactions_shows_root_dashed_add_button()
     {
         RunOnStaThread(() =>

@@ -196,15 +196,11 @@
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
                                 </Trigger>
                                 <Trigger Property="IsSelected" Value="True">
                                     <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
                                     <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
                                 </Trigger>
-                                <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
-                                </DataTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
@@ -285,14 +281,17 @@
                             Text="{Binding Account.Name, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis" />
                     </StackPanel>
-                    <TextBlock
+                    <StackPanel
                         Grid.Column="2"
-                        Margin="12,0,0,0"
-                        HorizontalAlignment="Right"
-                        FontFamily="{DynamicResource Bold}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
-                        Text="{Binding Amount, StringFormat={}{0:N0}, Mode=OneWay}" />
+                        Margin="12,0,0,0">
+                        <TextBlock
+                            HorizontalAlignment="Right"
+                            FontFamily="{DynamicResource Bold}"
+                            FontSize="13"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
+                            Text="{Binding Amount, StringFormat={}{0:N0}, Mode=OneWay}" />
+                        <components:Icon Style="{StaticResource TransactionCardStatusIconStyle}" />
+                    </StackPanel>
                 </Grid>
             </DataTemplate>
 
@@ -1600,12 +1599,18 @@
                                             Foreground="{StaticResource Brush.Text.Primary}"
                                             Text="{Binding RootTransaction.Name, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis" />
-                                        <TextBlock
+                                        <StackPanel
                                             Grid.Column="1"
-                                            Margin="12,0,0,0"
-                                            FontFamily="{StaticResource Bold}"
-                                            Foreground="{StaticResource Brush.Text.Primary}"
-                                            Text="{Binding RootTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                            Margin="12,0,0,0">
+                                            <TextBlock
+                                                HorizontalAlignment="Right"
+                                                FontFamily="{StaticResource Bold}"
+                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Text="{Binding RootTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
+                                            <components:Icon
+                                                DataContext="{Binding RootTransaction, Mode=OneWay}"
+                                                Style="{StaticResource TransactionCardStatusIconStyle}" />
+                                        </StackPanel>
                                     </Grid>
                                     <ProgressBar
                                         Grid.Row="1"

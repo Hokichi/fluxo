@@ -211,6 +211,37 @@ public sealed class TransactionPopupVMValidationTests
     }
 
     [Fact]
+    public void Warning_only_split_shows_warning_state_without_blocking_save()
+    {
+        RunInSta(() =>
+        {
+            var selectedDate = new DateTime(2026, 7, 1);
+            var included = CreateTransaction("Lunch", 8m, sourceId: 1);
+            included.OccurredOn = selectedDate;
+            var allocation = new BudgetAllocation
+            {
+                AllocationLimit = 70m,
+                AllocationPeriod = AllocationPeriod.Weekly
+            };
+            var peers = TransactionPopupVMFactory.CreatePeers(
+                CreateMainViewModel([CreateCheckingSource(balance: 500m)]),
+                CreateAppData(allocation, [included]));
+            peers.Popup.NameText = "Root";
+            peers.Popup.AmountText = 3m;
+            peers.Popup.SelectedDate = selectedDate;
+            peers.Popup.IsBulkMode = true;
+            peers.Popup.SelectedSidePanel = TransactionPopupSidePanel.Split;
+            peers.Splits.AddSplitCommand.Execute(null);
+            peers.Popup.NameText = "Child";
+            var child = Assert.Single(peers.Bulk.QueuedTransactions.Single().ChildTransactions);
+
+            Assert.True(child.IsValid);
+            Assert.True(child.HasWarnings);
+            Assert.True(peers.Popup.CanPersist);
+        });
+    }
+
+    [Fact]
     public void PostedIoU_ForcesBudgetExclusion()
     {
         RunInSta(() =>
@@ -906,9 +937,12 @@ public sealed class TransactionPopupVMValidationTests
                 amount: 3m,
                 appData: CreateAppData(allocation, [included, excluded, otherDay]));
             vm.SelectedDate = selectedDate;
+            vm.IsBulkMode = true;
 
             Assert.Equal("Over Daily Allowance", vm.AmountWarningHint);
             Assert.True(vm.CanPersist);
+            Assert.True(vm.PendingTransaction.IsValid);
+            Assert.True(vm.PendingTransaction.HasWarnings);
         });
     }
 
