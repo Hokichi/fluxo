@@ -9,9 +9,12 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.Messaging;
+using Fluxo.DataModels.Messages;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Infrastructure;
 using Fluxo.Resources.Styles;
+using Fluxo.Services.Dialogs;
 using Fluxo.Services.Notifications;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
@@ -23,6 +26,9 @@ public partial class TransactionPopup : BasePopup
     private readonly TransactionPopupVM _viewModel;
     private readonly TransactionBulkQueueVM _bulkQueueViewModel;
     private readonly TransactionSplitsVM _splitsViewModel;
+    private readonly IMessenger _messenger;
+    private readonly TransactionPopupMessageToken _messageToken;
+    private readonly IDialogService _dialogService;
     private bool _isInitialized;
     private bool _isHandlingAddTagSelection;
     private bool _isSyncingNoteDocument;
@@ -35,14 +41,27 @@ public partial class TransactionPopup : BasePopup
     public TransactionPopup(
         TransactionPopupVM viewModel,
         TransactionBulkQueueVM bulkQueueViewModel,
-        TransactionSplitsVM splitsViewModel)
+        TransactionSplitsVM splitsViewModel,
+        IMessenger messenger,
+        TransactionPopupMessageToken messageToken,
+        IDialogService dialogService)
     {
         InitializeComponent();
 
         _viewModel = viewModel;
         _bulkQueueViewModel = bulkQueueViewModel;
         _splitsViewModel = splitsViewModel;
+        _messenger = messenger;
+        _messageToken = messageToken;
+        _dialogService = dialogService;
         DataContext = viewModel;
+        _messenger.Register<TransactionPopup, TransactionSplitEqualOverrideRequestedMessage, TransactionPopupMessageToken>(
+            this, _messageToken, static (recipient, message) => message.Reply(
+                recipient._dialogService.ShowWarning(
+                    "Overwrite existing split amounts?",
+                    "Split Equally",
+                    recipient,
+                    MessageBoxButton.YesNo) == MessageBoxResult.Yes));
         CommandBindings.Add(new CommandBinding(ApplicationCommands.Delete, OnDeleteQueuedTransactionExecuted));
         BulkQueuePanel.DataContext = bulkQueueViewModel;
         SplitPanel.DataContext = splitsViewModel;
@@ -77,6 +96,7 @@ public partial class TransactionPopup : BasePopup
         };
         Closed += (_, _) =>
         {
+            _messenger.UnregisterAll(this);
             _viewModel.Dispose();
             _bulkQueueViewModel.Dispose();
             _splitsViewModel.Dispose();

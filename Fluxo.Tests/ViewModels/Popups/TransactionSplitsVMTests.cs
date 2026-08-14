@@ -183,6 +183,103 @@ public sealed class TransactionSplitsVMTests
     }
 
     [Fact]
+    public void TransactionSplitsVM_SplitEqually_NonZeroChildrenDeclined_DoesNotOverwrite()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var recipient = new object();
+        var root = ValidRoot(100m);
+        root.ChildTransactions.Add(ValidLeaf(25m));
+        root.ChildTransactions.Add(ValidLeaf(75m));
+        messenger.Register<object, TransactionSplitEqualOverrideRequestedMessage, TransactionPopupMessageToken>(
+            recipient, TransactionPopupMessageToken.Default, (_, message) => message.Reply(false));
+        using var vm = new TransactionSplitsVM(messenger);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
+
+        vm.SplitEquallyCommand.Execute(null);
+
+        Assert.Equal([25m, 75m], root.ChildTransactions.Select(child => child.Amount));
+    }
+
+    [Fact]
+    public void TransactionSplitsVM_SplitEqually_NonZeroChildrenAccepted_OverwritesAllChildren()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var recipient = new object();
+        var root = ValidRoot(100m);
+        root.ChildTransactions.Add(ValidLeaf(25m));
+        root.ChildTransactions.Add(ValidLeaf(75m));
+        messenger.Register<object, TransactionSplitEqualOverrideRequestedMessage, TransactionPopupMessageToken>(
+            recipient, TransactionPopupMessageToken.Default, (_, message) => message.Reply(true));
+        using var vm = new TransactionSplitsVM(messenger);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
+
+        vm.SplitEquallyCommand.Execute(null);
+
+        Assert.Equal([50m, 50m], root.ChildTransactions.Select(child => child.Amount));
+    }
+
+    [Fact]
+    public void TransactionSplitsVM_SplitEqually_ZeroChildren_SplitsWithoutConfirmation()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var root = ValidRoot(100m);
+        root.ChildTransactions.Add(ValidLeaf(0m));
+        root.ChildTransactions.Add(ValidLeaf(0m));
+        using var vm = new TransactionSplitsVM(messenger);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
+
+        vm.SplitEquallyCommand.Execute(null);
+
+        Assert.Equal([50m, 50m], root.ChildTransactions.Select(child => child.Amount));
+    }
+
+    [Theory]
+    [InlineData(0, 0, 0)]
+    [InlineData(-100, -50, -50)]
+    public void TransactionSplitsVM_SplitEqually_ZeroOrNegativeParent_RemainsExecutable(
+        decimal parentAmount,
+        decimal firstChildAmount,
+        decimal secondChildAmount)
+    {
+        var messenger = new WeakReferenceMessenger();
+        var root = ValidRoot(parentAmount);
+        root.ChildTransactions.Add(ValidLeaf(0m));
+        root.ChildTransactions.Add(ValidLeaf(0m));
+        using var vm = new TransactionSplitsVM(messenger);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
+
+        Assert.True(vm.SplitEquallyCommand.CanExecute(null));
+        vm.SplitEquallyCommand.Execute(null);
+
+        Assert.Equal([firstChildAmount, secondChildAmount], root.ChildTransactions.Select(child => child.Amount));
+    }
+
+    [Fact]
+    public void TransactionSplitsVM_SplitEqually_RootCreatesNestedChildOverflow()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var recipient = new object();
+        var root = ValidRoot(100m);
+        var child = ValidLeaf(100m);
+        child.ChildTransactions.Add(ValidLeaf(75m));
+        child.ChildTransactions.Add(ValidLeaf(0m));
+        root.ChildTransactions.Add(child);
+        root.ChildTransactions.Add(ValidLeaf(0m));
+        messenger.Register<object, TransactionSplitEqualOverrideRequestedMessage, TransactionPopupMessageToken>(
+            recipient, TransactionPopupMessageToken.Default, (_, message) => message.Reply(true));
+        using var vm = new TransactionSplitsVM(messenger);
+        messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), TransactionPopupMessageToken.Default);
+
+        vm.SplitEquallyCommand.Execute(null);
+        var result = messenger.Send(
+            new TransactionSplitValidationRequestedMessage(root), TransactionPopupMessageToken.Default).Response;
+
+        Assert.True(child.HasChildAmountOverflow);
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Split amounts cannot exceed their parent amount.", result.ErrorMessage);
+    }
+
+    [Fact]
     public void TransactionSplitsVM_Grandchild_IsLastSupportedLevelAndParentClassificationIs_Cleared()
     {
         var messenger = new WeakReferenceMessenger();

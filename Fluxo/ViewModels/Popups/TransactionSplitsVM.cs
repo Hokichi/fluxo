@@ -141,7 +141,18 @@ public sealed partial class TransactionSplitsVM : ObservableObject, IDisposable
     {
         if (RootTransaction is null)
             return;
-        Mutate(() => TransactionSplitHelper.SplitEqually(parent ?? RootTransaction));
+
+        var parentNode = parent ?? RootTransaction;
+        if (parentNode.ChildTransactions.Any(child => child.Amount != 0m))
+        {
+            var confirmation = _messenger.Send(
+                new TransactionSplitEqualOverrideRequestedMessage(parentNode),
+                _messageToken);
+            if (confirmation.HasReceivedResponse && !confirmation.Response)
+                return;
+        }
+
+        Mutate(() => TransactionSplitHelper.SplitEqually(parentNode));
     }
 
     private bool CanSplitEqually(TransactionVM? parent) =>

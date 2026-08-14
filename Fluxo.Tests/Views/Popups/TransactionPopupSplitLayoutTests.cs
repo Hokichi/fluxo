@@ -11,6 +11,7 @@ using Fluxo.DataModels.Popups.TransactionPopup;
 using Fluxo.Resources.Components;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Resources.Styles;
+using Fluxo.Services.Dialogs;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Views.Popups;
@@ -125,6 +126,61 @@ public sealed class TransactionPopupSplitLayoutTests
         });
     }
 
+    [Fact]
+    public void TransactionPopupSplitLayout_SplitEquallyConfirmationDeclined_LeavesExistingAmounts()
+    {
+        RunOnStaThread(() =>
+        {
+            var messenger = new WeakReferenceMessenger();
+            var token = new TransactionPopupMessageToken(Guid.NewGuid());
+            var dialogService = Substitute.For<IDialogService>();
+            dialogService.ShowWarning(
+                    "Overwrite existing split amounts?",
+                    "Split Equally",
+                    Arg.Any<Window?>(),
+                    MessageBoxButton.YesNo)
+                .Returns(MessageBoxResult.No);
+            var viewModel = new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger, token);
+            var bulk = new TransactionBulkQueueVM(messenger, token);
+            var splits = new TransactionSplitsVM(messenger, token);
+            _ = new TransactionPopup(viewModel, bulk, splits, messenger, token, dialogService);
+            var root = new TransactionVM { Amount = 100m };
+            root.ChildTransactions.Add(new TransactionVM { Amount = 25m });
+            root.ChildTransactions.Add(new TransactionVM { Amount = 75m });
+            messenger.Send(new TransactionSplitContextChangedMessage(root, true, true), token);
+
+            splits.SplitEquallyCommand.Execute(null);
+
+            Assert.Equal([25m, 75m], root.ChildTransactions.Select(child => child.Amount));
+        });
+    }
+
+    [Theory]
+    [InlineData("SplitTransactionLeafTemplate")]
+    [InlineData("SplitTransactionBranchTemplate")]
+    public void TransactionPopupSplitLayout_SplitCardStatusIcon_SharesNameRow(string templateKey)
+    {
+        RunOnStaThread(() =>
+        {
+            var popup = CreatePopup();
+            var template = Assert.IsType<DataTemplate>(popup.FindResource(templateKey));
+            var presenter = new ContentPresenter
+            {
+                Content = new TransactionVM { Name = "Name", Amount = 100m, IsValid = false },
+                ContentTemplate = template
+            };
+            presenter.Measure(new Size(800, 600));
+            presenter.Arrange(new Rect(0, 0, 800, 600));
+            presenter.UpdateLayout();
+
+            var name = FindVisualControls<TextBlock>(presenter)
+                .Single(textBlock => textBlock.Text == "Name");
+            var statusIcon = Assert.Single(FindVisualControls<Icon>(presenter));
+
+            Assert.Same(VisualTreeHelper.GetParent(name), VisualTreeHelper.GetParent(statusIcon));
+        });
+    }
+
     [Theory]
     [InlineData(120d, 30d, 500d, 90d)]
     [InlineData(20d, 50d, 500d, 0d)]
@@ -185,7 +241,13 @@ public sealed class TransactionPopupSplitLayoutTests
             bulk.AddQueuedTransactionCommand.Execute(null);
             viewModel.NameText = "Second";
             viewModel.NoteText = "Second note";
-            var popup = new TransactionPopup(viewModel, bulk, splits);
+            var popup = new TransactionPopup(
+                viewModel,
+                bulk,
+                splits,
+                messenger,
+                TransactionPopupMessageToken.Default,
+                Substitute.For<IDialogService>());
             var note = Assert.IsType<TextBox>(popup.FindName("NoteRichTextBox"));
 
             bulk.SelectedQueuedTransaction = first;
@@ -302,7 +364,13 @@ public sealed class TransactionPopupSplitLayoutTests
         EnsureApplicationResources();
         var messenger = new WeakReferenceMessenger();
         viewModel ??= new TransactionPopupVM(Substitute.For<IAppDataService>(), messenger);
-        return new TransactionPopup(viewModel, new TransactionBulkQueueVM(messenger), new TransactionSplitsVM(messenger));
+        return new TransactionPopup(
+            viewModel,
+            new TransactionBulkQueueVM(messenger),
+            new TransactionSplitsVM(messenger),
+            messenger,
+            TransactionPopupMessageToken.Default,
+            Substitute.For<IDialogService>());
     }
 
     private static void RaisePreviewTagClick(TransactionPopup popup, FadingScrollViewer scrollViewer, TagVM tag)
