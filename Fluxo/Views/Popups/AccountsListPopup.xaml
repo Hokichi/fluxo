@@ -22,7 +22,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="BankIconStyle" TargetType="components:Icon">
+        <Style x:Key="BankIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Checking">
@@ -34,7 +34,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CreditIconStyle" TargetType="components:Icon">
+        <Style x:Key="CreditIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Credit">
@@ -89,7 +89,7 @@
                                 Path="{StaticResource PiggyBank}"
                                 Color="{Binding Background, ElementName=AccentBorder, Converter={StaticResource BackgroundToForegroundConverter}}">
                                 <components:Icon.Style>
-                                    <Style TargetType="components:Icon">
+                                    <Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding AccountType}" Value="Saving">

@@ -5,7 +5,7 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
 
-    <Style x:Key="TransactionCardStatusIconStyle" TargetType="components:Icon">
+    <Style x:Key="TransactionCardStatusIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
         <Setter Property="Width" Value="12" />
         <Setter Property="Height" Value="12" />
         <Setter Property="Margin" Value="0,3,0,0" />

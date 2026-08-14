@@ -30,7 +30,7 @@
             </Setter>
         </Style>
 
-        <Style x:Key="BudgetAllocationTransactionsListStyle" TargetType="components:TransactionsList">
+        <Style x:Key="BudgetAllocationTransactionsListStyle" BasedOn="{StaticResource BaseTransactionsListStyle}" TargetType="components:TransactionsList">
             <Setter Property="IsEmptyActionVisible" Value="True" />
             <Setter Property="MaxVisibleItems" Value="5" />
             <Style.Triggers>

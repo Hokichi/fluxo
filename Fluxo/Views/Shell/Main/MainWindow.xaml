@@ -220,7 +220,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
                                 <components:Icon.Style>
-                                    <Style TargetType="components:Icon">
+                                    <Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
                                         <Setter Property="Path" Value="{StaticResource BanknoteArrowDown}" />
                                         <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
                                         <Style.Triggers>

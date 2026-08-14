@@ -4,6 +4,13 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components"
     xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
 
+    <Style x:Key="BaseIconStyle" TargetType="components:Icon" />
+
+    <Style x:Key="BaseTransactionsListStyle" TargetType="components:TransactionsList">
+        <Setter Property="IsEmptyActionVisible" Value="True" />
+        <Setter Property="MaxVisibleItems" Value="5" />
+    </Style>
+
     <Style x:Key="Accounts" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="Margin" Value="0,0,8,0" />
         <Setter Property="Padding" Value="0" />
@@ -24,7 +31,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="SpinnerArrowIconStyle" TargetType="components:Icon">
+    <Style x:Key="SpinnerArrowIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
         <Setter Property="Color" Value="{StaticResource Brush.Text.Muted}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">

@@ -5,7 +5,11 @@
 
     <BooleanToVisibilityConverter x:Key="PopupBoolToVisibility" />
 
-    <Style TargetType="{x:Type c:BasePopup}">
+    <Style x:Key="BaseBasePopupStyle" TargetType="{x:Type c:BasePopup}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseBasePopupStyle}" TargetType="{x:Type c:BasePopup}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type c:BasePopup}">
