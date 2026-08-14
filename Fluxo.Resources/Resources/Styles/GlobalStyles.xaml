@@ -48,7 +48,41 @@
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <Style TargetType="ToolTip">
+    <Style x:Key="BaseProgressBarStyle" TargetType="ProgressBar">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseScrollBarStyle" TargetType="ScrollBar">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseScrollViewerStyle" TargetType="ScrollViewer">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseSliderStyle" TargetType="Slider">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style x:Key="BaseThumbStyle" TargetType="Thumb">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseToolTipStyle" TargetType="ToolTip">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="8,5" />
+    </Style>
+
+    <Style x:Key="BaseFadingScrollViewerStyle" TargetType="{x:Type customControls:FadingScrollViewer}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Margin" Value="10" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Visible" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseToolTipStyle}" TargetType="ToolTip">
         <Setter Property="Background" Value="{StaticResource Brush.BalloonButton.Background.Default}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -72,7 +106,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RoundedHorizontalScrollThumbStyle" TargetType="Thumb">
+    <Style x:Key="RoundedHorizontalScrollThumbStyle" BasedOn="{StaticResource BaseThumbStyle}" TargetType="Thumb">
         <Setter Property="Background" Value="{StaticResource Brush.Text.Secondary}" />
         <Setter Property="Height" Value="4" />
         <Setter Property="Template">
@@ -97,7 +131,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RoundedVerticalScrollThumbStyle" TargetType="Thumb">
+    <Style x:Key="RoundedVerticalScrollThumbStyle" BasedOn="{StaticResource BaseThumbStyle}" TargetType="Thumb">
         <Setter Property="Background" Value="{StaticResource Brush.Text.Secondary}" />
         <Setter Property="Width" Value="4" />
         <Setter Property="Template">
@@ -166,14 +200,14 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <Style x:Key="RoundedVerticalScrollBarStyle" TargetType="ScrollBar">
+    <Style x:Key="RoundedVerticalScrollBarStyle" BasedOn="{StaticResource BaseScrollBarStyle}" TargetType="ScrollBar">
         <Setter Property="Width" Value="12" />
         <Setter Property="Margin" Value="12,0,0,0" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Deepened}" />
         <Setter Property="Template" Value="{StaticResource RoundedVerticalScrollBarTemplate}" />
     </Style>
 
-    <Style TargetType="ScrollBar">
+    <Style BasedOn="{StaticResource BaseScrollBarStyle}" TargetType="ScrollBar">
         <Setter Property="Height" Value="12" />
         <Setter Property="Margin" Value="0,12,0,0" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Deepened}" />
@@ -230,7 +264,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="{x:Type ScrollViewer}">
+    <Style BasedOn="{StaticResource BaseScrollViewerStyle}" TargetType="{x:Type ScrollViewer}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
@@ -292,7 +326,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type customControls:FadingScrollViewer}">
+    <Style BasedOn="{StaticResource BaseFadingScrollViewerStyle}" TargetType="{x:Type customControls:FadingScrollViewer}">
         <Setter Property="Margin" Value="10" />
         <Setter Property="HorizontalScrollBarVisibility" Value="Visible" />
         <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
@@ -359,10 +393,9 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RoundedProgressBarStyle" TargetType="ProgressBar">
+    <Style x:Key="RoundedProgressBarStyle" BasedOn="{StaticResource BaseProgressBarStyle}" TargetType="ProgressBar">
         <Setter Property="Background" Value="{StaticResource Brush.Background.Deepened}" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Account.Credit}" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ProgressBar">
@@ -592,7 +625,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="BudgetSliderThumbStyle" TargetType="Thumb">
+    <Style x:Key="BudgetSliderThumbStyle" BasedOn="{StaticResource BaseThumbStyle}" TargetType="Thumb">
         <Setter Property="Width" Value="16" />
         <Setter Property="Height" Value="16" />
         <Setter Property="Cursor" Value="Hand" />
@@ -619,7 +652,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="BudgetSliderStyle" TargetType="Slider">
+    <Style x:Key="BudgetSliderStyle" BasedOn="{StaticResource BaseSliderStyle}" TargetType="Slider">
         <Setter Property="Height" Value="24" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
         <Setter Property="Template">

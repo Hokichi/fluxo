@@ -42,11 +42,10 @@
             <Setter Property="Text" Value="No Data Found" />
         </Style>
 
-        <Style x:Key="AnalyticsCardProgressBarStyle" TargetType="ProgressBar">
+        <Style x:Key="AnalyticsCardProgressBarStyle" BasedOn="{StaticResource BaseProgressBarStyle}" TargetType="ProgressBar">
             <Setter Property="Height" Value="6" />
             <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
-            <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
