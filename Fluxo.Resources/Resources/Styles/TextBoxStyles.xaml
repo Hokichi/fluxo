@@ -248,7 +248,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="NumericUpDownArrowButtonStyle" TargetType="RepeatButton">
+    <Style x:Key="NumericUpDownArrowButtonStyle" BasedOn="{StaticResource BaseRepeatButtonStyle}" TargetType="RepeatButton">
         <Setter Property="Width" Value="28" />
         <Setter Property="Height" Value="20" />
         <Setter Property="Background" Value="Transparent" />

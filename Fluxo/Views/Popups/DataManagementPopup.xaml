@@ -44,7 +44,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ConflictAppendOptionStyle" TargetType="RadioButton">
+        <Style x:Key="ConflictAppendOptionStyle" BasedOn="{StaticResource BaseRadioButtonStyle}" TargetType="RadioButton">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsTag}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed" />

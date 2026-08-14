@@ -561,8 +561,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="BudgetTrackButtonStyle" TargetType="RepeatButton">
-        <Setter Property="Focusable" Value="False" />
+    <Style x:Key="BudgetTrackButtonStyle" BasedOn="{StaticResource BaseRepeatButtonStyle}" TargetType="RepeatButton">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">

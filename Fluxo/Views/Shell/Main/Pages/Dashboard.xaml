@@ -24,7 +24,7 @@
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
         </Style>
 
-        <Style x:Key="DashboardAccountsScrollButtonStyle" TargetType="Button">
+        <Style x:Key="DashboardAccountsScrollButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="80" />
             <Setter Property="Padding" Value="0" />

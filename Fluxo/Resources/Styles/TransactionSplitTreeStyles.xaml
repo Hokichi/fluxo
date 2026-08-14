@@ -47,7 +47,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SplitTransactionCardStyle" TargetType="Button">
+    <Style x:Key="SplitTransactionCardStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />

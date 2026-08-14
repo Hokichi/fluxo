@@ -5,7 +5,7 @@
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
     </Style>
 
-    <Style x:Key="WizardCircleActionButtonStyle" TargetType="Button">
+    <Style x:Key="WizardCircleActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="44" />
         <Setter Property="Height" Value="44" />
         <Setter Property="Padding" Value="0" />

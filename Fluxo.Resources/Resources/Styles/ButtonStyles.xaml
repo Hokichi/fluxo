@@ -3,11 +3,35 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:c="clr-namespace:Fluxo.Resources.CustomControls"
     xmlns:components="clr-namespace:Fluxo.Resources.Components">
-    <Style TargetType="{x:Type c:BalloonControl}">
-        <Setter Property="Background" Value="{Binding DefaultBackground, RelativeSource={RelativeSource Self}}" />
+    <Style x:Key="BaseButtonStyle" TargetType="Button">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseRepeatButtonStyle" TargetType="RepeatButton">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Focusable" Value="False" />
+    </Style>
+
+    <Style x:Key="BaseToggleButtonStyle" TargetType="ToggleButton">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style x:Key="BaseRadioButtonStyle" TargetType="RadioButton" />
+
+    <Style x:Key="BaseBalloonControlStyle" TargetType="{x:Type c:BalloonControl}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseBalloonControlStyle}" TargetType="{x:Type c:BalloonControl}">
+        <Setter Property="Background" Value="{Binding DefaultBackground, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Self}, Path=ButtonSize}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -159,11 +183,32 @@
         </Style.Triggers>
     </Style>
 
-    <Style BasedOn="{StaticResource {x:Type c:BalloonControl}}" TargetType="{x:Type c:BalloonButton}" />
+    <Style
+        x:Key="BaseBalloonButtonStyle"
+        BasedOn="{StaticResource {x:Type c:BalloonControl}}"
+        TargetType="{x:Type c:BalloonButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
 
-    <Style BasedOn="{StaticResource {x:Type c:BalloonControl}}" TargetType="{x:Type c:BalloonToggle}" />
+    <Style BasedOn="{StaticResource BaseBalloonButtonStyle}" TargetType="{x:Type c:BalloonButton}" />
 
-    <Style BasedOn="{StaticResource {x:Type c:BalloonControl}}" TargetType="{x:Type c:BalloonCheckBox}">
+    <Style
+        x:Key="BaseBalloonToggleStyle"
+        BasedOn="{StaticResource {x:Type c:BalloonControl}}"
+        TargetType="{x:Type c:BalloonToggle}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseBalloonToggleStyle}" TargetType="{x:Type c:BalloonToggle}" />
+
+    <Style
+        x:Key="BaseBalloonCheckBoxStyle"
+        BasedOn="{StaticResource {x:Type c:BalloonControl}}"
+        TargetType="{x:Type c:BalloonCheckBox}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseBalloonCheckBoxStyle}" TargetType="{x:Type c:BalloonCheckBox}">
         <Setter Property="CheckedBackground" Value="{StaticResource Brush.Mint}" />
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="True">
@@ -179,7 +224,14 @@
         </Style.Triggers>
     </Style>
 
-    <Style BasedOn="{StaticResource {x:Type c:BalloonCheckBox}}" TargetType="{x:Type c:BalloonRadioButton}" />
+    <Style
+        x:Key="BaseBalloonRadioButtonStyle"
+        BasedOn="{StaticResource {x:Type c:BalloonCheckBox}}"
+        TargetType="{x:Type c:BalloonRadioButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseBalloonRadioButtonStyle}" TargetType="{x:Type c:BalloonRadioButton}" />
 
     <Style
         x:Key="MainWindowBalloonButtonChromeStyle"
@@ -203,7 +255,11 @@
         <Setter Property="IconSize" Value="8" />
     </Style>
 
-    <Style TargetType="{x:Type c:SwipeRevealContainer}">
+    <Style x:Key="BaseSwipeRevealContainerStyle" TargetType="{x:Type c:SwipeRevealContainer}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseSwipeRevealContainerStyle}" TargetType="{x:Type c:SwipeRevealContainer}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type c:SwipeRevealContainer}">
@@ -278,7 +334,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="PopupTextButtonStyle" TargetType="Button">
+    <Style x:Key="PopupTextButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="14,0" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
@@ -313,7 +369,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="TabButtonStyle" TargetType="RadioButton">
+    <Style x:Key="TabButtonStyle" BasedOn="{StaticResource BaseRadioButtonStyle}" TargetType="RadioButton">
         <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="Height" Value="42" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
@@ -382,7 +438,7 @@
         <Setter Property="HoveredBackground" Value="{StaticResource Brush.Background.Hover}" />
     </Style>
 
-    <Style x:Key="TagDeleteButtonStyle" TargetType="Button">
+    <Style x:Key="TagDeleteButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Margin" Value="0,0,8,8" />
         <Setter Property="Padding" Value="12,7" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
@@ -433,7 +489,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ToggleSwitchStyle" TargetType="ToggleButton">
+    <Style x:Key="ToggleSwitchStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="20" />
         <Setter Property="Cursor" Value="Hand" />
@@ -491,7 +547,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="AddTileButtonStyle" TargetType="Button">
+    <Style x:Key="AddTileButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -541,7 +597,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ActionButtonStyle" TargetType="Button">
+    <Style x:Key="ActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Height" Value="40" />
         <Setter Property="MinWidth" Value="120" />
         <Setter Property="Padding" Value="18,0" />
@@ -594,7 +650,7 @@
         <Setter Property="DefaultBackground" Value="{StaticResource Brush.Background.Main}" />
     </Style>
 
-    <Style x:Key="SelectorButtonStyle" TargetType="ToggleButton">
+    <Style x:Key="SelectorButtonStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
         <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -653,7 +709,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarNavButtonStyle" TargetType="Button">
+    <Style x:Key="CalendarNavButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="28" />
         <Setter Property="Height" Value="28" />
         <Setter Property="Background" Value="Transparent" />
@@ -680,7 +736,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="HeaderActionButtonStyle" TargetType="Button">
+    <Style x:Key="HeaderActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -709,7 +765,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarDayButtonStyle" TargetType="Button">
+    <Style x:Key="CalendarDayButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="34" />
         <Setter Property="Height" Value="34" />
         <Setter Property="Margin" Value="2" />
@@ -768,7 +824,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarChoiceButtonStyle" TargetType="Button">
+    <Style x:Key="CalendarChoiceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="78" />
         <Setter Property="Height" Value="38" />
         <Setter Property="Margin" Value="4" />
@@ -816,7 +872,7 @@
         <Setter Property="Padding" Value="14,0" />
     </Style>
 
-    <Style x:Key="CustomColorButtonStyle" TargetType="Button">
+    <Style x:Key="CustomColorButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="30" />
         <Setter Property="Height" Value="30" />
         <Setter Property="Margin" Value="2,0,0,0" />
@@ -852,7 +908,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="OptionButtonStyle" TargetType="Button">
+    <Style x:Key="OptionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Margin" Value="0,0,0,10" />
         <Setter Property="Padding" Value="14,12" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
@@ -924,7 +980,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DialogActionButtonStyle" TargetType="Button">
+    <Style x:Key="DialogActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="MinWidth" Value="92" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="Padding" Value="16,10" />
@@ -1000,7 +1056,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="SourceButtonStyle" TargetType="Button">
+    <Style x:Key="SourceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -1034,13 +1090,17 @@
         Opacity="0.16"
         Color="{StaticResource Color.Mint}" />
 
-    <Style TargetType="{x:Type c:SegmentedToggleGroup}">
+    <Style x:Key="BaseSegmentedToggleGroupStyle" TargetType="{x:Type c:SegmentedToggleGroup}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Height" Value="32" />
         <Setter Property="Padding" Value="4" />
-        <Setter Property="Background" Value="{StaticResource Brush.Background.Deepened}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="OptionSpacing" Value="4" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseSegmentedToggleGroupStyle}" TargetType="{x:Type c:SegmentedToggleGroup}">
+        <Setter Property="Background" Value="{StaticResource Brush.Background.Deepened}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type c:SegmentedToggleGroup}">
@@ -1065,16 +1125,20 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type c:SegmentedToggleOption}">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Transparent" />
+    <Style x:Key="BaseSegmentedToggleOptionStyle" TargetType="{x:Type c:SegmentedToggleOption}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="14,6" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseSegmentedToggleOptionStyle}" TargetType="{x:Type c:SegmentedToggleOption}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="Padding" Value="14,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type c:SegmentedToggleOption}">
@@ -1112,7 +1176,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="PopupTagButtonStyle" TargetType="Button">
+    <Style x:Key="PopupTagButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Height" Value="28" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
@@ -1166,7 +1230,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="PopupTagToggleStyle" TargetType="ToggleButton">
+    <Style x:Key="PopupTagToggleStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
         <Setter Property="Height" Value="28" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
@@ -1266,8 +1330,18 @@
 
     <Style
         x:Key="PopupTagItemRadioStyle"
-        BasedOn="{StaticResource PopupTagToggleStyle}"
+        BasedOn="{StaticResource BaseRadioButtonStyle}"
         TargetType="RadioButton">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
@@ -1305,6 +1379,14 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{Binding HexCode}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
+            </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.4" />
                 <Setter Property="Cursor" Value="Arrow" />
@@ -1320,7 +1402,7 @@
         <Setter Property="IconSize" Value="8" />
     </Style>
 
-    <Style x:Key="HeaderMenuActionButtonStyle" TargetType="Button">
+    <Style x:Key="HeaderMenuActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -1356,7 +1438,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="TextOnlyButtonStyle" TargetType="Button">
+    <Style x:Key="TextOnlyButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -1380,7 +1462,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="DashedButtonStyle" TargetType="Button">
+    <Style x:Key="DashedButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="60" />
         <Setter Property="Height" Value="60" />
         <Setter Property="Background" Value="Transparent" />
@@ -1459,7 +1541,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MoveToCurrentPeriodButtonStyle" TargetType="Button">
+    <Style x:Key="MoveToCurrentPeriodButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -1492,7 +1574,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="TagToggleButtonStyle" TargetType="ToggleButton">
+    <Style x:Key="TagToggleButtonStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
         <Setter Property="Height" Value="24" />
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
@@ -1539,7 +1621,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="SpinnerArrowButtonStyle" TargetType="Button">
+    <Style x:Key="SpinnerArrowButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
