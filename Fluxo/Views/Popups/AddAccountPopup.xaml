@@ -9,16 +9,16 @@
     PopupTitle="{Binding PopupTitle}">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+        <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         </Style>
-        <Style x:Key="FieldHeaderGridStyle" TargetType="Grid">
+        <Style x:Key="FieldHeaderGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Margin" Value="0,0,0,8" />
         </Style>
-        <Style x:Key="FieldValidationHintStyle" TargetType="TextBlock">
+        <Style x:Key="FieldValidationHintStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
@@ -86,7 +86,7 @@
 
                         <StackPanel Margin="0,14,0,0">
                             <StackPanel.Style>
-                                <Style TargetType="StackPanel">
+                                <Style BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Checking}">

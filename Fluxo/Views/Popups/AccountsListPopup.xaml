@@ -7,7 +7,7 @@
     PopupTitle="Accounts">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="AccentStyle" TargetType="Border">
+        <Style x:Key="AccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Brush.Account.Checking}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Credit">
@@ -50,7 +50,7 @@
                 Style="{StaticResource SourceButtonStyle}">
                 <Grid>
                     <Grid.Style>
-                        <Style TargetType="Grid">
+                        <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                             <Setter Property="Opacity" Value="1" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsDisabled}" Value="True">
@@ -121,7 +121,7 @@
                                 Height="12"
                                 Margin="8,0,0,0">
                                 <Border.Style>
-                                    <Style TargetType="Border">
+                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
                                             <MultiDataTrigger>

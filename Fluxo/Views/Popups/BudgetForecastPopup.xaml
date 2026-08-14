@@ -8,14 +8,14 @@
     SizeToContent="WidthAndHeight">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="ForecastLabelStyle" TargetType="TextBlock">
+        <Style x:Key="ForecastLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <Style x:Key="ForecastValueStyle" TargetType="TextBlock">
+        <Style x:Key="ForecastValueStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,10,0,0" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="18" />
@@ -23,7 +23,7 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <Style x:Key="ForecastCellStyle" TargetType="TextBlock">
+        <Style x:Key="ForecastCellStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="12" />
@@ -291,7 +291,7 @@
                 Text="{Binding PurchaseMessage}"
                 TextWrapping="Wrap">
                 <TextBlock.Style>
-                    <Style TargetType="TextBlock">
+                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Success">

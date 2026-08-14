@@ -8,7 +8,7 @@
     PopupTitle="Data Management"
     Mode="None">
     <customControls:BasePopup.Resources>
-        <Style x:Key="InitialPageStyle" TargetType="Grid">
+        <Style x:Key="InitialPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="0">
@@ -17,7 +17,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ProcessingPageStyle" TargetType="Grid">
+        <Style x:Key="ProcessingPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="1">
@@ -26,7 +26,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ConflictPageStyle" TargetType="Grid">
+        <Style x:Key="ConflictPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="2">
@@ -35,7 +35,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ResultPageStyle" TargetType="Grid">
+        <Style x:Key="ResultPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="3">

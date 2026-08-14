@@ -69,13 +69,20 @@ public sealed class DateSelectorFutureSelectionTests
     private static void EnsureApplicationResources()
     {
         var application = Application.Current ?? new Application();
-        if (application.Resources.MergedDictionaries.Count > 0)
-            return;
+        foreach (var resource in new[]
+                 {
+                     "Theme.xaml", "Fonts.xaml", "Icons.xaml", "Converters.xaml",
+                     "Styles/ContainerStyles.xaml", "Styles/ButtonStyles.xaml"
+                 })
+        {
+            if (application.Resources.MergedDictionaries.Any(dictionary =>
+                    dictionary.Source?.OriginalString.EndsWith($"Resources/{resource}", StringComparison.OrdinalIgnoreCase) == true))
+                continue;
 
-        application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Fluxo.Resources;component/Resources/Theme.xaml", UriKind.Relative) });
-        application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Fluxo.Resources;component/Resources/Fonts.xaml", UriKind.Relative) });
-        application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Fluxo.Resources;component/Resources/Icons.xaml", UriKind.Relative) });
-        application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Fluxo.Resources;component/Resources/Converters.xaml", UriKind.Relative) });
-        application.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/Fluxo.Resources;component/Resources/Styles/ButtonStyles.xaml", UriKind.Relative) });
+            application.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Fluxo.Resources;component/Resources/{resource}", UriKind.Relative)
+            });
+        }
     }
 }

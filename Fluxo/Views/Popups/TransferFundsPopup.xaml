@@ -8,7 +8,7 @@
     Mode="Update">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+        <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />

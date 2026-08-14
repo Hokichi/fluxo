@@ -377,7 +377,7 @@
                     Margin="0,0,0,8"
                     CornerRadius="8">
                     <Border.Style>
-                        <Style TargetType="Border">
+                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                             <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
@@ -426,7 +426,7 @@
                                 Foreground="{StaticResource Brush.Text.Primary}"
                                 Text="GOAL" />
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsGoal}" Value="True">
@@ -447,7 +447,7 @@
                                 Foreground="#7A4A00"
                                 Text="RECURRING" />
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsRecurring}" Value="True">
@@ -541,7 +541,7 @@
                             <TranslateTransform />
                         </TextBlock.RenderTransform>
                         <TextBlock.Style>
-                            <Style TargetType="TextBlock">
+                            <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                 <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Kind}" Value="{x:Static dataEnums:LedgerTransactionKind.Income}">
@@ -618,7 +618,7 @@
                     </EventTrigger>
                 </Grid.Triggers>
                 <Grid.Style>
-                    <Style TargetType="Grid">
+                    <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                         <Setter Property="Background" Value="Transparent" />
                         <Setter Property="IsHitTestVisible" Value="True" />
                         <Setter Property="Opacity" Value="1" />
@@ -690,7 +690,7 @@
                                     Foreground="{StaticResource Brush.Text.Primary}"
                                     Text="GOAL" />
                                 <Border.Style>
-                                    <Style TargetType="Border">
+                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsGoal}" Value="True">
@@ -712,7 +712,7 @@
                                     Foreground="#7A4A00"
                                     Text="RECURRING" />
                                 <Border.Style>
-                                    <Style TargetType="Border">
+                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsRecurring}" Value="True">
@@ -805,7 +805,7 @@
                             FontSize="12"
                             Text="{Binding SignedAmount, StringFormat={}{0:+#,##0;-#,##0;$0}}">
                             <TextBlock.Style>
-                                <Style TargetType="TextBlock">
+                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                     <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Kind}" Value="{x:Static dataEnums:LedgerTransactionKind.Income}">
@@ -850,7 +850,7 @@
                                     ToolTip="Delete" />
                             </StackPanel>
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                     <Setter Property="IsEnabled" Value="True" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
@@ -936,7 +936,7 @@
                         </EventTrigger>
                     </Border.Triggers>
                     <Border.Style>
-                        <Style TargetType="Border">
+                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                             <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
                             <Setter Property="IsHitTestVisible" Value="True" />
                             <Setter Property="Opacity" Value="1" />

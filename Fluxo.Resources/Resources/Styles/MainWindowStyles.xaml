@@ -58,7 +58,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="NotificationAccentStyle" TargetType="Border">
+    <Style x:Key="NotificationAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource Brush.Info}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding Severity}" Value="{x:Static coreEnums:NotificationSeverity.Success}">
@@ -172,7 +172,7 @@
                                             FontSize="12"
                                             Text="{Binding DayName}">
                                             <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
+                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -200,7 +200,7 @@
                                             FontSize="14"
                                             Text="{Binding DayNumber}">
                                             <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
+                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -227,7 +227,7 @@
                                         Background="{StaticResource Brush.Mint}"
                                         CornerRadius="4 4 0 0">
                                         <Border.Style>
-                                            <Style TargetType="Border">
+                                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                                 <Setter Property="Opacity" Value="0" />
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
@@ -274,7 +274,7 @@
                                         Background="{StaticResource Brush.Mint}"
                                         CornerRadius="4 4 0 0">
                                         <Border.Style>
-                                            <Style TargetType="Border">
+                                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                                 <Setter Property="Opacity" Value="0" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsSelected}" Value="True">

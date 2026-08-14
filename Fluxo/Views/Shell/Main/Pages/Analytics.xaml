@@ -14,26 +14,26 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="AnalyticsSectionTitleStyle" TargetType="TextBlock">
+        <Style x:Key="AnalyticsSectionTitleStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="AnalyticsCardLabelStyle" TargetType="TextBlock">
+        <Style x:Key="AnalyticsCardLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
         </Style>
 
-        <Style x:Key="AnalyticsHintTextStyle" TargetType="TextBlock">
+        <Style x:Key="AnalyticsHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
-        <Style x:Key="AnalyticsNoDataTextStyle" TargetType="TextBlock">
+        <Style x:Key="AnalyticsNoDataTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />

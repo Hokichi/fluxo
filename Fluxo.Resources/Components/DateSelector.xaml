@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="WeekdayLabelStyle" TargetType="TextBlock">
+        <Style x:Key="WeekdayLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="10" />

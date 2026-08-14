@@ -9,7 +9,7 @@
     PopupTitle="Income Detail">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="LeftSideLabelStyle" TargetType="TextBlock">
+        <Style x:Key="LeftSideLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
@@ -84,7 +84,7 @@
                         FontFamily="{StaticResource Bold}"
                         FontSize="12">
                         <TextBlock.Style>
-                            <Style TargetType="TextBlock">
+                            <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                 <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
                                 <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
                                 <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />

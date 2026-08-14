@@ -10,7 +10,7 @@
     <Grid>
         <StackPanel>
             <StackPanel.Style>
-                <Style TargetType="StackPanel">
+                <Style BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding HasAccounts}" Value="False">
                             <Setter Property="Effect">

@@ -126,7 +126,7 @@
                     TextAlignment="Center"
                     TextWrapping="Wrap">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding HasNotifications}" Value="False">

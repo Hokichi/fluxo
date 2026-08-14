@@ -16,7 +16,7 @@
             <components:Account />
         </DataTemplate>
 
-        <Style x:Key="DashboardAccountLegendLabelStyle" TargetType="TextBlock">
+        <Style x:Key="DashboardAccountLegendLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Margin" Value="6,0,14,0" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource SemiBold}" />

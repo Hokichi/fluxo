@@ -31,7 +31,7 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/MainWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="HeaderSearchResultItemStyle" TargetType="Border">
+            <Style x:Key="HeaderSearchResultItemStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="CornerRadius" Value="12" />
                 <Setter Property="Padding" Value="12,10" />
@@ -43,8 +43,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="HideWhenSufficientFundsActionGateLockedStyle" TargetType="FrameworkElement">
-                <Setter Property="Visibility" Value="Visible" />
+            <Style x:Key="HideWhenSufficientFundsActionGateLockedStyle" BasedOn="{StaticResource BaseFrameworkElementStyle}" TargetType="FrameworkElement">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsSufficientFundsActionGateLocked}" Value="True">
                         <Setter Property="Visibility" Value="Collapsed" />
@@ -52,7 +51,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="HeaderSearchRegionLockAndGateStyle" TargetType="Grid">
+            <Style x:Key="HeaderSearchRegionLockAndGateStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                 <Setter Property="IsEnabled" Value="True" />
                 <Setter Property="Visibility" Value="Visible" />
                 <Style.Triggers>
@@ -65,7 +64,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="DashboardSpendingAmountGateLockedContentStyle" TargetType="Grid">
+            <Style x:Key="DashboardSpendingAmountGateLockedContentStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                 <Setter Property="IsHitTestVisible" Value="True" />
                 <Setter Property="Effect" Value="{x:Null}" />
                 <Setter Property="Opacity" Value="1" />
@@ -82,7 +81,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="FloatingSideNavigationRailStyle" TargetType="Border">
+            <Style x:Key="FloatingSideNavigationRailStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                 <Setter Property="Padding" Value="10,0" />
                 <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
                 <Setter Property="CornerRadius">
@@ -257,7 +256,7 @@
                                     VerticalAlignment="Center"
                                     Background="{Binding TagBrush}">
                                     <Border.Style>
-                                        <Style TargetType="Border">
+                                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                             <Setter Property="Visibility" Value="Visible" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding TagName}" Value="{x:Null}">
@@ -587,7 +586,7 @@
                                     MouseEnter="OnHeaderMenuPopupMouseEnter"
                                     MouseLeave="OnHeaderMenuPopupMouseLeave">
                                     <Border.Resources>
-                                        <Style x:Key="HeaderMenuShortcutTextStyle" TargetType="TextBlock">
+                                        <Style x:Key="HeaderMenuShortcutTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                             <Setter Property="VerticalAlignment" Value="Center" />
                                             <Setter Property="HorizontalAlignment" Value="Right" />
                                             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -819,7 +818,7 @@
                     Grid.RowSpan="3"
                     Panel.ZIndex="10">
                     <Grid.Style>
-                        <Style TargetType="Grid">
+                        <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                             <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsDashboardSpendingAmountGateLocked}" Value="True">
@@ -1042,7 +1041,7 @@
                                                 Padding="12"
                                                 CornerRadius="12">
                                                 <Border.Style>
-                                                    <Style TargetType="Border">
+                                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                                         <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
                                                         <Setter Property="Opacity" Value="1" />
                                                         <Style.Triggers>
@@ -1082,7 +1081,7 @@
                                                             Text="{Binding Details, Mode=OneWay}"
                                                             TextWrapping="Wrap">
                                                             <TextBlock.Style>
-                                                                <Style TargetType="TextBlock">
+                                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                                     <Setter Property="Visibility" Value="Visible" />
                                                                     <Style.Triggers>
                                                                         <Trigger Property="Text" Value="">
@@ -1099,7 +1098,7 @@
                                                             Foreground="{StaticResource Brush.Text.Muted}"
                                                             Text="Reverted">
                                                             <TextBlock.Style>
-                                                                <Style TargetType="TextBlock">
+                                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding IsReverted}" Value="True">
@@ -1156,7 +1155,7 @@
                                 Foreground="{StaticResource Brush.Text.Muted}"
                                 Text="No actions logged this session">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding HasItems, ElementName=HistoryItemsControl}" Value="False">

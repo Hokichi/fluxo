@@ -12,7 +12,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="TransactionsListHeaderText" TargetType="TextBlock">
+        <Style x:Key="TransactionsListHeaderText" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
@@ -67,7 +67,7 @@
                         Background="{Binding TagHexCode, FallbackValue=Transparent, TargetNullValue=Transparent}"
                         CornerRadius="12 0 0 12">
                         <Border.Style>
-                            <Style TargetType="Border">
+                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                 <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
                                     <MultiDataTrigger>
@@ -99,7 +99,7 @@
                                 <TranslateTransform />
                             </Border.RenderTransform>
                             <Border.Style>
-                                <Style TargetType="Border">
+                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <MultiDataTrigger>
@@ -162,7 +162,7 @@
                                     <TranslateTransform />
                                 </Grid.RenderTransform>
                                 <Grid.Style>
-                                    <Style TargetType="Grid">
+                                    <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                                         <Style.Triggers>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
@@ -241,7 +241,7 @@
                                     Text="{Binding AmountText}"
                                     ToolTip="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}}">
                                     <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
+                                        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsExpense}" Value="True">
@@ -334,7 +334,7 @@
                     Foreground="{StaticResource Brush.Text.Muted}"
                     Text="{Binding EmptyActionText, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <MultiDataTrigger>

@@ -25,18 +25,18 @@
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionBalanceUpdateStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="SectionLabelStyle" TargetType="TextBlock">
+            <Style x:Key="SectionLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="Margin" Value="0,0,0,8" />
                 <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
                 <Setter Property="FontSize" Value="11" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             </Style>
 
-            <Style x:Key="FieldHeaderGridStyle" TargetType="Grid">
+            <Style x:Key="FieldHeaderGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                 <Setter Property="Margin" Value="0,0,0,8" />
             </Style>
 
-            <Style x:Key="TransactionWarningTextStyle" TargetType="TextBlock">
+            <Style x:Key="TransactionWarningTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource Medium}" />
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
@@ -48,7 +48,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="PopupFieldBorderStyle" TargetType="Border">
+            <Style x:Key="PopupFieldBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                 <Setter Property="Padding" Value="12,10" />
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
@@ -478,7 +478,7 @@
     <Border Padding="20,4,20,20">
         <Grid>
             <Grid.Style>
-                <Style TargetType="Grid">
+                <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsViewOnly, Mode=OneWay}" Value="True">
                             <Setter Property="Focusable" Value="False" />
@@ -489,7 +489,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition>
                     <ColumnDefinition.Style>
-                        <Style TargetType="ColumnDefinition">
+                        <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
                             <Setter Property="Width" Value="220" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
@@ -501,7 +501,7 @@
                 </ColumnDefinition>
                 <ColumnDefinition>
                     <ColumnDefinition.Style>
-                        <Style TargetType="ColumnDefinition">
+                        <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
                             <Setter Property="Width" Value="20" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
@@ -514,7 +514,7 @@
                 <ColumnDefinition Width="720" />
                 <ColumnDefinition>
                     <ColumnDefinition.Style>
-                        <Style TargetType="ColumnDefinition">
+                        <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
                             <Setter Property="Width" Value="20" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ShowRightFormDivider, Mode=OneWay}" Value="False">
@@ -967,7 +967,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition>
                                                 <ColumnDefinition.Style>
-                                                    <Style TargetType="ColumnDefinition">
+                                                    <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
                                                         <Setter Property="Width" Value="Auto" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
@@ -982,7 +982,7 @@
                                             </ColumnDefinition>
                                             <ColumnDefinition>
                                                 <ColumnDefinition.Style>
-                                                    <Style TargetType="ColumnDefinition">
+                                                    <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
                                                         <Setter Property="Width" Value="16" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">

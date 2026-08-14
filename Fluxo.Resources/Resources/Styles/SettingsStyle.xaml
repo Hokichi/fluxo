@@ -90,7 +90,7 @@
         </Setter>
     </Style>
 
-    <Style x:Key="StateIconBadgeStyle" TargetType="Border">
+    <Style x:Key="StateIconBadgeStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
         <Setter Property="Width" Value="22" />
         <Setter Property="Height" Value="22" />
         <Setter Property="Margin" Value="8,0,0,0" />

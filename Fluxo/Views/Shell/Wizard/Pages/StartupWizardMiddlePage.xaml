@@ -63,7 +63,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Accounts">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep2Active}" Value="True">
@@ -131,7 +131,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Recurring Transactions">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep3Active}" Value="True">
@@ -196,7 +196,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Savings Goals">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep4Active}" Value="True">
@@ -258,7 +258,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Budget Allocation">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep5Active}" Value="True">
@@ -317,7 +317,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Personalization">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep6Active}" Value="True">
@@ -373,7 +373,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Preferences">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep7Active}" Value="True">
@@ -426,7 +426,7 @@
                                 Foreground="{StaticResource Brush.Text.Secondary}"
                                 Text="Summary">
                                 <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
+                                    <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsStep8Active}" Value="True">

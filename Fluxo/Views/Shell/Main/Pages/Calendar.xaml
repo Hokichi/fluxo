@@ -14,7 +14,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="CalendarColumnLayoutStyle" TargetType="Grid">
+        <Style x:Key="CalendarColumnLayoutStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Width" Value="480" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot}" Value="True">
@@ -37,19 +37,19 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CalendarSectionTitleStyle" TargetType="TextBlock">
+        <Style x:Key="CalendarSectionTitleStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="CalendarCardLabelStyle" TargetType="TextBlock">
+        <Style x:Key="CalendarCardLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
         </Style>
 
-        <Style x:Key="CalendarListItemHoverBorderStyle" TargetType="Border">
+        <Style x:Key="CalendarListItemHoverBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="Padding" Value="10,8" />
             <Setter Property="Background" Value="Transparent" />
@@ -64,7 +64,7 @@
         <Style x:Key="CalendarListItemsControlStyle" TargetType="ItemsControl">
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
-                    <Style TargetType="ContentPresenter">
+                    <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                     </Style>
                 </Setter.Value>
@@ -79,7 +79,7 @@
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
 
-        <Style x:Key="CalendarValueTextStyle" TargetType="TextBlock">
+        <Style x:Key="CalendarValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,6,0,0" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="24" />
@@ -95,7 +95,7 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
 
-        <Style x:Key="CalendarSummaryMaximizedVisibilityStyle" TargetType="Grid">
+        <Style x:Key="CalendarSummaryMaximizedVisibilityStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot}" Value="True">
@@ -104,7 +104,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CalendarSummaryRestoredVisibilityStyle" TargetType="Grid">
+        <Style x:Key="CalendarSummaryRestoredVisibilityStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Visible" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot}" Value="True">
@@ -113,7 +113,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CalendarNoDataTextStyle" TargetType="TextBlock">
+        <Style x:Key="CalendarNoDataTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -194,7 +194,7 @@
                     FontSize="14"
                     Text="{Binding DayNumber}">
                     <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -428,7 +428,7 @@
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemContainerStyle>
-                                    <Style TargetType="ContentPresenter">
+                                    <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
                                         <Setter Property="HorizontalAlignment" Value="Stretch" />
                                         <Setter Property="VerticalAlignment" Value="Stretch" />
                                     </Style>

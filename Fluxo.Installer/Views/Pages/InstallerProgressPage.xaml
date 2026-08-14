@@ -28,7 +28,7 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="ChecklistStateStyle" TargetType="TextBlock">
+            <Style x:Key="ChecklistStateStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource Bold}" />
                 <Setter Property="FontSize" Value="11" />
                 <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />

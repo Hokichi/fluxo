@@ -12,7 +12,7 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="AccountAccentStyle" TargetType="Border">
+        <Style x:Key="AccountAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Checking">
                     <Setter Property="Background" Value="{StaticResource Brush.Account.Checking}" />
@@ -53,7 +53,7 @@
             </Border.Background>
 
             <Border.Style>
-                <Style TargetType="Border">
+                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                     <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
                     <Setter Property="Opacity" Value="0" />
                     <Style.Triggers>

@@ -9,7 +9,7 @@
     Topmost="True"
     WindowStyle="None">
     <Window.Resources>
-        <Style x:Key="TrayMenuOptionTextStyle" TargetType="TextBlock">
+        <Style x:Key="TrayMenuOptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />

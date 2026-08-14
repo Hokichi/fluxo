@@ -10,7 +10,7 @@ xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=Pres
             <primitives:UniformGrid Columns="2" />
         </ItemsPanelTemplate>
 
-        <Style x:Key="WizardSavingGoalsItemContainerStyle" TargetType="ContentPresenter">
+        <Style x:Key="WizardSavingGoalsItemContainerStyle" BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
             <Setter Property="Margin" Value="0,0,12,12" />
         </Style>
 

@@ -42,7 +42,7 @@
         Background="Transparent"
         IsEnabled="{Binding IsSpinnerEnabled}">
         <Grid.Style>
-            <Style TargetType="Grid">
+            <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="False">
                         <Setter Property="Opacity" Value="0.4" />

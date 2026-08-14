@@ -165,7 +165,7 @@
                     ItemsSource="{Binding Tags}"
                     Visibility="{Binding HasTags, Converter={StaticResource BoolToVisibilityConverter}}">
                     <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
+                        <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
                             <Setter Property="HorizontalAlignment" Value="Stretch" />
                         </Style>
                     </ItemsControl.ItemContainerStyle>

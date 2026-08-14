@@ -75,7 +75,7 @@
                             </StackPanel>
                         </Grid>
                         <Border.Style>
-                            <Style TargetType="Border">
+                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                 <Setter Property="Opacity" Value="1" />
                                 <Style.Triggers>
                                     <EventTrigger RoutedEvent="Loaded">

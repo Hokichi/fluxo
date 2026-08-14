@@ -67,7 +67,7 @@
                     CornerRadius="12"
                     Cursor="Hand">
                     <Border.Style>
-                        <Style TargetType="Border">
+                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                             <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">
@@ -95,7 +95,7 @@
                     CornerRadius="12"
                     Cursor="Hand">
                     <Border.Style>
-                        <Style TargetType="Border">
+                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                             <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">

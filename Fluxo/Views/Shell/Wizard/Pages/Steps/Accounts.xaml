@@ -9,7 +9,7 @@
             <primitives:UniformGrid Columns="2" />
         </ItemsPanelTemplate>
 
-        <Style x:Key="WizardAccountsItemContainerStyle" TargetType="ContentPresenter">
+        <Style x:Key="WizardAccountsItemContainerStyle" BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
             <Setter Property="Margin" Value="0,0,12,12" />
         </Style>
 

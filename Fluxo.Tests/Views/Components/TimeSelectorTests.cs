@@ -25,6 +25,7 @@ public sealed class TimeSelectorTests
     {
         RunOnStaThread(() =>
         {
+            EnsureApplicationResources();
             var selector = new TimeSelector();
 
             selector.ProcessTextForTests("1");
@@ -40,6 +41,7 @@ public sealed class TimeSelectorTests
     {
         RunOnStaThread(() =>
         {
+            EnsureApplicationResources();
             var selector = new TimeSelector { SelectedTime = new TimeSpan(23, 59, 0) };
 
             selector.ProcessKeyForTests(Key.Right);
@@ -56,6 +58,7 @@ public sealed class TimeSelectorTests
     {
         RunOnStaThread(() =>
         {
+            EnsureApplicationResources();
             var selector = new TimeSelector { SelectedTime = new TimeSpan(23, 0, 0) };
 
             selector.ProcessKeyForTests(Key.Right);
@@ -93,7 +96,11 @@ public sealed class TimeSelectorTests
     private static void EnsureApplicationResources()
     {
         var application = Application.Current ?? new Application();
-        foreach (var resource in new[] { "Theme.xaml", "Fonts.xaml", "Icons.xaml", "Styles/TextBoxStyles.xaml" })
+        foreach (var resource in new[]
+                 {
+                     "Theme.xaml", "Fonts.xaml", "Icons.xaml",
+                     "Styles/ContainerStyles.xaml", "Styles/TextBoxStyles.xaml"
+                 })
         {
             if (application.Resources.MergedDictionaries.Any(dictionary =>
                     dictionary.Source?.OriginalString.EndsWith($"Resources/{resource}", StringComparison.OrdinalIgnoreCase) == true))

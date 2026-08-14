@@ -12,14 +12,14 @@
     <customControls:BasePopup.Resources>
         <converters:SourceSequenceLabelConverter x:Key="SourceSequenceLabelConverter" />
 
-        <Style x:Key="SummaryLabelStyle" TargetType="TextBlock">
+        <Style x:Key="SummaryLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <Style x:Key="TableHeaderTextStyle" TargetType="TextBlock">
+        <Style x:Key="TableHeaderTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
@@ -616,7 +616,7 @@
                 <Grid Grid.Column="2">
                     <Border>
                         <Border.Style>
-                            <Style TargetType="Border">
+                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsAllocationInvalid}" Value="True">
                                         <Setter Property="Effect">

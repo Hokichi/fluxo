@@ -214,7 +214,7 @@
                             VerticalAlignment="Center"
                             Content="{TemplateBinding LeftContent}">
                             <ContentPresenter.Style>
-                                <Style TargetType="ContentPresenter">
+                                <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
                                     <Setter Property="Opacity" Value="0" />
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
@@ -244,7 +244,7 @@
                             VerticalAlignment="Center"
                             Content="{TemplateBinding RightContent}">
                             <ContentPresenter.Style>
-                                <Style TargetType="ContentPresenter">
+                                <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
                                     <Setter Property="Opacity" Value="0" />
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
