@@ -28,13 +28,11 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="SplitTransactionTreeViewStyle" TargetType="TreeView">
+    <Style x:Key="SplitTransactionTreeViewStyle" BasedOn="{StaticResource BaseTreeViewStyle}" TargetType="TreeView">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
-                <Style TargetType="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="True" />
+                <Style BasedOn="{StaticResource BaseTreeViewItemStyle}" TargetType="TreeViewItem">
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TreeViewItem">

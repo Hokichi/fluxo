@@ -18,7 +18,7 @@
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
         </Style>
 
-        <Style x:Key="TransactionsListViewItemStyle" TargetType="ListViewItem">
+        <Style x:Key="TransactionsListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0,0,0,12" />
             <Setter Property="Background" Value="Transparent" />

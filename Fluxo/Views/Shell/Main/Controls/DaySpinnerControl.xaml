@@ -9,10 +9,8 @@
             <StackPanel Orientation="Horizontal" />
         </ItemsPanelTemplate>
 
-        <Style x:Key="TransparentDaySpinnerListViewStyle" TargetType="ListView">
-            <Setter Property="Background" Value="Transparent" />
+        <Style x:Key="TransparentDaySpinnerListViewStyle" BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
             <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListView">

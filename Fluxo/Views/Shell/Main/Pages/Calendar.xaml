@@ -61,7 +61,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CalendarListItemsControlStyle" TargetType="ItemsControl">
+        <Style x:Key="CalendarListItemsControlStyle" BasedOn="{StaticResource BaseItemsControlStyle}" TargetType="ItemsControl">
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">

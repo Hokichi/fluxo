@@ -3,6 +3,51 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls">
 
+    <Style x:Key="BaseComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseComboBoxItemStyle" TargetType="ComboBoxItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseExpanderStyle" TargetType="Expander">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Margin" Value="0,0,0,16" />
+        <Setter Property="IsExpanded" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseGroupItemStyle" TargetType="GroupItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseListBoxItemStyle" TargetType="ListBoxItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <Style x:Key="BaseTreeViewItemStyle" TargetType="TreeViewItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="IsExpanded" Value="True" />
+    </Style>
+
+    <Style x:Key="BaseItemsControlStyle" TargetType="ItemsControl" />
+
+    <Style x:Key="BaseListBoxStyle" TargetType="ListBox">
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+
+    <Style x:Key="BaseListViewStyle" TargetType="ListView">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style x:Key="BaseListViewItemStyle" TargetType="ListViewItem" />
+
+    <Style x:Key="BaseTreeViewStyle" TargetType="TreeView">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
     <Style TargetType="ToolTip">
         <Setter Property="Background" Value="{StaticResource Brush.BalloonButton.Background.Default}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
@@ -359,7 +404,7 @@
         </StackPanel>
     </DataTemplate>
 
-    <Style x:Key="FluxoComboBoxItemStyle" TargetType="ComboBoxItem">
+    <Style x:Key="FluxoComboBoxItemStyle" BasedOn="{StaticResource BaseComboBoxItemStyle}" TargetType="ComboBoxItem">
         <Setter Property="Height" Value="36" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -419,9 +464,8 @@
         </Setter>
     </Style>
 
-    <Style x:Key="FluxoComboBoxStyle" TargetType="ComboBox">
+    <Style x:Key="FluxoComboBoxStyle" BasedOn="{StaticResource BaseComboBoxStyle}" TargetType="ComboBox">
         <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Height" Value="40" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />

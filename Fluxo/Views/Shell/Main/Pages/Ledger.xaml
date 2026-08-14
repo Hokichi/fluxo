@@ -17,7 +17,7 @@
     <UserControl.Resources>
         <converters:LedgerGroupingModeDisplayConverter x:Key="LedgerGroupingModeDisplayConverter" />
 
-        <Style x:Key="LedgerFilterComboBoxItemStyle" TargetType="ComboBoxItem">
+        <Style x:Key="LedgerFilterComboBoxItemStyle" BasedOn="{StaticResource BaseComboBoxItemStyle}" TargetType="ComboBoxItem">
             <Setter Property="Height" Value="36" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -84,9 +84,8 @@
             </Setter>
         </Style>
 
-        <Style x:Key="LedgerFilterComboStyle" TargetType="ComboBox">
+        <Style x:Key="LedgerFilterComboStyle" BasedOn="{StaticResource BaseComboBoxStyle}" TargetType="ComboBox">
             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
-            <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Height" Value="34" />
             <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
             <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
@@ -347,7 +346,7 @@
                 Text="{Binding Converter={StaticResource LedgerGroupingModeDisplayConverter}}" />
         </DataTemplate>
 
-        <Style x:Key="LedgerListViewItemStyle" TargetType="ListViewItem">
+        <Style x:Key="LedgerListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -966,7 +965,7 @@
             </StackPanel>
         </DataTemplate>
 
-        <Style x:Key="LedgerGroupItemStyle" TargetType="GroupItem">
+        <Style x:Key="LedgerGroupItemStyle" BasedOn="{StaticResource BaseGroupItemStyle}" TargetType="GroupItem">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="GroupItem">

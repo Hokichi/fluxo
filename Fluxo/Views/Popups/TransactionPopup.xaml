@@ -56,17 +56,15 @@
                 <Setter Property="CornerRadius" Value="12" />
             </Style>
 
-            <Style x:Key="PopupTagListBoxStyle" TargetType="ListBox">
+            <Style x:Key="PopupTagListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="HorizontalContentAlignment" Value="Left" />
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-            <Style x:Key="PopupTagListBoxItemStyle" TargetType="ListBoxItem">
+            <Style x:Key="PopupTagListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,8,0" />
-                <Setter Property="Padding" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -91,19 +89,17 @@
                 <StackPanel Orientation="Horizontal" />
             </ItemsPanelTemplate>
 
-            <Style x:Key="TransactionNameSuggestionListBoxStyle" TargetType="ListBox">
+            <Style x:Key="TransactionNameSuggestionListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
                 <Setter Property="MinWidth" Value="260" />
                 <Setter Property="MaxHeight" Value="220" />
                 <Setter Property="Padding" Value="6" />
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             </Style>
 
-            <Style x:Key="TransactionNameSuggestionListBoxItemStyle" TargetType="ListBoxItem">
-                <Setter Property="Padding" Value="0" />
+            <Style x:Key="TransactionNameSuggestionListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -130,16 +126,14 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="TransactionHistoryListBoxStyle" TargetType="ListBox">
+            <Style x:Key="TransactionHistoryListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-            <Style x:Key="TransactionHistoryListBoxItemStyle" TargetType="ListBoxItem">
+            <Style x:Key="TransactionHistoryListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,0,8" />
-                <Setter Property="Padding" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -175,9 +169,8 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="TransactionQueueListBoxItemStyle" TargetType="ListBoxItem">
+            <Style x:Key="TransactionQueueListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,0,8" />
-                <Setter Property="Padding" Value="0" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />

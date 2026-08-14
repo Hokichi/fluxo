@@ -4,7 +4,7 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components"
     xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
 
-    <Style x:Key="Accounts" TargetType="ListViewItem">
+    <Style x:Key="Accounts" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="Margin" Value="0,0,8,0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="Transparent" />
@@ -42,7 +42,7 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="ListViewItemStyle" TargetType="ListViewItem">
+    <Style x:Key="ListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0,0,0,12" />
         <Setter Property="Background" Value="Transparent" />
@@ -150,7 +150,7 @@
         </Border>
     </DataTemplate>
 
-    <Style x:Key="DaysOfWeekStyle" TargetType="ListViewItem">
+    <Style x:Key="DaysOfWeekStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -377,7 +377,7 @@
         </Grid>
     </DataTemplate>
 
-    <Style x:Key="PopupTagListViewItemStyle" TargetType="ListViewItem">
+    <Style x:Key="PopupTagListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0,0,8,8" />
         <Setter Property="Background" Value="Transparent" />

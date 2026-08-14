@@ -3,15 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources">
 
-    <Style x:Key="BalanceUpdateListViewStyle" TargetType="ListView">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
+    <Style x:Key="BalanceUpdateListViewStyle" BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
         <Setter Property="Padding" Value="0" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
     </Style>
 
-    <Style x:Key="BalanceUpdateListViewItemStyle" TargetType="ListViewItem">
+    <Style x:Key="BalanceUpdateListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0,0,0,6" />

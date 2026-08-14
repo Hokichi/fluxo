@@ -14,7 +14,7 @@
             <WrapPanel />
         </ItemsPanelTemplate>
 
-        <Style x:Key="BudgetAllocationVisibleTagListViewItemStyle" TargetType="ListViewItem">
+        <Style x:Key="BudgetAllocationVisibleTagListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
             <Setter Property="Background" Value="Transparent" />

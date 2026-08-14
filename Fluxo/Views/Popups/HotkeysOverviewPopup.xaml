@@ -6,9 +6,7 @@
     PopupTitle="Hotkeys Overview">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="HotkeyExpanderStyle" TargetType="Expander">
-            <Setter Property="Margin" Value="0,0,0,16" />
-            <Setter Property="IsExpanded" Value="True" />
+        <Style x:Key="HotkeyExpanderStyle" BasedOn="{StaticResource BaseExpanderStyle}" TargetType="Expander">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
             <Setter Property="Template">
