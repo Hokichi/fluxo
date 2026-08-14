@@ -45,7 +45,7 @@
                     Text="{Binding UsernameText, UpdateSourceTrigger=PropertyChanged}"
                     TextAlignment="Center">
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
                             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint.Muted}" />

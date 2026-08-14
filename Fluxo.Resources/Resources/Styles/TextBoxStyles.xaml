@@ -3,7 +3,20 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls">
-    <Style x:Key="RoundedTextInputStyle" TargetType="TextBox">
+    <Style x:Key="BaseTextBoxStyle" TargetType="TextBox">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+    </Style>
+
+    <Style x:Key="BasePasswordBoxStyle" TargetType="PasswordBox">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="RoundedTextInputStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
         <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="4,0" />
@@ -45,18 +58,13 @@
         </Setter>
     </Style>
 
-    <Style x:Key="RoundedPasswordInputStyle" TargetType="PasswordBox">
-        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
-        <Setter Property="Height" Value="40" />
-        <Setter Property="Padding" Value="4,0" />
+    <Style x:Key="RoundedPasswordInputStyle" BasedOn="{StaticResource BasePasswordBoxStyle}" TargetType="PasswordBox">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="PasswordBox">
@@ -88,10 +96,17 @@
     </Style>
 
     <Style
-        x:Key="RoundedMoneyTextInputStyle"
+        x:Key="BaseMoneyTextBoxStyle"
         BasedOn="{StaticResource RoundedTextInputStyle}"
         TargetType="{x:Type customControls:MoneyTextBox}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Padding" Value="4,0" />
+    </Style>
+
+    <Style
+        x:Key="RoundedMoneyTextInputStyle"
+        BasedOn="{StaticResource BaseMoneyTextBoxStyle}"
+        TargetType="{x:Type customControls:MoneyTextBox}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -165,10 +180,17 @@
     </Style>
 
     <Style
-        x:Key="RoundedSuffixTextInputStyle"
+        x:Key="BaseSuffixTextBoxStyle"
         BasedOn="{StaticResource RoundedMoneyTextInputStyle}"
         TargetType="{x:Type customControls:SuffixTextBox}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Padding" Value="4,0,28,0" />
+    </Style>
+
+    <Style
+        x:Key="RoundedSuffixTextInputStyle"
+        BasedOn="{StaticResource BaseSuffixTextBoxStyle}"
+        TargetType="{x:Type customControls:SuffixTextBox}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -266,14 +288,18 @@
         </Setter>
     </Style>
 
-    <Style x:Key="NumericUpDownStyle" TargetType="{x:Type customControls:NumericUpDown}">
+    <Style x:Key="BaseNumericUpDownStyle" TargetType="{x:Type customControls:NumericUpDown}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Height" Value="40" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style BasedOn="{StaticResource BaseNumericUpDownStyle}" TargetType="{x:Type customControls:NumericUpDown}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
-        <Setter Property="FontSize" Value="13" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type customControls:NumericUpDown}">
@@ -364,6 +390,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
-    <Style BasedOn="{StaticResource NumericUpDownStyle}" TargetType="{x:Type customControls:NumericUpDown}" />
 </ResourceDictionary>

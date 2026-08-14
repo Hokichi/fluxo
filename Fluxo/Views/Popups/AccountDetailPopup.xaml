@@ -15,7 +15,7 @@
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="InlineHeaderTextBoxBaseStyle" TargetType="TextBox">
+        <Style x:Key="InlineHeaderTextBoxBaseStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
             <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
