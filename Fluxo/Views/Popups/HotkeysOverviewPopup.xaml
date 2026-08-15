@@ -5,7 +5,7 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     PopupTitle="Hotkeys Overview">
 
-    <customControls:BasePopup.Resources>
+<customControls:BasePopup.Resources>
         <Style x:Key="HotkeyExpanderStyle" BasedOn="{StaticResource BaseExpanderStyle}" TargetType="Expander">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
@@ -215,16 +215,16 @@
                 </Grid>
             </Expander>
         </DataTemplate>
-    </customControls:BasePopup.Resources>
+
+<ItemsPanelTemplate x:Key="HotkeyGroupItemsPanelTemplate">
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+</customControls:BasePopup.Resources>
 
     <Border Width="760" Padding="32,6,32,28">
         <ScrollViewer MaxHeight="520" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemTemplate="{StaticResource HotkeyGroupTemplate}" ItemsSource="{Binding HotkeyGroups}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+<ItemsControl ItemTemplate="{StaticResource HotkeyGroupTemplate}" ItemsSource="{Binding HotkeyGroups}" ItemsPanel="{StaticResource HotkeyGroupItemsPanelTemplate}">
+
             </ItemsControl>
         </ScrollViewer>
     </Border>

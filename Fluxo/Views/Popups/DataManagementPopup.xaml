@@ -7,7 +7,7 @@
     Width="640"
     PopupTitle="Data Management"
     Mode="None">
-    <customControls:BasePopup.Resources>
+<customControls:BasePopup.Resources>
         <Style x:Key="InitialPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
@@ -51,7 +51,49 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-    </customControls:BasePopup.Resources>
+
+<ItemsPanelTemplate x:Key="DataManagementEntityItemsPanelTemplate">
+                                <customControls:SpacedUniformGrid Columns="3" />
+                            </ItemsPanelTemplate>
+
+<DataTemplate x:Key="DataManagementEntityTemplate">
+                                <CheckBox
+                                    Margin="0,0,0,8"
+                                    Content="{Binding Title}"
+                                    IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                    IsEnabled="{Binding IsEnabled}"
+                                    Style="{StaticResource ItemCheckBoxWithContentStyle}" />
+                            </DataTemplate>
+
+<DataTemplate x:Key="DataManagementConflictTemplate">
+                                    <Border Margin="0,0,0,8" Style="{StaticResource CardBorderStyle}">
+                                        <StackPanel>
+                                            <TextBlock
+                                                FontFamily="{StaticResource Bold}"
+                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Text="{Binding Name}" />
+                                            <TextBlock
+                                                Margin="0,4,0,0"
+                                                FontFamily="{StaticResource Medium}"
+                                                FontSize="10"
+                                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                                Text="{Binding EntityKind}" />
+                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                <RadioButton Content="Replace" IsChecked="{Binding IsReplaceSelected, Mode=TwoWay}" />
+                                                <RadioButton
+                                                    Margin="14,0,0,0"
+                                                    Content="Append"
+                                                    IsChecked="{Binding IsAppendSelected, Mode=TwoWay}"
+                                                    Style="{StaticResource ConflictAppendOptionStyle}" />
+                                                <RadioButton
+                                                    Margin="14,0,0,0"
+                                                    Content="Ignore"
+                                                    IsChecked="{Binding IsIgnoreSelected, Mode=TwoWay}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+</customControls:BasePopup.Resources>
 
     <Grid
         Width="840"
@@ -125,22 +167,9 @@
                         FontFamily="{StaticResource Bold}"
                         Foreground="{StaticResource Brush.Text.Primary}"
                         Text="Entities" />
-                    <ItemsControl Margin="0,16,0,0" ItemsSource="{Binding Entities}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <customControls:SpacedUniformGrid Columns="3" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <CheckBox
-                                    Margin="0,0,0,8"
-                                    Content="{Binding Title}"
-                                    IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                    IsEnabled="{Binding IsEnabled}"
-                                    Style="{StaticResource ItemCheckBoxWithContentStyle}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+<ItemsControl Margin="0,16,0,0" ItemsSource="{Binding Entities}" ItemsPanel="{StaticResource DataManagementEntityItemsPanelTemplate}" ItemTemplate="{StaticResource DataManagementEntityTemplate}">
+
+
                     </ItemsControl>
             </StackPanel>
             <customControls:BalloonButton
@@ -227,37 +256,8 @@
                         Grid.Row="1"
                         Margin="0,16,0,0"
                         VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Conflicts}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Margin="0,0,0,8" Style="{StaticResource CardBorderStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                FontFamily="{StaticResource Bold}"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
-                                                Text="{Binding Name}" />
-                                            <TextBlock
-                                                Margin="0,4,0,0"
-                                                FontFamily="{StaticResource Medium}"
-                                                FontSize="10"
-                                                Foreground="{StaticResource Brush.Text.Secondary}"
-                                                Text="{Binding EntityKind}" />
-                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                                <RadioButton Content="Replace" IsChecked="{Binding IsReplaceSelected, Mode=TwoWay}" />
-                                                <RadioButton
-                                                    Margin="14,0,0,0"
-                                                    Content="Append"
-                                                    IsChecked="{Binding IsAppendSelected, Mode=TwoWay}"
-                                                    Style="{StaticResource ConflictAppendOptionStyle}" />
-                                                <RadioButton
-                                                    Margin="14,0,0,0"
-                                                    Content="Ignore"
-                                                    IsChecked="{Binding IsIgnoreSelected, Mode=TwoWay}" />
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
+<ItemsControl ItemsSource="{Binding Conflicts}" ItemTemplate="{StaticResource DataManagementConflictTemplate}">
+
                         </ItemsControl>
                     </customControls:FadingScrollViewer>
 

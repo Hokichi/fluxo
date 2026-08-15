@@ -8,7 +8,7 @@
     MaxHeight="800"
     PopupTitle="Income Detail">
 
-    <customControls:BasePopup.Resources>
+<customControls:BasePopup.Resources>
         <Style x:Key="LeftSideLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -73,21 +73,8 @@
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        FontSize="12">
-                        <TextBlock.Style>
-                            <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
-                                <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
-                                <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsExpense}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                        <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=-{0}}" />
-                                        <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=-{0}}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
+                        FontSize="12" Style="{StaticResource AccountActivityAmountTextStyle}">
+
                     </TextBlock>
                 </Grid>
             </Border>
@@ -140,7 +127,53 @@
                 </StackPanel>
             </Grid>
         </DataTemplate>
-    </customControls:BasePopup.Resources>
+
+<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="AccountActivityAmountTextStyle">
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                                <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
+                                <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsExpense}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                        <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=-{0}}" />
+                                        <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=-{0}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+<Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountDisableButtonStyle">
+                                    <Setter Property="ButtonIcon" Value="{StaticResource LightningSlashFill}" />
+                                    <Setter Property="HoveredBackground" Value="{StaticResource Brush.Warning}" />
+                                    <Setter Property="ToolTip" Value="Disable source" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                            <Setter Property="ButtonIcon" Value="{StaticResource LightningFill}" />
+                                            <Setter Property="ToolTip" Value="Enable source" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+
+<Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountEditButtonStyle">
+                                    <Setter Property="ButtonIcon" Value="{StaticResource Pen}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                            <Setter Property="ButtonIcon" Value="{StaticResource ContentSave}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+
+<Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountPinButtonStyle">
+                                    <Setter Property="ButtonIcon" Value="{StaticResource Unpin}" />
+                                    <Setter Property="HoveredBackground" Value="{StaticResource Brush.BalloonButton.Background.Default.Hovered}" />
+                                    <Setter Property="ToolTip" Value="Unpin source" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsUnpinned}" Value="True">
+                                            <Setter Property="ButtonIcon" Value="{StaticResource Pin}" />
+                                            <Setter Property="ToolTip" Value="Pin source" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+</customControls:BasePopup.Resources>
 
     <Grid
         Width="720"
@@ -419,39 +452,18 @@
                         VerticalAlignment="Bottom"
                         Columns="3"
                         Rows="2">
-                        <customControls:BalloonButton
+<customControls:BalloonButton
                             Click="OnDisableButtonClick"
                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Caution.Hovered}">
-                            <customControls:BalloonButton.Style>
-                                <Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource LightningSlashFill}" />
-                                    <Setter Property="HoveredBackground" Value="{StaticResource Brush.Warning}" />
-                                    <Setter Property="ToolTip" Value="Disable source" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
-                                            <Setter Property="ButtonIcon" Value="{StaticResource LightningFill}" />
-                                            <Setter Property="ToolTip" Value="Enable source" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </customControls:BalloonButton.Style>
+                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Caution.Hovered}" Style="{StaticResource AccountDisableButtonStyle}">
+
                         </customControls:BalloonButton>
-                        <customControls:BalloonButton
+<customControls:BalloonButton
                             Click="OnEditButtonClick"
                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                            ToolTip="{Binding EditButtonLabel}">
-                            <customControls:BalloonButton.Style>
-                                <Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource Pen}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
-                                            <Setter Property="ButtonIcon" Value="{StaticResource ContentSave}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </customControls:BalloonButton.Style>
+                            ToolTip="{Binding EditButtonLabel}" Style="{StaticResource AccountEditButtonStyle}">
+
                         </customControls:BalloonButton>
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource Exchange}"
@@ -461,24 +473,12 @@
                             IsEnabled="{Binding CanTransfer}"
                             Style="{StaticResource DetailActionBalloonButtonStyle}"
                             ToolTip="Transfer funds" />
-                        <customControls:BalloonButton
+<customControls:BalloonButton
                             Click="OnPinOrUnpinButtonClick"
                             DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
-                            IsEnabled="{Binding CanPinOrUnpin}">
-                            <customControls:BalloonButton.Style>
-                                <Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource Unpin}" />
-                                    <Setter Property="HoveredBackground" Value="{StaticResource Brush.BalloonButton.Background.Default.Hovered}" />
-                                    <Setter Property="ToolTip" Value="Unpin source" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsUnpinned}" Value="True">
-                                            <Setter Property="ButtonIcon" Value="{StaticResource Pin}" />
-                                            <Setter Property="ToolTip" Value="Pin source" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </customControls:BalloonButton.Style>
+                            IsEnabled="{Binding CanPinOrUnpin}" Style="{StaticResource AccountPinButtonStyle}">
+
                         </customControls:BalloonButton>
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource SourceSwitch}"

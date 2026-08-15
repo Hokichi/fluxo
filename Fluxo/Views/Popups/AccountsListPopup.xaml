@@ -6,7 +6,7 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     PopupTitle="Accounts">
 
-    <customControls:BasePopup.Resources>
+<customControls:BasePopup.Resources>
 <Style x:Key="SourceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -76,17 +76,8 @@
                 Margin="12,12,12,0"
                 Click="OnSourceClick"
                 Style="{StaticResource SourceButtonStyle}">
-                <Grid>
-                    <Grid.Style>
-                        <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
-                            <Setter Property="Opacity" Value="1" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsDisabled}" Value="True">
-                                    <Setter Property="Opacity" Value="0.55" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
+                <Grid Style="{StaticResource AccountCardStateGridStyle}">
+
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="12" />
@@ -115,17 +106,8 @@
                             <components:Icon
                                 Margin="10"
                                 Path="{StaticResource PiggyBank}"
-                                Color="{Binding Background, ElementName=AccentBorder, Converter={StaticResource BackgroundToForegroundConverter}}">
-                                <components:Icon.Style>
-                                    <Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding AccountType}" Value="Saving">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </components:Icon.Style>
+                                Color="{Binding Background, ElementName=AccentBorder, Converter={StaticResource BackgroundToForegroundConverter}}" Style="{StaticResource SavingAccountIconStyle}">
+
                             </components:Icon>
                         </Grid>
                     </Border>
@@ -147,21 +129,8 @@
                             <Border
                                 Width="12"
                                 Height="12"
-                                Margin="8,0,0,0">
-                                <Border.Style>
-                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding PinnedOnUI}" Value="False" />
-                                                    <Condition Binding="{Binding IsDisabled}" Value="False" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+                                Margin="8,0,0,0" Style="{StaticResource DisabledAccountBadgeStyle}">
+
                                 <components:Icon Path="{StaticResource Unpin}" Color="{StaticResource Brush.Warning}" />
                             </Border>
                         </StackPanel>
@@ -193,7 +162,38 @@
                 </Grid>
             </Button>
         </DataTemplate>
-    </customControls:BasePopup.Resources>
+
+<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="AccountCardStateGridStyle">
+                            <Setter Property="Opacity" Value="1" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDisabled}" Value="True">
+                                    <Setter Property="Opacity" Value="0.55" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon" x:Key="SavingAccountIconStyle">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding AccountType}" Value="Saving">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="DisabledAccountBadgeStyle">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding PinnedOnUI}" Value="False" />
+                                                    <Condition Binding="{Binding IsDisabled}" Value="False" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+</customControls:BasePopup.Resources>
 
     <Grid
         Width="400"

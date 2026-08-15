@@ -5,7 +5,7 @@
     xmlns:behaviors="clr-namespace:Fluxo.Helpers.Behaviors"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
-    <UserControl.Resources>
+<UserControl.Resources>
         <DataTemplate x:Key="SettingsSourceItemTemplate">
             <StackPanel>
                 <Border
@@ -55,21 +55,8 @@
                             Margin="10,0,0,0"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
-                            <Border>
-                                <Border.Style>
-                                    <Style BasedOn="{StaticResource StateIconBadgeStyle}" TargetType="Border">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding IsUnpinned}" Value="True" />
-                                                    <Condition Binding="{Binding IsEnabled}" Value="True" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+                            <Border Style="{StaticResource SettingsAccountDisabledBadgeStyle}">
+
                                 <components:Icon
                                     Margin="6"
                                     Path="{StaticResource Unpin}"
@@ -151,7 +138,20 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
-    </UserControl.Resources>
+
+<Style BasedOn="{StaticResource StateIconBadgeStyle}" TargetType="Border" x:Key="SettingsAccountDisabledBadgeStyle">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding IsUnpinned}" Value="True" />
+                                                    <Condition Binding="{Binding IsEnabled}" Value="True" />
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+</UserControl.Resources>
 
     <Border>
         <Grid>

@@ -5,7 +5,7 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:settings="clr-namespace:Fluxo.ViewModels.Popups.Settings">
-    <UserControl.Resources>
+<UserControl.Resources>
         <ItemsPanelTemplate x:Key="SettingsTagsItemsPanelTemplate">
             <customControls:SpacedUniformGrid
                 Columns="2"
@@ -130,7 +130,11 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
-    </UserControl.Resources>
+
+<Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter" x:Key="SettingsTagItemContainerStyle">
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        </Style>
+</UserControl.Resources>
 
     <Border>
         <Grid>
@@ -158,17 +162,13 @@
                     ToolTip="Add tag" />
             </Grid>
             <customControls:FadingScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl
+<ItemsControl
                     Margin="0,16,0,0"
                     ItemTemplate="{StaticResource SettingsTagCardTemplate}"
                     ItemsPanel="{StaticResource SettingsTagsItemsPanelTemplate}"
                     ItemsSource="{Binding Tags}"
-                    Visibility="{Binding HasTags, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <ItemsControl.ItemContainerStyle>
-                        <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
+                    Visibility="{Binding HasTags, Converter={StaticResource BoolToVisibilityConverter}}" ItemContainerStyle="{StaticResource SettingsTagItemContainerStyle}">
+
                 </ItemsControl>
             </customControls:FadingScrollViewer>
 
@@ -180,7 +180,7 @@
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
                 Foreground="{StaticResource Brush.Text.Secondary}"
-                Text="No tags yet — add one to get started."
+                Text="No tags yet â€” add one to get started."
                 Visibility="{Binding HasTags, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
         </Grid>
     </Border>

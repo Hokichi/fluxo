@@ -20,7 +20,7 @@
 
     <customControls:BasePopup.Resources>
 
-        <ResourceDictionary>
+<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionSplitTreeStyles.xaml" />
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionBalanceUpdateStyles.xaml" />
@@ -545,17 +545,8 @@
                         Width="10"
                         Height="10"
                         Path="{StaticResource ExclamationTriangle}"
-                        Visibility="{Binding HasFeedback, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <components:Icon.Style>
-                            <Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
-                                <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HasErrors, Mode=OneWay}" Value="False">
-                                        <Setter Property="Color" Value="{StaticResource Brush.Warning}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </components:Icon.Style>
+                        Visibility="{Binding HasFeedback, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Style="{StaticResource TransactionFeedbackIconStyle}">
+
                     </components:Icon>
                     <Popup
                         AllowsTransparency="True"
@@ -576,24 +567,25 @@
                     </Popup>
                 </Grid>
             </DataTemplate>
-        </ResourceDictionary>
-    </customControls:BasePopup.Resources>
 
-    <Border Padding="20,4,20,20">
-        <Grid>
-            <Grid.Style>
-                <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+<Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon" x:Key="TransactionFeedbackIconStyle">
+                                <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasErrors, Mode=OneWay}" Value="False">
+                                        <Setter Property="Color" Value="{StaticResource Brush.Warning}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="TransactionPopupRootGridStyle">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsViewOnly, Mode=OneWay}" Value="True">
                             <Setter Property="Focusable" Value="False" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </Grid.Style>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition>
-                    <ColumnDefinition.Style>
-                        <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
+
+<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="BulkQueueColumnStyle">
                             <Setter Property="Width" Value="220" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
@@ -601,11 +593,8 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </ColumnDefinition.Style>
-                </ColumnDefinition>
-                <ColumnDefinition>
-                    <ColumnDefinition.Style>
-                        <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
+
+<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="BulkQueueGutterColumnStyle">
                             <Setter Property="Width" Value="20" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
@@ -613,12 +602,8 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </ColumnDefinition.Style>
-                </ColumnDefinition>
-                <ColumnDefinition Width="720" />
-                <ColumnDefinition>
-                    <ColumnDefinition.Style>
-                        <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
+
+<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="RightFormDividerColumnStyle">
                             <Setter Property="Width" Value="20" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding ShowRightFormDivider, Mode=OneWay}" Value="False">
@@ -626,7 +611,60 @@
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </ColumnDefinition.Style>
+
+<DataTemplate x:Key="TransactionQueueGroupHeaderTemplate">
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        FontFamily="{DynamicResource Bold}"
+                                        FontSize="11"
+                                        Foreground="{DynamicResource Brush.Text.Muted}"
+                                        Text="{Binding Name, StringFormat={}{0:ddd, MMM d, yyyy}}" />
+                                </DataTemplate>
+
+<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="CategoryFieldColumnStyle">
+                                                        <Setter Property="Width" Value="Auto" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
+                                                                <Setter Property="Width" Value="0" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding DataContext.IsRepayment, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="True">
+                                                                <Setter Property="Width" Value="*" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+
+<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="CategoryFieldGutterColumnStyle">
+                                                        <Setter Property="Width" Value="16" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
+                                                                <Setter Property="Width" Value="0" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+
+<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="SplitProgressBarStyle">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+</ResourceDictionary>
+    </customControls:BasePopup.Resources>
+
+    <Border Padding="20,4,20,20">
+<Grid Style="{StaticResource TransactionPopupRootGridStyle}">
+
+            <Grid.ColumnDefinitions>
+<ColumnDefinition Style="{StaticResource BulkQueueColumnStyle}">
+
+                </ColumnDefinition>
+<ColumnDefinition Style="{StaticResource BulkQueueGutterColumnStyle}">
+
+                </ColumnDefinition>
+                <ColumnDefinition Width="720" />
+<ColumnDefinition Style="{StaticResource RightFormDividerColumnStyle}">
+
                 </ColumnDefinition>
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
@@ -660,17 +698,8 @@
                     SelectedItem="{Binding SelectedQueuedTransaction, Mode=TwoWay}"
                     Style="{StaticResource TransactionHistoryListBoxStyle}">
                     <ListBox.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock
-                                        Margin="0,0,0,8"
-                                        FontFamily="{DynamicResource Bold}"
-                                        FontSize="11"
-                                        Foreground="{DynamicResource Brush.Text.Muted}"
-                                        Text="{Binding Name, StringFormat={}{0:ddd, MMM d, yyyy}}" />
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
+<GroupStyle HeaderTemplate="{StaticResource TransactionQueueGroupHeaderTemplate}">
+
                         </GroupStyle>
                     </ListBox.GroupStyle>
                 </ListBox>
@@ -1069,32 +1098,11 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition>
-                                                <ColumnDefinition.Style>
-                                                    <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
-                                                        <Setter Property="Width" Value="Auto" />
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
-                                                                <Setter Property="Width" Value="0" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding DataContext.IsRepayment, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="True">
-                                                                <Setter Property="Width" Value="*" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </ColumnDefinition.Style>
+<ColumnDefinition Style="{StaticResource CategoryFieldColumnStyle}">
+
                                             </ColumnDefinition>
-                                            <ColumnDefinition>
-                                                <ColumnDefinition.Style>
-                                                    <Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition">
-                                                        <Setter Property="Width" Value="16" />
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
-                                                                <Setter Property="Width" Value="0" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </ColumnDefinition.Style>
+<ColumnDefinition Style="{StaticResource CategoryFieldGutterColumnStyle}">
+
                                             </ColumnDefinition>
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
@@ -1727,22 +1735,14 @@
                                                 Style="{StaticResource TransactionCardStatusIconStyle}" />
                                         </StackPanel>
                                     </Grid>
-                                    <ProgressBar
+<ProgressBar
                                         Grid.Row="1"
                                         Height="12"
                                         Margin="0,12,0,0"
                                         Maximum="{Binding RootTransaction.Amount, Mode=OneWay}"
                                         Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                        Value="{Binding RootTransaction.ChildAmountTotal, Mode=OneWay}">
-                                        <ProgressBar.Style>
-                                            <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ProgressBar.Style>
+                                        Value="{Binding RootTransaction.ChildAmountTotal, Mode=OneWay}" Style="{StaticResource SplitProgressBarStyle}">
+
                                     </ProgressBar>
                                     <Grid Grid.Row="2" Margin="0,8,0,0">
                                         <Grid.ColumnDefinitions>

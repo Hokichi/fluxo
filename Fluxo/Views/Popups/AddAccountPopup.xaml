@@ -8,7 +8,7 @@
     Mode="Modify"
     PopupTitle="{Binding PopupTitle}">
 
-    <customControls:BasePopup.Resources>
+<customControls:BasePopup.Resources>
         <Style x:Key="FieldValidationHintStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -16,7 +16,22 @@
             <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
-    </customControls:BasePopup.Resources>
+
+<Style BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel" x:Key="CheckingAccountFieldsStyle">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Checking}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Cash}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Credit}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+</customControls:BasePopup.Resources>
 
     <Grid Width="640" Margin="24,0,24,24">
         <customControls:FadingScrollViewer VerticalScrollBarVisibility="Auto">
@@ -75,23 +90,8 @@
                                 Text="{Binding SpentAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         </StackPanel>
 
-                        <StackPanel Margin="0,14,0,0">
-                            <StackPanel.Style>
-                                <Style BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Checking}">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Cash}">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SelectedAccountType}" Value="{x:Static enums:AccountType.Credit}">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
+<StackPanel Margin="0,14,0,0" Style="{StaticResource CheckingAccountFieldsStyle}">
+
                             <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                 <TextBlock
                                     Margin="0"

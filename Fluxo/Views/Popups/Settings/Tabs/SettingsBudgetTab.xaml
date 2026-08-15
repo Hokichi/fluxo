@@ -7,10 +7,9 @@
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:viewModels="clr-namespace:Fluxo.ViewModels.Popups.Settings">
 
-    <Grid>
-        <StackPanel>
-            <StackPanel.Style>
-                <Style BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
+<UserControl.Resources>
+
+<Style BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel" x:Key="SettingsBudgetContentStyle">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding HasAccounts}" Value="False">
                             <Setter Property="Effect">
@@ -23,7 +22,11 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+</UserControl.Resources>
+
+    <Grid>
+<StackPanel Style="{StaticResource SettingsBudgetContentStyle}">
+
             <Grid Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock

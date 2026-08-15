@@ -9,7 +9,7 @@
     PopupTitle="Budget Planning"
     SizeToContent="WidthAndHeight">
 
-    <customControls:BasePopup.Resources>
+<customControls:BasePopup.Resources>
         <converters:SourceSequenceLabelConverter x:Key="SourceSequenceLabelConverter" />
 
         <Style x:Key="SummaryLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
@@ -154,7 +154,19 @@
                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}" />
             </Grid>
         </DataTemplate>
-    </customControls:BasePopup.Resources>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="InvalidAllocationBorderStyle">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAllocationInvalid}" Value="True">
+                                        <Setter Property="Effect">
+                                            <Setter.Value>
+                                                <BlurEffect Radius="4" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+</customControls:BasePopup.Resources>
 
     <Grid Width="1280" Margin="24,0,24,24">
         <Border
@@ -614,20 +626,8 @@
                     </Grid>
                 </Grid>
                 <Grid Grid.Column="2">
-                    <Border>
-                        <Border.Style>
-                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsAllocationInvalid}" Value="True">
-                                        <Setter Property="Effect">
-                                            <Setter.Value>
-                                                <BlurEffect Radius="4" />
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
+<Border Style="{StaticResource InvalidAllocationBorderStyle}">
+
                         <StackPanel>
                             <StackPanel>
                                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
