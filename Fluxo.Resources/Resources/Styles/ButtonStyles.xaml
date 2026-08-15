@@ -750,7 +750,6 @@
         TargetType="Button">
         <Setter Property="Height" Value="34" />
         <Setter Property="MinWidth" Value="90" />
-        <Setter Property="Padding" Value="14,0" />
     </Style>
 
 

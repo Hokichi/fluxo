@@ -93,11 +93,9 @@
     <Style BasedOn="{StaticResource BaseToolTipStyle}" TargetType="ToolTip">
         <Setter Property="Background" Value="{StaticResource Brush.BalloonButton.Background.Default}" />
         <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{StaticResource Medium}" />
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="Padding" Value="8,5" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToolTip">
@@ -314,9 +312,6 @@
     </Style>
 
     <Style BasedOn="{StaticResource BaseFadingScrollViewerStyle}" TargetType="{x:Type customControls:FadingScrollViewer}">
-        <Setter Property="Margin" Value="10" />
-        <Setter Property="HorizontalScrollBarVisibility" Value="Visible" />
-        <Setter Property="VerticalScrollBarVisibility" Value="Visible" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type customControls:FadingScrollViewer}">
@@ -640,7 +635,6 @@
     </Style>
 
     <Style x:Key="BudgetSliderStyle" BasedOn="{StaticResource BaseSliderStyle}" TargetType="Slider">
-        <Setter Property="Height" Value="24" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
         <Setter Property="Template">
             <Setter.Value>

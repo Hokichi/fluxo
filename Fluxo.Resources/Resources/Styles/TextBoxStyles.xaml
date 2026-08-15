@@ -107,7 +107,6 @@
         BasedOn="{StaticResource RoundedTextInputStyle}"
         TargetType="{x:Type customControls:MoneyTextBox}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Padding" Value="4,0" />
     </Style>
 
     <Style
@@ -283,7 +282,6 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Focusable" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
