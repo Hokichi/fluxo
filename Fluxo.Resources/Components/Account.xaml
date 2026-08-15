@@ -11,7 +11,7 @@
     Visibility="{Binding PinnedOnUI, Converter={StaticResource BoolToVisibilityConverter}}"
     mc:Ignorable="d">
 
-    <UserControl.Resources>
+<UserControl.Resources>
         <Style x:Key="AccountAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Checking">
@@ -32,28 +32,8 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-    </UserControl.Resources>
 
-    <Grid>
-        <Border
-            x:Name="BGCard"
-            BorderThickness="1"
-            CornerRadius="8"
-            Opacity="0.1"
-            Style="{StaticResource AccountAccentStyle}" />
-
-        <Border
-            x:Name="AccountCard"
-            BorderThickness="0"
-            CornerRadius="8"
-            MouseLeftButtonDown="OnRootMouseLeftButtonDown"
-            PreviewMouseRightButtonUp="OnRootPreviewMouseRightButtonUp">
-            <Border.Background>
-                <SolidColorBrush Color="{StaticResource Color.Background.Deepened}" />
-            </Border.Background>
-
-            <Border.Style>
-                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="AccountStateBorderStyle">
                     <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
                     <Setter Property="Opacity" Value="0" />
                     <Style.Triggers>
@@ -84,7 +64,27 @@
                         </Trigger>
                     </Style.Triggers>
                 </Style>
-            </Border.Style>
+</UserControl.Resources>
+
+    <Grid>
+        <Border
+            x:Name="BGCard"
+            BorderThickness="1"
+            CornerRadius="8"
+            Opacity="0.1"
+            Style="{StaticResource AccountAccentStyle}" />
+
+<Border
+            x:Name="AccountCard"
+            BorderThickness="0"
+            CornerRadius="8"
+            MouseLeftButtonDown="OnRootMouseLeftButtonDown"
+            PreviewMouseRightButtonUp="OnRootPreviewMouseRightButtonUp" Style="{StaticResource AccountStateBorderStyle}">
+            <Border.Background>
+                <SolidColorBrush Color="{StaticResource Color.Background.Deepened}" />
+            </Border.Background>
+
+
         </Border>
 
         <Border

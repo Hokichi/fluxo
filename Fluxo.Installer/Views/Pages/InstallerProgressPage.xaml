@@ -10,7 +10,7 @@
     d:DesignWidth="860"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <ResourceDictionary>
+<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
@@ -44,7 +44,37 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </ResourceDictionary>
+
+<DataTemplate x:Key="InstallerChecklistStepTemplate">
+                            <Border
+                                Margin="0,0,0,10"
+                                Padding="14,12"
+                                Background="{StaticResource Brush.Background.Surface}"
+                                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                BorderThickness="1"
+                                CornerRadius="12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontFamily="{StaticResource Medium}"
+                                        FontSize="12"
+                                        Foreground="{StaticResource Brush.Text.Primary}"
+                                        Text="{Binding Label}" />
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Style="{StaticResource ChecklistStateStyle}"
+                                        Text="{Binding State}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+</ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
@@ -74,41 +104,11 @@
                     Text="{Binding StatusMessage}"
                     TextWrapping="Wrap" />
 
-                <ItemsControl
+<ItemsControl
                     Grid.Row="2"
                     Margin="0,18,0,0"
-                    ItemsSource="{Binding ChecklistSteps}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border
-                                Margin="0,0,0,10"
-                                Padding="14,12"
-                                Background="{StaticResource Brush.Background.Surface}"
-                                BorderBrush="{StaticResource Brush.Border.Subtle}"
-                                BorderThickness="1"
-                                CornerRadius="12">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
+                    ItemsSource="{Binding ChecklistSteps}" ItemTemplate="{StaticResource InstallerChecklistStepTemplate}">
 
-                                    <TextBlock
-                                        VerticalAlignment="Center"
-                                        FontFamily="{StaticResource Medium}"
-                                        FontSize="12"
-                                        Foreground="{StaticResource Brush.Text.Primary}"
-                                        Text="{Binding Label}" />
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Style="{StaticResource ChecklistStateStyle}"
-                                        Text="{Binding State}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
         </Border>

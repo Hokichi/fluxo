@@ -13,7 +13,7 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None">
     <Window.Resources>
-        <ResourceDictionary>
+<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
@@ -46,7 +46,56 @@
             <Style x:Key="BaseInstallerFinishedPageStyle" TargetType="{x:Type pages:InstallerFinishedPage}">
                 <Setter Property="Visibility" Value="Collapsed" />
             </Style>
-        </ResourceDictionary>
+
+<Style BasedOn="{StaticResource PopupTextButtonStyle}" TargetType="Button" x:Key="InstallerCloseButtonStyle">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Finished}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseInstallerWelcomePageStyle}" TargetType="{x:Type pages:InstallerWelcomePage}" x:Key="InstallerWelcomePageStateStyle">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Welcome}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseInstallerAppFoundPageStyle}" TargetType="{x:Type pages:InstallerAppFoundPage}" x:Key="InstallerAppFoundPageStateStyle">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.AppFound}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseInstallerProgressPageStyle}" TargetType="{x:Type pages:InstallerProgressPage}" x:Key="InstallerProgressPageStateStyle">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Progress}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseUninstallPageStyle}" TargetType="{x:Type pages:UninstallPage}" x:Key="UninstallPageStateStyle">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Uninstall}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseInstallerFinishedPageStyle}" TargetType="{x:Type pages:InstallerFinishedPage}" x:Key="InstallerFinishedPageStateStyle">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Finished}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+</ResourceDictionary>
     </Window.Resources>
 
     <Border
@@ -86,22 +135,13 @@
                         Text="o" />
                 </StackPanel>
 
-                <Button
+<Button
                     Grid.Column="1"
                     Width="36"
                     Height="36"
                     Padding="0"
-                    Command="{Binding CloseInstallerCommand}">
-                    <Button.Style>
-                        <Style BasedOn="{StaticResource PopupTextButtonStyle}" TargetType="Button">
-                            <Setter Property="Visibility" Value="Visible" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Finished}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
+                    Command="{Binding CloseInstallerCommand}" Style="{StaticResource InstallerCloseButtonStyle}">
+
                     <Path
                         Width="12"
                         Height="12"
@@ -112,64 +152,24 @@
             </Grid>
 
             <Grid Grid.Row="1">
-                <pages:InstallerWelcomePage>
-                    <pages:InstallerWelcomePage.Style>
-                        <Style BasedOn="{StaticResource BaseInstallerWelcomePageStyle}" TargetType="{x:Type pages:InstallerWelcomePage}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Welcome}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </pages:InstallerWelcomePage.Style>
+<pages:InstallerWelcomePage Style="{StaticResource InstallerWelcomePageStateStyle}">
+
                 </pages:InstallerWelcomePage>
 
-                <pages:InstallerAppFoundPage>
-                    <pages:InstallerAppFoundPage.Style>
-                        <Style BasedOn="{StaticResource BaseInstallerAppFoundPageStyle}" TargetType="{x:Type pages:InstallerAppFoundPage}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.AppFound}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </pages:InstallerAppFoundPage.Style>
+<pages:InstallerAppFoundPage Style="{StaticResource InstallerAppFoundPageStateStyle}">
+
                 </pages:InstallerAppFoundPage>
 
-                <pages:InstallerProgressPage>
-                    <pages:InstallerProgressPage.Style>
-                        <Style BasedOn="{StaticResource BaseInstallerProgressPageStyle}" TargetType="{x:Type pages:InstallerProgressPage}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Progress}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </pages:InstallerProgressPage.Style>
+<pages:InstallerProgressPage Style="{StaticResource InstallerProgressPageStateStyle}">
+
                 </pages:InstallerProgressPage>
 
-                <pages:UninstallPage>
-                    <pages:UninstallPage.Style>
-                        <Style BasedOn="{StaticResource BaseUninstallPageStyle}" TargetType="{x:Type pages:UninstallPage}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Uninstall}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </pages:UninstallPage.Style>
+<pages:UninstallPage Style="{StaticResource UninstallPageStateStyle}">
+
                 </pages:UninstallPage>
 
-                <pages:InstallerFinishedPage>
-                    <pages:InstallerFinishedPage.Style>
-                        <Style BasedOn="{StaticResource BaseInstallerFinishedPageStyle}" TargetType="{x:Type pages:InstallerFinishedPage}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Finished}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </pages:InstallerFinishedPage.Style>
+<pages:InstallerFinishedPage Style="{StaticResource InstallerFinishedPageStateStyle}">
+
                 </pages:InstallerFinishedPage>
             </Grid>
         </Grid>

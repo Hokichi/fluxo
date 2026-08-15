@@ -231,21 +231,13 @@
                                     Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                             </StackPanel>
                         </Grid>
-                        <ProgressBar
+<ProgressBar
                             Height="12"
                             Margin="0,12,0,0"
                             Maximum="{Binding Amount, Mode=OneWay}"
                             Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}"
-                            Value="{Binding ChildAmountTotal, Mode=OneWay}">
-                            <ProgressBar.Style>
-                                <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ProgressBar.Style>
+                            Value="{Binding ChildAmountTotal, Mode=OneWay}" Style="{StaticResource TransactionSplitProgressStyle}">
+
                         </ProgressBar>
                         <Grid Margin="0,8,0,0" Visibility="{Binding IsLeaf, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                             <Grid.ColumnDefinitions>
@@ -322,4 +314,12 @@
             </Grid>
         </StackPanel>
     </DataTemplate>
+
+<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="TransactionSplitProgressStyle">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
+                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
 </ResourceDictionary>

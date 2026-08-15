@@ -10,7 +10,7 @@
     d:DesignWidth="860"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <ResourceDictionary>
+<ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
@@ -27,7 +27,19 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/StepNavigatorStyle.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+
+<Style BasedOn="{StaticResource WizardCircleActionButtonStyle}" TargetType="Button" x:Key="InstallerFinishedActionButtonStyle">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding State}" Value="{x:Static models:InstallerState.FinishedSuccess}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding State}" Value="{x:Static models:InstallerState.FinishedUpToDate}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+</ResourceDictionary>
     </UserControl.Resources>
 
     <Border Style="{StaticResource CardBorderStyle}">
@@ -71,20 +83,8 @@
                     Margin="0,28,0,0"
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
-                    <Button Command="{Binding LaunchAppCommand}">
-                        <Button.Style>
-                            <Style BasedOn="{StaticResource WizardCircleActionButtonStyle}" TargetType="Button">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding State}" Value="{x:Static models:InstallerState.FinishedSuccess}">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding State}" Value="{x:Static models:InstallerState.FinishedUpToDate}">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
+<Button Command="{Binding LaunchAppCommand}" Style="{StaticResource InstallerFinishedActionButtonStyle}">
+
                         <Path
                             Width="14"
                             Height="14"
