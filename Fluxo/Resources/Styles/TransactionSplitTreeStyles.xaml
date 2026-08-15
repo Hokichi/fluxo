@@ -159,6 +159,17 @@
         </Grid>
     </DataTemplate>
 
+    <Style
+        x:Key="TransactionSplitProgressStyle"
+        BasedOn="{StaticResource RoundedProgressBarStyle}"
+        TargetType="ProgressBar">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
     <DataTemplate x:Key="SplitTransactionBranchTemplate">
         <StackPanel>
             <Grid>
@@ -315,11 +326,4 @@
         </StackPanel>
     </DataTemplate>
 
-<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="TransactionSplitProgressStyle">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
 </ResourceDictionary>
