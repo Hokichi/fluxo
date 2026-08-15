@@ -10,6 +10,41 @@
     Mode="Modify">
 
     <customControls:BasePopup.Resources>
+<Style x:Key="CustomColorButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="2,0,0,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid
+                        Width="30"
+                        Height="30"
+                        Background="Transparent">
+                        <Ellipse
+                            Stroke="{TemplateBinding BorderBrush}"
+                            StrokeDashArray="2,2"
+                            StrokeThickness="{TemplateBinding BorderThickness}" />
+                        <components:Icon
+                            x:Name="Plus"
+                            Margin="9"
+                            Path="{StaticResource PlusSolid}"
+                            Color="{StaticResource Brush.Text.Muted}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource Brush.Text.Primary}" />
+                            <Setter TargetName="Plus" Property="Color" Value="{StaticResource Brush.Text.Primary}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
         <Style x:Key="ColorSelectorListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />

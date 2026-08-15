@@ -5,6 +5,173 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
     <UserControl.Resources>
+<Style x:Key="DaysOfWeekStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
+        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <RadioButton GroupName="DaysOfWeek" IsChecked="{Binding IsSelected}">
+                        <RadioButton.Template>
+                            <ControlTemplate TargetType="RadioButton">
+                                <Grid>
+                                    <StackPanel
+                                        Width="48"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent">
+                                        <TextBlock
+                                            x:Name="DayOfWeekName"
+                                            Margin="0,0,0,6"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Bold}"
+                                            FontSize="12"
+                                            Text="{Binding DayName}">
+                                            <TextBlock.Style>
+                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+                                                            <Setter Property="Effect">
+                                                                <Setter.Value>
+                                                                    <DropShadowEffect
+                                                                        BlurRadius="5"
+                                                                        Opacity="0.5"
+                                                                        ShadowDepth="0"
+                                                                        Color="{StaticResource Color.Mint}" />
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock
+                                            x:Name="DayOfWeekDate"
+                                            Margin="0,0,0,8"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Black}"
+                                            FontSize="14"
+                                            Text="{Binding DayNumber}">
+                                            <TextBlock.Style>
+                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+                                                            <Setter Property="Effect">
+                                                                <Setter.Value>
+                                                                    <DropShadowEffect
+                                                                        BlurRadius="5"
+                                                                        Opacity="0.5"
+                                                                        ShadowDepth="0"
+                                                                        Color="{StaticResource Color.Text.Primary}" />
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <Border
+                                        Width="32"
+                                        Height="4"
+                                        VerticalAlignment="Bottom"
+                                        Background="{StaticResource Brush.Mint}"
+                                        CornerRadius="4 4 0 0">
+                                        <Border.Style>
+                                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsSelected}" Value="False" />
+                                                            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=RadioButton}}" Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <MultiDataTrigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0.5"
+                                                                        Duration="0:0:0.2" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </MultiDataTrigger.EnterActions>
+                                                        <MultiDataTrigger.ExitActions>
+                                                            <BeginStoryboard x:Name="HoverExitStoryboard">
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0"
+                                                                        Duration="0:0:0.2" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </MultiDataTrigger.ExitActions>
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="10"
+                                                ShadowDepth="0"
+                                                Color="{StaticResource Color.Mint}" />
+                                        </Border.Effect>
+                                    </Border>
+
+                                    <Border
+                                        Width="32"
+                                        Height="4"
+                                        VerticalAlignment="Bottom"
+                                        Background="{StaticResource Brush.Mint}"
+                                        CornerRadius="4 4 0 0">
+                                        <Border.Style>
+                                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                        <DataTrigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="1"
+                                                                        Duration="0:0:0.1" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.EnterActions>
+                                                        <DataTrigger.ExitActions>
+                                                            <BeginStoryboard x:Name="HoverExitStoryboard">
+                                                                <Storyboard>
+                                                                    <DoubleAnimation
+                                                                        Storyboard.TargetProperty="Opacity"
+                                                                        To="0"
+                                                                        Duration="0:0:0.1" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </DataTrigger.ExitActions>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="10"
+                                                ShadowDepth="0"
+                                                Color="{StaticResource Color.Mint}" />
+                                        </Border.Effect>
+                                    </Border>
+                                </Grid>
+                            </ControlTemplate>
+                        </RadioButton.Template>
+                    </RadioButton>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
         <Style x:Key="TransparentDaySpinnerListViewStyle" BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Template">

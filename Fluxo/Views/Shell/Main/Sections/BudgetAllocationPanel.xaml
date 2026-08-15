@@ -6,6 +6,115 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
     <UserControl.Resources>
+<DataTemplate x:Key="PopupTags">
+        <Grid>
+            <Border
+                Height="24"
+                Padding="12,0"
+                Background="{StaticResource Brush.Background.Surface}"
+                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse
+                        Width="6"
+                        Height="6"
+                        Fill="{Binding HexCode}" />
+
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Bold}"
+                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Text="{Binding Name}" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                x:Name="SelectedPopupTagPill"
+                Height="24"
+                Padding="12,0"
+                Background="{Binding HexCode}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse
+                        Width="6"
+                        Height="6"
+                        Fill="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+
+                    <TextBlock
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Bold}"
+                        Text="{Binding Name}">
+                        <TextBlock.Foreground>
+                            <Binding
+                                Converter="{StaticResource BackgroundToForegroundConverter}"
+                                Path="HexCode" />
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </DataTemplate>
+<Style x:Key="PopupTagListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0,0,8,8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template" Value="{StaticResource PlainListViewItemTemplate}" />
+    </Style>
+<Style x:Key="TagToggleButtonStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="12">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            Foreground="{TemplateBinding Foreground}"
+                            Text="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="Foreground" Value="{StaticResource Brush.Background.Surface}" />
+            </Trigger>
+            <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="Foreground" Value="{StaticResource Brush.Background.Surface}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
         <Style x:Key="BudgetAllocationVisibleTagListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
