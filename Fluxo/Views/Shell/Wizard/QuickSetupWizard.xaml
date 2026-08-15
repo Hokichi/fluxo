@@ -6,7 +6,8 @@
     xmlns:pages="clr-namespace:Fluxo.Views.Shell.Wizard.Pages"
     Title="fluxo Wizard"
     Icon="/Fluxo.Resources;component/Resources/fluxo.ico"
-    ShowInTaskbar="True">
+    ShowInTaskbar="True"
+    Style="{StaticResource QuickSetupWizardPopupStyle}">
 
     <customControls:BasePopup.PopupTitleContent>
         <StackPanel Orientation="Horizontal">
@@ -28,22 +29,19 @@
         </StackPanel>
     </customControls:BasePopup.PopupTitleContent>
 
-    <customControls:BasePopup.Style>
-        <Style BasedOn="{StaticResource {x:Type customControls:BasePopup}}" TargetType="{x:Type customControls:BasePopup}">
-            <Setter Property="ShowCloseButton" Value="True" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding DataContext.IsFinalStep, RelativeSource={RelativeSource Self}}" Value="True">
-                    <Setter Property="ShowCloseButton" Value="False" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </customControls:BasePopup.Style>
-
     <customControls:BasePopup.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="QuickSetupWizardPopupStyle" BasedOn="{StaticResource {x:Type customControls:BasePopup}}" TargetType="{x:Type customControls:BasePopup}">
+                <Setter Property="ShowCloseButton" Value="True" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsFinalStep, RelativeSource={RelativeSource Self}}" Value="True">
+                        <Setter Property="ShowCloseButton" Value="False" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </customControls:BasePopup.Resources>
 

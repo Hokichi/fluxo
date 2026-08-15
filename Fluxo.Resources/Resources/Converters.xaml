@@ -17,4 +17,9 @@
     <converters:NumberWithCommasConverter x:Key="NumberWithCommasConverter" />
     <converters:ProgressToArcGeometryConverter x:Key="ProgressToArcGeometryConverter" />
     <converters:BackgroundToForegroundConverter x:Key="BackgroundToForegroundConverter" />
+    <converters:WizardStepForegroundConverter
+        x:Key="WizardStepForegroundConverter"
+        CurrentBrush="{StaticResource Brush.Text.Primary}"
+        CompletedBrush="{StaticResource Brush.Text.Muted}"
+        FutureBrush="{StaticResource Brush.Text.Secondary}" />
 </ResourceDictionary>
