@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
-    <UserControl.Resources>
+<UserControl.Resources>
         <Style x:Key="NotificationAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Brush.Info}" />
             <Style.Triggers>
@@ -19,16 +19,48 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-    </UserControl.Resources>
-    <customControls:FadingScrollViewer
-        x:Name="NotificationScrollViewer"
-        Width="270"
-        MaxHeight="180"
-        HorizontalScrollBarVisibility="Disabled"
-        VerticalScrollBarVisibility="Hidden">
-        <ItemsControl ItemsSource="{Binding Items, Mode=OneWay}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
+
+<DataTemplate x:Key="FloatingNotificationDetailTemplate">
+                                            <TextBlock
+                                                FontSize="7.5"
+                                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                                Text="{Binding StringFormat=• {0}, Mode=OneWay}"
+                                                TextWrapping="Wrap" />
+                                        </DataTemplate>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="FloatingNotificationCardStyle">
+                                <Setter Property="Opacity" Value="1" />
+                                <Style.Triggers>
+                                    <EventTrigger RoutedEvent="Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                                    To="0"
+                                                    Duration="0:0:0.25">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <DataTrigger Binding="{Binding IsClosing, Mode=OneWay}" Value="True">
+                                        <DataTrigger.EnterActions>
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetProperty="Opacity"
+                                                        To="0"
+                                                        Duration="0:0:0.2" />
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </DataTrigger.EnterActions>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+<DataTemplate x:Key="FloatingNotificationTemplate">
                     <Border
                         Height="54"
                         Margin="6,3"
@@ -36,7 +68,8 @@
                         Background="{StaticResource Brush.Background.Surface}"
                         CornerRadius="12"
                         Cursor="Hand"
-                        MouseLeftButtonUp="OnCardClick">
+                        MouseLeftButtonUp="OnCardClick"
+                        Style="{StaticResource FloatingNotificationCardStyle}">
                         <Border.RenderTransform>
                             <TranslateTransform X="0" />
                         </Border.RenderTransform>
@@ -71,55 +104,23 @@
                                     Foreground="{StaticResource Brush.Text.Secondary}"
                                     Text="{Binding Message, Mode=OneWay}"
                                     TextWrapping="Wrap" />
-                                <ItemsControl Margin="0,4.5,0,0" ItemsSource="{Binding Details, Mode=OneWay}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock
-                                                FontSize="7.5"
-                                                Foreground="{StaticResource Brush.Text.Secondary}"
-                                                Text="{Binding StringFormat=• {0}, Mode=OneWay}"
-                                                TextWrapping="Wrap" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
+<ItemsControl Margin="0,4.5,0,0" ItemsSource="{Binding Details, Mode=OneWay}" ItemTemplate="{StaticResource FloatingNotificationDetailTemplate}">
+
                                 </ItemsControl>
                             </StackPanel>
                         </Grid>
-                        <Border.Style>
-                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                <Setter Property="Opacity" Value="1" />
-                                <Style.Triggers>
-                                    <EventTrigger RoutedEvent="Loaded">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation
-                                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                    To="0"
-                                                    Duration="0:0:0.25">
-                                                    <DoubleAnimation.EasingFunction>
-                                                        <CubicEase EasingMode="EaseOut" />
-                                                    </DoubleAnimation.EasingFunction>
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                    <DataTrigger Binding="{Binding IsClosing, Mode=OneWay}" Value="True">
-                                        <DataTrigger.EnterActions>
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        Storyboard.TargetProperty="Opacity"
-                                                        To="0"
-                                                        Duration="0:0:0.2" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </DataTrigger.EnterActions>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
+
                     </Border>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
+</UserControl.Resources>
+    <customControls:FadingScrollViewer
+        x:Name="NotificationScrollViewer"
+        Width="270"
+        MaxHeight="180"
+        HorizontalScrollBarVisibility="Disabled"
+        VerticalScrollBarVisibility="Hidden">
+<ItemsControl ItemsSource="{Binding Items, Mode=OneWay}" ItemTemplate="{StaticResource FloatingNotificationTemplate}">
+
         </ItemsControl>
     </customControls:FadingScrollViewer>
 </UserControl>

@@ -44,14 +44,6 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ConflictAppendOptionStyle" BasedOn="{StaticResource BaseRadioButtonStyle}" TargetType="RadioButton">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsTag}" Value="True">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
 <ItemsPanelTemplate x:Key="DataManagementEntityItemsPanelTemplate">
                                 <customControls:SpacedUniformGrid Columns="3" />
                             </ItemsPanelTemplate>
@@ -84,7 +76,8 @@
                                                     Margin="14,0,0,0"
                                                     Content="Append"
                                                     IsChecked="{Binding IsAppendSelected, Mode=TwoWay}"
-                                                    Style="{StaticResource ConflictAppendOptionStyle}" />
+                                                    Style="{StaticResource BaseRadioButtonStyle}"
+                                                    Visibility="{Binding IsTag, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                                                 <RadioButton
                                                     Margin="14,0,0,0"
                                                     Content="Ignore"
@@ -131,7 +124,7 @@
                             Foreground="{StaticResource Brush.Danger}"
                             Text="Overwrite will replace all of your data. Please ensure the data has been properly backed up."
                             TextWrapping="Wrap"
-                            Visibility="{Binding IsOverwriteSelected, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding IsOverwriteSelected, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     </Grid>
                     <TextBlock
                         Margin="0,0,0,8"
@@ -139,7 +132,7 @@
                         FontSize="11"
                         Foreground="{StaticResource Brush.Danger}"
                         Text="{Binding FileValidationMessage}"
-                        Visibility="{Binding IsFileInvalid, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        Visibility="{Binding IsFileInvalid, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />

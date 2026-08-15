@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
-    <UserControl.Resources>
+<UserControl.Resources>
 <Style x:Key="DaysOfWeekStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
         <Setter Property="Template">
@@ -197,13 +197,8 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-    </UserControl.Resources>
 
-    <Grid
-        Background="Transparent"
-        IsEnabled="{Binding IsSpinnerEnabled}">
-        <Grid.Style>
-            <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="DisabledDaySpinnerGridStyle">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="False">
                         <Setter Property="Opacity" Value="0.4" />
@@ -213,7 +208,12 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
-        </Grid.Style>
+</UserControl.Resources>
+
+<Grid
+        Background="Transparent"
+        IsEnabled="{Binding IsSpinnerEnabled}" Style="{StaticResource DisabledDaySpinnerGridStyle}">
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="40" />
             <ColumnDefinition Width="*" />

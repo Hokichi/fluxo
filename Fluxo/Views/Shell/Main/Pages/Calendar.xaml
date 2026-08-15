@@ -13,7 +13,7 @@
     Focusable="True"
     mc:Ignorable="d">
 
-    <UserControl.Resources>
+<UserControl.Resources>
         <Style x:Key="CalendarColumnLayoutStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Width" Value="480" />
             <Style.Triggers>
@@ -95,24 +95,6 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
 
-        <Style x:Key="CalendarSummaryMaximizedVisibilityStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
-            <Setter Property="Visibility" Value="Collapsed" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot}" Value="True">
-                    <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="CalendarSummaryRestoredVisibilityStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
-            <Setter Property="Visibility" Value="Visible" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot}" Value="True">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
         <Style x:Key="CalendarNoDataTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -192,17 +174,8 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="14"
-                    Text="{Binding DayNumber}">
-                    <TextBlock.Style>
-                        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary.Dark}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+                    Text="{Binding DayNumber}" Style="{StaticResource CalendarDayNumberTextStyle}">
+
                 </TextBlock>
             </Button>
         </DataTemplate>
@@ -212,12 +185,8 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 ItemTemplate="{StaticResource CalendarDayTemplate}"
-                ItemsSource="{Binding Days}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="7" Rows="1" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                ItemsSource="{Binding Days}" ItemsPanel="{StaticResource CalendarWeekItemsPanelTemplate}">
+
             </ItemsControl>
         </DataTemplate>
 
@@ -324,7 +293,29 @@
                 </Grid>
             </Border>
         </DataTemplate>
-    </UserControl.Resources>
+
+<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="CalendarDayNumberTextStyle">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary.Dark}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<ItemsPanelTemplate x:Key="CalendarWeekItemsPanelTemplate">
+                        <UniformGrid Columns="7" Rows="1" />
+                    </ItemsPanelTemplate>
+
+<ItemsPanelTemplate x:Key="CalendarBufferedWeeksItemsPanelTemplate">
+                                        <UniformGrid Rows="10" />
+                                    </ItemsPanelTemplate>
+
+<Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter" x:Key="CalendarWeekItemContainerStyle">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="VerticalAlignment" Value="Stretch" />
+                                    </Style>
+</UserControl.Resources>
 
     <Grid Margin="12">
         <Grid.ColumnDefinitions>
@@ -414,25 +405,16 @@
                         Focusable="True"
                         SizeChanged="OnCalendarWeekViewportSizeChanged">
                         <Canvas x:Name="CalendarWeekSurface" ClipToBounds="False">
-                            <ItemsControl
+<ItemsControl
                                 x:Name="CalendarWeekItemsControl"
                                 Width="{Binding ActualWidth, ElementName=CalendarWeekViewport}"
                                 ItemTemplate="{StaticResource CalendarWeekTemplate}"
-                                ItemsSource="{Binding BufferedWeeks}">
+                                ItemsSource="{Binding BufferedWeeks}" ItemsPanel="{StaticResource CalendarBufferedWeeksItemsPanelTemplate}" ItemContainerStyle="{StaticResource CalendarWeekItemContainerStyle}">
                                 <ItemsControl.RenderTransform>
                                     <TranslateTransform x:Name="CalendarWeekTranslateTransform" />
                                 </ItemsControl.RenderTransform>
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="10" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemContainerStyle>
-                                    <Style BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
-                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                        <Setter Property="VerticalAlignment" Value="Stretch" />
-                                    </Style>
-                                </ItemsControl.ItemContainerStyle>
+
+
                             </ItemsControl>
                         </Canvas>
                     </Grid>
@@ -440,7 +422,9 @@
             </Border>
 
             <Grid Grid.Row="3">
-                <Grid Style="{StaticResource CalendarSummaryMaximizedVisibilityStyle}">
+                <Grid
+                    Style="{StaticResource BaseGridStyle}"
+                    Visibility="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="10" />
@@ -524,7 +508,9 @@
                     </Border>
                 </Grid>
 
-                <Grid Style="{StaticResource CalendarSummaryRestoredVisibilityStyle}">
+                <Grid
+                    Style="{StaticResource BaseGridStyle}"
+                    Visibility="{Binding UseExpandedCalendarLayout, ElementName=CalendarRoot, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="10" />
@@ -627,7 +613,7 @@
                                 <TextBlock
                                     Style="{StaticResource CalendarNoDataTextStyle}"
                                     Text="No expenses for this date."
-                                    Visibility="{Binding HasNoExpenses, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding HasNoExpenses, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
                         </customControls:FadingScrollViewer>
                     </Grid>
@@ -652,7 +638,7 @@
                                 <TextBlock
                                     Style="{StaticResource CalendarNoDataTextStyle}"
                                     Text="No incomes for this date."
-                                    Visibility="{Binding HasNoIncomes, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding HasNoIncomes, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
                         </customControls:FadingScrollViewer>
                     </Grid>
@@ -677,7 +663,7 @@
                                 <TextBlock
                                     Style="{StaticResource CalendarNoDataTextStyle}"
                                     Text="No goal deadlines for this date."
-                                    Visibility="{Binding HasNoGoalDeadlines, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding HasNoGoalDeadlines, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
                         </customControls:FadingScrollViewer>
                     </Grid>
@@ -705,7 +691,7 @@
                                 <TextBlock
                                     Style="{StaticResource CalendarNoDataTextStyle}"
                                     Text="No recurring transactions for this date."
-                                    Visibility="{Binding HasNoRecurringTransactions, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    Visibility="{Binding HasNoRecurringTransactions, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
                         </customControls:FadingScrollViewer>
                     </Grid>

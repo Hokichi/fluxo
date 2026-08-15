@@ -13,7 +13,7 @@
     d:DataContext="{d:DesignInstance Type=main:LedgerVM}"
     mc:Ignorable="d">
 
-    <UserControl.Resources>
+<UserControl.Resources>
         <Style x:Key="LedgerSignedAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
             <Style.Triggers>
@@ -379,17 +379,8 @@
                 <Border
                     x:Name="ChildRowSurface"
                     Margin="0,0,0,8"
-                    CornerRadius="8">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
+                    CornerRadius="8" Style="{StaticResource LedgerChildRowBorderStyle}">
+
                 </Border>
 
                 <Grid Margin="0,0,0,8">
@@ -418,48 +409,30 @@
                             FontSize="13"
                             Foreground="{StaticResource Brush.Text.Primary}"
                             Text="{Binding Name, Mode=OneWay}" />
-                        <Border
+<Border
                             Margin="8,4,0,0"
                             Padding="8,3"
                             VerticalAlignment="Center"
                             Background="{StaticResource Brush.Background.Hover}"
-                            CornerRadius="4">
+                            CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
                                 Foreground="{StaticResource Brush.Text.Primary}"
                                 Text="GOAL" />
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsGoal}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+
                         </Border>
-                        <Border
+<Border
                             Margin="6,0,0,0"
                             Padding="5,1"
                             Background="#FFEBD2"
-                            CornerRadius="4">
+                            CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
                                 Foreground="#7A4A00"
                                 Text="RECURRING" />
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsRecurring}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+
                         </Border>
                     </StackPanel>
 
@@ -471,7 +444,7 @@
                         IsChecked="{Binding IsSelectedForBatch, Mode=OneWay}"
                         IsEnabled="False"
                         Style="{StaticResource ItemCheckBoxStyle}"
-                        Visibility="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}">
+                        Visibility="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                         <CheckBox.RenderTransform>
                             <TranslateTransform />
                         </CheckBox.RenderTransform>
@@ -482,7 +455,7 @@
                         Grid.Column="3"
                         MaxWidth="160"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center" Style="{StaticResource LedgerChildActionsGridStyle}">
                         <Grid.RenderTransform>
                             <TranslateTransform />
                         </Grid.RenderTransform>
@@ -611,13 +584,7 @@
                         </BeginStoryboard>
                     </EventTrigger>
                 </Grid.Triggers>
-                <Grid.Style>
-                    <Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="IsHitTestVisible" Value="True" />
-                        <Setter Property="Opacity" Value="1" />
-                    </Style>
-                </Grid.Style>
+
             </Grid>
         </DataTemplate>
 
@@ -629,7 +596,8 @@
                     Margin="0,0,0,8"
                     Padding="0"
                     CornerRadius="8"
-                    Loaded="OnLedgerRowLoaded">
+                    Loaded="OnLedgerRowLoaded"
+                    Style="{StaticResource LedgerDrawerBorderStyle}">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -663,7 +631,7 @@
                                 VerticalAlignment="Center"
                                 Background="{StaticResource Brush.Mint}"
                                 CornerRadius="9"
-                                Visibility="{Binding HasChildTransactions, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{Binding HasChildTransactions, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
@@ -672,49 +640,31 @@
                                     Foreground="{StaticResource Brush.Text.Primary.Dark}"
                                     Text="{Binding VisibleChildCount, Mode=OneWay}" />
                             </Border>
-                            <Border
+<Border
                                 Margin="8,4,0,0"
                                 Padding="8,3"
                                 VerticalAlignment="Center"
                                 Background="{StaticResource Brush.Background.Hover}"
-                                CornerRadius="4">
+                                CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
                                     Foreground="{StaticResource Brush.Text.Primary}"
                                     Text="GOAL" />
-                                <Border.Style>
-                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsGoal}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+
                             </Border>
 
-                            <Border
+<Border
                                 Margin="6,0,0,0"
                                 Padding="5,1"
                                 Background="#FFEBD2"
-                                CornerRadius="4">
+                                CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
                                     Foreground="#7A4A00"
                                     Text="RECURRING" />
-                                <Border.Style>
-                                    <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsRecurring}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+
                             </Border>
                         </StackPanel>
 
@@ -726,7 +676,7 @@
                             Click="OnBatchSelectionCheckBoxClick"
                             IsChecked="{Binding IsSelectedForBatch, Mode=TwoWay}"
                             Style="{StaticResource ItemCheckBoxStyle}"
-                            Visibility="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}">
+                            Visibility="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                             <CheckBox.RenderTransform>
                                 <TranslateTransform />
                             </CheckBox.RenderTransform>
@@ -809,7 +759,8 @@
                             Grid.Column="5"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
-                            Background="Transparent">
+                            Background="Transparent"
+                            Style="{StaticResource LedgerRowActionsBorderStyle}">
                             <Border.RenderTransform>
                                 <TranslateTransform />
                             </Border.RenderTransform>
@@ -833,16 +784,7 @@
                                     Style="{StaticResource HeaderButtonStyle}"
                                     ToolTip="Delete" />
                             </StackPanel>
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                    <Setter Property="IsEnabled" Value="True" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
-                                            <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+
                         </Border>
                     </Grid>
                     <Border.Triggers>
@@ -919,20 +861,9 @@
                             </BeginStoryboard>
                         </EventTrigger>
                     </Border.Triggers>
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
-                            <Setter Property="IsHitTestVisible" Value="True" />
-                            <Setter Property="Opacity" Value="1" />
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
+
                 </Border>
-                <Grid Visibility="{Binding IsChildrenExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid Visibility="{Binding IsChildrenExpanded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="24" />
                         <ColumnDefinition Width="*" />
@@ -1054,7 +985,51 @@
         </Style>
 
         <GroupStyle x:Key="LedgerGroupStyle" ContainerStyle="{StaticResource LedgerGroupItemStyle}" />
-    </UserControl.Resources>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="LedgerChildRowBorderStyle">
+                            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="LedgerChildActionsGridStyle">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="IsHitTestVisible" Value="True" />
+                        <Setter Property="Opacity" Value="1" />
+                    </Style>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="LedgerRowActionsBorderStyle">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="LedgerDrawerBorderStyle">
+                            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
+                            <Setter Property="IsHitTestVisible" Value="True" />
+                            <Setter Property="Opacity" Value="1" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource HeaderButtonStyle}" TargetType="customControls:BalloonButton" x:Key="LedgerSortButtonStyle">
+                            <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownWideNarrow}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding AmountSortDirection}" Value="Ascending">
+                                    <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownNarrowWide}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+</UserControl.Resources>
 
     <Grid Margin="24,0,24,0">
         <Grid x:Name="LedgerContentGrid">
@@ -1109,7 +1084,7 @@
                     ShouldExpand="True"
                     UncheckedIcon="{StaticResource CheckAll}"
                     UncheckedText="Check All"
-                    Visibility="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                 <customControls:BalloonCheckBox
                     Margin="8,0,0,0"
                     HorizontalAlignment="Left"
@@ -1138,7 +1113,7 @@
                     IsEnabled="{Binding HasSelectedVisibleTransactions}"
                     ShouldExpand="True"
                     UncheckedText="Delete Selected"
-                    Visibility="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
             </StackPanel>
 
             <StackPanel
@@ -1288,7 +1263,7 @@
                     ItemsSource="{Binding AccountFilters}"
                     Style="{StaticResource LedgerFilterComboStyle}"
                     Tag="{Binding AccountFilterPresentation}"
-                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}" />
                 <ComboBox
                     Grid.Column="1"
                     Margin="8,0,0,0"
@@ -1298,7 +1273,7 @@
                     SelectedValuePath="Value"
                     Style="{StaticResource LedgerGroupingComboStyle}"
                     Tag="{Binding BatchAccountSelectionText}"
-                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                 <ComboBox
                     Grid.Column="2"
                     Margin="8,0,0,0"
@@ -1316,7 +1291,7 @@
                     ItemsSource="{Binding TagFilters}"
                     Style="{StaticResource LedgerFilterComboStyle}"
                     Tag="{Binding TagFilterPresentation}"
-                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}" />
                 <ComboBox
                     Grid.Column="3"
                     Margin="8,0,0,0"
@@ -1326,7 +1301,7 @@
                     SelectedValuePath="Value"
                     Style="{StaticResource LedgerGroupingComboStyle}"
                     Tag="{Binding BatchTagSelectionText}"
-                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                 <customControls:BalloonButton
                     Grid.Column="5"
                     ButtonIcon="{StaticResource Ban}"
@@ -1337,7 +1312,7 @@
                     IconSize="14"
                     IsEnabled="{Binding HasActiveFilters, Mode=OneWay}"
                     Style="{StaticResource HeaderButtonStyle}"
-                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}" />
                 <customControls:BalloonButton
                     Grid.Column="5"
                     ButtonIcon="{StaticResource Check}"
@@ -1347,7 +1322,7 @@
                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                     IconSize="14"
                     Style="{StaticResource HeaderButtonStyle}"
-                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                 <Border
                     Grid.Column="6"
                     Width="1"
@@ -1365,24 +1340,15 @@
                     SelectionChanged="OnGroupingModeSelectionChanged"
                     Style="{StaticResource LedgerGroupingComboStyle}"
                     Tag="Group By" />
-                <customControls:BalloonButton
+<customControls:BalloonButton
                     Grid.Column="8"
                     ButtonSize="34"
                     Click="OnOrderingButtonClick"
                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="14"
-                    IsEnabled="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolNegationConverter}}">
-                    <customControls:BalloonButton.Style>
-                        <Style BasedOn="{StaticResource HeaderButtonStyle}" TargetType="customControls:BalloonButton">
-                            <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownWideNarrow}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding AmountSortDirection}" Value="Ascending">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownNarrowWide}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </customControls:BalloonButton.Style>
+                    IsEnabled="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolNegationConverter}}" Style="{StaticResource LedgerSortButtonStyle}">
+
                 </customControls:BalloonButton>
             </Grid>
 
@@ -1418,7 +1384,7 @@
                     FontFamily="{StaticResource Bold}"
                     FontSize="13"
                     Foreground="{StaticResource Brush.Text.Muted}"
-                    Visibility="{Binding HasVisibleTransactions, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+                    Visibility="{Binding HasVisibleTransactions, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}">
                     <Run Text="No ledger data found for" />
                     <Run Text="{Binding EmptyStatePeriodText, Mode=OneWay}" />
                 </TextBlock>

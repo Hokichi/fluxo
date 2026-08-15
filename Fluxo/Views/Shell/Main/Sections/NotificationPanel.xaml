@@ -65,7 +65,7 @@
                             HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                             ShouldExpand="True"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
-                            Visibility="{Binding HasActionCta, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding HasActionCta, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
                         <customControls:BalloonButton
                             Width="24"
@@ -79,7 +79,7 @@
                             IconSize="11"
                             ShouldExpand="True"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
-                            Visibility="{Binding HasMultipleNotifications, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            Visibility="{Binding HasMultipleNotifications, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -116,7 +116,7 @@
                         ItemsSource="{Binding NotificationItems}" />
                 </ScrollViewer>
 
-                <TextBlock
+<TextBlock
                     x:Name="EmptyStateText"
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
@@ -124,17 +124,8 @@
                     Foreground="{StaticResource Brush.Text.Muted}"
                     Text="You're all caught up."
                     TextAlignment="Center"
-                    TextWrapping="Wrap">
-                    <TextBlock.Style>
-                        <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasNotifications}" Value="False">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
+                    TextWrapping="Wrap" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding HasNotifications, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+
                 </TextBlock>
             </Grid>
 
@@ -143,7 +134,7 @@
                 Margin="0,12,0,0"
                 HorizontalAlignment="Right"
                 Orientation="Horizontal"
-                Visibility="{Binding HasNotifications, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding HasNotifications, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                 <customControls:BalloonButton
                     x:Name="SnoozeAllNotificationsButton"
                     Width="24"

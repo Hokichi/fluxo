@@ -5,7 +5,7 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
-    <UserControl.Resources>
+<UserControl.Resources>
 <DataTemplate x:Key="PopupTags">
         <Grid>
             <Border
@@ -15,7 +15,7 @@
                 BorderBrush="{StaticResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="12"
-                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal">
                     <Ellipse
                         Width="6"
@@ -38,7 +38,7 @@
                 Background="{Binding HexCode}"
                 BorderThickness="1"
                 CornerRadius="12"
-                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                 <StackPanel Orientation="Horizontal">
                     <Ellipse
                         Width="6"
@@ -137,7 +137,25 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-    </UserControl.Resources>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="VisibleBudgetTagBorderStyle">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
+<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="HiddenBudgetTagBorderStyle">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+</UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -152,7 +170,7 @@
             Margin="0,0,0,16"
             Orientation="Horizontal">
             <Grid Margin="16,0,0,0" VerticalAlignment="Center">
-                <Border
+<Border
                     x:Name="AllTagUnselected"
                     Height="24"
                     Padding="12,0"
@@ -160,17 +178,8 @@
                     BorderBrush="{StaticResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    Cursor="Hand">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                            <Setter Property="Visibility" Value="Visible" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
+                    Cursor="Hand" Style="{StaticResource VisibleBudgetTagBorderStyle}">
+
                     <Border.InputBindings>
                         <MouseBinding Command="{Binding ClearSelectedTagCommand}" MouseAction="LeftClick" />
                     </Border.InputBindings>
@@ -181,24 +190,15 @@
                         Text="All" />
                 </Border>
 
-                <Border
+<Border
                     x:Name="AllTagSelected"
                     Height="24"
                     Padding="12,0"
                     Background="{StaticResource Brush.Mint}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    Cursor="Hand">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedTag}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
+                    Cursor="Hand" Style="{StaticResource HiddenBudgetTagBorderStyle}">
+
                     <Border.InputBindings>
                         <MouseBinding Command="{Binding ClearSelectedTagCommand}" MouseAction="LeftClick" />
                     </Border.InputBindings>
@@ -229,7 +229,7 @@
                 Content="More"
                 Style="{StaticResource TagToggleButtonStyle}"
                 Tag="{Binding IsSelectedTagInOtherTags}"
-                Visibility="{Binding HasOtherTags, Converter={StaticResource BoolToVisibilityConverter}}" />
+                Visibility="{Binding HasOtherTags, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
             <Popup
                 AllowsTransparency="True"

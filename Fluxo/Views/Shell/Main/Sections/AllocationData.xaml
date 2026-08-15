@@ -4,6 +4,36 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources">
 
+<UserControl.Resources>
+
+<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="NeedsAllocationProgressStyle">
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Needs}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsNeedsOverflowing}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="WantsAllocationProgressStyle">
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Wants}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsWantsOverflowing}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+
+<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="InvestmentAllocationProgressStyle">
+                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Investments}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsInvestOverflowing}" Value="True">
+                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+</UserControl.Resources>
+
     <Border Style="{StaticResource CardBorderStyle}">
         <Grid VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
@@ -37,7 +67,7 @@
                                 Margin="0,0,8,0"
                                 VerticalAlignment="Center"
                                 Path="{StaticResource ExclamationTriangle}"
-                                Visibility="{Binding IsNeedsOverflowing, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding IsNeedsOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                 Color="{StaticResource Brush.Danger}" />
                             <Border
                                 Height="24"
@@ -75,22 +105,13 @@
                             Text="{Binding NeedsAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
-                    <ProgressBar
+<ProgressBar
                         Height="4"
                         Margin="0,16,0,0"
                         Maximum="100"
                         Minimum="0"
-                        Value="{Binding NeedsPercentage, Mode=OneWay}">
-                        <ProgressBar.Style>
-                            <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Needs}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsNeedsOverflowing}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ProgressBar.Style>
+                        Value="{Binding NeedsPercentage, Mode=OneWay}" Style="{StaticResource NeedsAllocationProgressStyle}">
+
                     </ProgressBar>
 
                     <Grid Margin="0,4,0,0">
@@ -137,7 +158,7 @@
                                 Margin="0,0,8,0"
                                 VerticalAlignment="Center"
                                 Path="{StaticResource ExclamationTriangle}"
-                                Visibility="{Binding IsWantsOverflowing, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding IsWantsOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                 Color="{StaticResource Brush.Danger}" />
                             <Border
                                 Height="24"
@@ -174,22 +195,13 @@
                             Text="{Binding WantsAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
-                    <ProgressBar
+<ProgressBar
                         Height="4"
                         Margin="0,16,0,0"
                         Maximum="100"
                         Minimum="0"
-                        Value="{Binding WantsPercentage, Mode=OneWay}">
-                        <ProgressBar.Style>
-                            <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Wants}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsWantsOverflowing}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ProgressBar.Style>
+                        Value="{Binding WantsPercentage, Mode=OneWay}" Style="{StaticResource WantsAllocationProgressStyle}">
+
                     </ProgressBar>
 
                     <Grid Margin="0,4,0,0">
@@ -236,7 +248,7 @@
                                 Margin="0,0,8,0"
                                 VerticalAlignment="Center"
                                 Path="{StaticResource ExclamationTriangle}"
-                                Visibility="{Binding IsInvestOverflowing, Converter={StaticResource BoolToVisibilityConverter}}"
+                                Visibility="{Binding IsInvestOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                 Color="{StaticResource Brush.Danger}" />
                             <Border
                                 Height="24"
@@ -274,22 +286,13 @@
                             Text="{Binding InvestAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
-                    <ProgressBar
+<ProgressBar
                         Height="4"
                         Margin="0,16,0,0"
                         Maximum="100"
                         Minimum="0"
-                        Value="{Binding InvestPercentage, Mode=OneWay}">
-                        <ProgressBar.Style>
-                            <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Investments}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsInvestOverflowing}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ProgressBar.Style>
+                        Value="{Binding InvestPercentage, Mode=OneWay}" Style="{StaticResource InvestmentAllocationProgressStyle}">
+
                     </ProgressBar>
 
                     <Grid Margin="0,4,0,0">
