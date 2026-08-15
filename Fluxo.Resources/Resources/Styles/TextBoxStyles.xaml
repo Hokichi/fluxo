@@ -7,6 +7,13 @@
         <Setter Property="OverridesDefaultStyle" Value="True" />
     </Style>
 
+    <ControlTemplate x:Key="FadingTextBoxContentHostTemplate" TargetType="TextBox">
+        <customControls:FadingScrollViewer
+            x:Name="PART_ContentHost"
+            Margin="0"
+            VerticalAlignment="Stretch" />
+    </ControlTemplate>
+
     <Style x:Key="BasePasswordBoxStyle" TargetType="PasswordBox">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />

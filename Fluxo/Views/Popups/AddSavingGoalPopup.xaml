@@ -9,12 +9,6 @@
     Mode="Modify">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-        </Style>
         <Style x:Key="EndDateInfinityToggleStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="36" />
@@ -63,7 +57,7 @@
 
     <Grid Width="480" Margin="24,0,24,24">
         <StackPanel>
-                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Goal Name" />
+                <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Goal Name" />
                 <TextBox
                     x:Name="NameTextBox"
                     Style="{StaticResource RoundedTextInputStyle}"
@@ -77,19 +71,19 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel>
-                        <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Target Amount" />
+                        <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Target Amount" />
                         <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding TargetAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="2">
-                        <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Current Amount" />
+                        <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Current Amount" />
                         <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding CurrentAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </StackPanel>
                 </Grid>
 
                 <TextBlock
                     Margin="0,14,0,8"
-                    Style="{StaticResource FieldLabelStyle}"
+                    Style="{StaticResource PopupFieldLabelStyle}"
                     Text="Target Date" />
                 <Grid>
                     <Grid.ColumnDefinitions>

@@ -28,7 +28,7 @@
                 Tag="{Binding Date}" />
         </DataTemplate>
 
-        <ItemsPanelTemplate x:Key="CalendarMonthItemsPanelTemplate">
+        <ItemsPanelTemplate x:Key="DateSelectorPeriodItemsPanelTemplate">
             <WrapPanel ItemHeight="46" ItemWidth="86" />
         </ItemsPanelTemplate>
 
@@ -40,10 +40,6 @@
                 Style="{StaticResource CalendarChoiceButtonStyle}"
                 Tag="{Binding Value}" />
         </DataTemplate>
-
-        <ItemsPanelTemplate x:Key="CalendarYearItemsPanelTemplate">
-            <WrapPanel ItemHeight="46" ItemWidth="86" />
-        </ItemsPanelTemplate>
 
         <DataTemplate x:Key="CalendarYearItemTemplate">
             <Button
@@ -174,7 +170,7 @@
                         Margin="0,14,0,0"
                         HorizontalAlignment="Center"
                         ItemTemplate="{StaticResource CalendarMonthItemTemplate}"
-                        ItemsPanel="{StaticResource CalendarMonthItemsPanelTemplate}"
+                        ItemsPanel="{StaticResource DateSelectorPeriodItemsPanelTemplate}"
                         ItemsSource="{Binding Months}"
                         Visibility="{Binding IsMonthMode, Converter={StaticResource BoolToVisibilityConverter}}" />
 
@@ -182,7 +178,7 @@
                         Margin="0,14,0,0"
                         HorizontalAlignment="Center"
                         ItemTemplate="{StaticResource CalendarYearItemTemplate}"
-                        ItemsPanel="{StaticResource CalendarYearItemsPanelTemplate}"
+                        ItemsPanel="{StaticResource DateSelectorPeriodItemsPanelTemplate}"
                         ItemsSource="{Binding Years}"
                         Visibility="{Binding IsYearMode, Converter={StaticResource BoolToVisibilityConverter}}" />
                 </StackPanel>

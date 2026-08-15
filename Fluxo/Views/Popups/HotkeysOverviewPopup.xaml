@@ -184,13 +184,8 @@
                     <ItemsControl
                         Grid.Column="2"
                         ItemTemplate="{StaticResource HotkeyPartTemplate}"
-                        ItemsSource="{Binding Parts}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
+                        ItemsPanel="{StaticResource HorizontalStackItemsPanelTemplate}"
+                        ItemsSource="{Binding Parts}" />
                 </Grid>
             </Border>
             <DataTemplate.Triggers>

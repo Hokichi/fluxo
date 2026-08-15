@@ -3,17 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 
-    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
+    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
-        <ItemsPanelTemplate x:Key="WizardRecurringTransactionsItemsPanelTemplate">
-            <primitives:UniformGrid Columns="2" />
-        </ItemsPanelTemplate>
-
-        <Style x:Key="WizardRecurringTransactionsItemContainerStyle" BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
-            <Setter Property="Margin" Value="0,0,12,12" />
-        </Style>
-
         <DataTemplate x:Key="WizardRecurringTransactionsItemTemplate">
             <Border Style="{StaticResource CardBorderStyle}">
                 <Grid>
@@ -62,9 +53,9 @@ xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=Pres
     <!--  Step 3: Recurring Transactions  -->
     <StackPanel Visibility="{Binding IsStep3Active, Converter={StaticResource BoolToVisibilityConverter}}">
         <ItemsControl
-            ItemContainerStyle="{StaticResource WizardRecurringTransactionsItemContainerStyle}"
+            ItemContainerStyle="{StaticResource WizardItemContainerStyle}"
             ItemTemplate="{StaticResource WizardRecurringTransactionsItemTemplate}"
-            ItemsPanel="{StaticResource WizardRecurringTransactionsItemsPanelTemplate}"
+            ItemsPanel="{StaticResource WizardItemsPanelTemplate}"
             ItemsSource="{Binding RecurringTransactions}" />
     </StackPanel>
 </UserControl>

@@ -9,15 +9,6 @@
     PopupTitle="{Binding PopupTitle}">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-        </Style>
-        <Style x:Key="FieldHeaderGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
-            <Setter Property="Margin" Value="0,0,0,8" />
-        </Style>
         <Style x:Key="FieldValidationHintStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -38,10 +29,10 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel>
-                        <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                        <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                             <TextBlock
                                 Margin="0"
-                                Style="{StaticResource FieldLabelStyle}"
+                                Style="{StaticResource PopupFieldLabelStyle}"
                                 Text="Source Name" />
                             <TextBlock Style="{StaticResource FieldValidationHintStyle}" Text="{Binding NameValidationHint}" />
                         </Grid>
@@ -53,7 +44,7 @@
 
                         <TextBlock
                             Margin="0,14,0,8"
-                            Style="{StaticResource FieldLabelStyle}"
+                            Style="{StaticResource PopupFieldLabelStyle}"
                             Text="Source Type" />
                         <ComboBox
                             DisplayMemberPath="Label"
@@ -66,15 +57,15 @@
 
                     <StackPanel Grid.Column="2">
                         <StackPanel Visibility="{Binding IsBalanceLike, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Current Amount" />
+                            <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Current Amount" />
                             <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding PrimaryAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding IsCredit, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                            <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                 <TextBlock
                                     Margin="0"
-                                    Style="{StaticResource FieldLabelStyle}"
+                                    Style="{StaticResource PopupFieldLabelStyle}"
                                     Text="Current Spent" />
                                 <TextBlock Style="{StaticResource FieldValidationHintStyle}" Text="{Binding SpentAmountValidationHint}" />
                             </Grid>
@@ -101,10 +92,10 @@
                                     </Style.Triggers>
                                 </Style>
                             </StackPanel.Style>
-                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                            <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                 <TextBlock
                                     Margin="0"
-                                    Style="{StaticResource FieldLabelStyle}"
+                                    Style="{StaticResource PopupFieldLabelStyle}"
                                     Text="Maximum Spending" />
                                 <TextBlock Style="{StaticResource FieldValidationHintStyle}" Text="{Binding MaximumSpendingValidationHint}" />
                             </Grid>
@@ -117,15 +108,15 @@
                         </StackPanel>
 
                         <StackPanel Margin="0,14,0,0" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Account Limit" />
+                            <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Account Limit" />
                             <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding AccountLimitText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         </StackPanel>
 
                         <StackPanel Margin="0,14,0,0" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                            <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                 <TextBlock
                                     Margin="0"
-                                    Style="{StaticResource FieldLabelStyle}"
+                                    Style="{StaticResource PopupFieldLabelStyle}"
                                     Text="Minimum Payment" />
                                 <TextBlock Style="{StaticResource FieldValidationHintStyle}" Text="{Binding MinimumPaymentValidationHint}" />
                             </Grid>
@@ -137,7 +128,7 @@
                         </StackPanel>
 
                         <StackPanel Margin="0,14,0,0" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Due Date" />
+                            <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Due Date" />
                             <customControls:NumericUpDown
                                 LowerLimit="1"
                                 Step="1"
@@ -147,7 +138,7 @@
                         </StackPanel>
 
                         <StackPanel Margin="0,14,0,0" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Deduct Source" />
+                            <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Deduct Source" />
                             <ComboBox
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding DeductSourcesView}"
@@ -161,10 +152,10 @@
                         </StackPanel>
 
                         <StackPanel Margin="0,12,0,0" Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                            <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                 <TextBlock
                                     Margin="0"
-                                    Style="{StaticResource FieldLabelStyle}"
+                                    Style="{StaticResource PopupFieldLabelStyle}"
                                     Text="APY" />
                                 <TextBlock Style="{StaticResource FieldValidationHintStyle}" Text="{Binding ApyValidationHint}" />
                             </Grid>

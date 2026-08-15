@@ -456,16 +456,8 @@
                                             FontSize="13"
                                             Foreground="{StaticResource Brush.Text.Primary}"
                                             PreviewKeyDown="OnHeaderSearchBoxPreviewKeyDown"
-                                            TextChanged="OnHeaderSearchTextChanged">
-                                            <TextBox.Template>
-                                                <ControlTemplate TargetType="TextBox">
-                                                    <customControls:FadingScrollViewer
-                                                        x:Name="PART_ContentHost"
-                                                        Margin="0"
-                                                        VerticalAlignment="Stretch" />
-                                                </ControlTemplate>
-                                            </TextBox.Template>
-                                        </TextBox>
+                                            TextChanged="OnHeaderSearchTextChanged"
+                                            Template="{StaticResource FadingTextBoxContentHostTemplate}" />
                                     </Grid>
                                 </Border>
 

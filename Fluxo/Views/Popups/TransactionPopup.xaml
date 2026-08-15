@@ -32,10 +32,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             </Style>
 
-            <Style x:Key="FieldHeaderGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
-                <Setter Property="Margin" Value="0,0,0,8" />
-            </Style>
-
             <Style x:Key="TransactionWarningTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource Medium}" />
                 <Setter Property="FontSize" Value="12" />
@@ -84,10 +80,6 @@
                     IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
                     Style="{StaticResource PopupTagItemRadioStyle}" />
             </DataTemplate>
-
-            <ItemsPanelTemplate x:Key="PopupVisibleTagsItemsPanelTemplate">
-                <StackPanel Orientation="Horizontal" />
-            </ItemsPanelTemplate>
 
             <Style x:Key="TransactionNameSuggestionListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
                 <Setter Property="MinWidth" Value="260" />
@@ -638,7 +630,7 @@
                         <Grid Grid.Row="0" Margin="0,16,0,0">
                             <StackPanel>
                                 <StackPanel>
-                                    <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                    <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="8" />
@@ -709,7 +701,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <StackPanel Grid.Column="0">
-                                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                            <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock
                                                         Margin="0"
@@ -730,7 +722,7 @@
                                         </StackPanel>
 
                                         <StackPanel Grid.Column="2" IsEnabled="{Binding ShowDateSelector, Mode=OneWay}">
-                                            <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                            <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock
                                                         Margin="0"
@@ -762,7 +754,7 @@
                                     </Grid>
 
                                     <StackPanel Margin="0,16,0,0" Visibility="{Binding IsRepayment, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                        <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                        <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock
                                                     Margin="0"
@@ -1104,7 +1096,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0">
-                                        <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                        <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="8" />
@@ -1204,7 +1196,7 @@
                                     </StackPanel>
 
                                     <StackPanel Grid.Column="2">
-                                        <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                        <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                             <TextBlock
                                                 Margin="0"
                                                 Style="{StaticResource SectionLabelStyle}"
@@ -1292,7 +1284,7 @@
 
                             <StackPanel Visibility="Collapsed">
                                 <StackPanel>
-                                    <Grid Style="{StaticResource FieldHeaderGridStyle}">
+                                    <Grid Style="{StaticResource PopupFieldHeaderGridStyle}">
                                         <TextBlock
                                             Margin="0"
                                             Style="{StaticResource SectionLabelStyle}"
@@ -1410,7 +1402,7 @@
                                         x:Name="TagsListBox"
                                         ItemContainerStyle="{StaticResource PopupTagListBoxItemStyle}"
                                         ItemTemplate="{StaticResource PopupTagTemplate}"
-                                        ItemsPanel="{StaticResource PopupVisibleTagsItemsPanelTemplate}"
+                                        ItemsPanel="{StaticResource HorizontalStackItemsPanelTemplate}"
                                         ItemsSource="{Binding Tags, Mode=OneWay}"
                                         SelectedItem="{Binding SelectedTag, Mode=TwoWay}"
                                         Style="{StaticResource PopupTagListBoxStyle}" />

@@ -5,10 +5,6 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
     <UserControl.Resources>
-        <ItemsPanelTemplate x:Key="DaySpinnerItemsPanelTemplate">
-            <StackPanel Orientation="Horizontal" />
-        </ItemsPanelTemplate>
-
         <Style x:Key="TransparentDaySpinnerListViewStyle" BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Template">
@@ -79,7 +75,7 @@
             BorderBrush="Transparent"
             BorderThickness="0"
             ItemContainerStyle="{StaticResource DaysOfWeekStyle}"
-            ItemsPanel="{StaticResource DaySpinnerItemsPanelTemplate}"
+            ItemsPanel="{StaticResource HorizontalStackItemsPanelTemplate}"
             ItemsSource="{Binding DaysOfWeek}"
             SelectedItem="{Binding SelectedDay, Mode=OneWay}"
             SelectionChanged="OnSelectedDayChanged"

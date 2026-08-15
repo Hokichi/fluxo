@@ -10,13 +10,6 @@
     Mode="Modify">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-        </Style>
-
         <Style x:Key="ColorSelectorListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
@@ -65,19 +58,13 @@
                     </Style>
                 </Setter.Value>
             </Setter>
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="ItemsPanel" Value="{StaticResource PopupWrapItemsPanelTemplate}" />
         </Style>
     </customControls:BasePopup.Resources>
 
     <Grid Margin="24,0,24,24">
         <StackPanel>
-                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Tag Name" />
+                <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Tag Name" />
                 <TextBox
                     x:Name="TagNameTextBox"
                     Style="{StaticResource RoundedTextInputStyle}"
@@ -85,7 +72,7 @@
 
                 <TextBlock
                     Margin="0,14,0,8"
-                    Style="{StaticResource FieldLabelStyle}"
+                    Style="{StaticResource PopupFieldLabelStyle}"
                     Text="Spending Limit" />
                 <TextBox
                     Style="{StaticResource RoundedTextInputStyle}"
@@ -93,7 +80,7 @@
 
                 <TextBlock
                     Margin="0,14,0,8"
-                    Style="{StaticResource FieldLabelStyle}"
+                    Style="{StaticResource PopupFieldLabelStyle}"
                     Text="Color" />
                 <Grid>
                     <Grid.ColumnDefinitions>

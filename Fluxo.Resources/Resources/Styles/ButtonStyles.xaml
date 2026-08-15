@@ -588,6 +588,17 @@
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="RoundedActionButtonTemplate" TargetType="Button">
+        <Border
+            Padding="{TemplateBinding Padding}"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="12">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+    </ControlTemplate>
+
     <Style x:Key="ActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Height" Value="40" />
         <Setter Property="MinWidth" Value="120" />
@@ -598,20 +609,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="12">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource RoundedActionButtonTemplate}" />
     </Style>
 
     <Style
@@ -983,20 +981,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="12">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource RoundedActionButtonTemplate}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />

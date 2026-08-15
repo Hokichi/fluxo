@@ -22,16 +22,7 @@
             <Setter Property="CaretBrush" Value="{StaticResource Brush.Text.Primary}" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <customControls:FadingScrollViewer
-                            x:Name="PART_ContentHost"
-                            Margin="0"
-                            VerticalAlignment="Stretch" />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource FadingTextBoxContentHostTemplate}" />
         </Style>
 
         <Style

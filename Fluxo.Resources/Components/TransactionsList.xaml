@@ -25,13 +25,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <ContentPresenter />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+        <Setter Property="Template" Value="{StaticResource PlainListViewItemTemplate}" />
         </Style>
 
         <DataTemplate x:Key="TransactionsListItemTemplate">

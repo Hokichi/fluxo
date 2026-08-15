@@ -10,11 +10,6 @@
     Mode="Modify">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-        </Style>
     </customControls:BasePopup.Resources>
 
     <Grid Width="400" Margin="24,0,24,24">
@@ -32,7 +27,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock
-            Style="{StaticResource FieldLabelStyle}"
+            Style="{StaticResource CompactPopupFieldLabelStyle}"
             Text="{Binding NewAmountLabel, Mode=OneWay}" />
         <customControls:MoneyTextBox
             x:Name="AmountTextBox"
@@ -42,7 +37,7 @@
 
         <TextBlock
             Grid.Row="4"
-            Style="{StaticResource FieldLabelStyle}"
+            Style="{StaticResource CompactPopupFieldLabelStyle}"
             Text="Account" />
         <ComboBox
             Grid.Row="6"
@@ -55,7 +50,7 @@
             </ComboBox.GroupStyle>
         </ComboBox>
 
-        <TextBlock Grid.Row="8" Style="{StaticResource FieldLabelStyle}">
+        <TextBlock Grid.Row="8" Style="{StaticResource CompactPopupFieldLabelStyle}">
             <Run Text="{Binding CurrentAmountLabel, Mode=OneWay}" />
             <Run Text=": " />
             <Run Text="{Binding CurrentAmount, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />

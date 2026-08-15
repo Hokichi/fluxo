@@ -2,17 +2,8 @@
     x:Class="Fluxo.Views.Shell.Wizard.Pages.Steps.Accounts"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-    xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
+    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
-        <ItemsPanelTemplate x:Key="WizardAccountsItemsPanelTemplate">
-            <primitives:UniformGrid Columns="2" />
-        </ItemsPanelTemplate>
-
-        <Style x:Key="WizardAccountsItemContainerStyle" BasedOn="{StaticResource BaseContentPresenterStyle}" TargetType="ContentPresenter">
-            <Setter Property="Margin" Value="0,0,12,12" />
-        </Style>
-
         <DataTemplate x:Key="WizardAccountsItemTemplate">
             <Border Style="{StaticResource CardBorderStyle}">
                 <Grid>
@@ -56,9 +47,9 @@
     <!--  Step 2: Accounts  -->
     <StackPanel Visibility="{Binding IsStep2Active, Converter={StaticResource BoolToVisibilityConverter}}">
         <ItemsControl
-            ItemContainerStyle="{StaticResource WizardAccountsItemContainerStyle}"
+            ItemContainerStyle="{StaticResource WizardItemContainerStyle}"
             ItemTemplate="{StaticResource WizardAccountsItemTemplate}"
-            ItemsPanel="{StaticResource WizardAccountsItemsPanelTemplate}"
+            ItemsPanel="{StaticResource WizardItemsPanelTemplate}"
             ItemsSource="{Binding Accounts}" />
     </StackPanel>
 

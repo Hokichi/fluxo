@@ -6,14 +6,6 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
     <UserControl.Resources>
-        <ItemsPanelTemplate x:Key="BudgetAllocationTagItemsPanelTemplate">
-            <StackPanel Orientation="Horizontal" />
-        </ItemsPanelTemplate>
-
-        <ItemsPanelTemplate x:Key="BudgetAllocationPopupTagItemsPanelTemplate">
-            <WrapPanel />
-        </ItemsPanelTemplate>
-
         <Style x:Key="BudgetAllocationVisibleTagListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
@@ -21,13 +13,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <ContentPresenter />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource PlainListViewItemTemplate}" />
         </Style>
 
         <Style x:Key="BudgetAllocationTransactionsListStyle" BasedOn="{StaticResource BaseTransactionsListStyle}" TargetType="components:TransactionsList">
@@ -121,7 +107,7 @@
                 BorderThickness="0"
                 ItemContainerStyle="{StaticResource BudgetAllocationVisibleTagListViewItemStyle}"
                 ItemTemplate="{StaticResource Tags}"
-                ItemsPanel="{StaticResource BudgetAllocationTagItemsPanelTemplate}"
+                ItemsPanel="{StaticResource HorizontalStackItemsPanelTemplate}"
                 ItemsSource="{Binding Tags}"
                 PreviewMouseLeftButtonDown="OnTagListPreviewMouseLeftButtonDown"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -174,7 +160,7 @@
                                 BorderThickness="0"
                                 ItemContainerStyle="{StaticResource PopupTagListViewItemStyle}"
                                 ItemTemplate="{StaticResource PopupTags}"
-                                ItemsPanel="{StaticResource BudgetAllocationPopupTagItemsPanelTemplate}"
+                                ItemsPanel="{StaticResource PopupWrapItemsPanelTemplate}"
                                 ItemsSource="{Binding OtherTags}"
                                 PreviewMouseLeftButtonDown="OnTagListPreviewMouseLeftButtonDown"
                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"

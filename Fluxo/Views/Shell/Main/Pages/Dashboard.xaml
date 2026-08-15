@@ -8,10 +8,6 @@
     xmlns:sections="clr-namespace:Fluxo.Views.Shell.Main.Sections">
 
     <UserControl.Resources>
-        <ItemsPanelTemplate x:Key="MainWindowAccountsItemsPanelTemplate">
-            <StackPanel Orientation="Horizontal" />
-        </ItemsPanelTemplate>
-
         <DataTemplate x:Key="MainWindowAccountItemTemplate">
             <components:Account />
         </DataTemplate>
@@ -139,7 +135,7 @@
                                 BorderThickness="0"
                                 ItemContainerStyle="{StaticResource Accounts}"
                                 ItemTemplate="{StaticResource MainWindowAccountItemTemplate}"
-                                ItemsPanel="{StaticResource MainWindowAccountsItemsPanelTemplate}"
+                                ItemsPanel="{StaticResource HorizontalStackItemsPanelTemplate}"
                                 ItemsSource="{Binding Accounts}"
                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 ScrollViewer.VerticalScrollBarVisibility="Disabled" />
