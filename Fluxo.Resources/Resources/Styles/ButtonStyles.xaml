@@ -73,10 +73,7 @@
                                         IsHitTestVisible="False"
                                         Stretch="Uniform">
                                         <Path.Fill>
-                                            <MultiBinding Converter="{StaticResource ForegroundForBackgroundBrushConverter}">
-                                                <Binding ElementName="PART_Shape" Path="Fill" />
-                                                <Binding Path="Foreground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                            </MultiBinding>
+                                            <Binding ElementName="PART_Shape" Path="Fill" Converter="{StaticResource BackgroundToForegroundConverter}" />
                                         </Path.Fill>
                                     </Path>
                                 </Grid>
@@ -99,10 +96,7 @@
                                             TextTrimming="CharacterEllipsis"
                                             TextWrapping="NoWrap">
                                             <TextBlock.Foreground>
-                                                <MultiBinding Converter="{StaticResource ForegroundForBackgroundBrushConverter}">
-                                                    <Binding ElementName="PART_Shape" Path="Fill" />
-                                                    <Binding Path="Foreground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                                </MultiBinding>
+                                                <Binding ElementName="PART_Shape" Path="Fill" Converter="{StaticResource BackgroundToForegroundConverter}" />
                                             </TextBlock.Foreground>
                                         </TextBlock>
                                         <TextBlock
@@ -117,10 +111,7 @@
                                             TextWrapping="NoWrap"
                                             Visibility="Collapsed">
                                             <TextBlock.Foreground>
-                                                <MultiBinding Converter="{StaticResource ForegroundForBackgroundBrushConverter}">
-                                                    <Binding ElementName="PART_Shape" Path="Fill" />
-                                                    <Binding Path="Foreground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                                </MultiBinding>
+                                                <Binding ElementName="PART_Shape" Path="Fill" Converter="{StaticResource BackgroundToForegroundConverter}" />
                                             </TextBlock.Foreground>
                                         </TextBlock>
                                     </StackPanel>
@@ -1256,10 +1247,7 @@
                             FontSize="{TemplateBinding FontSize}"
                             Text="{TemplateBinding Content}">
                             <TextBlock.Foreground>
-                                <MultiBinding Converter="{StaticResource ForegroundForBackgroundBrushConverter}">
-                                    <Binding Path="Background" RelativeSource="{RelativeSource TemplatedParent}" />
-                                    <Binding Path="Foreground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                </MultiBinding>
+                                <Binding Path="Background" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource BackgroundToForegroundConverter}" />
                             </TextBlock.Foreground>
                         </TextBlock>
                     </Border>
@@ -1309,10 +1297,7 @@
                                 FontSize="{TemplateBinding FontSize}"
                                 Text="{TemplateBinding Content}">
                                 <TextBlock.Foreground>
-                                    <MultiBinding Converter="{StaticResource ForegroundForBackgroundBrushConverter}">
-                                        <Binding Path="Background" RelativeSource="{RelativeSource TemplatedParent}" />
-                                        <Binding Path="Foreground" RelativeSource="{RelativeSource TemplatedParent}" />
-                                    </MultiBinding>
+                                    <Binding Path="Background" RelativeSource="{RelativeSource TemplatedParent}" Converter="{StaticResource BackgroundToForegroundConverter}" />
                                 </TextBlock.Foreground>
                             </TextBlock>
                         </StackPanel>
@@ -1371,8 +1356,8 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource ForegroundForBackgroundBrushConverter}}" />
-                            <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource ForegroundForBackgroundBrushConverter}}" />
+                            <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                            <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

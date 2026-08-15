@@ -281,8 +281,7 @@
                                         Text="{Binding TagName}">
                                         <TextBlock.Foreground>
                                             <Binding
-                                                Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
-                                                ConverterParameter="{StaticResource Brush.Text.Primary}"
+                                                Converter="{StaticResource BackgroundToForegroundConverter}"
                                                 ElementName="HeaderSearchTagBadge"
                                                 Path="Background" />
                                         </TextBlock.Foreground>

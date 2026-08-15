@@ -1,5 +1,6 @@
 using Fluxo.Resources.Converters;
 using System.Globalization;
+using System.Windows.Data;
 using System.Windows.Media;
 using Xunit;
 
@@ -155,20 +156,12 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void BackgroundToForegroundConverter_ConvertMultiValue_UsesBackgroundValue()
+    public void BackgroundToForegroundConverter_ExposesSingleValueConversionOnly()
     {
         var converter = new BackgroundToForegroundConverter();
-        var background = Color.FromRgb(230, 234, 240);
 
-        var result = converter.Convert(
-            new object[] { background, Brushes.White },
-            typeof(Brush),
-            null!,
-            CultureInfo.InvariantCulture);
-
-        var brush = Assert.IsType<SolidColorBrush>(result);
-        Assert.True(ContrastRatio(background, brush.Color) >= converter.TargetContrast);
-        Assert.True(RelativeLuminance(brush.Color) < RelativeLuminance(background));
+        Assert.IsAssignableFrom<IValueConverter>(converter);
+        Assert.IsNotAssignableFrom<IMultiValueConverter>(converter);
     }
 
     [Fact]
@@ -179,18 +172,6 @@ public sealed class BackgroundToForegroundConverterTests
         Assert.Throws<NotSupportedException>(() => converter.ConvertBack(
             Brushes.White,
             typeof(Brush),
-            null!,
-            CultureInfo.InvariantCulture));
-    }
-
-    [Fact]
-    public void BackgroundToForegroundConverter_ConvertBackMultiValue_ThrowsNotSupportedException()
-    {
-        var converter = new BackgroundToForegroundConverter();
-
-        Assert.Throws<NotSupportedException>(() => converter.ConvertBack(
-            Brushes.White,
-            new[] { typeof(Brush), typeof(Brush) },
             null!,
             CultureInfo.InvariantCulture));
     }

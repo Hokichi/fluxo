@@ -365,7 +365,7 @@
                     <Ellipse
                         Width="8"
                         Height="8"
-                        Fill="{Binding HexCode, Converter={StaticResource ForegroundForBackgroundBrushConverter}}" />
+                        Fill="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
 
                     <TextBlock
                         Margin="8,0,0,0"
@@ -374,8 +374,7 @@
                         Text="{Binding Name}">
                         <TextBlock.Foreground>
                             <Binding
-                                Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
-                                ConverterParameter="{StaticResource Brush.Text.Primary}"
+                                Converter="{StaticResource BackgroundToForegroundConverter}"
                                 Path="HexCode" />
                         </TextBlock.Foreground>
                     </TextBlock>
@@ -437,7 +436,7 @@
                     <Ellipse
                         Width="6"
                         Height="6"
-                        Fill="{Binding HexCode, Converter={StaticResource ForegroundForBackgroundBrushConverter}}" />
+                        Fill="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
 
                     <TextBlock
                         Margin="8,0,0,0"
@@ -446,8 +445,7 @@
                         Text="{Binding Name}">
                         <TextBlock.Foreground>
                             <Binding
-                                Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
-                                ConverterParameter="{StaticResource Brush.Text.Primary}"
+                                Converter="{StaticResource BackgroundToForegroundConverter}"
                                 Path="HexCode" />
                         </TextBlock.Foreground>
                     </TextBlock>

@@ -4,10 +4,15 @@ using System.Windows.Media;
 
 namespace Fluxo.Resources.Converters;
 
-internal static class ColorUtil
+/// <summary>
+/// Derives a foreground brush from the background by keeping the same hue,
+/// reducing saturation, then binary-searching for the least-extreme lightness
+/// that clears the target WCAG contrast ratio.
+/// </summary>
+public class BackgroundToForegroundConverter : IValueConverter
 {
     /// <summary>WCAG 2.1 relative luminance (0 = black, 1 = white).</summary>
-    public static double RelativeLuminance(Color color)
+    private static double RelativeLuminance(Color color)
     {
         double r = Linearize(color.R / 255.0);
         double g = Linearize(color.G / 255.0);
@@ -17,7 +22,7 @@ internal static class ColorUtil
     }
 
     /// <summary>WCAG 2.1 contrast ratio between two colors (range: 1-21).</summary>
-    public static double ContrastRatio(Color first, Color second)
+    private static double ContrastRatio(Color first, Color second)
     {
         double firstLuminance = RelativeLuminance(first);
         double secondLuminance = RelativeLuminance(second);
@@ -26,7 +31,7 @@ internal static class ColorUtil
     }
 
     /// <summary>RGB to HSL. H in [0,360), S in [0,1], L in [0,1].</summary>
-    public static (double H, double S, double L) RgbToHsl(Color color)
+    private static (double H, double S, double L) RgbToHsl(Color color)
     {
         double r = color.R / 255.0;
         double g = color.G / 255.0;
@@ -55,7 +60,7 @@ internal static class ColorUtil
     }
 
     /// <summary>HSL to RGB. H in [0,360), S in [0,1], L in [0,1].</summary>
-    public static Color HslToRgb(double hue, double saturation, double lightness)
+    private static Color HslToRgb(double hue, double saturation, double lightness)
     {
         if (saturation < 1e-10)
         {
@@ -95,15 +100,6 @@ internal static class ColorUtil
     }
 
     private static byte ToByte(double value) => (byte)Math.Clamp(value * 255, 0, 255);
-}
-
-/// <summary>
-/// Derives a foreground brush from the background by keeping the same hue,
-/// reducing saturation, then binary-searching for the least-extreme lightness
-/// that clears the target WCAG contrast ratio.
-/// </summary>
-public class BackgroundToForegroundConverter : IValueConverter, IMultiValueConverter
-{
     /// <summary>4.5 = WCAG AA. Raise to 7.0 for AAA.</summary>
     public double TargetContrast { get; set; } = 4.5;
 
@@ -124,25 +120,19 @@ public class BackgroundToForegroundConverter : IValueConverter, IMultiValueConve
         return new SolidColorBrush(GetHarmonicForeground(GetBackgroundColor(value)));
     }
 
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    {
-        var background = values.Length > 0 ? values[0] : null;
-        return new SolidColorBrush(GetHarmonicForeground(GetBackgroundColor(background)));
-    }
-
     private Color GetHarmonicForeground(Color background)
     {
         if (background.A == 0)
             return Colors.White;
 
-        double backgroundLuminance = ColorUtil.RelativeLuminance(background);
+        double backgroundLuminance = RelativeLuminance(background);
         bool backgroundIsDark = backgroundLuminance <= 0.179;
 
-        var (hue, saturation, _) = ColorUtil.RgbToHsl(background);
+        var (hue, saturation, _) = RgbToHsl(background);
         double foregroundSaturation = Math.Min(saturation * SaturationRetention, 0.55);
 
-        Color Candidate(double lightness) => ColorUtil.HslToRgb(hue, foregroundSaturation, lightness);
-        bool Passes(double lightness) => ColorUtil.ContrastRatio(background, Candidate(lightness)) >= TargetContrast;
+        Color Candidate(double lightness) => HslToRgb(hue, foregroundSaturation, lightness);
+        bool Passes(double lightness) => ContrastRatio(background, Candidate(lightness)) >= TargetContrast;
 
         return backgroundIsDark
             ? FindLightForeground(Candidate, Passes, LuminanceAdjustment)
@@ -219,6 +209,4 @@ public class BackgroundToForegroundConverter : IValueConverter, IMultiValueConve
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         => throw new NotSupportedException();
 
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        => throw new NotSupportedException();
 }

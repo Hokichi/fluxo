@@ -347,8 +347,7 @@
                                     TextTrimming="CharacterEllipsis">
                                     <TextBlock.Foreground>
                                         <Binding
-                                            Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
-                                            ConverterParameter="{StaticResource Brush.Text.Primary}"
+                                            Converter="{StaticResource BackgroundToForegroundConverter}"
                                             Path="Background"
                                             RelativeSource="{RelativeSource AncestorType=Border}" />
                                     </TextBlock.Foreground>

@@ -45,8 +45,7 @@
                                                 <Binding
                                                     ElementName="ColorChip"
                                                     Path="Background"
-                                                    Converter="{StaticResource ForegroundForBackgroundBrushConverter}"
-                                                    ConverterParameter="{StaticResource Brush.Text.Primary}" />
+                                                    Converter="{StaticResource BackgroundToForegroundConverter}" />
                                             </components:Icon.Color>
                                         </components:Icon>
                                     </Border>

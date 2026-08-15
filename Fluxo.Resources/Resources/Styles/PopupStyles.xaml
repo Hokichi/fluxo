@@ -3,8 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:c="clr-namespace:Fluxo.Resources.CustomControls">
 
-    <BooleanToVisibilityConverter x:Key="PopupBoolToVisibility" />
-
     <Style x:Key="BaseBasePopupStyle" TargetType="{x:Type c:BasePopup}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
     </Style>
@@ -59,7 +57,7 @@
                                         Style="{StaticResource HeaderButtonStyle}"
                                         SubText="Esc"
                                         Visibility="{TemplateBinding ShowCloseButton,
-                                                                     Converter={StaticResource PopupBoolToVisibility}}" />
+                                                                     Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </Grid>
 
                                 <Border
@@ -111,7 +109,7 @@
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderCheckBoxStyle}"
                                             Visibility="{TemplateBinding CanToggleBulk,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
+                                                                         Converter={StaticResource BoolToVisibilityConverter}}" />
                                     </StackPanel>
 
                                     <StackPanel
@@ -199,7 +197,7 @@
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Ctrl+Enter"
                                             Visibility="{TemplateBinding CanSkip,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
+                                                                         Converter={StaticResource BoolToVisibilityConverter}}" />
                                         <c:BalloonButton
                                             x:Name="PART_FinishButton"
                                             ButtonIcon="{StaticResource Check}"
@@ -227,7 +225,7 @@
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanDelete,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
+                                                                         Converter={StaticResource BoolToVisibilityConverter}}" />
                                     </StackPanel>
 
                                     <StackPanel
@@ -244,7 +242,7 @@
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanEdit,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
+                                                                         Converter={StaticResource BoolToVisibilityConverter}}" />
                                         <c:BalloonButton
                                             x:Name="PART_CloneButton"
                                             Margin="8,0,0,0"
@@ -255,7 +253,7 @@
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanClone,
-                                                                         Converter={StaticResource PopupBoolToVisibility}}" />
+                                                                         Converter={StaticResource BoolToVisibilityConverter}}" />
                                     </StackPanel>
                                 </Grid>
                             </Grid>
