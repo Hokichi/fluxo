@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Dialogs;
@@ -19,14 +18,14 @@ namespace Fluxo.ViewModels.Shell.Main;
 public partial class NotificationPanelVM : ObservableRecipient,
     IRecipient<DashboardDataInvalidatedMessage>, IRecipient<NotificationEntityCreatedMessage>
 {
-    private readonly IDataOperationRunner _runner;
+    private readonly IAppDataService _appData;
     private readonly INotificationGroupingService _grouping;
     private readonly StartupNotificationEvaluator _evaluator;
 
     public NotificationPanelVM(
         ITransactionService transactionService,
         IAccountService accountService,
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         INotificationGroupingService? notificationGroupingService = null,
         IDialogService? dialogService = null,
@@ -40,9 +39,9 @@ public partial class NotificationPanelVM : ObservableRecipient,
         _ = mapper;
         _ = dialogService;
         _ = appUpdateInteractionService;
-        _runner = dataOperationRunner;
+        _appData = appData;
         _grouping = notificationGroupingService ?? new NotificationGroupingService();
-        _evaluator = evaluator ?? new StartupNotificationEvaluator(dataOperationRunner);
+        _evaluator = evaluator ?? new StartupNotificationEvaluator(appData);
         Notifications.CollectionChanged += OnNotificationsChanged;
         IsActive = true;
     }
@@ -79,19 +78,23 @@ public partial class NotificationPanelVM : ObservableRecipient,
 
     [RelayCommand] private async Task SnoozeAllNotificationsAsync()
     {
-        await _runner.RunAsync(async (scope, ct) =>
+        var settings = await _appData.GetUserSettingByNameAsync(
+            UserSettingNames.NotificationsSnoozeEndDate);
+        var value = DateTime.Now.AddHours(24).ToString("O", CultureInfo.InvariantCulture);
+        if (settings is null)
         {
-            var settings = await scope.UnitOfWork.UserSettings.GetByNameAsync(UserSettingNames.NotificationsSnoozeEndDate, ct);
-            var value = DateTime.Now.AddHours(24).ToString("O", CultureInfo.InvariantCulture);
-            if (settings is null)
-                await scope.UnitOfWork.UserSettings.AddAsync(new() { Name = UserSettingNames.NotificationsSnoozeEndDate, Value = value }, ct);
-            else
+            await _appData.AddUserSettingAsync(new()
             {
-                settings.Value = value;
-                scope.UnitOfWork.UserSettings.Update(settings);
-            }
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-        });
+                Name = UserSettingNames.NotificationsSnoozeEndDate,
+                Value = value
+            });
+        }
+        else
+        {
+            settings.Value = value;
+            _appData.UpdateUserSetting(settings);
+        }
+        await _appData.SaveChangesAsync();
         ReplaceNotifications([]);
     }
 
@@ -142,12 +145,14 @@ public partial class NotificationPanelVM : ObservableRecipient,
         _ => null
     };
 
-    private async Task<bool> IsSnoozedAsync(CancellationToken cancellationToken) => await _runner.RunAsync(async (scope, ct) =>
+    private async Task<bool> IsSnoozedAsync(CancellationToken cancellationToken)
     {
-        var setting = await scope.UnitOfWork.UserSettings.GetByNameAsync(UserSettingNames.NotificationsSnoozeEndDate, ct);
+        var setting = await _appData.GetUserSettingByNameAsync(
+            UserSettingNames.NotificationsSnoozeEndDate,
+            cancellationToken).ConfigureAwait(false);
         return setting is not null && DateTime.TryParseExact(setting.Value, "O", CultureInfo.InvariantCulture,
             DateTimeStyles.RoundtripKind, out var endDate) && endDate > DateTime.Now;
-    }, cancellationToken);
+    }
 
     private void ApplyEvaluation(StartupNotificationEvaluation evaluation)
     {

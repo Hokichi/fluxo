@@ -417,7 +417,7 @@ public class UpcomingEventsPanelVMTests
             }).ToList());
 
         return new UpcomingEventsPanelVM(
-            new InlineDataOperationRunner(unitOfWork),
+            new Fluxo.Services.Persistence.AppDataService(unitOfWork),
             mapper,
             () => today,
             new WeakReferenceMessenger());

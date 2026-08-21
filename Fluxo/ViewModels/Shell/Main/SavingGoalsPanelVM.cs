@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
 using Fluxo.Core.DTO;
-using Fluxo.Core.Interfaces.Operations;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 
@@ -14,19 +14,19 @@ namespace Fluxo.ViewModels.Shell.Main;
 
 public partial class SavingGoalsPanelVM : ObservableRecipient, IRecipient<DashboardDataInvalidatedMessage>
 {
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly IMapper _mapper;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
     private readonly HashSet<int> _disabledSavingGoalIds = [];
     private readonly HashSet<int> _hiddenSavingGoalIds = [];
 
     public SavingGoalsPanelVM(
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _mapper = mapper;
         IsActive = true;
     }
@@ -62,11 +62,8 @@ public partial class SavingGoalsPanelVM : ObservableRecipient, IRecipient<Dashbo
     {
         await LoadSavingGoalSettingsAsync(cancellationToken);
 
-        var savingGoalDtos = await _dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            return _mapper.Map<IReadOnlyList<SavingGoalDto>>(
-                await scope.UnitOfWork.SavingGoals.GetAllAsync(ct));
-        }, cancellationToken);
+        var savingGoalDtos = _mapper.Map<IReadOnlyList<SavingGoalDto>>(
+            await _appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false));
 
         var savingGoals = _mapper.Map<IReadOnlyList<SavingGoalVM>>(savingGoalDtos);
 
@@ -137,11 +134,11 @@ public partial class SavingGoalsPanelVM : ObservableRecipient, IRecipient<Dashbo
 
     private async Task LoadSavingGoalSettingsAsync(CancellationToken cancellationToken)
     {
-        var settingsByName = await _dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            var settings = await scope.UnitOfWork.UserSettings.GetAllAsync(ct);
-            return settings.ToDictionary(setting => setting.Name, setting => setting.Value, StringComparer.Ordinal);
-        }, cancellationToken);
+        var settings = await _appData.GetUserSettingsAsync(cancellationToken).ConfigureAwait(false);
+        var settingsByName = settings.ToDictionary(
+            setting => setting.Name,
+            setting => setting.Value,
+            StringComparer.Ordinal);
 
         _hiddenSavingGoalIds.Clear();
         _hiddenSavingGoalIds.UnionWith(ParseIdSet(settingsByName, UserSettingNames.HiddenSavingGoalIds));

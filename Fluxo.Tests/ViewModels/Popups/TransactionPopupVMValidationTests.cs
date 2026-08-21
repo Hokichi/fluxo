@@ -2949,6 +2949,7 @@ public sealed class TransactionPopupVMValidationTests
         var mapper = Substitute.For<IMapper>();
         var unitOfWork = CreateUnitOfWork();
         var dataOperationRunner = new InlineDataOperationRunner(unitOfWork);
+        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
         mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<TagVM>>(Arg.Any<object>()).Returns([]);
@@ -2971,27 +2972,27 @@ public sealed class TransactionPopupVMValidationTests
             new NotificationPanelVM(
                 transactionService,
                 accountService,
-                dataOperationRunner,
+                appData,
                 mapper,
                 messenger: messenger),
             new BudgetAllocationPanelVM(
                 transactionService,
                 accountService,
                 tagService,
-                dataOperationRunner,
+                appData,
                 mapper,
                 messenger),
             new SpentAllowancePanelVM(
                 transactionService,
                 accountService,
-                dataOperationRunner,
+                appData,
                 mapper,
                 messenger),
-            new SavingGoalsPanelVM(dataOperationRunner, mapper, messenger),
-            new UpcomingEventsPanelVM(dataOperationRunner, mapper, messenger: messenger),
+            new SavingGoalsPanelVM(appData, mapper, messenger),
+            new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
             new MainViewModeToggleVM(messenger));
         var main = new MainVM(
-            dataOperationRunner,
+            appData,
             dashboard,
             new DaySpinnerVM(messenger),
             null);

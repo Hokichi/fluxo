@@ -136,14 +136,14 @@ public class SavingGoalsPanelVMTests
         userSettingsRepository.GetAllAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<UserSettings>>([]));
         unitOfWork.UserSettings.Returns(userSettingsRepository);
-        var dataOperationRunner = new InlineDataOperationRunner(unitOfWork);
+        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
 
         var mapper = Substitute.For<IMapper>();
         mapper.Map<IReadOnlyList<SavingGoalDto>>(Arg.Any<object>()).Returns(new List<SavingGoalDto>());
         mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns(goals);
 
         return new SavingGoalsPanelVM(
-            dataOperationRunner,
+            appData,
             mapper,
             new WeakReferenceMessenger());
     }

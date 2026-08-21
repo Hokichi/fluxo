@@ -324,32 +324,33 @@ public sealed class SettingsIoUsTabVMTests
         unitOfWork.Transactions.Returns(incomeLogs);
 
         var runner = new InlineDataOperationRunner(unitOfWork);
+        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
         var dashboard = new DashboardVM(
             new NotificationPanelVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
-                runner,
+                appData,
                 mapper,
                 messenger: messenger),
             new BudgetAllocationPanelVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
                 Substitute.For<ITagService>(),
-                runner,
+                appData,
                 mapper,
                 messenger),
             new SpentAllowancePanelVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
-                runner,
+                appData,
                 mapper,
                 messenger),
-            new SavingGoalsPanelVM(runner, mapper, messenger),
-            new UpcomingEventsPanelVM(runner, mapper, messenger: messenger),
+            new SavingGoalsPanelVM(appData, mapper, messenger),
+            new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
             new MainViewModeToggleVM(messenger));
 
         return new MainVM(
-            runner,
+            appData,
             dashboard,
             new DaySpinnerVM(messenger),
             null);

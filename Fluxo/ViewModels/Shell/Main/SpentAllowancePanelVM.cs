@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Budgeting;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
@@ -21,7 +20,7 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
     IRecipient<RecordLogMemoryMessage>,
     IRecipient<LogMemoryActionAppliedMessage>
 {
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly ITransactionService _transactionService;
     private readonly IMapper _mapper;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
@@ -36,7 +35,7 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
     public SpentAllowancePanelVM(
         ITransactionService transactionService,
         IAccountService accountService,
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null,
         Func<DateTime>? todayProvider = null)
@@ -44,7 +43,7 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
     {
         _transactionService = transactionService;
         _accountService = accountService;
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _mapper = mapper;
         _todayProvider = todayProvider ?? (() => DateTime.Today);
 
@@ -250,8 +249,7 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
 
     private async Task<BudgetAllocation> LoadBudgetAllocationAsync(CancellationToken cancellationToken)
     {
-        return await _dataOperationRunner.RunAsync(async (scope, ct) =>
-            await scope.UnitOfWork.BudgetAllocation.GetAsync(ct) ?? new BudgetAllocation(), cancellationToken);
+        return await _appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static void ApplyExpense(AccountVM account, decimal amount)

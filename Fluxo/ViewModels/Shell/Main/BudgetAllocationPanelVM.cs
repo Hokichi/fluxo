@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Dialogs;
@@ -31,7 +30,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
     private const int BucketPageSize = 25;
     private const int VisibleTagSlots = 5;
 
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly ITransactionService _transactionService;
     private readonly HashSet<TransactionVM> _investVisibleWindow = [];
     private readonly Dictionary<int, TagVM> _knownTagsById = [];
@@ -68,7 +67,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
         ITransactionService transactionService,
         IAccountService accountService,
         ITagService tagService,
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null,
         IDialogService? dialogService = null,
@@ -79,7 +78,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
         _transactionService = transactionService;
         _accountService = accountService;
         _tagService = tagService;
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _mapper = mapper;
         _dialogService = dialogService;
         _uiSettleAwaiter = uiSettleAwaiter;
@@ -579,8 +578,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
 
     private async Task<BudgetAllocation> LoadBudgetAllocationAsync(CancellationToken cancellationToken)
     {
-        return await _dataOperationRunner.RunAsync(async (scope, ct) =>
-            await scope.UnitOfWork.BudgetAllocation.GetAsync(ct) ?? new BudgetAllocation(), cancellationToken);
+        return await _appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private static int ConvertThresholdToPercentage(decimal threshold)

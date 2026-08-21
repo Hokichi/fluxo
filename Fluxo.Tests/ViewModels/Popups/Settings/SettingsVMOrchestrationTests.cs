@@ -119,34 +119,34 @@ public sealed class SettingsVMOrchestrationTests
     private static MainVM CreateMainViewModel(IMessenger messenger, IUnitOfWork unitOfWork)
     {
         var mapper = Substitute.For<IMapper>();
-        var dataOperationRunner = new InlineDataOperationRunner(unitOfWork);
+        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
 
         var dashboard = new DashboardVM(
             new NotificationPanelVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
-                dataOperationRunner,
+                appData,
                 mapper,
                 messenger: messenger),
             new BudgetAllocationPanelVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
                 Substitute.For<ITagService>(),
-                dataOperationRunner,
+                appData,
                 mapper,
                 messenger),
             new SpentAllowancePanelVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
-                dataOperationRunner,
+                appData,
                 mapper,
                 messenger),
-            new SavingGoalsPanelVM(dataOperationRunner, mapper, messenger),
-            new UpcomingEventsPanelVM(dataOperationRunner, mapper, messenger: messenger),
+            new SavingGoalsPanelVM(appData, mapper, messenger),
+            new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
             new MainViewModeToggleVM(messenger));
 
         return new MainVM(
-            dataOperationRunner,
+            appData,
             dashboard,
             new DaySpinnerVM(messenger),
             null);

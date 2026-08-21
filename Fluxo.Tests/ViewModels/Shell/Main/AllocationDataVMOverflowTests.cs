@@ -45,6 +45,6 @@ public sealed class AllocationDataVMOverflowTests
     private static AllocationDataVM CreateViewModel() => new(
         Substitute.For<ITransactionService>(),
         Substitute.For<IAccountService>(),
-        Substitute.For<IDataOperationRunner>(),
+        Substitute.For<IAppDataService>(),
         Substitute.For<IMapper>());
 }

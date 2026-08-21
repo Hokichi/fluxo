@@ -696,6 +696,7 @@ public sealed class TransactionPopupVMPersistenceTests
         var mapper = Substitute.For<IMapper>();
         var unitOfWork = CreateUnitOfWork();
         var dataOperationRunner = new InlineDataOperationRunner(unitOfWork);
+        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
         mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<TagVM>>(Arg.Any<object>()).Returns([]);
@@ -712,13 +713,13 @@ public sealed class TransactionPopupVMPersistenceTests
         tagService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.TagDto>>([]));
 
         var dashboard = new DashboardVM(
-            new NotificationPanelVM(transactionService, accountService, dataOperationRunner, mapper, messenger: messenger),
-            new BudgetAllocationPanelVM(transactionService, accountService, tagService, dataOperationRunner, mapper, messenger),
-            new SpentAllowancePanelVM(transactionService, accountService, dataOperationRunner, mapper, messenger),
-            new SavingGoalsPanelVM(dataOperationRunner, mapper, messenger),
-            new UpcomingEventsPanelVM(dataOperationRunner, mapper, messenger: messenger),
+            new NotificationPanelVM(transactionService, accountService, appData, mapper, messenger: messenger),
+            new BudgetAllocationPanelVM(transactionService, accountService, tagService, appData, mapper, messenger),
+            new SpentAllowancePanelVM(transactionService, accountService, appData, mapper, messenger),
+            new SavingGoalsPanelVM(appData, mapper, messenger),
+            new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
             new MainViewModeToggleVM(messenger));
-        var main = new MainVM(dataOperationRunner, dashboard, new DaySpinnerVM(messenger), null);
+        var main = new MainVM(appData, dashboard, new DaySpinnerVM(messenger), null);
 
         foreach (var account in accounts)
             main.BudgetPanel.Accounts.Add(account);

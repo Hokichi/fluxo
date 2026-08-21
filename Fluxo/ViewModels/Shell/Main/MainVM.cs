@@ -4,7 +4,6 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Helpers.MainWindow;
 using Fluxo.Helpers.Settings;
@@ -15,7 +14,7 @@ namespace Fluxo.ViewModels.Shell.Main;
 
 public partial class MainVM : ObservableRecipient
 {
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly AppLockHelper _appLockHelper;
     private bool _isInitialized;
 
@@ -27,7 +26,7 @@ public partial class MainVM : ObservableRecipient
     public bool IsInitialized => _isInitialized;
 
     public MainVM(
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         DashboardVM dashboard,
         Main.DaySpinnerVM daySpinner,
         Main.LedgerVM? ledger = null,
@@ -35,7 +34,7 @@ public partial class MainVM : ObservableRecipient
         IMessenger? messenger = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         Dashboard = dashboard;
         DaySpinner = daySpinner;
         Ledger = ledger;
@@ -112,11 +111,8 @@ public partial class MainVM : ObservableRecipient
 
     private async Task LoadUserSettingsAsync()
     {
-        var settingsByName = await _dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            var settings = await scope.UnitOfWork.UserSettings.GetAllAsync(ct);
-            return settings.ToDictionary(s => s.Name, s => s.Value, StringComparer.Ordinal);
-        });
+        var settings = await _appData.GetUserSettingsAsync().ConfigureAwait(false);
+        var settingsByName = settings.ToDictionary(s => s.Name, s => s.Value, StringComparer.Ordinal);
 
         if (settingsByName.TryGetValue(UserSettingNames.PreferredDisplayName, out var name))
         {

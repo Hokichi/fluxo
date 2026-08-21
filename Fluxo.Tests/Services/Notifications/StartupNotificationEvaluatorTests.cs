@@ -161,7 +161,9 @@ public sealed class StartupNotificationEvaluatorTests
             .Returns(Task.FromResult(settings ?? (IReadOnlyList<UserSettings>)[]));
         unitOfWork.BudgetAllocation.GetAsync(Arg.Any<CancellationToken>()).Returns(Task.FromResult(allocation));
 
-        return new StartupNotificationEvaluator(new InlineDataOperationRunner(unitOfWork), () => now ?? new DateTime(2026, 7, 10));
+        return new StartupNotificationEvaluator(
+            new Fluxo.Services.Persistence.AppDataService(unitOfWork),
+            () => now ?? new DateTime(2026, 7, 10));
     }
 
     private static Transaction Expense(int accountId, decimal amount, ExpenseCategory category) => new()

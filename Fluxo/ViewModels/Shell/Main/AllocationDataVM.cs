@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Budgeting;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
@@ -19,7 +18,7 @@ public partial class AllocationDataVM : ObservableRecipient,
     IRecipient<RecordLogMemoryMessage>,
     IRecipient<LogMemoryActionAppliedMessage>
 {
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly ITransactionService _transactionService;
     private readonly IMapper _mapper;
     private readonly IAccountService _accountService;
@@ -33,14 +32,14 @@ public partial class AllocationDataVM : ObservableRecipient,
     public AllocationDataVM(
         ITransactionService transactionService,
         IAccountService accountService,
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
         _transactionService = transactionService;
         _accountService = accountService;
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _mapper = mapper;
 
         IsActive = true;
@@ -215,8 +214,7 @@ public partial class AllocationDataVM : ObservableRecipient,
 
     private async Task<BudgetAllocation> LoadBudgetAllocationAsync(CancellationToken cancellationToken)
     {
-        return await _dataOperationRunner.RunAsync(async (scope, ct) =>
-            await scope.UnitOfWork.BudgetAllocation.GetAsync(ct) ?? new BudgetAllocation(), cancellationToken);
+        return await _appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private void RefreshBudgetMetrics()

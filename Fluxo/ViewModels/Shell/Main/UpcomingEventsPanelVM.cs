@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 using Fluxo.Helpers.Popups;
@@ -17,19 +17,19 @@ namespace Fluxo.ViewModels.Shell.Main;
 public partial class UpcomingEventsPanelVM : ObservableRecipient, IRecipient<DashboardDataInvalidatedMessage>
 {
     private const int UpcomingWindowDays = 14;
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly IMapper _mapper;
     private readonly Func<DateTime> _todayProvider;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
     public UpcomingEventsPanelVM(
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         Func<DateTime>? todayProvider = null,
         IMessenger? messenger = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _mapper = mapper;
         _todayProvider = todayProvider ?? (() => DateTime.Today);
         IsActive = true;
@@ -54,13 +54,10 @@ public partial class UpcomingEventsPanelVM : ObservableRecipient, IRecipient<Das
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
-        var snapshot = await _dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            var recurring = await scope.UnitOfWork.RecurringTransactions.GetAllAsync(ct);
-            var goals = await scope.UnitOfWork.SavingGoals.GetAllAsync(ct);
-            var accounts = await scope.UnitOfWork.Accounts.GetAllAsync(ct);
-            return new UpcomingEventsSnapshot(recurring, goals, accounts);
-        }, cancellationToken);
+        var recurring = await _appData.GetRecurringTransactionsAsync(cancellationToken).ConfigureAwait(false);
+        var goals = await _appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false);
+        var accounts = await _appData.GetAccountsAsync(cancellationToken).ConfigureAwait(false);
+        var snapshot = new UpcomingEventsSnapshot(recurring, goals, accounts);
 
         var recurringDtos = _mapper.Map<IReadOnlyList<RecurringTransactionDto>>(snapshot.RecurringTransactions);
         var recurringTransactions = _mapper.Map<IReadOnlyList<RecurringTransactionVM>>(recurringDtos);

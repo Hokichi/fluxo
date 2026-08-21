@@ -124,7 +124,7 @@ public sealed class TransactionPopupMessengerTests
         _ = new SpentAllowancePanelVM(
             transactionService,
             accountService,
-            new InlineDataOperationRunner(unitOfWork),
+            new Fluxo.Services.Persistence.AppDataService(unitOfWork),
             mapper,
             messenger);
 
@@ -253,6 +253,7 @@ public sealed class TransactionPopupMessengerTests
         unitOfWork.Accounts.Returns(accounts);
 
         var runner = new InlineDataOperationRunner(unitOfWork);
+        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
         var mapper = Substitute.For<IMapper>();
         mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
@@ -277,11 +278,11 @@ public sealed class TransactionPopupMessengerTests
         notificationAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
 
         var dashboard = new DashboardVM(
-            new NotificationPanelVM(notificationTransactions, notificationAccounts, runner, mapper, messenger: messenger),
-            new BudgetAllocationPanelVM(budgetTransactions, budgetAccounts, tags, runner, mapper, messenger),
-            new SpentAllowancePanelVM(spentTransactions, spentAccounts, runner, mapper, messenger),
-            new SavingGoalsPanelVM(runner, mapper, messenger),
-            new UpcomingEventsPanelVM(runner, mapper, messenger: messenger),
+            new NotificationPanelVM(notificationTransactions, notificationAccounts, appData, mapper, messenger: messenger),
+            new BudgetAllocationPanelVM(budgetTransactions, budgetAccounts, tags, appData, mapper, messenger),
+            new SpentAllowancePanelVM(spentTransactions, spentAccounts, appData, mapper, messenger),
+            new SavingGoalsPanelVM(appData, mapper, messenger),
+            new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
             new MainViewModeToggleVM(messenger));
 
         var ledgerTransactions = Substitute.For<ITransactionService>();
@@ -304,7 +305,7 @@ public sealed class TransactionPopupMessengerTests
         ledgerTags.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
         var ledger = new LedgerVM(ledgerTransactions, ledgerAccounts, ledgerTags, runner,
             new MapperConfiguration(configuration => configuration.AddProfile<DtoViewModelProfile>(), NullLoggerFactory.Instance).CreateMapper(), messenger);
-        var main = new MainVM(runner, dashboard, new DaySpinnerVM(messenger), ledger, messenger: messenger);
+        var main = new MainVM(appData, dashboard, new DaySpinnerVM(messenger), ledger, messenger: messenger);
         return new MainGraph(main, budgetTransactions, spentTransactions, ledgerReloads[0], ledgerReloads[1], () => ledgerCalls);
     }
 

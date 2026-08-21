@@ -2,21 +2,15 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Budgeting;
-using Fluxo.Core.Interfaces.Operations;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 using System.Globalization;
 
 namespace Fluxo.Services.Notifications;
 
-public sealed record StartupNotificationEvaluation(
-    IReadOnlySet<int> OverdueAccountIds,
-    IReadOnlySet<int> OverdueRecurringTransactionIds,
-    IReadOnlySet<int> OverdueSavingGoalIds,
-    IReadOnlyList<NotificationVM> Notifications);
-
 public sealed class StartupNotificationEvaluator(
-    IDataOperationRunner dataOperationRunner,
+    IAppDataService appData,
     Func<DateTime>? clock = null)
 {
     public Task<StartupNotificationEvaluation> EvaluateAsync(CancellationToken cancellationToken = default) =>
@@ -28,24 +22,23 @@ public sealed class StartupNotificationEvaluator(
         CancellationToken cancellationToken = default) =>
         EvaluateAsync(kind, entityId, cancellationToken);
 
-    private Task<StartupNotificationEvaluation> EvaluateAsync(
+    private async Task<StartupNotificationEvaluation> EvaluateAsync(
         NotificationEntityKind? requestedKind,
         int? requestedId,
-        CancellationToken cancellationToken) =>
-        dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            var unitOfWork = scope.UnitOfWork;
+        CancellationToken cancellationToken)
+    {
             var now = clock?.Invoke() ?? DateTime.Now;
             var today = now.Date;
-            var transactions = (await unitOfWork.Transactions.GetAllAsync(ct))
+            var transactions = (await appData.GetTransactionsAsync(cancellationToken).ConfigureAwait(false))
                 .Where(transaction => !transaction.IsForDeletion).ToList();
-            var accounts = (await unitOfWork.Accounts.GetAllAsync(ct))
+            var accounts = (await appData.GetAccountsAsync(cancellationToken).ConfigureAwait(false))
                 .Where(account => !account.IsForDeletion && account.IsEnabled).ToList();
-            var recurring = (await unitOfWork.RecurringTransactions.GetAllAsync(ct))
+            var recurring = (await appData.GetRecurringTransactionsAsync(cancellationToken).ConfigureAwait(false))
                 .Where(item => item.IsEnabled && (item.EndDate is null || item.EndDate.Value.Date >= today)).ToList();
-            var goals = await unitOfWork.SavingGoals.GetAllAsync(ct);
-            var settings = (await unitOfWork.UserSettings.GetAllAsync(ct)).ToDictionary(setting => setting.Name, setting => setting.Value);
-            var allocation = await unitOfWork.BudgetAllocation.GetAsync(ct);
+            var goals = await appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false);
+            var settings = (await appData.GetUserSettingsAsync(cancellationToken).ConfigureAwait(false))
+                .ToDictionary(setting => setting.Name, setting => setting.Value);
+            var allocation = await appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
             if (IsSnoozed(UserSettingNames.NotificationsSnoozeEndDate, now))
                 return new StartupNotificationEvaluation(new HashSet<int>(), new HashSet<int>(), new HashSet<int>(), []);
 
@@ -104,7 +97,7 @@ public sealed class StartupNotificationEvaluator(
             decimal Decimal(string name, decimal fallback) => !settings.TryGetValue(name, out var value) || !decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed) ? fallback : parsed;
             bool IsSnoozed(string name, DateTime current) => settings.TryGetValue(name, out var value) &&
                 DateTime.TryParseExact(value, "O", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var endDate) && endDate > current;
-        }, cancellationToken);
+    }
 
     private static void AddBudgetThresholdNotifications(
         List<NotificationVM> notifications,
