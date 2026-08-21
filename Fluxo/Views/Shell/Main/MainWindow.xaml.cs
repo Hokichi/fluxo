@@ -12,7 +12,6 @@ using System.Windows.Media.Effects;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.DataModels.Messages;
 using Fluxo.Helpers.MainWindow;
@@ -80,7 +79,7 @@ public partial class MainWindow : Window, IPopupHost
     private readonly DispatcherTimer _popupOverlayDeferredHideTimer = new() { Interval = TimeSpan.FromMilliseconds(FadeDuration) };
     private readonly DispatcherTimer _appAutoLockActiveDelayTimer = new() { Interval = AppAutoLockActiveDelay };
     private readonly DispatcherTimer _appAutoLockCountdownTimer = new();
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly LogMemoryManager _logMemoryManager;
     private readonly MainVM _mainVM;
     private readonly IDialogService _dialogService;
@@ -135,7 +134,7 @@ public partial class MainWindow : Window, IPopupHost
 
     public MainWindow(
         MainVM mainVM,
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IDialogService dialogService,
         IServiceProvider serviceProvider,
         FloatingNotificationOverlayWindow floatingNotificationOverlay,
@@ -146,7 +145,7 @@ public partial class MainWindow : Window, IPopupHost
         InitializeComponent();
 
         _mainVM = mainVM;
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
         _floatingNotificationOverlay = floatingNotificationOverlay;
@@ -157,7 +156,7 @@ public partial class MainWindow : Window, IPopupHost
                 .FirstOrDefault(popup => popup.IsOwnedBy(ownerToken)));
         _appUpdateService = appUpdateService;
         _appUpdateInteractionService = appUpdateInteractionService;
-        _logMemoryManager = new LogMemoryManager(_dataOperationRunner, _mainVM.ReloadCurrentDataAsync);
+        _logMemoryManager = new LogMemoryManager(_appData, _mainVM.ReloadCurrentDataAsync);
         WeakReferenceMessenger.Default.Register<MainWindow, NavigateToLedgerRequestedMessage>(
             this,
             static (recipient, message) => _ = recipient.NavigateToLedgerFromDashboardAsync());

@@ -1,14 +1,14 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Messaging;
 using CoreILogMemoryAction = Fluxo.Core.Interfaces.History.ILogMemoryAction;
-using Fluxo.Core.Interfaces.Operations;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 
 namespace Fluxo.Services.History;
 
 public sealed class LogMemoryManager : IDisposable
 {
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly Func<Task> _reloadCurrentDataAsync;
     private readonly IMessenger _messenger;
     private readonly Stack<LogMemoryEntry> _redoStack = [];
@@ -17,11 +17,11 @@ public sealed class LogMemoryManager : IDisposable
     private bool _isExecuting;
 
     public LogMemoryManager(
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         Func<Task> reloadCurrentDataAsync,
         IMessenger? messenger = null)
     {
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _reloadCurrentDataAsync = reloadCurrentDataAsync;
         _messenger = messenger ?? WeakReferenceMessenger.Default;
 
@@ -66,14 +66,9 @@ public sealed class LogMemoryManager : IDisposable
         _isExecuting = true;
         try
         {
-            await _dataOperationRunner.RunInTransactionAsync(
-                "revert history range",
-                async (scope, ct) =>
-                {
-                    foreach (var candidate in entries)
-                        await candidate.Action.RevertAsync(scope.UnitOfWork, ct);
-                },
-                cancellationToken);
+            foreach (var candidate in entries)
+                await candidate.Action.RevertAsync(_appData, cancellationToken);
+            await _appData.SaveChangesAsync(cancellationToken);
 
             foreach (var candidate in entries)
             {
@@ -192,17 +187,16 @@ public sealed class LogMemoryManager : IDisposable
         }
     }
 
-    private Task ApplyAsync(
+    private async Task ApplyAsync(
         LogMemoryEntry entry,
         LogMemoryApplyDirection direction,
         CancellationToken cancellationToken)
     {
-        return _dataOperationRunner.RunAsync(
-            direction == LogMemoryApplyDirection.Revert ? "revert history action" : "reapply history action",
-            (scope, ct) => direction == LogMemoryApplyDirection.Revert
-                ? entry.Action.RevertAsync(scope.UnitOfWork, ct)
-                : entry.Action.ReapplyAsync(scope.UnitOfWork, ct),
-            cancellationToken);
+        if (direction == LogMemoryApplyDirection.Revert)
+            await entry.Action.RevertAsync(_appData, cancellationToken);
+        else
+            await entry.Action.ReapplyAsync(_appData, cancellationToken);
+        await _appData.SaveChangesAsync(cancellationToken);
     }
 
     private void RefreshState()

@@ -1,4 +1,4 @@
-using Fluxo.Core.Interfaces;
+using Fluxo.Core.Interfaces.Services;
 
 namespace Fluxo.Core.Interfaces.History;
 
@@ -12,7 +12,7 @@ public interface ILogMemoryAction
 
     string Details => string.Empty;
 
-    Task RevertAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken = default);
+    Task RevertAsync(IAppDataService appData, CancellationToken cancellationToken = default);
 
-    Task ReapplyAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken = default);
+    Task ReapplyAsync(IAppDataService appData, CancellationToken cancellationToken = default);
 }

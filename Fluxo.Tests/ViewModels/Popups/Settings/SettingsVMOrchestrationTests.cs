@@ -196,12 +196,12 @@ public sealed class SettingsVMOrchestrationTests
     {
         public string Description { get; } = description;
 
-        public Task RevertAsync(Fluxo.Core.Interfaces.IUnitOfWork unitOfWork, CancellationToken cancellationToken = default)
+        public Task RevertAsync(IAppDataService appData, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
 
-        public Task ReapplyAsync(Fluxo.Core.Interfaces.IUnitOfWork unitOfWork, CancellationToken cancellationToken = default)
+        public Task ReapplyAsync(IAppDataService appData, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }

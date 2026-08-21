@@ -33,7 +33,7 @@ public sealed class TransactionBalanceMemoryActionTests
         unitOfWork.Accounts.Returns(accounts);
         var action = new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(transaction));
 
-        await action.RevertAsync(unitOfWork);
+        await action.RevertAsync(new Fluxo.Services.Persistence.AppDataService(unitOfWork));
 
         Assert.Equal(100m, account.Balance);
         accounts.DidNotReceive().Update(account);

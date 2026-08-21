@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Tests.TestDoubles;
@@ -180,13 +181,42 @@ public sealed class LogMemoryManagerTests
         Assert.False(await manager.ToggleAsync(foreign));
     }
 
+    [Fact]
+    public async Task LogMemoryManager_Undo_CommitsOneActionOnce()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        var messenger = new StrongReferenceMessenger();
+        var manager = new LogMemoryManager(appData, () => Task.CompletedTask, messenger);
+        messenger.Send(new RecordLogMemoryMessage(new RecordingAction("one", [])));
+
+        await manager.UndoAsync();
+
+        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task LogMemoryManager_RevertTo_CommitsEntireRangeOnce()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        var messenger = new StrongReferenceMessenger();
+        var manager = new LogMemoryManager(appData, () => Task.CompletedTask, messenger);
+        messenger.Send(new RecordLogMemoryMessage(new RecordingAction("one", [])));
+        messenger.Send(new RecordLogMemoryMessage(new RecordingAction("two", [])));
+        messenger.Send(new RecordLogMemoryMessage(new RecordingAction("three", [])));
+
+        await manager.RevertToAsync(manager.HistoryEntries[0]);
+
+        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
     private static (LogMemoryManager Manager, StrongReferenceMessenger Messenger, List<bool> Reloads)
         CreateManager()
     {
         var messenger = new StrongReferenceMessenger();
         var reloads = new List<bool>();
+        var appData = Substitute.For<IAppDataService>();
         var manager = new LogMemoryManager(
-            new InlineDataOperationRunner(Substitute.For<IUnitOfWork>()),
+            appData,
             () =>
             {
                 reloads.Add(true);
@@ -201,7 +231,7 @@ public sealed class LogMemoryManagerTests
     {
         public string Description { get; } = description;
 
-        public Task RevertAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken = default)
+        public Task RevertAsync(IAppDataService appData, CancellationToken cancellationToken = default)
         {
             calls.Add($"revert:{Description}");
             return failOnRevert
@@ -209,7 +239,7 @@ public sealed class LogMemoryManagerTests
                 : Task.CompletedTask;
         }
 
-        public Task ReapplyAsync(IUnitOfWork unitOfWork, CancellationToken cancellationToken = default)
+        public Task ReapplyAsync(IAppDataService appData, CancellationToken cancellationToken = default)
         {
             calls.Add($"reapply:{Description}");
             return Task.CompletedTask;

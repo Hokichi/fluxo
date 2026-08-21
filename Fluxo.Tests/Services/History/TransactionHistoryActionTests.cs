@@ -20,7 +20,8 @@ public sealed class TransactionHistoryActionTests
         transactions.GetByIdAsync(snapshot.TransactionId, Arg.Any<CancellationToken>())
             .Returns((Transaction?)null);
 
-        await new DeleteTransactionMemoryAction(snapshot).RevertAsync(unitOfWork);
+        await new DeleteTransactionMemoryAction(snapshot).RevertAsync(
+            new Fluxo.Services.Persistence.AppDataService(unitOfWork));
 
         Assert.Equal(125m, source.Balance);
         Assert.Equal(50m, goal.CurrentAmount);
@@ -40,7 +41,8 @@ public sealed class TransactionHistoryActionTests
         transactions.GetByIdAsync(snapshot.TransactionId, Arg.Any<CancellationToken>())
             .Returns(transaction);
 
-        await new DeleteTransactionMemoryAction(snapshot).ReapplyAsync(unitOfWork);
+        await new DeleteTransactionMemoryAction(snapshot).ReapplyAsync(
+            new Fluxo.Services.Persistence.AppDataService(unitOfWork));
 
         Assert.Equal(150m, source.Balance);
         Assert.Equal(25m, goal.CurrentAmount);
