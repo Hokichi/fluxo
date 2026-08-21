@@ -1,6 +1,7 @@
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Core.Interfaces.Caching;
 using Fluxo.DataModels.Messages;
 using Fluxo.Mappings;
 using Fluxo.Services.Backups;
@@ -17,6 +18,7 @@ using Fluxo.ViewModels.Popups.DataManagement;
 using Fluxo.ViewModels.Popups.Planning;
 using Fluxo.ViewModels.Popups.Settings;
 using Fluxo.Services.Updates;
+using Fluxo.Services.Caching;
 using Fluxo.ViewModels.Shell;
 using Fluxo.Views.Popups;
 using Fluxo.Views.Popups.Planning;
@@ -61,8 +63,11 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITagService, TagService>();
         services.AddTransient<IAnalyticsService, AnalyticsService>();
         services.AddTransient<ICalendarService, CalendarService>();
-        services.AddScoped<IAppDataService>(provider =>
-            new AppDataService(provider.GetRequiredService<Fluxo.Core.Interfaces.Operations.IDataOperationRunner>()));
+        services.AddSingleton<AppDataCacheHydrator>();
+        services.AddSingleton<AppDataCache>();
+        services.AddSingleton<IAppDataCache>(provider => provider.GetRequiredService<AppDataCache>());
+        services.AddSingleton<AppDataCommitCoordinator>();
+        services.AddScoped<IAppDataService, AppDataService>();
         services.AddTransient<IBudgetAllocationPeriodSyncService, BudgetAllocationPeriodSyncService>();
         services.AddTransient<IUserBackupService, UserBackupService>();
         services.AddTransient<StartupNotificationEvaluator>();

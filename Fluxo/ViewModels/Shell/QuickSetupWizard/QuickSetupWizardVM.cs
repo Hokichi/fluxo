@@ -7,6 +7,7 @@ using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Data.Context;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Persistence;
+using Fluxo.Services.Caching;
 using Fluxo.ViewModels.Popups.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -25,6 +26,7 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
     private readonly IAppDataService _appData;
     private readonly IStartupRegistrationService _startupRegistrationService;
     private readonly IDataOperationScopeFactory _dataOperationScopeFactory;
+    private readonly AppDataCommitCoordinator _appDataCommitCoordinator;
     private IDataOperationScope? _stagedScope;
     private Func<Task>? _stagedCommitAsync;
     private Func<Task>? _stagedRollbackAsync;
@@ -37,6 +39,7 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         IAppDataService appData,
         IStartupRegistrationService startupRegistrationService,
         IDataOperationScopeFactory dataOperationScopeFactory,
+        AppDataCommitCoordinator appDataCommitCoordinator,
         QuickSetupWizardGreetingPageVM greetingPage,
         QuickSetupWizardNamePageVM namePage,
         QuickSetupWizardMiddlePageVM middlePage,
@@ -49,6 +52,7 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         _appData = appData;
         _startupRegistrationService = startupRegistrationService;
         _dataOperationScopeFactory = dataOperationScopeFactory;
+        _appDataCommitCoordinator = appDataCommitCoordinator;
 
         GreetingPage = greetingPage;
         NamePage = namePage;
@@ -278,10 +282,9 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
             await stagedAppData.SaveChangesAsync();
 
             _stagedScope = scope;
-            _stagedCommitAsync = async () =>
-            {
-                await ExecuteTransactionActionAndDisposeAsync(stagedTransaction, tx => tx.CommitAsync());
-            };
+            _stagedCommitAsync = () => CommitStagedDataAsync(
+                () => ExecuteTransactionActionAndDisposeAsync(stagedTransaction, tx => tx.CommitAsync()),
+                () => _appDataCommitCoordinator.RebuildAsync());
             _stagedRollbackAsync = async () =>
             {
                 await ExecuteTransactionActionAndDisposeAsync(stagedTransaction, tx => tx.RollbackAsync());
@@ -359,6 +362,12 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         }
 
         capturedException?.Throw();
+    }
+
+    internal static async Task CommitStagedDataAsync(Func<Task> commitAsync, Func<Task> rebuildCacheAsync)
+    {
+        await commitAsync();
+        await rebuildCacheAsync();
     }
 
     private async Task ClearStagedAsync(bool rollbackStagedChanges = true)

@@ -302,6 +302,7 @@ public sealed class QuickSetupWizardVMTests
             appData,
             Substitute.For<IStartupRegistrationService>(),
             new TestDataOperationScopeFactory(),
+            null!,
             greeting,
             name,
             middle,

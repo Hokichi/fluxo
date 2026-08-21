@@ -3,6 +3,7 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.Core.Interfaces.Caching;
 using Fluxo.Data.Context;
 using Fluxo.Data.Extensions;
 using Fluxo.Extensions;
@@ -49,6 +50,7 @@ public partial class App : Application
     private readonly IDataOperationRunner _dataOperationRunner;
     private readonly IBudgetAllocationPeriodSyncService _budgetAllocationPeriodSyncService;
     private readonly ITransactionService _transactionService;
+    private readonly IAppDataCache _appDataCache;
     private readonly MainVM _mainVM;
     private readonly IStartupRegistrationService _startupRegistrationService;
     private readonly IUiSettleAwaiter _uiSettleAwaiter;
@@ -78,6 +80,7 @@ public partial class App : Application
         _dataOperationRunner = _serviceProvider.GetRequiredService<IDataOperationRunner>();
         _budgetAllocationPeriodSyncService = _serviceProvider.GetRequiredService<IBudgetAllocationPeriodSyncService>();
         _transactionService = _serviceProvider.GetRequiredService<ITransactionService>();
+        _appDataCache = _serviceProvider.GetRequiredService<IAppDataCache>();
         _startupRegistrationService = _serviceProvider.GetRequiredService<IStartupRegistrationService>();
         _uiSettleAwaiter = _serviceProvider.GetRequiredService<IUiSettleAwaiter>();
 
@@ -133,26 +136,32 @@ public partial class App : Application
                 isFirstRun = await EnsureFirstRunSettingAsync(_dataOperationRunner);
                 LogStartupStage("first-run setting", StartupStageState.Completed);
                 await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
-                LogStartupStage("post-termination cleanup", StartupStageState.Started);
-                await _transactionService.PostTerminationCleanupAsync();
-                LogStartupStage("post-termination cleanup", StartupStageState.Completed);
-                await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
-                LogStartupStage("startup registration sync", StartupStageState.Started);
-                await SyncRunAtStartupRegistrationAsync();
-                LogStartupStage("startup registration sync", StartupStageState.Completed);
-                await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
-                LogStartupStage("startup update check", StartupStageState.Started);
-                // Floating update card is checked after MainWindow becomes visible.
-                LogStartupStage("startup update check", StartupStageState.Completed);
-                await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
-
-                if (!isFirstRun)
-                {
-                    LogStartupStage("main view model initialization", StartupStageState.Started);
-                    await _mainVM.InitializeWithStartupStagesAsync(() =>
-                        _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup));
-                    LogStartupStage("main view model initialization", StartupStageState.Completed);
-                }
+                await InitializeApplicationDataAsync(
+                    isFirstRun,
+                    _appDataCache,
+                    async () =>
+                    {
+                        LogStartupStage("post-termination cleanup", StartupStageState.Started);
+                        await _transactionService.PostTerminationCleanupAsync();
+                        LogStartupStage("post-termination cleanup", StartupStageState.Completed);
+                    },
+                    async () =>
+                    {
+                        LogStartupStage("startup registration sync", StartupStageState.Started);
+                        await SyncRunAtStartupRegistrationAsync();
+                        LogStartupStage("startup registration sync", StartupStageState.Completed);
+                        LogStartupStage("startup update check", StartupStageState.Started);
+                        // Floating update card is checked after MainWindow becomes visible.
+                        LogStartupStage("startup update check", StartupStageState.Completed);
+                    },
+                    async () =>
+                    {
+                        LogStartupStage("main view model initialization", StartupStageState.Started);
+                        await _mainVM.InitializeWithStartupStagesAsync(() =>
+                            _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup));
+                        LogStartupStage("main view model initialization", StartupStageState.Completed);
+                    },
+                    () => _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup));
             }
             finally
             {
@@ -323,6 +332,26 @@ public partial class App : Application
     private async Task<bool> IsCloseBehaviorMinimizeToTrayAsync()
     {
         return await GetCloseBehaviorAsync() == AppCloseBehavior.MinimizeToTray;
+    }
+
+    internal static async Task InitializeApplicationDataAsync(
+        bool isFirstRun,
+        IAppDataCache cache,
+        Func<Task> postTerminationCleanupAsync,
+        Func<Task> syncStartupRegistrationAsync,
+        Func<Task> initializeMainAsync,
+        Func<Task> betweenStagesAsync)
+    {
+        await postTerminationCleanupAsync();
+        await betweenStagesAsync();
+        await syncStartupRegistrationAsync();
+        await betweenStagesAsync();
+        LogStartupStage("application data cache", StartupStageState.Started);
+        await cache.InitializeAsync();
+        LogStartupStage("application data cache", StartupStageState.Completed);
+        await betweenStagesAsync();
+        if (!isFirstRun)
+            await initializeMainAsync();
     }
 
     private async Task<AppCloseBehavior> GetCloseBehaviorAsync()

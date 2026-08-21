@@ -29,6 +29,7 @@ internal sealed class AppDataCommitCoordinatorFixture : IAsyncDisposable
     internal ServiceProvider Provider { get; }
     internal AppDataCache Cache { get; }
     internal AppDataCommitCoordinator Coordinator { get; }
+    internal IServiceProvider Services => Provider;
 
     internal static async Task<AppDataCommitCoordinatorFixture> CreateAsync(
         params IInterceptor[] interceptors)
