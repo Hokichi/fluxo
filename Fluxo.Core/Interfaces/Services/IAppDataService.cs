@@ -1,4 +1,5 @@
 using Fluxo.Core.Entities;
+using Fluxo.Core.Filters;
 
 namespace Fluxo.Core.Interfaces.Services;
 
@@ -6,6 +7,11 @@ public interface IAppDataService
 {
     Task<IReadOnlyList<Transaction>> GetTransactionsAsync(CancellationToken cancellationToken = default);
     Task<Transaction?> GetTransactionByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Transaction>> SearchTransactionsAsync(
+        TransactionFilter filter,
+        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Transaction>> GetMarkedTransactionsForDeletionAsync(
+        CancellationToken cancellationToken = default);
     Task AddTransactionAsync(Transaction entity, CancellationToken cancellationToken = default);
     void UpdateTransaction(Transaction entity);
     void RemoveTransaction(Transaction entity);
@@ -13,6 +19,8 @@ public interface IAppDataService
     Task<IReadOnlyList<Tag>> GetTagsAsync(CancellationToken cancellationToken = default);
     Task<Tag?> GetTagByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<(Tag Tag, int Count)>> GetTagsByCountDescendingAsync(
+        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<(Tag Tag, int Count)>> GetTodayTagsByCountDescendingAsync(
         CancellationToken cancellationToken = default);
     Task AddTagAsync(Tag entity, CancellationToken cancellationToken = default);
     void UpdateTag(Tag entity);
@@ -26,6 +34,11 @@ public interface IAppDataService
 
     Task<IReadOnlyList<Account>> GetAccountsAsync(CancellationToken cancellationToken = default);
     Task<Account?> GetAccountByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Account>> SearchAccountsAsync(
+        AccountFilter filter,
+        CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Account>> GetMarkedAccountsForDeletionAsync(
+        CancellationToken cancellationToken = default);
     Task AddAccountAsync(Account entity, CancellationToken cancellationToken = default);
     void UpdateAccount(Account entity);
     void RemoveAccount(Account entity);

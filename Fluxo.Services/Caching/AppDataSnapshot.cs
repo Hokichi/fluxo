@@ -83,6 +83,95 @@ internal sealed class AppDataSnapshot
         return snapshot;
     }
 
+    internal AppDataSnapshot Apply(long version, AppDataChangeSet changeSet)
+    {
+        var transactions = Transactions;
+        var tags = Tags;
+        var savingGoals = SavingGoals;
+        var accounts = Accounts;
+        var recurringTransactions = RecurringTransactions;
+        var userSettings = UserSettings;
+        var budgetAllocation = BudgetAllocation;
+        var transactionOrder = TransactionOrder;
+        var tagUsageCounts = TagUsageCounts;
+
+        foreach (var change in changeSet.Changes)
+        {
+            switch (change.Entity)
+            {
+                case Transaction transaction:
+                    if (transactions.TryGetValue(transaction.Id, out var previousTransaction))
+                    {
+                        transactionOrder = transactionOrder.Remove(new TransactionCacheOrderKey(
+                            previousTransaction.OccurredOn,
+                            previousTransaction.LoggedOn,
+                            previousTransaction.Id));
+                        tagUsageCounts = AdjustTagCount(tagUsageCounts, previousTransaction, -1);
+                    }
+
+                    if (change.Kind == AppDataChangeKind.Deleted)
+                    {
+                        transactions = transactions.Remove(transaction.Id);
+                    }
+                    else
+                    {
+                        var stored = CloneTransactionScalar(transaction);
+                        transactions = transactions.SetItem(stored.Id, stored);
+                        transactionOrder = transactionOrder.Add(new TransactionCacheOrderKey(
+                            stored.OccurredOn,
+                            stored.LoggedOn,
+                            stored.Id));
+                        tagUsageCounts = AdjustTagCount(tagUsageCounts, stored, 1);
+                    }
+                    break;
+                case Tag tag:
+                    tags = change.Kind == AppDataChangeKind.Deleted
+                        ? tags.Remove(tag.Id)
+                        : tags.SetItem(tag.Id, CloneTag(tag));
+                    break;
+                case SavingGoal goal:
+                    savingGoals = change.Kind == AppDataChangeKind.Deleted
+                        ? savingGoals.Remove(goal.Id)
+                        : savingGoals.SetItem(goal.Id, CloneSavingGoal(goal));
+                    break;
+                case Account account:
+                    accounts = change.Kind == AppDataChangeKind.Deleted
+                        ? accounts.Remove(account.Id)
+                        : accounts.SetItem(account.Id, CloneAccount(account));
+                    break;
+                case RecurringTransaction recurring:
+                    recurringTransactions = change.Kind == AppDataChangeKind.Deleted
+                        ? recurringTransactions.Remove(recurring.Id)
+                        : recurringTransactions.SetItem(recurring.Id, CloneRecurringScalar(recurring));
+                    break;
+                case UserSettings setting:
+                    userSettings = change.Kind == AppDataChangeKind.Deleted
+                        ? userSettings.Remove(setting.Name)
+                        : userSettings.SetItem(setting.Name, CloneUserSetting(setting));
+                    break;
+                case BudgetAllocation allocation:
+                    budgetAllocation = change.Kind == AppDataChangeKind.Deleted
+                        ? null
+                        : CloneBudgetAllocation(allocation);
+                    break;
+            }
+        }
+
+        var candidate = new AppDataSnapshot(
+            version,
+            transactions,
+            tags,
+            savingGoals,
+            accounts,
+            recurringTransactions,
+            userSettings,
+            budgetAllocation,
+            transactionOrder,
+            tagUsageCounts);
+        candidate.Validate();
+        return candidate;
+    }
+
     internal void Validate()
     {
         foreach (var transaction in Transactions.Values)
@@ -121,6 +210,18 @@ internal sealed class AppDataSnapshot
     {
         if (id.HasValue)
             Require(values, id.Value, relation, ownerId);
+    }
+
+    private static ImmutableDictionary<int, int> AdjustTagCount(
+        ImmutableDictionary<int, int> counts,
+        Transaction transaction,
+        int adjustment)
+    {
+        if (transaction.IsForDeletion || transaction.TagId is not { } tagId)
+            return counts;
+
+        var next = counts.GetValueOrDefault(tagId) + adjustment;
+        return next <= 0 ? counts.Remove(tagId) : counts.SetItem(tagId, next);
     }
 
     private static Transaction CloneTransactionScalar(Transaction value) => new()

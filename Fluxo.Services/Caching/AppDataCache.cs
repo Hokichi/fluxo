@@ -3,6 +3,7 @@ using Fluxo.Core.Exceptions;
 using Fluxo.Core.Filters;
 using Fluxo.Core.Interfaces.Caching;
 using Fluxo.Core.Interfaces.Services;
+using System.Diagnostics;
 
 namespace Fluxo.Services.Caching;
 
@@ -194,10 +195,24 @@ public sealed class AppDataCache(AppDataCacheHydrator hydrator, ILogService logS
         return hydrator.HydrateAsync(current.Version + 1, cancellationToken);
     }
 
+    internal AppDataSnapshot CreateCandidate(AppDataChangeSet changes)
+    {
+        var current = CaptureSnapshot();
+        return current.Apply(current.Version + 1, changes);
+    }
+
     internal void Publish(AppDataSnapshot snapshot)
     {
+        Debug.Assert(snapshot.Version == Version + 1);
         Interlocked.Exchange(ref _snapshot, snapshot);
-        logService.LogInformation($"Application data cache published. Version={snapshot.Version}.");
+        try
+        {
+            logService.LogInformation($"Application data cache published. Version={snapshot.Version}.");
+        }
+        catch
+        {
+            // Publication follows a durable commit and must never fail because diagnostics failed.
+        }
     }
 
     private static Task<IReadOnlyList<T>> RunCollectionProjection<T>(
