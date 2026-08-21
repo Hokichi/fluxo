@@ -24,7 +24,7 @@ public sealed class AppDataService : IAppDataService
         _coordinator = coordinator;
     }
 
-    public AppDataService(IUnitOfWork unitOfWork)
+    internal AppDataService(IUnitOfWork unitOfWork)
     {
         _directUnitOfWork = unitOfWork;
     }
