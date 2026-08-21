@@ -1,9 +1,7 @@
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces;
-using Fluxo.Core.Interfaces.Repositories;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.Services.Persistence;
-using Fluxo.Tests.TestDoubles;
 using NSubstitute;
 using Xunit;
 
@@ -14,10 +12,10 @@ public sealed class CalendarServiceTests
     [Fact]
     public async Task CalendarService_GetCalendarDayAsync_FiltersSelectedDateAndBuildsSummaries()
     {
-        var (sut, unitOfWork) = CreateSut();
+        var (sut, appData) = CreateSut();
         var selected = new DateOnly(2026, 6, 12);
 
-        unitOfWork.Transactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([
             new Transaction
             {
                 Id = 1,
@@ -100,12 +98,12 @@ public sealed class CalendarServiceTests
             }
         ]);
 
-        unitOfWork.SavingGoals.GetAllAsync(Arg.Any<CancellationToken>()).Returns([
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns([
             new SavingGoal { Id = 6, Name = "Vacation", CurrentAmount = 100m, TargetAmount = 500m, SavingEndDate = new DateTime(2026, 6, 12) },
             new SavingGoal { Id = 7, Name = "No date", CurrentAmount = 0m, TargetAmount = 10m, SavingEndDate = null }
         ]);
 
-        unitOfWork.RecurringTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([
+        appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>()).Returns([
             new RecurringTransaction
             {
                 Id = 8,
@@ -162,10 +160,10 @@ public sealed class CalendarServiceTests
         int day,
         bool expectedIncluded)
     {
-        var (sut, unitOfWork) = CreateSut();
-        unitOfWork.Transactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        unitOfWork.SavingGoals.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        unitOfWork.RecurringTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([
+        var (sut, appData) = CreateSut();
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>()).Returns([
             new RecurringTransaction
             {
                 Id = 10,
@@ -184,13 +182,9 @@ public sealed class CalendarServiceTests
         Assert.Equal(expectedIncluded, result.RecurringTransactions.Count == 1);
     }
 
-    private static (CalendarService Sut, IUnitOfWork UnitOfWork) CreateSut()
+    private static (CalendarService Sut, IAppDataService AppData) CreateSut()
     {
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        unitOfWork.Transactions.Returns(Substitute.For<ITransactionRepository>());
-        unitOfWork.SavingGoals.Returns(Substitute.For<ISavingGoalRepository>());
-        unitOfWork.RecurringTransactions.Returns(Substitute.For<IRecurringTransactionRepository>());
-
-        return (new CalendarService(new InlineDataOperationRunner(unitOfWork)), unitOfWork);
+        var appData = Substitute.For<IAppDataService>();
+        return (new CalendarService(appData), appData);
     }
 }

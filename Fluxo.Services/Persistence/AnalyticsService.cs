@@ -1,11 +1,10 @@
 using Fluxo.Core.DTO;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 
 namespace Fluxo.Services.Persistence;
 
-public sealed class AnalyticsService(IDataOperationRunner dataOperationRunner) : IAnalyticsService
+public sealed class AnalyticsService(IAppDataService appData) : IAnalyticsService
 {
     public async Task<AnalyticsDto> GetAnalyticsAsync(
         DateOnly from,
@@ -15,11 +14,8 @@ public sealed class AnalyticsService(IDataOperationRunner dataOperationRunner) :
         if (from > to)
             (from, to) = (to, from);
 
-        return await dataOperationRunner.RunAsync("load analytics data", async (scope, ct) =>
-        {
-            var unitOfWork = scope.UnitOfWork;
-            var transactions = await unitOfWork.Transactions.GetAllAsync(ct);
-            var goals = await unitOfWork.SavingGoals.GetAllAsync(ct);
+        var transactions = await appData.GetTransactionsAsync(cancellationToken).ConfigureAwait(false);
+        var goals = await appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false);
 
             var fromDate = from.ToDateTime(TimeOnly.MinValue);
             var toDate = to.ToDateTime(TimeOnly.MaxValue);
@@ -107,13 +103,12 @@ public sealed class AnalyticsService(IDataOperationRunner dataOperationRunner) :
                     goal.SavingEndDate))
                 .ToArray();
 
-            return new AnalyticsDto(
-                TotalIncome: totalIncome,
-                TotalExpense: totalExpense,
-                TimeSeries: timeSeries,
-                CategoryRatio: categoryRatio,
-                TopSpendingTags: tagTotals,
-                GoalsCreatedInPeriod: goalsCreatedInPeriod);
-        }, cancellationToken);
+        return new AnalyticsDto(
+            TotalIncome: totalIncome,
+            TotalExpense: totalExpense,
+            TimeSeries: timeSeries,
+            CategoryRatio: categoryRatio,
+            TopSpendingTags: tagTotals,
+            GoalsCreatedInPeriod: goalsCreatedInPeriod);
     }
 }

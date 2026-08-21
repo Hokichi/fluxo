@@ -50,6 +50,7 @@ public partial class App : Application
     private readonly IDataOperationRunner _dataOperationRunner;
     private readonly IBudgetAllocationPeriodSyncService _budgetAllocationPeriodSyncService;
     private readonly ITransactionService _transactionService;
+    private readonly IAppDataService _appDataService;
     private readonly IAppDataCache _appDataCache;
     private readonly MainVM _mainVM;
     private readonly IStartupRegistrationService _startupRegistrationService;
@@ -80,6 +81,7 @@ public partial class App : Application
         _dataOperationRunner = _serviceProvider.GetRequiredService<IDataOperationRunner>();
         _budgetAllocationPeriodSyncService = _serviceProvider.GetRequiredService<IBudgetAllocationPeriodSyncService>();
         _transactionService = _serviceProvider.GetRequiredService<ITransactionService>();
+        _appDataService = _serviceProvider.GetRequiredService<IAppDataService>();
         _appDataCache = _serviceProvider.GetRequiredService<IAppDataCache>();
         _startupRegistrationService = _serviceProvider.GetRequiredService<IStartupRegistrationService>();
         _uiSettleAwaiter = _serviceProvider.GetRequiredService<IUiSettleAwaiter>();
@@ -358,11 +360,8 @@ public partial class App : Application
     {
         try
         {
-            return await _dataOperationRunner.RunAsync("resolve app close behavior", async (scope, ct) =>
-            {
-                var setting = await scope.UnitOfWork.UserSettings.GetByNameAsync(UserSettingNames.CloseBehavior, ct);
-                return UserSettingValueParser.ParseCloseBehavior(setting?.Value, AppCloseBehavior.Exit);
-            });
+            var setting = await _appDataService.GetUserSettingByNameAsync(UserSettingNames.CloseBehavior);
+            return UserSettingValueParser.ParseCloseBehavior(setting?.Value, AppCloseBehavior.Exit);
         }
         catch (Exception exception)
         {

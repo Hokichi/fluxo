@@ -5,30 +5,29 @@ using Fluxo.Core.Interfaces.Services;
 
 namespace Fluxo.Services.Persistence;
 
-public sealed class TransactionService(IDataOperationRunner runner, IMapper mapper) : ITransactionService
+public sealed class TransactionService(IAppDataService appData, IDataOperationRunner runner, IMapper mapper)
+    : ITransactionService
 {
-    public Task<IReadOnlyList<TransactionDto>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        runner.RunAsync("load transactions", async (scope, ct) =>
-            mapper.Map<IReadOnlyList<TransactionDto>>(await scope.UnitOfWork.Transactions.GetAllAsync(ct)), cancellationToken);
+    public async Task<IReadOnlyList<TransactionDto>> GetAllAsync(CancellationToken cancellationToken = default) =>
+        mapper.Map<IReadOnlyList<TransactionDto>>(
+            await appData.GetTransactionsAsync(cancellationToken).ConfigureAwait(false));
 
-    public Task<TransactionDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default) =>
-        runner.RunAsync("load transaction", async (scope, ct) =>
-        {
-            var transaction = await scope.UnitOfWork.Transactions.GetByIdAsync(id, ct);
-            return transaction is null ? null : mapper.Map<TransactionDto>(transaction);
-        }, cancellationToken);
+    public async Task<TransactionDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var transaction = await appData.GetTransactionByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        return transaction is null ? null : mapper.Map<TransactionDto>(transaction);
+    }
 
-    public Task DeleteAsync(int id, CancellationToken cancellationToken = default) =>
-        runner.RunAsync("delete transaction", async (scope, ct) =>
-        {
-            var transaction = await scope.UnitOfWork.Transactions.GetByIdAsync(id, ct);
-            if (transaction is null)
-                return;
+    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var transaction = await appData.GetTransactionByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (transaction is null)
+            return;
 
-            transaction.IsForDeletion = true;
-            scope.UnitOfWork.Transactions.Update(transaction);
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-        }, cancellationToken);
+        transaction.IsForDeletion = true;
+        appData.UpdateTransaction(transaction);
+        await appData.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
 
     public Task PostTerminationCleanupAsync(CancellationToken cancellationToken = default) =>
         runner.RunAsync("cleanup terminated transactions", async (scope, ct) =>

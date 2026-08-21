@@ -1,25 +1,21 @@
 using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 
 namespace Fluxo.Services.Persistence;
 
-public sealed class CalendarService(IDataOperationRunner dataOperationRunner) : ICalendarService
+public sealed class CalendarService(IAppDataService appData) : ICalendarService
 {
     public async Task<CalendarDto> GetCalendarDayAsync(
         DateOnly date,
         CancellationToken cancellationToken = default)
     {
-        return await dataOperationRunner.RunAsync("load calendar data", async (scope, ct) =>
-        {
-            var unitOfWork = scope.UnitOfWork;
-            var selectedDate = date.ToDateTime(TimeOnly.MinValue).Date;
+        var selectedDate = date.ToDateTime(TimeOnly.MinValue).Date;
 
-            var transactions = await unitOfWork.Transactions.GetAllAsync(ct);
-            var goals = await unitOfWork.SavingGoals.GetAllAsync(ct);
-            var recurringTransactions = await unitOfWork.RecurringTransactions.GetAllAsync(ct);
+        var transactions = await appData.GetTransactionsAsync(cancellationToken).ConfigureAwait(false);
+        var goals = await appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false);
+        var recurringTransactions = await appData.GetRecurringTransactionsAsync(cancellationToken).ConfigureAwait(false);
 
             var expenses = transactions
                 .Where(transaction => transaction.Type == TransactionType.Expense && !transaction.IsForDeletion &&
@@ -73,7 +69,7 @@ public sealed class CalendarService(IDataOperationRunner dataOperationRunner) : 
                     transaction.Source?.Name ?? string.Empty))
                 .ToArray();
 
-            return new CalendarDto(
+        return new CalendarDto(
                 date,
                 transactions.Where(transaction =>
                         transaction.Type == TransactionType.Expense &&
@@ -91,8 +87,7 @@ public sealed class CalendarService(IDataOperationRunner dataOperationRunner) : 
                 expenses,
                 incomes,
                 goalDeadlines,
-                dueRecurringTransactions);
-        }, cancellationToken);
+            dueRecurringTransactions);
     }
 
     internal static bool IsDueOn(RecurringTransaction transaction, DateOnly selectedDate)

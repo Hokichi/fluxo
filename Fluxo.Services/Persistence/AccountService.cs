@@ -2,49 +2,36 @@ using AutoMapper;
 using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Filters;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 
 namespace Fluxo.Services.Persistence;
 
-public sealed class AccountService(IDataOperationRunner dataOperationRunner, IMapper mapper) : IAccountService
+public sealed class AccountService(IAppDataService appData, IMapper mapper) : IAccountService
 {
     public async Task<IReadOnlyList<AccountDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await dataOperationRunner.RunAsync("load accounts", async (scope, ct) =>
-        {
-            var sources = await scope.UnitOfWork.Accounts.GetAllAsync(ct);
-            return mapper.Map<IReadOnlyList<AccountDto>>(sources);
-        }, cancellationToken);
+        var sources = await appData.GetAccountsAsync(cancellationToken).ConfigureAwait(false);
+        return mapper.Map<IReadOnlyList<AccountDto>>(sources);
     }
 
     public async Task<AccountDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await dataOperationRunner.RunAsync("load account", async (scope, ct) =>
-        {
-            var source = await scope.UnitOfWork.Accounts.GetByIdAsync(id, ct);
-            return source is null ? null : mapper.Map<AccountDto>(source);
-        }, cancellationToken);
+        var source = await appData.GetAccountByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        return source is null ? null : mapper.Map<AccountDto>(source);
     }
 
     public async Task<IReadOnlyList<AccountDto>> SearchAsync(AccountFilter filter,
         CancellationToken cancellationToken = default)
     {
-        return await dataOperationRunner.RunAsync("search accounts", async (scope, ct) =>
-        {
-            var sources = await scope.UnitOfWork.Accounts.SearchAsync(filter, ct);
-            return mapper.Map<IReadOnlyList<AccountDto>>(sources);
-        }, cancellationToken);
+        var sources = await appData.SearchAccountsAsync(filter, cancellationToken).ConfigureAwait(false);
+        return mapper.Map<IReadOnlyList<AccountDto>>(sources);
     }
 
     public async Task AddAsync(AccountDto dto, CancellationToken cancellationToken = default)
     {
-        await dataOperationRunner.RunAsync("add account", async (scope, ct) =>
-        {
-            var source = mapper.Map<Account>(dto);
-            source.Id = 0; // ensure EF treats this as a new insert
-            await scope.UnitOfWork.Accounts.AddAsync(source, ct);
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-        }, cancellationToken);
+        var source = mapper.Map<Account>(dto);
+        source.Id = 0;
+        await appData.AddAccountAsync(source, cancellationToken).ConfigureAwait(false);
+        await appData.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 }
