@@ -31,6 +31,29 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/MainWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <Style x:Key="QuickSearchResultIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+                <Setter Property="Path" Value="{StaticResource BanknoteArrowDown}" />
+                <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsIncome}" Value="True">
+                        <Setter Property="Path" Value="{StaticResource BanknoteArrowUp}" />
+                        <Setter Property="Color" Value="{StaticResource Brush.Success}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="QuickSearchTagBadgeStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+                <Setter Property="Visibility" Value="Visible" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding TagName}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding TagName}" Value="">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <Style x:Key="HeaderSearchResultItemStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="CornerRadius" Value="12" />
@@ -262,29 +285,6 @@
                     </Grid>
                 </Border>
             </DataTemplate>
-
-<Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon" x:Key="QuickSearchResultIconStyle">
-                                        <Setter Property="Path" Value="{StaticResource BanknoteArrowDown}" />
-                                        <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsIncome}" Value="True">
-                                                <Setter Property="Path" Value="{StaticResource BanknoteArrowUp}" />
-                                                <Setter Property="Color" Value="{StaticResource Brush.Success}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="QuickSearchTagBadgeStyle">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding TagName}" Value="{x:Null}">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding TagName}" Value="">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
 
 <ControlTemplate TargetType="Button" x:Key="AppLockOverlayButtonTemplate">
                             <Border Background="{TemplateBinding Background}">

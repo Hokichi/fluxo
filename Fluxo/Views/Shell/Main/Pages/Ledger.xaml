@@ -14,6 +14,41 @@
     mc:Ignorable="d">
 
 <UserControl.Resources>
+        <Style x:Key="LedgerChildRowBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LedgerChildActionsGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="IsHitTestVisible" Value="True" />
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style x:Key="LedgerRowActionsBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="IsEnabled" Value="True" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LedgerDrawerBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
+            <Setter Property="IsHitTestVisible" Value="True" />
+            <Setter Property="Opacity" Value="1" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="LedgerSignedAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
             <Style.Triggers>
@@ -985,41 +1020,6 @@
         </Style>
 
         <GroupStyle x:Key="LedgerGroupStyle" ContainerStyle="{StaticResource LedgerGroupItemStyle}" />
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="LedgerChildRowBorderStyle">
-                            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-
-<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="LedgerChildActionsGridStyle">
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="IsHitTestVisible" Value="True" />
-                        <Setter Property="Opacity" Value="1" />
-                    </Style>
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="LedgerRowActionsBorderStyle">
-                                    <Setter Property="IsEnabled" Value="True" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
-                                            <Setter Property="IsEnabled" Value="False" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="LedgerDrawerBorderStyle">
-                            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
-                            <Setter Property="IsHitTestVisible" Value="True" />
-                            <Setter Property="Opacity" Value="1" />
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
 
 <Style BasedOn="{StaticResource HeaderButtonStyle}" TargetType="customControls:BalloonButton" x:Key="LedgerSortButtonStyle">
                             <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownWideNarrow}" />

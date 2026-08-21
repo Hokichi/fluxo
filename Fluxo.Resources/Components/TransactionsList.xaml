@@ -12,6 +12,96 @@
     mc:Ignorable="d">
 
 <UserControl.Resources>
+        <Style x:Key="TransactionRowBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True" />
+                        <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=customControls:SwipeRevealContainer}, Path=IsRevealed}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TransactionChildRowBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True" />
+                        <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=customControls:SwipeRevealContainer}, Path=IsRevealed}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible" />
+                    <MultiDataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="2" Duration="0:0:0.15">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.EnterActions>
+                    <MultiDataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.15">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.ExitActions>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TransactionRowLayoutStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True" />
+                        <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=customControls:SwipeRevealContainer}, Path=IsRevealed}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="4" Duration="0:0:0.15">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.EnterActions>
+                    <MultiDataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.15">
+                                    <DoubleAnimation.EasingFunction>
+                                        <CubicEase EasingMode="EaseOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.ExitActions>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TransactionAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsExpense}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="TransactionsListHeaderText" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
@@ -159,108 +249,6 @@
                 </Grid>
             </customControls:SwipeRevealContainer>
         </DataTemplate>
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="TransactionRowBorderStyle">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True" />
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=customControls:SwipeRevealContainer}, Path=IsRevealed}" Value="False" />
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </MultiDataTrigger>
-                                </Style.Triggers>
-                            </Style>
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="TransactionChildRowBorderStyle">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True" />
-                                                <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=customControls:SwipeRevealContainer}, Path=IsRevealed}" Value="False" />
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <MultiDataTrigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                            To="2"
-                                                            Duration="0:0:0.15">
-                                                            <DoubleAnimation.EasingFunction>
-                                                                <CubicEase EasingMode="EaseOut" />
-                                                            </DoubleAnimation.EasingFunction>
-                                                        </DoubleAnimation>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </MultiDataTrigger.EnterActions>
-                                            <MultiDataTrigger.ExitActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                            To="0"
-                                                            Duration="0:0:0.15">
-                                                            <DoubleAnimation.EasingFunction>
-                                                                <CubicEase EasingMode="EaseOut" />
-                                                            </DoubleAnimation.EasingFunction>
-                                                        </DoubleAnimation>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </MultiDataTrigger.ExitActions>
-                                        </MultiDataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-
-<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="TransactionRowLayoutStyle">
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True" />
-                                                    <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=customControls:SwipeRevealContainer}, Path=IsRevealed}" Value="False" />
-                                                </MultiDataTrigger.Conditions>
-                                                <MultiDataTrigger.EnterActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimation
-                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                                To="4"
-                                                                Duration="0:0:0.15">
-                                                                <DoubleAnimation.EasingFunction>
-                                                                    <CubicEase EasingMode="EaseOut" />
-                                                                </DoubleAnimation.EasingFunction>
-                                                            </DoubleAnimation>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </MultiDataTrigger.EnterActions>
-                                                <MultiDataTrigger.ExitActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <DoubleAnimation
-                                                                Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                                To="0"
-                                                                Duration="0:0:0.15">
-                                                                <DoubleAnimation.EasingFunction>
-                                                                    <CubicEase EasingMode="EaseOut" />
-                                                                </DoubleAnimation.EasingFunction>
-                                                            </DoubleAnimation>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </MultiDataTrigger.ExitActions>
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-
-<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="TransactionAmountTextStyle">
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding IsExpense}" Value="True">
-                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
 
 <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="TransactionsEmptyStateTextStyle">
                             <Setter Property="Visibility" Value="Collapsed" />

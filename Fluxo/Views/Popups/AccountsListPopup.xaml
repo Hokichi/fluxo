@@ -71,6 +71,37 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="AccountCardStateGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+            <Setter Property="Opacity" Value="1" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsDisabled}" Value="True">
+                    <Setter Property="Opacity" Value="0.55" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SavingAccountIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding AccountType}" Value="Saving">
+                    <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DisabledAccountBadgeStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding PinnedOnUI}" Value="False" />
+                        <Condition Binding="{Binding IsDisabled}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <DataTemplate x:Key="AccountsListItemTemplate">
             <Button
                 Margin="12,12,12,0"
@@ -163,36 +194,6 @@
             </Button>
         </DataTemplate>
 
-<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="AccountCardStateGridStyle">
-                            <Setter Property="Opacity" Value="1" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsDisabled}" Value="True">
-                                    <Setter Property="Opacity" Value="0.55" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-
-<Style BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon" x:Key="SavingAccountIconStyle">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding AccountType}" Value="Saving">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="DisabledAccountBadgeStyle">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Style.Triggers>
-                                            <MultiDataTrigger>
-                                                <MultiDataTrigger.Conditions>
-                                                    <Condition Binding="{Binding PinnedOnUI}" Value="False" />
-                                                    <Condition Binding="{Binding IsDisabled}" Value="False" />
-                                                </MultiDataTrigger.Conditions>
-                                                <Setter Property="Visibility" Value="Visible" />
-                                            </MultiDataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
 </customControls:BasePopup.Resources>
 
     <Grid

@@ -9,6 +9,19 @@
     PopupTitle="Income Detail">
 
 <customControls:BasePopup.Resources>
+        <Style x:Key="AccountActivityAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+            <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
+            <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsExpense}" Value="True">
+                    <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                    <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=-{0}}" />
+                    <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=-{0}}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="LeftSideLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -127,19 +140,6 @@
                 </StackPanel>
             </Grid>
         </DataTemplate>
-
-<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="AccountActivityAmountTextStyle">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
-                                <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
-                                <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsExpense}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                                        <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=-{0}}" />
-                                        <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=-{0}}" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
 
 <Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountDisableButtonStyle">
                                     <Setter Property="ButtonIcon" Value="{StaticResource LightningSlashFill}" />

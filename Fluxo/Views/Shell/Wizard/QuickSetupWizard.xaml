@@ -29,22 +29,6 @@
         </StackPanel>
     </customControls:BasePopup.PopupTitleContent>
 
-    <customControls:BasePopup.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            <Style x:Key="QuickSetupWizardPopupStyle" BasedOn="{StaticResource {x:Type customControls:BasePopup}}" TargetType="{x:Type customControls:BasePopup}">
-                <Setter Property="ShowCloseButton" Value="True" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding DataContext.IsFinalStep, RelativeSource={RelativeSource Self}}" Value="True">
-                        <Setter Property="ShowCloseButton" Value="False" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </ResourceDictionary>
-    </customControls:BasePopup.Resources>
-
     <Grid
         Width="860"
         Height="560"
