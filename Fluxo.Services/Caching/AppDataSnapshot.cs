@@ -184,7 +184,7 @@ internal sealed class AppDataSnapshot
         CreatedOn = value.CreatedOn
     };
 
-    private static RecurringTransaction CloneRecurringScalar(RecurringTransaction value) => new()
+    internal static RecurringTransaction CloneRecurringScalar(RecurringTransaction value) => new()
     {
         Id = value.Id,
         Name = value.Name,
