@@ -303,7 +303,7 @@ public sealed class TransactionPopupMessengerTests
         ledgerAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
         var ledgerTags = Substitute.For<ITagService>();
         ledgerTags.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var ledger = new LedgerVM(ledgerTransactions, ledgerAccounts, ledgerTags, runner,
+        var ledger = new LedgerVM(ledgerTransactions, ledgerAccounts, ledgerTags, appData,
             new MapperConfiguration(configuration => configuration.AddProfile<DtoViewModelProfile>(), NullLoggerFactory.Instance).CreateMapper(), messenger);
         var main = new MainVM(appData, dashboard, new DaySpinnerVM(messenger), ledger, messenger: messenger);
         return new MainGraph(main, budgetTransactions, spentTransactions, ledgerReloads[0], ledgerReloads[1], () => ledgerCalls);

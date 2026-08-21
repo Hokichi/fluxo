@@ -322,7 +322,7 @@ public sealed class LedgerVMDateRangeTests
             transactionService,
             accountService,
             tagService,
-            Substitute.For<IDataOperationRunner>(),
+            Substitute.For<IAppDataService>(),
             mapper,
             messenger,
             dialogService,

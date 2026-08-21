@@ -11,7 +11,6 @@ using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Dialogs;
@@ -27,7 +26,7 @@ public partial class LedgerVM : ObservableRecipient,
     IRecipient<LedgerAllTimeRequestedMessage>,
     IRecipient<LedgerSearchTextChangedMessage>
 {
-    private readonly IDataOperationRunner _dataOperationRunner;
+    private readonly IAppDataService _appData;
     private readonly ITransactionService _transactionService;
     private readonly IMapper _mapper;
     private readonly IAccountService _accountService;
@@ -66,7 +65,7 @@ public partial class LedgerVM : ObservableRecipient,
         ITransactionService transactionService,
         IAccountService accountService,
         ITagService tagService,
-        IDataOperationRunner dataOperationRunner,
+        IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null,
         IDialogService? dialogService = null,
@@ -76,7 +75,7 @@ public partial class LedgerVM : ObservableRecipient,
         _transactionService = transactionService;
         _accountService = accountService;
         _tagService = tagService;
-        _dataOperationRunner = dataOperationRunner;
+        _appData = appData;
         _mapper = mapper;
         _dialogService = dialogService;
         _uiSettleAwaiter = uiSettleAwaiter;
@@ -619,39 +618,36 @@ public partial class LedgerVM : ObservableRecipient,
             return;
         }
 
-        await _dataOperationRunner.RunAsync(async (scope, ct) =>
+        Account? targetSource = null;
+        if (SelectedBatchAccountId is { } sourceId)
+            targetSource = await _appData.GetAccountByIdAsync(sourceId);
+
+        Tag? targetTag = null;
+        if (SelectedBatchTagId is { } tagId)
+            targetTag = await _appData.GetTagByIdAsync(tagId);
+
+        foreach (var transaction in selectedTransactions)
         {
-            Account? targetSource = null;
-            if (SelectedBatchAccountId is { } sourceId)
-                targetSource = await scope.UnitOfWork.Accounts.GetByIdAsync(sourceId, ct);
+            var persisted = await _appData.GetTransactionByIdAsync(transaction.Id);
+            if (persisted is null)
+                continue;
 
-            Tag? targetTag = null;
-            if (SelectedBatchTagId is { } tagId)
-                targetTag = await scope.UnitOfWork.Tags.GetByIdAsync(tagId, ct);
-
-            foreach (var transaction in selectedTransactions)
+            if (targetSource is not null)
             {
-                var persisted = await scope.UnitOfWork.Transactions.GetByIdAsync(transaction.Id, ct);
-                if (persisted is null)
-                    continue;
-
-                if (targetSource is not null)
-                {
-                    persisted.Account = targetSource;
-                    persisted.SourceAccountId = targetSource.Id;
-                }
-
-                if (persisted.Type == TransactionType.Expense && targetTag is not null && !transaction.IsGoal)
-                {
-                    persisted.Tag = targetTag;
-                    persisted.TagId = targetTag.Id;
-                }
-
-                scope.UnitOfWork.Transactions.Update(persisted);
+                persisted.Account = targetSource;
+                persisted.SourceAccountId = targetSource.Id;
             }
 
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-        });
+            if (persisted.Type == TransactionType.Expense && targetTag is not null && !transaction.IsGoal)
+            {
+                persisted.Tag = targetTag;
+                persisted.TagId = targetTag.Id;
+            }
+
+            _appData.UpdateTransaction(persisted);
+        }
+
+        await _appData.SaveChangesAsync();
 
         _batchPreviewSnapshots.Clear();
         SelectedBatchAccountId = null;
@@ -672,20 +668,17 @@ public partial class LedgerVM : ObservableRecipient,
         if (selectedTransactions.Count == 0)
             return;
 
-        await _dataOperationRunner.RunAsync(async (scope, ct) =>
+        foreach (var transaction in selectedTransactions)
         {
-            foreach (var transaction in selectedTransactions)
-            {
-                var persisted = await scope.UnitOfWork.Transactions.GetByIdAsync(transaction.Id, ct);
-                if (persisted is null)
-                    continue;
+            var persisted = await _appData.GetTransactionByIdAsync(transaction.Id);
+            if (persisted is null)
+                continue;
 
-                persisted.IsForDeletion = true;
-                scope.UnitOfWork.Transactions.Update(persisted);
-            }
+            persisted.IsForDeletion = true;
+            _appData.UpdateTransaction(persisted);
+        }
 
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-        });
+        await _appData.SaveChangesAsync();
 
         foreach (var transaction in selectedTransactions)
             _transactions.Remove(transaction);
@@ -1060,21 +1053,14 @@ public partial class LedgerVM : ObservableRecipient,
 
     private async Task RemoveExpenseTransactionAsync(LedgerTransactionItemVM transaction)
     {
-        var snapshot = await _dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            var expenseLog = await scope.UnitOfWork.Transactions.GetByIdAsync(transaction.Id, ct);
-            if (expenseLog is null)
-                return null;
-
-            var result = TransactionMemorySnapshot.Create(expenseLog);
-            expenseLog.IsForDeletion = true;
-            scope.UnitOfWork.Transactions.Update(expenseLog);
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-            return result;
-        });
-
-        if (snapshot is null)
+        var expenseLog = await _appData.GetTransactionByIdAsync(transaction.Id);
+        if (expenseLog is null)
             return;
+
+        var snapshot = TransactionMemorySnapshot.Create(expenseLog);
+        expenseLog.IsForDeletion = true;
+        _appData.UpdateTransaction(expenseLog);
+        await _appData.SaveChangesAsync();
 
         _transactions.Remove(transaction);
         HasTransactions = _transactions.Count > 0;
@@ -1086,21 +1072,14 @@ public partial class LedgerVM : ObservableRecipient,
 
     private async Task RemoveIncomeTransactionAsync(LedgerTransactionItemVM transaction)
     {
-        var snapshot = await _dataOperationRunner.RunAsync(async (scope, ct) =>
-        {
-            var incomeLog = await scope.UnitOfWork.Transactions.GetByIdAsync(transaction.Id, ct);
-            if (incomeLog is null)
-                return null;
-
-            var result = TransactionMemorySnapshot.Create(incomeLog);
-            incomeLog.IsForDeletion = true;
-            scope.UnitOfWork.Transactions.Update(incomeLog);
-            await scope.UnitOfWork.SaveChangesAsync(ct);
-            return result;
-        });
-
-        if (snapshot is null)
+        var incomeLog = await _appData.GetTransactionByIdAsync(transaction.Id);
+        if (incomeLog is null)
             return;
+
+        var snapshot = TransactionMemorySnapshot.Create(incomeLog);
+        incomeLog.IsForDeletion = true;
+        _appData.UpdateTransaction(incomeLog);
+        await _appData.SaveChangesAsync();
 
         _transactions.Remove(transaction);
         HasTransactions = _transactions.Count > 0;
