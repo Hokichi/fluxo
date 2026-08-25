@@ -54,6 +54,8 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
         {
             await _viewModel.LoadAsync();
             _isLoaded = true;
+            if (_searchTarget is not null)
+                await ApplySearchTargetAsync(_searchTarget);
         }
         catch (Exception exception)
         {

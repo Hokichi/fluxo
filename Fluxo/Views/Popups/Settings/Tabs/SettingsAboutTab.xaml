@@ -3,7 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
-    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
+    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    AutomationProperties.AutomationId="Settings.Configuration.Root">
     <StackPanel>
         <TextBlock
             FontFamily="{StaticResource Bold}"
@@ -52,6 +53,7 @@
                     </StackPanel>
                 </StackPanel>
                 <ToggleButton
+                    AutomationProperties.AutomationId="Settings.Configuration.RunWithWindows"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     IsChecked="{Binding ShouldRunAtStartup, Mode=TwoWay}"
@@ -75,14 +77,16 @@
                         Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
-                <customControls:SegmentedToggleGroup Width="252" HorizontalAlignment="Right">
+                <customControls:SegmentedToggleGroup AutomationProperties.AutomationId="Settings.Configuration.CloseBehavior" Width="252" HorizontalAlignment="Right">
                     <customControls:SegmentedToggleOption
+                        AutomationProperties.AutomationId="Settings.Configuration.MinimizeToTray"
                         Command="{Binding SetCloseBehaviorCommand}"
                         CommandParameter="{x:Static coreEnums:AppCloseBehavior.MinimizeToTray}"
                         Content="Minimize to tray"
                         IsSelected="{Binding IsMinimizeToTrayCloseBehaviorSelected, Mode=OneWay}"
                         SelectOnClick="False" />
                     <customControls:SegmentedToggleOption
+                        AutomationProperties.AutomationId="Settings.Configuration.Exit"
                         Command="{Binding SetCloseBehaviorCommand}"
                         CommandParameter="{x:Static coreEnums:AppCloseBehavior.Exit}"
                         Content="Exit"
@@ -130,6 +134,7 @@
                         Text="{Binding CurrentVersion}" />
                     <Button
                         x:Name="CheckForUpdatesButton"
+                        AutomationProperties.AutomationId="Settings.Configuration.CheckUpdates"
                         MinWidth="128"
                         Margin="12,0,0,0"
                         Click="OnCheckForUpdatesClick"
@@ -147,11 +152,13 @@
             </Grid.ColumnDefinitions>
             <Button
                 Grid.Column="0"
+                AutomationProperties.AutomationId="Settings.Configuration.Reset"
                 Click="OnResetAllSettingsClick"
                 Content="Reset All Settings"
                 Style="{StaticResource PopupTextButtonStyle}" />
             <Button
                 Grid.Column="2"
+                AutomationProperties.AutomationId="Settings.Configuration.DeleteAllData"
                 Click="OnDeleteAllDataClick"
                 Content="Delete All Data"
                 Foreground="{DynamicResource Brush.Danger}"

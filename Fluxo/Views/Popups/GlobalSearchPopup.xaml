@@ -1,0 +1,172 @@
+<customControls:BasePopup
+    x:Class="Fluxo.Views.Popups.GlobalSearchPopup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
+    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    Mode="None"
+    PopupTitle="Search">
+
+    <customControls:BasePopup.Resources>
+        <DataTemplate x:Key="GlobalSearchTypePillContentTemplate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                <components:Icon
+                    x:Name="SelectedCheck"
+                    Width="10"
+                    Height="10"
+                    Margin="6,0,0,0"
+                    Color="{DynamicResource Brush.Mint}"
+                    Path="{StaticResource Check}"
+                    Visibility="Collapsed" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsSelected, Mode=OneWay, RelativeSource={RelativeSource AncestorType=customControls:SegmentedToggleOption}}" Value="True">
+                    <Setter TargetName="SelectedCheck" Property="Visibility" Value="Visible" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <Style x:Key="GlobalSearchResultIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Color" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Type, Mode=OneWay}" Value="Transactions">
+                    <Setter Property="Path" Value="{StaticResource BanknoteArrowDown}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Type, Mode=OneWay}" Value="Accounts">
+                    <Setter Property="Path" Value="{StaticResource BookDollar}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Type, Mode=OneWay}" Value="Tags">
+                    <Setter Property="Path" Value="{StaticResource SolidPriceTagAlt}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Type, Mode=OneWay}" Value="Goals">
+                    <Setter Property="Path" Value="{StaticResource BullseyeSolid}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Type, Mode=OneWay}" Value="Features">
+                    <Setter Property="Path" Value="{StaticResource Cog}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Type, Mode=OneWay}" Value="Settings">
+                    <Setter Property="Path" Value="{StaticResource Cog}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate x:Key="GlobalSearchResultItemTemplate">
+            <Grid Margin="12,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="24" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <components:Icon VerticalAlignment="Center" Style="{StaticResource GlobalSearchResultIconStyle}" />
+                <TextBlock
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource Bold}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
+                    Text="{Binding Name, Mode=OneWay}"
+                    TextTrimming="CharacterEllipsis" />
+                <TextBlock
+                    Grid.Column="2"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource Medium}"
+                    FontSize="11"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
+                    Text="{Binding SecondaryText, Mode=OneWay}"
+                    TextTrimming="CharacterEllipsis" />
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="GlobalSearchResultItemContainerStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border
+                            x:Name="ItemBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ItemBorder" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GlobalSearchStateTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </customControls:BasePopup.Resources>
+
+    <Grid Width="720" Height="420" Margin="24,0,24,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="12" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="8" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBox
+            x:Name="QueryTextBox"
+            AutomationProperties.Name="Search everything"
+            IsEnabled="False"
+            Style="{StaticResource RoundedTextInputStyle}"
+            TextChanged="OnQueryTextChanged" />
+        <customControls:SegmentedToggleGroup
+            x:Name="ResultTypeGroup"
+            Grid.Row="2"
+            AutomationProperties.Name="Result type"
+            OptionSelected="OnResultTypeSelected" />
+        <TextBlock
+            x:Name="SelectedTypeText"
+            Grid.Row="4"
+            FontFamily="{StaticResource Bold}"
+            FontSize="12"
+            Foreground="{DynamicResource Brush.Text.Secondary}" />
+        <Grid Grid.Row="6">
+            <ListBox
+                x:Name="ResultsListBox"
+                AutomationProperties.Name="Search results"
+                ItemContainerStyle="{StaticResource GlobalSearchResultItemContainerStyle}"
+                ItemTemplate="{StaticResource GlobalSearchResultItemTemplate}"
+                ItemsSource="{Binding VisibleResults, Mode=OneWay}"
+                MouseLeftButtonUp="OnResultMouseLeftButtonUp"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            <TextBlock x:Name="StateText" IsHitTestVisible="False" Style="{StaticResource GlobalSearchStateTextStyle}" />
+        </Grid>
+    </Grid>
+</customControls:BasePopup>

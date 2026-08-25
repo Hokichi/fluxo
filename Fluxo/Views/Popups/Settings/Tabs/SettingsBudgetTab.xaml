@@ -44,6 +44,7 @@
                 </StackPanel>
 
                 <customControls:SegmentedToggleGroup
+                    AutomationProperties.AutomationId="Settings.Budget.Root"
                     Width="240"
                     Margin="0"
                     HorizontalAlignment="Right"
@@ -99,6 +100,7 @@
                             </StackPanel>
                         </Grid>
                         <Slider
+                            AutomationProperties.AutomationId="Settings.Budget.Needs"
                             Grid.Row="1"
                             IsSnapToTickEnabled="True"
                             Maximum="100"
@@ -160,6 +162,7 @@
                             </StackPanel>
                         </Grid>
                         <Slider
+                            AutomationProperties.AutomationId="Settings.Budget.Wants"
                             Grid.Row="1"
                             IsSnapToTickEnabled="True"
                             Maximum="100"
@@ -221,6 +224,7 @@
                             </StackPanel>
                         </Grid>
                         <Slider
+                            AutomationProperties.AutomationId="Settings.Budget.Invest"
                             Grid.Row="1"
                             IsSnapToTickEnabled="True"
                             Maximum="100"
@@ -260,6 +264,7 @@
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Spending Limit" />
                         <customControls:MoneyTextBox
+                            AutomationProperties.AutomationId="Settings.Budget.SpendingLimit"
                             Grid.Column="1"
                             Language="en-US"
                             Style="{StaticResource RoundedMoneyTextInputStyle}"
@@ -278,7 +283,7 @@
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Allocation Period" />
-                        <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding AllocationPeriod, Mode=TwoWay}">
+                        <customControls:SegmentedToggleGroup AutomationProperties.AutomationId="Settings.Budget.AllocationPeriod" Grid.Column="1" SelectedValue="{Binding AllocationPeriod, Mode=TwoWay}">
                             <customControls:SegmentedToggleOption Content="Weekly" Value="{x:Static enums:AllocationPeriod.Weekly}" />
                             <customControls:SegmentedToggleOption Content="Biweekly" Value="{x:Static enums:AllocationPeriod.Biweekly}" />
                             <customControls:SegmentedToggleOption Content="Monthly" Value="{x:Static enums:AllocationPeriod.Monthly}" />
@@ -299,7 +304,7 @@
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Period Start" />
-                        <Grid Grid.Column="1">
+                        <Grid AutomationProperties.AutomationId="Settings.Budget.PeriodStart" Grid.Column="1">
                             <ComboBox
                                 DisplayMemberPath="Label"
                                 ItemsSource="{Binding WeekdayPeriodStartOptions}"
@@ -341,7 +346,7 @@
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Budget Rollover" />
-                        <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding RolloverPolicy, Mode=TwoWay}">
+                        <customControls:SegmentedToggleGroup AutomationProperties.AutomationId="Settings.Budget.Rollover" Grid.Column="1" SelectedValue="{Binding RolloverPolicy, Mode=TwoWay}">
                             <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:RolloverPolicy.None}" />
                             <customControls:SegmentedToggleOption Content="Matching" Value="{x:Static enums:RolloverPolicy.Matching}" />
                             <customControls:SegmentedToggleOption Content="Pooled" Value="{x:Static enums:RolloverPolicy.Pooled}" />
@@ -360,7 +365,7 @@
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Overspend Behavior" />
-                        <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding OverspendPolicy, Mode=TwoWay}">
+                        <customControls:SegmentedToggleGroup AutomationProperties.AutomationId="Settings.Budget.Overspend" Grid.Column="1" SelectedValue="{Binding OverspendPolicy, Mode=TwoWay}">
                             <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:OverspendPolicy.Ignore}" />
                             <customControls:SegmentedToggleOption Content="Soft Debt" Value="{x:Static enums:OverspendPolicy.SoftDebt}" />
                             <customControls:SegmentedToggleOption Content="Hard Stop" Value="{x:Static enums:OverspendPolicy.HardStop}" />
