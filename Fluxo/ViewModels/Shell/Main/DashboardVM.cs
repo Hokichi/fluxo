@@ -14,7 +14,7 @@ public partial class DashboardVM : ObservableObject
 
     public DashboardVM(
         NotificationPanelVM notificationPanel,
-        BudgetAllocationPanelVM budgetPanel,
+        RecentActivitiesVM budgetPanel,
         SpentAllowancePanelVM spentAllowancePanel,
         SavingGoalsPanelVM savingGoalsPanel,
         UpcomingEventsPanelVM upcomingEventsPanel,
@@ -34,7 +34,7 @@ public partial class DashboardVM : ObservableObject
 
     public NotificationPanelVM NotificationPanel { get; }
     public AllocationDataVM? AllocationData { get; }
-    public BudgetAllocationPanelVM BudgetPanel { get; }
+    public RecentActivitiesVM BudgetPanel { get; }
     public SpentAllowancePanelVM SpentAllowancePanel { get; }
     public SavingGoalsPanelVM SavingGoalsPanel { get; }
     public UpcomingEventsPanelVM UpcomingEventsPanel { get; }

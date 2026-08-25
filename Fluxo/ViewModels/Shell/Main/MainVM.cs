@@ -51,7 +51,7 @@ public partial class MainVM : ObservableRecipient
 
     public DashboardVM Dashboard { get; }
     public Main.NotificationPanelVM NotificationPanel => Dashboard.NotificationPanel;
-    public Main.BudgetAllocationPanelVM BudgetPanel => Dashboard.BudgetPanel;
+    public Main.RecentActivitiesVM BudgetPanel => Dashboard.BudgetPanel;
     public Main.SpentAllowancePanelVM SpentAllowancePanel => Dashboard.SpentAllowancePanel;
     public Main.SavingGoalsPanelVM SavingGoalsPanel => Dashboard.SavingGoalsPanel;
     public Main.UpcomingEventsPanelVM UpcomingEventsPanel => Dashboard.UpcomingEventsPanel;

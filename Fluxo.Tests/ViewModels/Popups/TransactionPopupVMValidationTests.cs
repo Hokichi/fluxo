@@ -2975,7 +2975,7 @@ public sealed class TransactionPopupVMValidationTests
                 appData,
                 mapper,
                 messenger: messenger),
-            new BudgetAllocationPanelVM(
+            new RecentActivitiesVM(
                 transactionService,
                 accountService,
                 tagService,

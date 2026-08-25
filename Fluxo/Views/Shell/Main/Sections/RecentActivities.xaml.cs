@@ -8,9 +8,9 @@ using Fluxo.Resources.Infrastructure;
 
 namespace Fluxo.Views.Shell.Main.Sections;
 
-public partial class BudgetAllocationPanel : UserControl
+public partial class RecentActivities : UserControl
 {
-    public BudgetAllocationPanel()
+    public RecentActivities()
     {
         InitializeComponent();
     }

@@ -279,7 +279,7 @@ public sealed class TransactionPopupMessengerTests
 
         var dashboard = new DashboardVM(
             new NotificationPanelVM(notificationTransactions, notificationAccounts, appData, mapper, messenger: messenger),
-            new BudgetAllocationPanelVM(budgetTransactions, budgetAccounts, tags, appData, mapper, messenger),
+            new RecentActivitiesVM(budgetTransactions, budgetAccounts, tags, appData, mapper, messenger),
             new SpentAllowancePanelVM(spentTransactions, spentAccounts, appData, mapper, messenger),
             new SavingGoalsPanelVM(appData, mapper, messenger),
             new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),

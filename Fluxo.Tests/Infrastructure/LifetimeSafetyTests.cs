@@ -11,7 +11,7 @@ public sealed class LifetimeSafetyTests
     public void LifetimeSafety_SingletonUiRoots_DoNotDependOnUnitOfWorkOrRepositoryInterfaces()
     {
         AssertConstructorIsSafe(typeof(MainVM));
-        AssertConstructorIsSafe(typeof(BudgetAllocationPanelVM));
+        AssertConstructorIsSafe(typeof(RecentActivitiesVM));
         AssertConstructorIsSafe(typeof(NotificationPanelVM));
         AssertConstructorIsSafe(typeof(SavingGoalsPanelVM));
         AssertConstructorIsSafe(typeof(UpcomingEventsPanelVM));

@@ -781,7 +781,7 @@ public sealed class TransactionPopupVMPersistenceTests
 
         var dashboard = new DashboardVM(
             new NotificationPanelVM(transactionService, accountService, appData, mapper, messenger: messenger),
-            new BudgetAllocationPanelVM(transactionService, accountService, tagService, appData, mapper, messenger),
+            new RecentActivitiesVM(transactionService, accountService, tagService, appData, mapper, messenger),
             new SpentAllowancePanelVM(transactionService, accountService, appData, mapper, messenger),
             new SavingGoalsPanelVM(appData, mapper, messenger),
             new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),

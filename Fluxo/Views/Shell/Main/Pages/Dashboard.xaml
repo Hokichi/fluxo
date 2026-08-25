@@ -224,7 +224,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <sections:BudgetAllocationPanel x:Name="BudgetAllocationPanelHost" DataContext="{Binding BudgetPanel}" />
+                <sections:RecentActivities x:Name="RecentActivitiesHost" DataContext="{Binding BudgetPanel}" />
 
                 <Grid Grid.Column="2">
                     <Grid.RowDefinitions>

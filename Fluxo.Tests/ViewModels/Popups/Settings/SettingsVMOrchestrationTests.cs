@@ -286,7 +286,7 @@ public sealed class SettingsVMOrchestrationTests
                 appData,
                 mapper,
                 messenger: messenger),
-            new BudgetAllocationPanelVM(
+            new RecentActivitiesVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
                 Substitute.For<ITagService>(),

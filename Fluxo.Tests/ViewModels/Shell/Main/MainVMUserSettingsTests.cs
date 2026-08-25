@@ -47,7 +47,7 @@ public sealed class MainVMUserSettingsTests
                 appData,
                 mapper,
                 messenger: messenger),
-            new BudgetAllocationPanelVM(
+            new RecentActivitiesVM(
                 Substitute.For<ITransactionService>(),
                 Substitute.For<IAccountService>(),
                 Substitute.For<ITagService>(),

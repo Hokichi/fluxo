@@ -19,7 +19,7 @@ using CoreILogMemoryAction = Fluxo.Core.Interfaces.History.ILogMemoryAction;
 
 namespace Fluxo.ViewModels.Shell.Main;
 
-public partial class BudgetAllocationPanelVM : ObservableRecipient,
+public partial class RecentActivitiesVM : ObservableRecipient,
     IRecipient<DateRangeSelectionChangedMessage>,
     IRecipient<AllTimeViewModeMessage>,
     IRecipient<ViewModeChangeMessage>,
@@ -63,7 +63,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
     private int _transactionsVisibleCount = BucketPageSize;
     private int _wantsVisibleCount = BucketPageSize;
 
-    public BudgetAllocationPanelVM(
+    public RecentActivitiesVM(
         ITransactionService transactionService,
         IAccountService accountService,
         ITagService tagService,
