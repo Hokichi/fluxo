@@ -11,12 +11,12 @@
                 <TextBlock
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="Username" />
                 <TextBlock
                     Margin="0,4,0,0"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding ReportUsernameText}" />
             </StackPanel>
         </Border>
@@ -37,21 +37,21 @@
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
                         FontSize="22"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="{Binding ReportAccountCount}" />
                     <TextBlock
                         Margin="0,4,0,0"
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="Accounts" />
                     <TextBlock
                         Margin="0,4,0,0"
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Foreground="{DynamicResource Brush.Text.Muted}"
                         Text="{Binding ReportTotalBalanceText}"
                         ToolTip="{Binding ReportTotalBalanceTooltipText}" />
                 </StackPanel>
@@ -63,21 +63,21 @@
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
                         FontSize="22"
-                        Foreground="{StaticResource Brush.Warning}"
+                        Foreground="{DynamicResource Brush.Warning}"
                         Text="{Binding ReportRecurringTransactionCount}" />
                     <TextBlock
                         Margin="0,4,0,0"
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="Recurring Transactions" />
                     <TextBlock
                         Margin="0,4,0,0"
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Foreground="{DynamicResource Brush.Text.Muted}"
                         Text="{Binding ReportTotalRecurringTransactionText}"
                         ToolTip="{Binding ReportTotalRecurringTransactionTooltipText}" />
                 </StackPanel>
@@ -89,14 +89,14 @@
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
                         FontSize="22"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="{Binding ReportSavingGoalCount}" />
                     <TextBlock
                         Margin="0,4,0,0"
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="Savings Goals" />
                 </StackPanel>
             </Border>
@@ -108,12 +108,12 @@
                 <TextBlock
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="Budget Allocation" />
                 <TextBlock
                     Margin="0,4,0,0"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding ReportBudgetAllocationText}" />
             </StackPanel>
         </Border>
@@ -124,12 +124,12 @@
                 <TextBlock
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="Notifications Enabled" />
                 <TextBlock
                     Margin="0,4,0,0"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}">
+                    Foreground="{DynamicResource Brush.Text.Primary}">
                     <Run Text="{Binding ReportNotificationsEnabledCount, Mode=OneWay}" />
                     <Run Text=" of 7" />
                 </TextBlock>

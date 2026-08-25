@@ -16,8 +16,8 @@
                     Width="84"
                     Height="84"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Background.Surface}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Surface}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="42">
                     <Image
@@ -30,14 +30,14 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="28"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding CurrentStepTitle}" />
                 <TextBlock
                     Margin="0,12,0,0"
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding CurrentStepDescription}"
                     TextAlignment="Center" />
             </StackPanel>

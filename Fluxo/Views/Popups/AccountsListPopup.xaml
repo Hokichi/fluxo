@@ -20,15 +20,15 @@
                     <Border
                         x:Name="RootBorder"
                         Padding="16"
-                        Background="{StaticResource Brush.Background.Elevated}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Elevated}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="8">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -36,16 +36,16 @@
         </Setter>
     </Style>
         <Style x:Key="AccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Brush.Account.Checking}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Account.Checking}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Credit">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Credit}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Credit}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding AccountType}" Value="Saving">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Saving}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Saving}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding AccountType}" Value="Cash">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Cash}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Cash}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -148,28 +148,28 @@
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Name}" />
                             <Border
                                 Width="12"
                                 Height="12"
                                 Margin="8,0,0,0"
                                 Visibility="{Binding IsDisabled, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <components:Icon Path="{StaticResource LightningSlashFill}" Color="{StaticResource Brush.Danger}" />
+                                <components:Icon Path="{StaticResource LightningSlashFill}" Color="{DynamicResource Brush.Danger}" />
                             </Border>
                             <Border
                                 Width="12"
                                 Height="12"
                                 Margin="8,0,0,0" Style="{StaticResource DisabledAccountBadgeStyle}">
 
-                                <components:Icon Path="{StaticResource Unpin}" Color="{StaticResource Brush.Warning}" />
+                                <components:Icon Path="{StaticResource Unpin}" Color="{DynamicResource Brush.Warning}" />
                             </Border>
                         </StackPanel>
                         <TextBlock
                             Margin="0,6,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding TypeDisplayName}" />
                     </StackPanel>
 
@@ -178,7 +178,7 @@
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             ToolTip="{Binding PrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyFullDisplayConverter}}">
                             <Run Text="{Binding PrimaryAmount, Mode=OneWay, Converter={StaticResource NumberWithCommasConverter}}" />
                         </TextBlock>
@@ -187,7 +187,7 @@
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Medium}"
                             FontSize="10"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding PrimaryAmountLabel}" />
                     </StackPanel>
                 </Grid>
@@ -214,16 +214,16 @@
             ButtonText="Add New Account"
             Click="OnAddNewSourceClick"
             CornerRadius="8"
-            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
             IconSize="10"
             ShouldExpand="True" />
 
         <Border
             Grid.Row="0"
             Padding="0,0,0,12"
-            Background="{StaticResource Brush.Background.Surface}"
-            BorderBrush="{StaticResource Brush.Border.Subtle}"
+            Background="{DynamicResource Brush.Background.Surface}"
+            BorderBrush="{DynamicResource Brush.Border.Subtle}"
             BorderThickness="1"
             CornerRadius="18">
             <customControls:FadingScrollViewer Margin="0" VerticalScrollBarVisibility="Hidden">

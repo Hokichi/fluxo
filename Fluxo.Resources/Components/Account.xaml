@@ -15,30 +15,30 @@
         <Style x:Key="AccountAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Checking">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Checking}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Account.Checking}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Checking}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Account.Checking}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding AccountType}" Value="Cash">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Cash}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Account.Cash}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Cash}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Account.Cash}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding AccountType}" Value="Credit">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Credit}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Account.Credit}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Credit}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Account.Credit}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding AccountType}" Value="Saving">
-                    <Setter Property="Background" Value="{StaticResource Brush.Account.Saving}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Account.Saving}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Account.Saving}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Account.Saving}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
 <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="AccountStateBorderStyle">
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
                     <Setter Property="Opacity" Value="0" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
@@ -81,7 +81,7 @@
             MouseLeftButtonDown="OnRootMouseLeftButtonDown"
             PreviewMouseRightButtonUp="OnRootPreviewMouseRightButtonUp" Style="{StaticResource AccountStateBorderStyle}">
             <Border.Background>
-                <SolidColorBrush Color="{StaticResource Color.Background.Deepened}" />
+                <SolidColorBrush Color="{DynamicResource Color.Background.Deepened}" />
             </Border.Background>
 
 
@@ -139,8 +139,8 @@
             <Border
                 Width="220"
                 Padding="8"
-                Background="{StaticResource Brush.Background.Elevated}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Elevated}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="18">
                 <StackPanel>
@@ -155,12 +155,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource Eye}"
-                                Color="{StaticResource Brush.Info}" />
+                                Color="{DynamicResource Brush.Info}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="View" />
                         </Grid>
                     </Button>
@@ -176,12 +176,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource Delete}"
-                                Color="{StaticResource Brush.Danger}" />
+                                Color="{DynamicResource Brush.Danger}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Delete" />
                         </Grid>
                     </Button>
@@ -197,12 +197,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource Unpin}"
-                                Color="{StaticResource Brush.Warning}" />
+                                Color="{DynamicResource Brush.Warning}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Unpin" />
                         </Grid>
                     </Button>
@@ -221,12 +221,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource LightningSlashFill}"
-                                Color="{StaticResource Brush.Warning}" />
+                                Color="{DynamicResource Brush.Warning}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Disable" />
                         </Grid>
                     </Button>
@@ -245,12 +245,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource Exchange}"
-                                Color="{StaticResource Brush.Mint}" />
+                                Color="{DynamicResource Brush.Mint}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Transfer" />
                         </Grid>
                     </Button>
@@ -269,12 +269,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource Bill}"
-                                Color="{StaticResource Brush.Mint}" />
+                                Color="{DynamicResource Brush.Mint}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Repayment" />
                         </Grid>
                     </Button>
@@ -293,12 +293,12 @@
                                 Width="14"
                                 Height="14"
                                 Path="{StaticResource MoneyExchange}"
-                                Color="{StaticResource Brush.Warning}" />
+                                Color="{DynamicResource Brush.Warning}" />
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Reconciliation" />
                         </Grid>
                     </Button>

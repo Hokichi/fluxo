@@ -12,7 +12,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />
@@ -44,8 +43,8 @@
                     Width="72"
                     Height="72"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Background.Surface}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Surface}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="36">
                     <Image
@@ -58,12 +57,12 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="36"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="flux" />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="36"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
                 <TextBlock
@@ -71,7 +70,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="14"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="Your finance, simplified." />
             </StackPanel>
 
@@ -92,7 +91,7 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding StatusMessage}"
                             TextWrapping="Wrap" />
                         <TextBlock
@@ -113,8 +112,8 @@
                     Command="{Binding ChangeDirectoryCommand}"
                     CornerRadius="8"
                     Cursor="Hand"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="16"
                     ToolTip="Change Directory" />
                 <customControls:BalloonButton
@@ -127,8 +126,8 @@
                     Command="{Binding InstallCommand}"
                     CornerRadius="8"
                     Cursor="Hand"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                     IconSize="12" />
             </Grid>
         </Grid>

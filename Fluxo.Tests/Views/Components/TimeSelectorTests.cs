@@ -98,7 +98,7 @@ public sealed class TimeSelectorTests
         var application = Application.Current ?? new Application();
         foreach (var resource in new[]
                  {
-                     "Theme.xaml", "Fonts.xaml", "Icons.xaml",
+                     "Themes/Dark.xaml", "Fonts.xaml", "Icons.xaml",
                      "Styles/ContainerStyles.xaml", "Styles/TextBoxStyles.xaml"
                  })
         {

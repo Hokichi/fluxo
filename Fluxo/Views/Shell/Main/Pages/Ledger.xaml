@@ -18,10 +18,10 @@
             x:Key="LedgerChildRowBorderStyle"
             BasedOn="{StaticResource BaseBorderStyle}"
             TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -51,12 +51,12 @@
             x:Key="LedgerDrawerBorderStyle"
             BasedOn="{StaticResource BaseBorderStyle}"
             TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
             <Setter Property="IsHitTestVisible" Value="True" />
             <Setter Property="Opacity" Value="1" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -65,10 +65,10 @@
             x:Key="LedgerSignedAmountTextStyle"
             BasedOn="{StaticResource BaseTextBlockStyle}"
             TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Kind}" Value="{x:Static dataEnums:LedgerTransactionKind.Income}">
-                    <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -78,7 +78,7 @@
             BasedOn="{StaticResource BaseComboBoxItemStyle}"
             TargetType="ComboBoxItem">
             <Setter Property="Height" Value="36" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -128,13 +128,13 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                             </Trigger>
                             <DataTrigger Binding="{Binding IsChecked}" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                                 <Setter TargetName="SelectedCheckmark" Property="Opacity" Value="1" />
                             </DataTrigger>
                         </ControlTemplate.Triggers>
@@ -149,10 +149,10 @@
             TargetType="ComboBox">
             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
             <Setter Property="Height" Value="34" />
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -195,7 +195,7 @@
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Medium}"
                                                     FontSize="13"
-                                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="{Binding Tag.Label, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
 
                                                 <Border
@@ -206,7 +206,7 @@
                                                     Margin="8,0,8,0"
                                                     Padding="4,0"
                                                     VerticalAlignment="Center"
-                                                    Background="{StaticResource Brush.Mint}"
+                                                    Background="{DynamicResource Brush.Mint}"
                                                     CornerRadius="8">
                                                     <TextBlock
                                                         HorizontalAlignment="Center"
@@ -230,7 +230,7 @@
                                                     Height="8"
                                                     VerticalAlignment="Center"
                                                     Data="{StaticResource AngleDown}"
-                                                    Fill="{StaticResource Brush.Text.Muted}"
+                                                    Fill="{DynamicResource Brush.Text.Muted}"
                                                     RenderTransformOrigin="0.5,0.5"
                                                     Stretch="Uniform" />
                                             </Grid>
@@ -263,8 +263,8 @@
                                 VerticalOffset="8">
                                 <Border
                                     MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
-                                    Background="{StaticResource Brush.Background.Surface}"
-                                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                    Background="{DynamicResource Brush.Background.Surface}"
+                                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                     BorderThickness="1"
                                     CornerRadius="8">
                                     <customControls:FadingScrollViewer
@@ -326,7 +326,7 @@
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Medium}"
                                                     FontSize="13"
-                                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
 
                                                 <Path
@@ -336,7 +336,7 @@
                                                     Height="8"
                                                     VerticalAlignment="Center"
                                                     Data="{StaticResource AngleDown}"
-                                                    Fill="{StaticResource Brush.Text.Muted}"
+                                                    Fill="{DynamicResource Brush.Text.Muted}"
                                                     RenderTransformOrigin="0.5,0.5"
                                                     Stretch="Uniform" />
                                             </Grid>
@@ -366,8 +366,8 @@
                                 VerticalOffset="8">
                                 <Border
                                     MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
-                                    Background="{StaticResource Brush.Background.Surface}"
-                                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                    Background="{DynamicResource Brush.Background.Surface}"
+                                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                     BorderThickness="1"
                                     CornerRadius="8">
                                     <customControls:FadingScrollViewer
@@ -395,7 +395,7 @@
             <TextBlock
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="{Binding Label}" />
         </DataTemplate>
 
@@ -403,7 +403,7 @@
             <TextBlock
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="{Binding Mode=OneWay}" />
         </DataTemplate>
 
@@ -465,33 +465,33 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="13"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name, Mode=OneWay}" />
                         <Border
                             Margin="8,4,0,0"
                             Padding="8,3"
                             VerticalAlignment="Center"
-                            Background="{StaticResource Brush.Background.Hover}"
+                            Background="{DynamicResource Brush.Background.Hover}"
                             CornerRadius="4"
                             Style="{StaticResource BaseBorderStyle}"
                             Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="GOAL" />
                         </Border>
                         <Border
                             Margin="6,0,0,0"
                             Padding="5,1"
-                            Background="{StaticResource Brush.Background.Recurring}"
+                            Background="{DynamicResource Brush.Background.Recurring}"
                             CornerRadius="4"
                             Style="{StaticResource BaseBorderStyle}"
                             Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
-                                Foreground="{StaticResource Brush.Text.Recurring}"
+                                Foreground="{DynamicResource Brush.Text.Recurring}"
                                 Text="RECURRING" />
                         </Border>
                     </StackPanel>
@@ -548,8 +548,8 @@
                         Padding="12,4"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Background="{StaticResource Brush.Background.Deepened}"
-                        BorderBrush="{StaticResource Brush.Border.Accent.Muted}"
+                        Background="{DynamicResource Brush.Background.Deepened}"
+                        BorderBrush="{DynamicResource Brush.Border.Accent.Muted}"
                         BorderThickness="1"
                         CornerRadius="12"
                         Cursor="Hand"
@@ -560,7 +560,7 @@
                         <TextBlock
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Mint}"
+                            Foreground="{DynamicResource Brush.Mint}"
                             Text="{Binding AccountName}" />
                     </Border>
 
@@ -679,7 +679,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Name, Mode=OneWay}" />
                             <Border
                                 x:Name="LedgerChildCountBadge"
@@ -687,7 +687,7 @@
                                 Height="20"
                                 Margin="6,0,0,0"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource Brush.Mint}"
+                                Background="{DynamicResource Brush.Mint}"
                                 CornerRadius="9"
                                 Visibility="{Binding HasChildTransactions, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                 <TextBlock
@@ -695,35 +695,35 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Black}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Primary.Inverted}"
+                                    Foreground="{DynamicResource Brush.Text.Primary.Inverted}"
                                     Text="{Binding VisibleChildCount, Mode=OneWay}" />
                             </Border>
                             <Border
                                 Margin="8,4,0,0"
                                 Padding="8,3"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource Brush.Background.Hover}"
+                                Background="{DynamicResource Brush.Background.Hover}"
                                 CornerRadius="4"
                                 Style="{StaticResource BaseBorderStyle}"
                                 Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="GOAL" />
                             </Border>
 
                             <Border
                                 Margin="6,0,0,0"
                                 Padding="5,1"
-                                Background="{StaticResource Brush.Background.Recurring}"
+                                Background="{DynamicResource Brush.Background.Recurring}"
                                 CornerRadius="4"
                                 Style="{StaticResource BaseBorderStyle}"
                                 Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
-                                    Foreground="{StaticResource Brush.Text.Recurring}"
+                                    Foreground="{DynamicResource Brush.Text.Recurring}"
                                     Text="RECURRING" />
                             </Border>
                         </StackPanel>
@@ -782,8 +782,8 @@
                             <Border
                                 x:Name="LedgerTransactionAccountBadge"
                                 Padding="12,4"
-                                Background="{StaticResource Brush.Background.Deepened}"
-                                BorderBrush="{StaticResource Brush.Border.Accent.Muted}"
+                                Background="{DynamicResource Brush.Background.Deepened}"
+                                BorderBrush="{DynamicResource Brush.Border.Accent.Muted}"
                                 BorderThickness="1"
                                 CornerRadius="12"
                                 Cursor="Hand"
@@ -791,7 +791,7 @@
                                 <TextBlock
                                     FontFamily="{StaticResource Medium}"
                                     FontSize="11"
-                                    Foreground="{StaticResource Brush.Mint}"
+                                    Foreground="{DynamicResource Brush.Mint}"
                                     Text="{Binding AccountName}" />
                             </Border>
                         </Grid>
@@ -826,8 +826,8 @@
                                     ButtonIcon="{StaticResource Info}"
                                     ButtonSize="32"
                                     Click="OnViewTransactionClick"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                                     IconSize="12"
                                     Style="{StaticResource HeaderButtonStyle}"
                                     ToolTip="View Transaction" />
@@ -835,8 +835,8 @@
                                     ButtonIcon="{StaticResource Delete}"
                                     ButtonSize="32"
                                     Click="OnRemoveTransactionClick"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     IconSize="12"
                                     Style="{StaticResource HeaderButtonStyle}"
                                     ToolTip="Delete" />
@@ -927,7 +927,7 @@
                         Width="1.5"
                         Margin="0,0,0,8"
                         HorizontalAlignment="Center"
-                        Background="{StaticResource Brush.Background.Hover}" />
+                        Background="{DynamicResource Brush.Background.Hover}" />
                     <ItemsControl
                         Grid.Column="1"
                         ItemTemplate="{StaticResource LedgerChildRowTemplate}"
@@ -970,7 +970,7 @@
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Bold}"
                                                     FontSize="11"
-                                                    Foreground="{StaticResource Brush.Text.Muted}"
+                                                    Foreground="{DynamicResource Brush.Text.Muted}"
                                                     Text="{TemplateBinding Content}" />
 
                                                 <Border
@@ -979,12 +979,12 @@
                                                     Height="1.5"
                                                     Margin="12,0,0,0"
                                                     VerticalAlignment="Center"
-                                                    Background="{StaticResource Brush.Border.Subtle}" />
+                                                    Background="{DynamicResource Brush.Border.Subtle}" />
                                             </Grid>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="LedgerGroupHeaderText" Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-                                                    <Setter TargetName="LedgerGroupHeaderLine" Property="Background" Value="{StaticResource Brush.Mint}" />
+                                                    <Setter TargetName="LedgerGroupHeaderText" Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                                                    <Setter TargetName="LedgerGroupHeaderLine" Property="Background" Value="{DynamicResource Brush.Mint}" />
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -1073,21 +1073,21 @@
                     ButtonText="Export Data"
                     Click="OnExportDataClick"
                     CornerRadius="8"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                     IconSize="12"
                     IsEnabled="{Binding HasVisibleTransactions}"
                     ShouldExpand="True" />
                 <customControls:BalloonCheckBox
                     Margin="8,0,0,0"
                     HorizontalAlignment="Left"
-                    CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                    CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                     CheckedIcon="{StaticResource DisableChecks}"
                     CheckedText="Disable Selection"
                     Click="OnSelectionModeClick"
                     CornerRadius="8"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="12"
                     IsChecked="{Binding IsSelectionModeEnabled, Mode=OneWay}"
                     IsEnabled="{Binding HasVisibleTransactions}"
@@ -1097,13 +1097,13 @@
                 <customControls:BalloonCheckBox
                     Margin="8,0,0,0"
                     HorizontalAlignment="Left"
-                    CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                    CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                     CheckedIcon="{StaticResource UncheckAll}"
                     CheckedText="Uncheck All"
                     Click="OnToggleVisibleBatchSelectionClick"
                     CornerRadius="8"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="12"
                     IsChecked="{Binding AreAllVisibleTransactionsSelected, Mode=OneWay}"
                     IsEnabled="{Binding HasVisibleTransactions}"
@@ -1116,10 +1116,10 @@
                     HorizontalAlignment="Left"
                     ButtonIcon="{StaticResource Pen}"
                     ButtonText="Bulk Edit"
-                    CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                    CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                     CornerRadius="8"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="12"
                     IsChecked="{Binding IsBulkEditEnabled, Mode=TwoWay}"
                     ShouldExpand="True"
@@ -1128,12 +1128,12 @@
                     Margin="8,0,0,0"
                     HorizontalAlignment="Left"
                     ButtonIcon="{StaticResource Delete}"
-                    CheckedBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
+                    CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
                     CheckedText="Delete All"
                     Click="OnRemoveSelectedTransactionsClick"
                     CornerRadius="8"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="12"
                     IsChecked="{Binding AreAllVisibleTransactionsSelected, Mode=OneWay}"
                     IsEnabled="{Binding HasSelectedVisibleTransactions}"
@@ -1153,8 +1153,8 @@
                     ButtonText="View all transactions"
                     Command="{Binding LoadAllTransactionsCommand}"
                     CornerRadius="8"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="14"
                     ShouldExpand="True" />
                 <TextBlock
@@ -1162,7 +1162,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="From" />
                 <components:DateSelector
                     x:Name="LedgerStartDateSelector"
@@ -1174,7 +1174,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="To" />
                 <components:DateSelector
                     x:Name="LedgerEndDateSelector"
@@ -1193,14 +1193,14 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="SPENT" />
                         <TextBlock
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="22"
-                            Foreground="{StaticResource Brush.Danger}"
+                            Foreground="{DynamicResource Brush.Danger}"
                             Text="{Binding SpentAmount, StringFormat={}{0:#,##0}}" />
                     </Grid>
                 </Border>
@@ -1210,14 +1210,14 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="EARNED" />
                         <TextBlock
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="22"
-                            Foreground="{StaticResource Brush.Success}"
+                            Foreground="{DynamicResource Brush.Success}"
                             Text="{Binding EarnedAmount, StringFormat={}{0:#,##0}}" />
                     </Grid>
                 </Border>
@@ -1227,14 +1227,14 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="GOAL" />
                         <TextBlock
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="22"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding GoalAmount, StringFormat={}{0:#,##0}}" />
                     </Grid>
                 </Border>
@@ -1244,14 +1244,14 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="NET" />
                         <TextBlock
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="22"
-                            Foreground="{StaticResource Brush.Info}"
+                            Foreground="{DynamicResource Brush.Info}"
                             Text="{Binding NetAmount, StringFormat={}{0:#,##0}}" />
                     </Grid>
                 </Border>
@@ -1333,8 +1333,8 @@
                     ButtonIcon="{StaticResource Ban}"
                     ButtonSize="34"
                     Click="OnClearFiltersClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Caution.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Caution.Hovered}"
                     IconSize="14"
                     IsEnabled="{Binding HasActiveFilters, Mode=OneWay}"
                     Style="{StaticResource HeaderButtonStyle}"
@@ -1344,8 +1344,8 @@
                     ButtonIcon="{StaticResource Check}"
                     ButtonSize="34"
                     Click="OnApplyBatchUpdatesClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                     IconSize="14"
                     Style="{StaticResource HeaderButtonStyle}"
                     Visibility="{Binding IsBulkEditEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
@@ -1353,7 +1353,7 @@
                     Grid.Column="6"
                     Width="1"
                     Margin="8,2,0,2"
-                    Background="{StaticResource Brush.Text.Muted}"
+                    Background="{DynamicResource Brush.Text.Muted}"
                     SnapsToDevicePixels="True" />
                 <ComboBox
                     x:Name="LedgerGroupingComboBox"
@@ -1370,8 +1370,8 @@
                     Grid.Column="8"
                     ButtonSize="34"
                     Click="OnOrderingButtonClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="14"
                     IsEnabled="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolNegationConverter}}"
                     Style="{StaticResource LedgerSortButtonStyle}" />
@@ -1399,7 +1399,7 @@
                     VerticalAlignment="Bottom"
                     FontFamily="{StaticResource Bold}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="{Binding SelectedVisibleTotal, Mode=OneWay, StringFormat={}Total: {0:+#,##0;-#,##0;$0}}"
                     Visibility="{Binding IsSelectionModeEnabled, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
@@ -1408,7 +1408,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Visibility="{Binding HasVisibleTransactions, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}">
                     <Run Text="No ledger data found for" />
                     <Run Text="{Binding EmptyStatePeriodText, Mode=OneWay}" />

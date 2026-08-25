@@ -49,7 +49,7 @@
                                     Canvas.Top="4"
                                     Width="48"
                                     Height="48"
-                                    Stroke="{StaticResource Brush.Background.Hover}"
+                                    Stroke="{DynamicResource Brush.Background.Hover}"
                                     StrokeThickness="6" />
                                 <Path
                                     Canvas.Left="6"
@@ -75,14 +75,14 @@
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="16"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis" />
 
                             <TextBlock
                                 Margin="0,6,0,0"
                                 FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Secondary}">
+                                Foreground="{DynamicResource Brush.Text.Secondary}">
                                 <Run
                                     FontFamily="{StaticResource Black}"
                                     Foreground="{Binding AnimatedProgressRatio, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource GoalProgressToBrushConverter}}"
@@ -97,22 +97,22 @@
                         Grid.Row="2"
                         Grid.Column="0"
                         Padding="8"
-                        Background="{StaticResource Brush.Background.Deepened}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Deepened}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="8">
                         <StackPanel>
                             <TextBlock
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="10"
-                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
                                 Text="Amount Left"
                                 TextWrapping="Wrap" />
                             <TextBlock
                                 Margin="0,4,0,0"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="12"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding AmountLeftText}"
                                 TextTrimming="CharacterEllipsis" />
                         </StackPanel>
@@ -122,22 +122,22 @@
                         Grid.Row="2"
                         Grid.Column="2"
                         Padding="8"
-                        Background="{StaticResource Brush.Background.Deepened}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Deepened}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="8">
                         <StackPanel>
                             <TextBlock
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="10"
-                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
                                 Text="Weekly Average"
                                 TextWrapping="Wrap" />
                             <TextBlock
                                 Margin="0,4,0,0"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="12"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding WeeklyAverageText}"
                                 TextTrimming="CharacterEllipsis" />
                         </StackPanel>
@@ -147,22 +147,22 @@
                         Grid.Row="2"
                         Grid.Column="4"
                         Padding="8"
-                        Background="{StaticResource Brush.Background.Deepened}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Deepened}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="8">
                         <StackPanel>
                             <TextBlock
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="10"
-                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
                                 Text="Estimated Deadline"
                                 TextWrapping="Wrap" />
                             <TextBlock
                                 Margin="0,4,0,0"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="12"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding EstimatedDeadlineText}"
                                 TextTrimming="CharacterEllipsis" />
                         </StackPanel>
@@ -191,7 +191,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Saving Goals" />
 
                 <StackPanel
@@ -202,8 +202,8 @@
                     ButtonIcon="{StaticResource Pen}"
                     ButtonText="Edit Goal"
                     Click="OnEditSavingGoalClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     ShouldExpand="True"
                     Style="{StaticResource SavingGoalActionBalloonButtonStyle}"
                     ToolTip="Edit Goal" />
@@ -212,8 +212,8 @@
                     ButtonIcon="{StaticResource TrackChanges}"
                     ButtonText="Add Funds"
                     Click="OnAddGoalFundsClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                     ShouldExpand="True"
                     Style="{StaticResource SavingGoalActionBalloonButtonStyle}"
                     ToolTip="Update Funds" />
@@ -221,15 +221,15 @@
                 <Border
                     Width="1"
                     Margin="8,2,0,2"
-                    Background="{StaticResource Brush.Text.Muted}"
+                    Background="{DynamicResource Brush.Text.Muted}"
                     SnapsToDevicePixels="True" />
 
                 <customControls:BalloonButton
                     ButtonIcon="{StaticResource PlusSolid}"
                     ButtonText="Add New Goal"
                     Click="OnAddSavingGoalClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                     ShouldExpand="True"
                     Style="{StaticResource SavingGoalActionBalloonButtonStyle}"
                     ToolTip="Add Saving Goal" />
@@ -241,7 +241,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Medium}"
                 FontSize="11"
-                Foreground="{StaticResource Brush.Text.Muted}"
+                Foreground="{DynamicResource Brush.Text.Muted}"
                 Text="Add a saving goal to track progress here."
                 TextAlignment="Center"
                 TextWrapping="Wrap"
@@ -275,8 +275,8 @@
                     Grid.Column="0"
                     ButtonIcon="{StaticResource AngleRight}"
                     Click="OnNavigatePreviousClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     RenderTransformOrigin="0.5,0.5"
                     Style="{StaticResource SavingGoalActionBalloonButtonStyle}"
                     ToolTip="Previous Goal"
@@ -301,8 +301,8 @@
                     Grid.Column="2"
                     ButtonIcon="{StaticResource AngleRight}"
                     Click="OnNavigateNextClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     Style="{StaticResource SavingGoalActionBalloonButtonStyle}"
                     ToolTip="Next Goal"
                     Visibility="{Binding HasMultipleSavingGoals, Converter={StaticResource BoolToVisibilityConverter}}" />

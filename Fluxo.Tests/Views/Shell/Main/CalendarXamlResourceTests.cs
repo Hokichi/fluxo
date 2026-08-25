@@ -31,7 +31,7 @@ public sealed class CalendarXamlResourceTests
         var application = Application.Current ?? new Application();
         foreach (var resource in new[]
                  {
-                     "Theme.xaml", "Fonts.xaml", "Icons.xaml", "Converters.xaml",
+                     "Themes/Dark.xaml", "Fonts.xaml", "Icons.xaml", "Converters.xaml",
                      "Styles/ContainerStyles.xaml", "Styles/ButtonStyles.xaml", "Styles/TextBoxStyles.xaml",
                      "Styles/GlobalStyles.xaml", "Styles/PopupStyles.xaml", "Styles/MainWindowStyles.xaml",
                      "Styles/SettingsStyle.xaml", "Styles/StepNavigatorStyle.xaml", "Styles/QuickSetupWizardStyle.xaml"

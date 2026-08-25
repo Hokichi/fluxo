@@ -11,6 +11,7 @@ using Fluxo.Services.Dialogs;
 using Fluxo.Services.Notifications;
 using Fluxo.Services.Ui;
 using Fluxo.Services.Logging;
+using Fluxo.Services.Theming;
 using Fluxo.ViewModels.Controls;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
@@ -84,6 +85,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IUiSettleAwaiter, UiSettleAwaiter>();
         services.AddSingleton<IStartupRegistrationService, StartupRegistrationService>();
         services.AddSingleton<IUiLockPasswordProtector, DpapiUiLockPasswordProtector>();
+        services.AddSingleton<ThemeService>();
         services.AddSingleton<IAppUpdateService, AppUpdateService>();
         services.AddSingleton<IAppUpdateLifecycleService, AppUpdateLifecycleService>();
         services.AddSingleton<IAppUpdateInteractionService, AppUpdateInteractionService>();

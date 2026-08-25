@@ -16,7 +16,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Light}"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="SPENT" />
 
                 <TextBlock
@@ -24,7 +24,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="18"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding TotalSpent, Converter={StaticResource NumberWithCommasConverter}}"
                     ToolTip="{Binding TotalSpent, Converter={StaticResource MoneyFullDisplayConverter}}" />
             </Grid>
@@ -35,7 +35,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Light}"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="EARNED" />
 
                 <TextBlock
@@ -54,7 +54,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Light}"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="ALLOWANCE" />
 
                 <TextBlock
@@ -64,12 +64,12 @@
                     <Run
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding Allowance, Converter={StaticResource NumberWithCommasConverter}}" />
                     <Run
                         FontFamily="{StaticResource Medium}"
                         FontSize="12"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="/ day" />
                 </TextBlock>
             </Grid>
@@ -80,7 +80,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Light}"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="NET" />
 
                 <TextBlock

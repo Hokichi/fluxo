@@ -382,10 +382,10 @@
                             <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                         </Trigger>
                         <Trigger SourceName="PART_UpButton" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="UpIcon" Property="Color" Value="{StaticResource Brush.Mint}" />
+                            <Setter TargetName="UpIcon" Property="Color" Value="{DynamicResource Brush.Mint}" />
                         </Trigger>
                         <Trigger SourceName="PART_DownButton" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="DownIcon" Property="Color" Value="{StaticResource Brush.Mint}" />
+                            <Setter TargetName="DownIcon" Property="Color" Value="{DynamicResource Brush.Mint}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />

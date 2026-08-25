@@ -26,10 +26,10 @@
     </Style>
 
     <Style x:Key="SpinnerArrowIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
-        <Setter Property="Color" Value="{StaticResource Brush.Text.Muted}" />
+        <Setter Property="Color" Value="{DynamicResource Brush.Text.Muted}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
-                <Setter Property="Color" Value="{StaticResource Brush.Text.Primary}" />
+                <Setter Property="Color" Value="{DynamicResource Brush.Text.Primary}" />
                 <Setter Property="Effect">
                     <Setter.Value>
                         <DropShadowEffect
@@ -64,7 +64,7 @@
                             Canvas.Top="4"
                             Width="72"
                             Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
-                            Stroke="{StaticResource Brush.Background.Surface}"
+                            Stroke="{DynamicResource Brush.Background.Surface}"
                             StrokeThickness="8" />
                         <Path
                             Canvas.Left="8"
@@ -90,14 +90,14 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding Name}"
                         TextTrimming="CharacterEllipsis" />
 
                     <TextBlock
                         Margin="0,8,0,0"
                         FontSize="14"
-                        Foreground="{StaticResource Brush.Text.Secondary}">
+                        Foreground="{DynamicResource Brush.Text.Secondary}">
                         <Run
                             FontFamily="{StaticResource Black}"
                             Foreground="{Binding AnimatedProgressRatio, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource GoalProgressToBrushConverter}}"
@@ -109,7 +109,7 @@
                         Margin="0,4,0,0"
                         FontFamily="{StaticResource Light}"
                         FontSize="12"
-                        Foreground="{StaticResource Brush.Text.Secondary}">
+                        Foreground="{DynamicResource Brush.Text.Secondary}">
                         <Run Text="{Binding RemainingAmount, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         <Run Text="left" />
                         <Run Text="&#x00B7;" />
@@ -128,8 +128,8 @@
                 Height="24"
                 Margin="16,0,0,0"
                 Padding="12,0"
-                Background="{StaticResource Brush.Background.Surface}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Surface}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="12"
                 Cursor="Hand"
@@ -144,7 +144,7 @@
                         Margin="8,0,0,0"
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding Name}" />
                 </StackPanel>
             </Border>

@@ -11,7 +11,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />
@@ -38,8 +37,8 @@
                         Width="72"
                         Height="72"
                         HorizontalAlignment="Center"
-                        Background="{StaticResource Brush.Background.Surface}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Surface}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="36">
                         <Image
@@ -53,19 +52,19 @@
                             HorizontalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="24"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Uninstalling " />
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="24"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="flux" />
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="24"
-                            Foreground="{StaticResource Brush.Mint}"
+                            Foreground="{DynamicResource Brush.Mint}"
                             Text="o" />
                     </StackPanel>
 
@@ -74,7 +73,7 @@
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="13"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="It was fun while it lasted." />
 
                     <TextBlock
@@ -82,7 +81,7 @@
                         HorizontalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="12"
-                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Foreground="{DynamicResource Brush.Text.Muted}"
                         Text="{Binding StatusMessage}"
                         TextWrapping="Wrap" />
                 </StackPanel>

@@ -12,8 +12,8 @@
         <Style x:Key="EndDateInfinityToggleStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="36" />
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -34,16 +34,16 @@
                                 <Path
                                     x:Name="InfinityIcon"
                                     Data="{StaticResource Infinity}"
-                                    Fill="{StaticResource Brush.Text.Secondary}"
+                                    Fill="{DynamicResource Brush.Text.Secondary}"
                                     Stretch="Uniform" />
                             </Viewbox>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="InfinityIcon" Property="Fill" Value="{StaticResource Brush.Mint}" />
+                                <Setter TargetName="InfinityIcon" Property="Fill" Value="{DynamicResource Brush.Mint}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="RootBorder" Property="Opacity" Value="0.4" />

@@ -11,7 +11,7 @@
         <Style x:Key="ForecastLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
@@ -19,7 +19,7 @@
             <Setter Property="Margin" Value="0,10,0,0" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="18" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
@@ -27,17 +27,17 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
 <Style BasedOn="{StaticResource ForecastCellStyle}" TargetType="TextBlock" x:Key="ForecastBalanceTextStyle">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsBalanceDecreased, Mode=OneWay}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsBalanceIncreased, Mode=OneWay}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -86,16 +86,16 @@
                                 </DataTemplate>
 
 <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="PurchaseMessageTextStyle">
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Success">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Warning">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Danger">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding PurchaseMessage}" Value="">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -121,7 +121,7 @@
                 HorizontalAlignment="Right"
                 ButtonIcon="{StaticResource CashRegister}"
                 ButtonText="Test a transaction"
-                DefaultBackground="{StaticResource Brush.Background.Surface}"
+                DefaultBackground="{DynamicResource Brush.Background.Surface}"
                 IconSize="14"
                 IsChecked="{Binding IsTestTransactionVisible, Mode=TwoWay}"
                 ShouldShowText="True" />
@@ -149,7 +149,7 @@
                 <StackPanel>
                     <TextBlock Style="{StaticResource ForecastLabelStyle}" Text="NEEDS" />
                     <TextBlock
-                        Foreground="{StaticResource Brush.Category.Needs}"
+                        Foreground="{DynamicResource Brush.Category.Needs}"
                         Style="{StaticResource ForecastValueStyle}"
                         Text="{Binding Needs, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                 </StackPanel>
@@ -159,7 +159,7 @@
                 <StackPanel>
                     <TextBlock Style="{StaticResource ForecastLabelStyle}" Text="WANTS" />
                     <TextBlock
-                        Foreground="{StaticResource Brush.Category.Wants}"
+                        Foreground="{DynamicResource Brush.Category.Wants}"
                         Style="{StaticResource ForecastValueStyle}"
                         Text="{Binding Wants, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                 </StackPanel>
@@ -169,7 +169,7 @@
                 <StackPanel>
                     <TextBlock Style="{StaticResource ForecastLabelStyle}" Text="INVEST" />
                     <TextBlock
-                        Foreground="{StaticResource Brush.Category.Investments}"
+                        Foreground="{DynamicResource Brush.Category.Investments}"
                         Style="{StaticResource ForecastValueStyle}"
                         Text="{Binding Invest, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                 </StackPanel>
@@ -266,11 +266,11 @@
                         Orientation="Horizontal">
                         <customControls:BalloonRadioButton
                             ButtonIcon="{StaticResource Home}"
-                            CheckedBackground="{StaticResource Brush.Mint}"
+                            CheckedBackground="{DynamicResource Brush.Mint}"
                             CornerRadius="8"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             GroupName="BudgetForecastPurchaseCategory"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             IconSize="12"
                             IsChecked="{Binding IsPurchaseNeedsCategory, Mode=TwoWay}"
                             ShouldShowText="True"
@@ -278,11 +278,11 @@
                         <customControls:BalloonRadioButton
                             Margin="8,0,0,0"
                             ButtonIcon="{StaticResource ShoppingBag}"
-                            CheckedBackground="{StaticResource Brush.Mint}"
+                            CheckedBackground="{DynamicResource Brush.Mint}"
                             CornerRadius="8"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             GroupName="BudgetForecastPurchaseCategory"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             IconSize="12"
                             IsChecked="{Binding IsPurchaseWantsCategory, Mode=TwoWay}"
                             ShouldShowText="True"
@@ -290,11 +290,11 @@
                         <customControls:BalloonRadioButton
                             Margin="8,0,0,0"
                             ButtonIcon="{StaticResource TrendingUp}"
-                            CheckedBackground="{StaticResource Brush.Mint}"
+                            CheckedBackground="{DynamicResource Brush.Mint}"
                             CornerRadius="8"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             GroupName="BudgetForecastPurchaseCategory"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             IconSize="12"
                             IsChecked="{Binding IsPurchaseInvestCategory, Mode=TwoWay}"
                             ShouldShowText="True"

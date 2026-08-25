@@ -12,27 +12,27 @@
                         VerticalAlignment="Bottom"
                         Orientation="Horizontal">
                         <customControls:BalloonButton Click="OnEditAccountClick" Style="{StaticResource EditButton}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}" />
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}" />
                         <customControls:BalloonButton Click="OnDeleteAccountClick" Style="{StaticResource DeleteButton}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}" />
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}" />
                     </StackPanel>
                     <StackPanel Margin="0,4,0,0">
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             FontSize="15"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}" />
                         <TextBlock
                             Margin="0,8,0,0"
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding TypeLabel}" />
                         <TextBlock
                             Margin="0,12,0,0"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Mint}"
+                            Foreground="{DynamicResource Brush.Mint}"
                             ToolTip="{Binding PrimaryAmount, Converter={StaticResource MoneyFullDisplayConverter}}">
                             <Run Text="{Binding PrimaryAmountLabel}" />
                             <Run Text=": " />

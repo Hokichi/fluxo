@@ -11,7 +11,7 @@
         <TextBlock
             Margin="0,0,0,8"
             FontFamily="{StaticResource Bold}"
-            Foreground="{StaticResource Brush.Text.Primary}"
+            Foreground="{DynamicResource Brush.Text.Primary}"
             Text="Account" />
         <ComboBox
             x:Name="AccountComboBox"

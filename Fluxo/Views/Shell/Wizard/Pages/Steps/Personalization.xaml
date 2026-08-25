@@ -13,12 +13,12 @@
                 <StackPanel>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Lock UI when away" />
                     <TextBlock
                         Margin="0,6,0,0"
                         FontFamily="{StaticResource Medium}"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="Lock fluxo after inactivity."
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -37,7 +37,7 @@
             <StackPanel>
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Auto-lock after" />
                 <customControls:SegmentedToggleGroup Margin="0,10,0,0" SelectedValue="{Binding SelectedAppAutoLockPreset, Mode=TwoWay}">
                     <customControls:SegmentedToggleOption Content="30 seconds" Value="30" />
@@ -75,12 +75,12 @@
                 <StackPanel>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Unlock password" />
                     <TextBlock
                         Margin="0,6,0,0"
                         FontFamily="{StaticResource Medium}"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="Used for manual locks and away locks."
                         TextWrapping="Wrap" />
                 </StackPanel>
@@ -104,8 +104,8 @@
                         CheckedBackground="Transparent"
                         CheckedIcon="{StaticResource Eye}"
                         CheckedText="Hide password"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                         IconSize="12"
                         IsChecked="{Binding IsUiLockingPasswordVisible, Mode=TwoWay}"
                         UncheckedIcon="{StaticResource EyeOff}"

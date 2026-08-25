@@ -8,7 +8,7 @@
 <customControls:BasePopup.Resources>
         <Style x:Key="HotkeyExpanderStyle" BasedOn="{StaticResource BaseExpanderStyle}" TargetType="Expander">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Expander">
@@ -45,7 +45,7 @@
                                                     Data="{StaticResource AngleRight}"
                                                     Stretch="Uniform">
                                                     <Path.Fill>
-                                                        <SolidColorBrush x:Name="ExpanderIconBrush" Color="{StaticResource Color.Text.Primary}" />
+                                                        <SolidColorBrush x:Name="ExpanderIconBrush" Color="{DynamicResource Color.Text.Primary}" />
                                                     </Path.Fill>
                                                 </Path>
                                                 <TextBlock
@@ -56,7 +56,7 @@
                                                     FontSize="13"
                                                     Text="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}">
                                                     <TextBlock.Foreground>
-                                                        <SolidColorBrush x:Name="ExpanderHeaderTextBrush" Color="{StaticResource Color.Text.Primary}" />
+                                                        <SolidColorBrush x:Name="ExpanderHeaderTextBrush" Color="{DynamicResource Color.Text.Primary}" />
                                                     </TextBlock.Foreground>
                                                 </TextBlock>
                                             </Grid>
@@ -72,12 +72,12 @@
                                                             <ColorAnimation
                                                                 Storyboard.TargetName="ExpanderIconBrush"
                                                                 Storyboard.TargetProperty="Color"
-                                                                To="{StaticResource Color.Mint}"
+                                                                To="{DynamicResource Color.Mint}"
                                                                 Duration="0:0:0.14" />
                                                             <ColorAnimation
                                                                 Storyboard.TargetName="ExpanderHeaderTextBrush"
                                                                 Storyboard.TargetProperty="Color"
-                                                                To="{StaticResource Color.Mint}"
+                                                                To="{DynamicResource Color.Mint}"
                                                                 Duration="0:0:0.14" />
                                                         </Storyboard>
                                                     </BeginStoryboard>
@@ -88,12 +88,12 @@
                                                             <ColorAnimation
                                                                 Storyboard.TargetName="ExpanderIconBrush"
                                                                 Storyboard.TargetProperty="Color"
-                                                                To="{StaticResource Color.Text.Primary}"
+                                                                To="{DynamicResource Color.Text.Primary}"
                                                                 Duration="0:0:0.14" />
                                                             <ColorAnimation
                                                                 Storyboard.TargetName="ExpanderHeaderTextBrush"
                                                                 Storyboard.TargetProperty="Color"
-                                                                To="{StaticResource Color.Text.Primary}"
+                                                                To="{DynamicResource Color.Text.Primary}"
                                                                 Duration="0:0:0.14" />
                                                         </Storyboard>
                                                     </BeginStoryboard>
@@ -121,8 +121,8 @@
         <Style x:Key="HotkeyRowStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Margin" Value="0,0,0,8" />
             <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
         </Style>
@@ -135,7 +135,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
@@ -147,8 +147,8 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
 
@@ -156,8 +156,8 @@
             <Border
                 Margin="4,0,0,0"
                 Padding="8,4"
-                Background="{StaticResource Brush.Background.Elevated}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Elevated}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="6">
                 <TextBlock
@@ -166,7 +166,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding Text}"
                     TextAlignment="Center" />
             </Border>
@@ -190,8 +190,8 @@
             </Border>
             <DataTemplate.Triggers>
                 <Trigger SourceName="HotkeyItemBorder" Property="IsMouseOver" Value="True">
-                    <Setter TargetName="HotkeyItemBorder" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                    <Setter TargetName="HotkeyItemBorder" Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                    <Setter TargetName="HotkeyItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    <Setter TargetName="HotkeyItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                 </Trigger>
             </DataTemplate.Triggers>
         </DataTemplate>

@@ -48,6 +48,22 @@ public sealed class WizardStepForegroundConverterTests
     }
 
     [Fact]
+    public void WizardStepForegroundConverter_Convert_ResolvesConfiguredThemeBrushKey()
+    {
+        var themeBrush = Brushes.Gold;
+        var converter = new WizardStepForegroundConverter(key =>
+            key == "Brush.Text.Primary" ? themeBrush : null)
+        {
+            CurrentBrush = Brushes.Red,
+            CurrentBrushKey = "Brush.Text.Primary"
+        };
+
+        var result = converter.Convert(3, typeof(Brush), "3", CultureInfo.InvariantCulture);
+
+        Assert.Same(themeBrush, result);
+    }
+
+    [Fact]
     public void WizardStepForegroundConverter_ConvertBack_ThrowsNotSupportedException()
     {
         var converter = CreateConverter();

@@ -8,13 +8,13 @@
         <TextBlock
             FontFamily="{StaticResource Bold}"
             FontSize="16"
-            Foreground="{StaticResource Brush.Text.Primary}"
+            Foreground="{DynamicResource Brush.Text.Primary}"
             Text="Configuration" />
         <TextBlock
             Margin="0,8,0,16"
             FontFamily="{StaticResource Medium}"
             FontSize="11"
-            Foreground="{StaticResource Brush.Text.Secondary}"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
             Text="Configure how the app behaves" />
 
         <Border Style="{StaticResource RowCardStyle}">
@@ -26,26 +26,26 @@
                 <StackPanel>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Run with Windows" />
                     <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
                         <TextBlock
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             TextWrapping="Wrap">
                             <Run Text="Start " />
                         </TextBlock>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="flux" />
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Mint.Muted}"
+                            Foreground="{DynamicResource Brush.Mint.Muted}"
                             Text="o" />
                         <TextBlock
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             TextWrapping="Wrap">
                             <Run Text=" in the system tray when Windows signs in." />
                         </TextBlock>
@@ -64,15 +64,15 @@
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="When closing " />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="flux" />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
                 <customControls:SegmentedToggleGroup Width="252" HorizontalAlignment="Right">
@@ -101,21 +101,21 @@
                 <StackPanel>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Current Version" />
                     <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
                         <TextBlock
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="Currently installed version of "
                             TextWrapping="Wrap" />
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="flux" />
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Mint.Muted}"
+                            Foreground="{DynamicResource Brush.Mint.Muted}"
                             Text="o." />
                     </StackPanel>
                 </StackPanel>
@@ -126,7 +126,7 @@
                     <TextBlock
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding CurrentVersion}" />
                     <Button
                         x:Name="CheckForUpdatesButton"
@@ -154,7 +154,7 @@
                 Grid.Column="2"
                 Click="OnDeleteAllDataClick"
                 Content="Delete All Data"
-                Foreground="{StaticResource Brush.Danger}"
+                Foreground="{DynamicResource Brush.Danger}"
                 Style="{StaticResource PopupTextButtonStyle}" />
         </Grid>
     </StackPanel>

@@ -12,7 +12,6 @@
     <UserControl.Resources>
 <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />
@@ -52,8 +51,8 @@
                     Width="84"
                     Height="84"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Background.Surface}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Surface}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="42">
                     <Image
@@ -67,7 +66,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="30"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding FinishedTitle}" />
 
                 <TextBlock
@@ -75,7 +74,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding FinishedSubtitle}"
                     TextAlignment="Center" />
 
@@ -95,9 +94,9 @@
 
                     <Button
                         Margin="12,0,0,0"
-                        Background="{StaticResource Brush.Background.Hover}"
+                        Background="{DynamicResource Brush.Background.Hover}"
                         Command="{Binding CloseInstallerCommand}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Style="{DynamicResource WizardCircleActionButtonStyle}">
                         <Path
                             Width="14"
@@ -113,7 +112,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="{Binding StatusMessage}"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />

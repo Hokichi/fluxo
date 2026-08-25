@@ -94,10 +94,10 @@
         </Style>
 
         <Style x:Key="TransactionAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsExpense}" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -105,7 +105,7 @@
         <Style x:Key="TransactionsListHeaderText" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
         <Style x:Key="TransactionsListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
@@ -128,8 +128,8 @@
                         VerticalAlignment="Center"
                         ButtonIcon="{StaticResource Info}"
                         Click="OnTransactionDetailButtonClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                         IconSize="12" />
                 </customControls:SwipeRevealContainer.LeftContent>
 
@@ -140,8 +140,8 @@
                         ButtonIcon="{StaticResource Delete}"
                         ButtonSize="32"
                         Click="OnDeleteButtonClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                         IconSize="12" />
                 </customControls:SwipeRevealContainer.RightContent>
 
@@ -163,7 +163,7 @@
                         </Border.Clip>
 <Border
                             x:Name="ExpenseItemBGBorder"
-                            Background="{StaticResource Brush.Background.Hover}"
+                            Background="{DynamicResource Brush.Background.Hover}"
                             ClipToBounds="True"
                             CornerRadius="12" Style="{StaticResource TransactionChildRowBorderStyle}">
                             <Border.RenderTransform>
@@ -208,13 +208,13 @@
                                         VerticalAlignment="Center"
                                         FontFamily="{StaticResource Bold}"
                                         FontSize="14"
-                                        Foreground="{StaticResource Brush.Text.Primary}"
+                                        Foreground="{DynamicResource Brush.Text.Primary}"
                                         Text="{Binding Name}"
                                         TextTrimming="CharacterEllipsis"
                                         TextWrapping="NoWrap" />
                                     <StackPanel Margin="0,4,0,0" Orientation="Horizontal">
                                         <TextBlock FontFamily="{StaticResource Regular}" FontSize="12">
-                                            <Run Foreground="{StaticResource Brush.Text.Muted}" Text="{Binding Account.Name}" />
+                                            <Run Foreground="{DynamicResource Brush.Text.Muted}" Text="{Binding Account.Name}" />
                                         </TextBlock>
                                     </StackPanel>
                                 </StackPanel>
@@ -239,7 +239,7 @@
                                     HorizontalAlignment="Right"
                                     FontFamily="{StaticResource Regular}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Muted}"
+                                    Foreground="{DynamicResource Brush.Text.Muted}"
                                     Text="{Binding OccurredOn, Converter={StaticResource DateTimeToRelativeDateConverter}}"
                                     TextTrimming="CharacterEllipsis"
                                     TextWrapping="NoWrap" />
@@ -345,8 +345,8 @@
             ButtonText="View in Ledger"
             Click="OnViewInLedgerButtonClick"
             CornerRadius="8"
-            DefaultBackground="{StaticResource Brush.Mint.Muted}"
-            HoveredBackground="{StaticResource Brush.Mint}"
+            DefaultBackground="{DynamicResource Brush.Mint.Muted}"
+            HoveredBackground="{DynamicResource Brush.Mint}"
             IconSize="12"
             ShouldExpand="True" />
 
@@ -376,7 +376,7 @@
                 Grid.Row="1"
                 Height="1"
                 Margin="12,0,12,12"
-                Background="{StaticResource Brush.Text.Muted}"
+                Background="{DynamicResource Brush.Text.Muted}"
                 Opacity="0.25" />
 
             <Grid Grid.Row="2">
@@ -385,7 +385,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="14"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="{Binding EmptyActionText, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" Style="{StaticResource TransactionsEmptyStateTextStyle}">
 
                 </TextBlock>

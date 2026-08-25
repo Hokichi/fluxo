@@ -28,17 +28,17 @@
                                             Text="{Binding DayName}">
                                             <TextBlock.Style>
                                                 <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
                                                             <Setter Property="Effect">
                                                                 <Setter.Value>
                                                                     <DropShadowEffect
                                                                         BlurRadius="5"
                                                                         Opacity="0.5"
                                                                         ShadowDepth="0"
-                                                                        Color="{StaticResource Color.Mint}" />
+                                                                        Color="{DynamicResource Color.Mint}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </DataTrigger>
@@ -56,17 +56,17 @@
                                             Text="{Binding DayNumber}">
                                             <TextBlock.Style>
                                                 <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-                                                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+                                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
                                                             <Setter Property="Effect">
                                                                 <Setter.Value>
                                                                     <DropShadowEffect
                                                                         BlurRadius="5"
                                                                         Opacity="0.5"
                                                                         ShadowDepth="0"
-                                                                        Color="{StaticResource Color.Text.Primary}" />
+                                                                        Color="{DynamicResource Color.Text.Primary}" />
                                                                 </Setter.Value>
                                                             </Setter>
                                                         </DataTrigger>
@@ -79,7 +79,7 @@
                                         Width="32"
                                         Height="4"
                                         VerticalAlignment="Bottom"
-                                        Background="{StaticResource Brush.Mint}"
+                                        Background="{DynamicResource Brush.Mint}"
                                         CornerRadius="4 4 0 0">
                                         <Border.Style>
                                             <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
@@ -118,7 +118,7 @@
                                             <DropShadowEffect
                                                 BlurRadius="10"
                                                 ShadowDepth="0"
-                                                Color="{StaticResource Color.Mint}" />
+                                                Color="{DynamicResource Color.Mint}" />
                                         </Border.Effect>
                                     </Border>
 
@@ -126,7 +126,7 @@
                                         Width="32"
                                         Height="4"
                                         VerticalAlignment="Bottom"
-                                        Background="{StaticResource Brush.Mint}"
+                                        Background="{DynamicResource Brush.Mint}"
                                         CornerRadius="4 4 0 0">
                                         <Border.Style>
                                             <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
@@ -161,7 +161,7 @@
                                             <DropShadowEffect
                                                 BlurRadius="10"
                                                 ShadowDepth="0"
-                                                Color="{StaticResource Color.Mint}" />
+                                                Color="{DynamicResource Color.Mint}" />
                                         </Border.Effect>
                                     </Border>
                                 </Grid>

@@ -15,10 +15,10 @@
 
     <UserControl.Resources>
         <Style x:Key="CalendarDayNumberTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary.Inverted}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary.Inverted}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -53,13 +53,13 @@
         <Style x:Key="CalendarSectionTitleStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
         <Style x:Key="CalendarCardLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
         <Style x:Key="CalendarListItemHoverBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
@@ -69,7 +69,7 @@
             <Setter Property="CornerRadius" Value="10" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -96,7 +96,7 @@
             <Setter Property="Margin" Value="0,6,0,0" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="24" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
         <Style
@@ -113,7 +113,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
@@ -124,7 +124,7 @@
             <Setter Property="Margin" Value="2" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Default}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
@@ -140,21 +140,21 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="DayBorder" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                <Setter TargetName="DayBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                             </Trigger>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding IsSelected}" Value="True" />
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True" />
                                 </MultiDataTrigger.Conditions>
-                                <Setter TargetName="DayBorder" Property="Background" Value="{StaticResource Brush.Mint.Muted}" />
+                                <Setter TargetName="DayBorder" Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
                             </MultiDataTrigger>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding IsCurrentDay}" Value="True" />
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True" />
                                 </MultiDataTrigger.Conditions>
-                                <Setter TargetName="DayBorder" Property="BorderBrush" Value="{StaticResource Brush.Mint.Muted}" />
+                                <Setter TargetName="DayBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint.Muted}" />
                             </MultiDataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -162,11 +162,11 @@
             </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsCurrentDay}" Value="True">
-                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsOutsideVisibleMonth}" Value="True">
                     <Setter Property="Opacity" Value="0.45" />
@@ -213,19 +213,19 @@
                     <StackPanel>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}" />
                         <TextBlock
                             Margin="0,3,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding AccountName}" />
                     </StackPanel>
                     <TextBlock
                         Grid.Column="1"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Danger}"
+                        Foreground="{DynamicResource Brush.Danger}"
                         Text="{Binding AmountText}" />
                 </Grid>
             </Border>
@@ -241,19 +241,19 @@
                     <StackPanel>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}" />
                         <TextBlock
                             Margin="0,3,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding AccountName}" />
                     </StackPanel>
                     <TextBlock
                         Grid.Column="1"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="{Binding AmountText}" />
                 </Grid>
             </Border>
@@ -264,13 +264,13 @@
                 <StackPanel>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding Name}" />
                     <TextBlock
                         Margin="0,3,0,0"
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Secondary}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="{Binding ProgressText}" />
                 </StackPanel>
             </Border>
@@ -286,13 +286,13 @@
                     <StackPanel>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}" />
                         <TextBlock
                             Margin="0,3,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}">
+                            Foreground="{DynamicResource Brush.Text.Secondary}">
                             <Run Text="{Binding TypeText}" />
                             <Run Text=" - " />
                             <Run Text="{Binding SourceName}" />
@@ -301,7 +301,7 @@
                     <TextBlock
                         Grid.Column="1"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Info}"
+                        Foreground="{DynamicResource Brush.Info}"
                         Text="{Binding AmountText}" />
                 </Grid>
             </Border>
@@ -343,7 +343,7 @@
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding VisibleMonthLabel}" />
                     <StackPanel
                         Grid.Column="1"
@@ -353,23 +353,23 @@
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource AngleUp}"
                             Command="{Binding NavigateToPreviousMonthCommand}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                             ToolTip="Previous month" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource CalendarTodayOutline}"
                             Click="OnCalendarTodayButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                             IsEnabled="{Binding IsAtCurrentDay, Converter={StaticResource BoolNegationConverter}}"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                             ToolTip="Today" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource AngleDown}"
                             Command="{Binding NavigateToNextMonthCommand}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                             ToolTip="Next month" />
                     </StackPanel>
@@ -447,7 +447,7 @@
                                 Text="Total Spent" />
                             <TextBlock
                                 Grid.Column="1"
-                                Foreground="{StaticResource Brush.Danger}"
+                                Foreground="{DynamicResource Brush.Danger}"
                                 Style="{StaticResource CalendarSummaryInlineValueTextStyle}"
                                 Text="{Binding TotalSpentText}" />
                         </Grid>
@@ -465,7 +465,7 @@
                                 Text="Total Earned" />
                             <TextBlock
                                 Grid.Column="1"
-                                Foreground="{StaticResource Brush.Mint}"
+                                Foreground="{DynamicResource Brush.Mint}"
                                 Style="{StaticResource CalendarSummaryInlineValueTextStyle}"
                                 Text="{Binding TotalEarnedText}" />
                         </Grid>
@@ -483,7 +483,7 @@
                                 Text="Goals Due" />
                             <TextBlock
                                 Grid.Column="1"
-                                Foreground="{StaticResource Brush.Warning}"
+                                Foreground="{DynamicResource Brush.Warning}"
                                 Style="{StaticResource CalendarSummaryInlineValueTextStyle}"
                                 Text="{Binding GoalsDueText}" />
                         </Grid>
@@ -501,7 +501,7 @@
                                 Text="Payment Due" />
                             <TextBlock
                                 Grid.Column="1"
-                                Foreground="{StaticResource Brush.Info}"
+                                Foreground="{DynamicResource Brush.Info}"
                                 Style="{StaticResource CalendarSummaryInlineValueTextStyle}"
                                 Text="{Binding PaymentDueText}" />
                         </Grid>
@@ -529,7 +529,7 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource CalendarCardLabelStyle}" Text="Total Spent" />
                             <TextBlock
-                                Foreground="{StaticResource Brush.Danger}"
+                                Foreground="{DynamicResource Brush.Danger}"
                                 Style="{StaticResource CalendarValueTextStyle}"
                                 Text="{Binding TotalSpentText}" />
                         </StackPanel>
@@ -543,7 +543,7 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource CalendarCardLabelStyle}" Text="Total Earned" />
                             <TextBlock
-                                Foreground="{StaticResource Brush.Mint}"
+                                Foreground="{DynamicResource Brush.Mint}"
                                 Style="{StaticResource CalendarValueTextStyle}"
                                 Text="{Binding TotalEarnedText}" />
                         </StackPanel>
@@ -557,7 +557,7 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource CalendarCardLabelStyle}" Text="Goals Due" />
                             <TextBlock
-                                Foreground="{StaticResource Brush.Warning}"
+                                Foreground="{DynamicResource Brush.Warning}"
                                 Style="{StaticResource CalendarValueTextStyle}"
                                 Text="{Binding GoalsDueText}" />
                         </StackPanel>
@@ -572,7 +572,7 @@
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource CalendarCardLabelStyle}" Text="Payment Due" />
                             <TextBlock
-                                Foreground="{StaticResource Brush.Info}"
+                                Foreground="{DynamicResource Brush.Info}"
                                 Style="{StaticResource CalendarValueTextStyle}"
                                 Text="{Binding PaymentDueText}" />
                         </StackPanel>

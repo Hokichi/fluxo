@@ -36,7 +36,7 @@
                                             SnapsToDevicePixels="True">
                                             <Border.Style>
                                                 <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                                    <Setter Property="Background" Value="{StaticResource Brush.Text.Muted}" />
+                                                    <Setter Property="Background" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Setter Property="Width" Value="12" />
                                                     <Style.Triggers>
                                                         <MultiDataTrigger>
@@ -44,14 +44,14 @@
                                                                 <Condition Binding="{Binding IsCompleted}" Value="True" />
                                                                 <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
                                                             </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="{StaticResource Brush.Mint.Muted}" />
+                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
                                                         </MultiDataTrigger>
                                                         <MultiDataTrigger>
                                                             <MultiDataTrigger.Conditions>
                                                                 <Condition Binding="{Binding IsActive}" Value="True" />
                                                                 <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
                                                             </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="{StaticResource Brush.Mint.Muted}" />
+                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
                                                         </MultiDataTrigger>
 
                                                         <DataTrigger Binding="{Binding IsFirst}" Value="True">
@@ -70,17 +70,17 @@
                                             <Border.Style>
                                                 <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                                     <Setter Property="Width" Value="8" />
-                                                    <Setter Property="Background" Value="{StaticResource Brush.Text.Muted}" />
+                                                    <Setter Property="Background" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <MultiDataTrigger>
                                                             <MultiDataTrigger.Conditions>
                                                                 <Condition Binding="{Binding IsCompleted}" Value="True" />
                                                                 <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
                                                             </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="{StaticResource Brush.Mint.Muted}" />
+                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
                                                         </MultiDataTrigger>
                                                         <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                            <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
+                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
                                                             <DataTrigger.EnterActions>
                                                                 <BeginStoryboard>
                                                                     <Storyboard>
@@ -124,7 +124,7 @@
                             Margin="8,0,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="10"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             IsHitTestVisible="False"
                             Text="{TemplateBinding StepCounterText}">
                             <TextBlock.Style>

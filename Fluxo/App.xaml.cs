@@ -10,10 +10,12 @@ using Fluxo.Extensions;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
 using Fluxo.Services.Dialogs;
+using Fluxo.Services.Theming;
 using Fluxo.Services.Ui;
 using Fluxo.Services.Updates;
 using Fluxo.Infrastructure.SingleInstance;
 using Fluxo.ViewModels.Shell;
+using Fluxo.Resources.Theming;
 using Fluxo.Views.Shell;
 using Fluxo.Views.Shell.Main;
 using Fluxo.Views.Shell.Tray;
@@ -52,6 +54,7 @@ public partial class App : Application
     private readonly ITransactionService _transactionService;
     private readonly IAppDataService _appDataService;
     private readonly IAppDataCache _appDataCache;
+    private readonly ThemeService _themeService;
     private readonly MainVM _mainVM;
     private readonly IStartupRegistrationService _startupRegistrationService;
     private readonly IUiSettleAwaiter _uiSettleAwaiter;
@@ -83,6 +86,7 @@ public partial class App : Application
         _transactionService = _serviceProvider.GetRequiredService<ITransactionService>();
         _appDataService = _serviceProvider.GetRequiredService<IAppDataService>();
         _appDataCache = _serviceProvider.GetRequiredService<IAppDataCache>();
+        _themeService = _serviceProvider.GetRequiredService<ThemeService>();
         _startupRegistrationService = _serviceProvider.GetRequiredService<IStartupRegistrationService>();
         _uiSettleAwaiter = _serviceProvider.GetRequiredService<IUiSettleAwaiter>();
 
@@ -164,6 +168,8 @@ public partial class App : Application
                         LogStartupStage("main view model initialization", StartupStageState.Completed);
                     },
                     () => _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup));
+                await RestoreThemeAsync();
+                await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
             }
             finally
             {
@@ -369,6 +375,25 @@ public partial class App : Application
                 exception,
                 "Unable to resolve close behavior from user settings. Falling back to default exit behavior.");
             return AppCloseBehavior.Exit;
+        }
+    }
+
+    private async Task RestoreThemeAsync()
+    {
+        LogStartupStage("theme restoration", StartupStageState.Started);
+
+        try
+        {
+            await _themeService.RestoreAsync();
+            LogStartupStage("theme restoration", StartupStageState.Completed);
+        }
+        catch (Exception exception)
+        {
+            ThemeManager.SwitchTheme(ApplicationTheme.Dark);
+            LogStartupStage("theme restoration", StartupStageState.Failed);
+            FluxoLogManager.LogWarning(
+                exception,
+                "Unable to restore the saved theme. Falling back to dark mode.");
         }
     }
 

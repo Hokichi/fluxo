@@ -40,7 +40,7 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="13"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}"
                             TextTrimming="CharacterEllipsis" />
                     </Grid>
@@ -50,14 +50,14 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="14"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding SpentText}" />
                         <TextBlock
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding LimitText}"
                             Visibility="{Binding HasSpendingLimit, Converter={StaticResource BoolToVisibilityConverter}}" />
                     </Grid>
@@ -65,7 +65,7 @@
                     <ProgressBar
                         x:Name="SpendingProgress"
                         Grid.Row="2"
-                        Foreground="{StaticResource Brush.Success}"
+                        Foreground="{DynamicResource Brush.Success}"
                         Maximum="100"
                         Style="{StaticResource RoundedProgressBarStyle}"
                         Value="{Binding ProgressPercentage, Mode=OneWay}" />
@@ -75,20 +75,20 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding RemainderText}"
                             Visibility="{Binding HasSpendingLimit, Converter={StaticResource BoolToVisibilityConverter}}" />
                         <Border
                             x:Name="StatusBadge"
                             Padding="7,3"
                             HorizontalAlignment="Right"
-                            Background="{StaticResource Brush.Success.Dark}"
+                            Background="{DynamicResource Brush.Success.Dark}"
                             CornerRadius="10">
                             <TextBlock
                                 x:Name="StatusText"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="10"
-                                Foreground="{StaticResource Brush.Success}"
+                                Foreground="{DynamicResource Brush.Success}"
                                 Text="{Binding PercentageText}" />
                         </Border>
                     </Grid>
@@ -103,15 +103,15 @@
                             Margin="0,0,4,0"
                             ButtonIcon="{StaticResource Pen}"
                             Click="OnEditTagClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                             ToolTip="Edit" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource Delete}"
                             Click="OnDeleteTagClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                             ToolTip="Delete" />
                     </StackPanel>
@@ -119,14 +119,14 @@
             </Border>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding SpendingState}" Value="{x:Static dataEnums:SettingsTagSpendingState.Warning}">
-                    <Setter TargetName="SpendingProgress" Property="Foreground" Value="{StaticResource Brush.Warning}" />
-                    <Setter TargetName="StatusBadge" Property="Background" Value="{StaticResource Brush.Warning.Dark}" />
-                    <Setter TargetName="StatusText" Property="Foreground" Value="{StaticResource Brush.Warning}" />
+                    <Setter TargetName="SpendingProgress" Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                    <Setter TargetName="StatusBadge" Property="Background" Value="{DynamicResource Brush.Warning.Dark}" />
+                    <Setter TargetName="StatusText" Property="Foreground" Value="{DynamicResource Brush.Warning}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding SpendingState}" Value="{x:Static dataEnums:SettingsTagSpendingState.Danger}">
-                    <Setter TargetName="SpendingProgress" Property="Foreground" Value="{StaticResource Brush.Danger}" />
-                    <Setter TargetName="StatusBadge" Property="Background" Value="{StaticResource Brush.Danger.Dark}" />
-                    <Setter TargetName="StatusText" Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                    <Setter TargetName="SpendingProgress" Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                    <Setter TargetName="StatusBadge" Property="Background" Value="{DynamicResource Brush.Danger.Dark}" />
+                    <Setter TargetName="StatusText" Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -150,14 +150,14 @@
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
                     FontSize="16"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Tags" />
                 <customControls:BalloonButton
                     Grid.Column="1"
                     ButtonIcon="{StaticResource PlusSolid}"
                     Click="OnAddTagClick"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                     Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                     ToolTip="Add tag" />
             </Grid>
@@ -179,7 +179,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Secondary}"
+                Foreground="{DynamicResource Brush.Text.Secondary}"
                 Text="No tags yet â€” add one to get started."
                 Visibility="{Binding HasTags, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
         </Grid>

@@ -14,12 +14,12 @@
                     <StackPanel>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Title}" />
                         <TextBlock
                             Margin="0,6,0,0"
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding Description}"
                             TextWrapping="Wrap" />
                     </StackPanel>
@@ -41,13 +41,13 @@
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Preferences" />
                         <TextBlock
                             Margin="0,8,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="Set your app display preferences and notification behavior." />
                     </StackPanel>
 
@@ -64,12 +64,12 @@
                 <StackPanel Visibility="{Binding IsPersonalizationPageSelected, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Username" />
                     <TextBox
                         x:Name="UsernameTextBox"
                         Margin="0,8,0,0"
-                        Background="{StaticResource Brush.Background.Elevated}"
+                        Background="{DynamicResource Brush.Background.Elevated}"
                         LostFocus="OnUsernameTextBoxLostFocus"
                         Style="{StaticResource RoundedTextInputStyle}"
                         Text="{Binding PreferredAppName, UpdateSourceTrigger=PropertyChanged}"
@@ -78,7 +78,7 @@
                     <TextBlock
                         Margin="0,24,0,0"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Security" />
 
                     <Border Margin="0,8,0,0" Style="{StaticResource RowCardStyle}">
@@ -86,7 +86,7 @@
                             <Grid>
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="Lock UI when away" />
                                 <ToggleButton
                                     HorizontalAlignment="Right"
@@ -98,12 +98,12 @@
                             <Border
                                 Height="1.5"
                                 Margin="0,12"
-                                Background="{StaticResource Brush.Border.Subtle}" />
+                                Background="{DynamicResource Brush.Border.Subtle}" />
 
                             <StackPanel Margin="0,16,0,0" Visibility="{Binding HasAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="Auto-lock after" />
                                 <customControls:SegmentedToggleGroup Margin="0,10,0,0" SelectedValue="{Binding SelectedAppAutoLockPreset, Mode=TwoWay}">
                                     <customControls:SegmentedToggleOption Content="30 seconds" Value="30" />
@@ -126,7 +126,7 @@
                                         Margin="8,0,0,0"
                                         VerticalAlignment="Center"
                                         FontFamily="{StaticResource Regular}"
-                                        Foreground="{StaticResource Brush.Text.Primary}"
+                                        Foreground="{DynamicResource Brush.Text.Primary}"
                                         Text="seconds" />
                                 </StackPanel>
                             </StackPanel>
@@ -134,14 +134,14 @@
                             <Border
                                 Height="1.5"
                                 Margin="0,12"
-                                Background="{StaticResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Border.Subtle}"
                                 Visibility="{Binding HasAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                             <TextBlock
                                 Margin="0,16,0,0"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Unlock password" />
 
                             <Grid Margin="0,8,0,0">
@@ -155,7 +155,7 @@
 
                                     <TextBox
                                         x:Name="UiLockingPasswordVisibleTextBox"
-                                        Background="{StaticResource Brush.Background.Elevated}"
+                                        Background="{DynamicResource Brush.Background.Elevated}"
                                         LostFocus="OnUiLockingPasswordLostFocus"
                                         Style="{StaticResource RoundedTextInputStyle}"
                                         Text="{Binding UiLockingPassword, UpdateSourceTrigger=PropertyChanged}"
@@ -165,11 +165,11 @@
                                     <customControls:BalloonCheckBox
                                         Margin="8,0,8,0"
                                         HorizontalAlignment="Right"
-                                        CheckedBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                        CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                         CheckedIcon="{StaticResource EyeOff}"
                                         CheckedText="Hide password"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                         IconSize="14"
                                         IsChecked="{Binding IsUiLockingPasswordVisible, Mode=TwoWay}"
                                         ShouldExpand="False"
@@ -183,7 +183,7 @@
                     <TextBlock
                         Margin="0,24,0,0"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Data Management" />
 
                     <Grid Margin="0,8,0,16">

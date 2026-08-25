@@ -9,56 +9,56 @@
         <Style x:Key="WizardStep1SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep2Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardStep2SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep3Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardStep3SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep4Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardStep4SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep5Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardStep5SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep6Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardStep6SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep7Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardStep7SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep8Active}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="WizardFinishButtonStyle" BasedOn="{StaticResource ActionButtonStyle}" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Background.Surface}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.4" />
@@ -80,13 +80,13 @@
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
                     FontSize="14"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Setup Steps" />
                 <TextBlock
                     Margin="0,6,0,16"
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="{Binding StepCounterText}" />
 
                 <!--  Step 1  -->
@@ -96,7 +96,7 @@
                             x:Name="Step1Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="0"
                             Opacity="0" />
                         <StackPanel
@@ -126,7 +126,7 @@
                             x:Name="Step2Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="2"
                             Opacity="0" />
                         <StackPanel
@@ -156,7 +156,7 @@
                             x:Name="Step3Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="2"
                             Opacity="0" />
                         <StackPanel
@@ -186,7 +186,7 @@
                             x:Name="Step4Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="2"
                             Opacity="0" />
                         <StackPanel
@@ -216,7 +216,7 @@
                             x:Name="Step5Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="2"
                             Opacity="0" />
                         <StackPanel
@@ -246,7 +246,7 @@
                             x:Name="Step6Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="2"
                             Opacity="0" />
                         <StackPanel
@@ -276,7 +276,7 @@
                             x:Name="Step7Stripe"
                             Width="4"
                             HorizontalAlignment="Left"
-                            Background="{StaticResource Brush.Mint}"
+                            Background="{DynamicResource Brush.Mint}"
                             CornerRadius="2"
                             Opacity="0" />
                         <StackPanel
@@ -325,12 +325,12 @@
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             FontSize="22"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding CurrentStepTitle}" />
                         <TextBlock
                             Margin="0,8,0,0"
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding CurrentStepDescription}"
                             TextWrapping="Wrap" />
                     </StackPanel>

@@ -23,14 +23,14 @@
                         <StackPanel>
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis" />
                             <TextBlock
                                 Margin="0,5,0,0"
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="11"
-                                Foreground="{StaticResource Brush.Text.Secondary}">
+                                Foreground="{DynamicResource Brush.Text.Secondary}">
                                 <Run Text="{Binding TypeLabel, Mode=OneWay}" />
                                 <Run Text=" - " />
                                 <Run Text="{Binding AccountName}" />
@@ -44,7 +44,7 @@
                             Margin="16,0,0,0"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}">
+                            Foreground="{DynamicResource Brush.Text.Primary}">
                             <TextBlock.ToolTip>
                                 <TextBlock>
                                     <Run Text="{Binding AmountSign, Mode=OneWay}" />
@@ -68,8 +68,8 @@
                                 ButtonIcon="{StaticResource Check}"
                                 ButtonText="Reconcile"
                                 Click="OnResolveClick"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                                 ShouldExpand="True"
                                 Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                                 ToolTip="Resolve" />
@@ -79,12 +79,12 @@
                 <Border
                     Height="1.5"
                     Margin="12"
-                    Background="{StaticResource Brush.Border.Subtle}" />
+                    Background="{DynamicResource Brush.Border.Subtle}" />
             </StackPanel>
             <DataTemplate.Triggers>
                 <Trigger SourceName="ItemRoot" Property="IsMouseOver" Value="True">
-                    <Setter TargetName="ItemRoot" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                    <Setter TargetName="ItemRoot" Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+                    <Setter TargetName="ItemRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    <Setter TargetName="ItemRoot" Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
                     <Setter TargetName="RowActions" Property="Visibility" Value="Visible" />
                     <Setter TargetName="RowActions" Property="Opacity" Value="1" />
                     <Setter TargetName="RowActions" Property="IsHitTestVisible" Value="True" />
@@ -105,7 +105,7 @@
                 Margin="0,0,0,8"
                 FontFamily="{StaticResource Bold}"
                 FontSize="16"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="Debt/IoUs" />
             <Grid Grid.Row="1" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
@@ -115,14 +115,14 @@
                 <TextBlock
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="Manage loans, debts and IoUs" />
                 <TextBlock
                     Grid.Column="1"
                     Margin="16,0,0,0"
                     FontFamily="{StaticResource Bold}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Mint}">
+                    Foreground="{DynamicResource Brush.Mint}">
                     <Run Text="Total:" />
                     <Run Text="{Binding TotalAmountText, Mode=OneWay, Converter={StaticResource MoneyDisplayConverter}}" />
                 </TextBlock>
@@ -144,7 +144,7 @@
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="No Debts Or IOUs" />
             </StackPanel>
         </Grid>

@@ -6,16 +6,16 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
 <UserControl.Resources>
         <Style x:Key="NotificationAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-            <Setter Property="Background" Value="{StaticResource Brush.Info}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Info}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Severity}" Value="{x:Static coreEnums:NotificationSeverity.Success}">
-                    <Setter Property="Background" Value="{StaticResource Brush.Success}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Success}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Severity}" Value="{x:Static coreEnums:NotificationSeverity.Warning}">
-                    <Setter Property="Background" Value="{StaticResource Brush.Warning}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Warning}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Severity}" Value="{x:Static coreEnums:NotificationSeverity.Danger}">
-                    <Setter Property="Background" Value="{StaticResource Brush.Danger}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Danger}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -23,7 +23,7 @@
 <DataTemplate x:Key="FloatingNotificationDetailTemplate">
                                             <TextBlock
                                                 FontSize="7.5"
-                                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                                 Text="{Binding StringFormat=• {0}, Mode=OneWay}"
                                                 TextWrapping="Wrap" />
                                         </DataTemplate>
@@ -65,7 +65,7 @@
                         Height="54"
                         Margin="6,3"
                         Padding="13.5,10.5"
-                        Background="{StaticResource Brush.Background.Surface}"
+                        Background="{DynamicResource Brush.Background.Surface}"
                         CornerRadius="12"
                         Cursor="Hand"
                         MouseLeftButtonUp="OnCardClick"
@@ -88,20 +88,20 @@
                             <StackPanel Grid.Column="1" Margin="10.5,0,0,0">
                                 <TextBlock
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Primary}">
+                                    Foreground="{DynamicResource Brush.Text.Primary}">
                                     <Run
                                         FontFamily="{StaticResource Bold}"
                                         Text="{Binding Header, Mode=OneWay}" />
                                     <Run
                                         FontFamily="{StaticResource Regular}"
-                                        Foreground="{StaticResource Brush.Text.Secondary}"
+                                        Foreground="{DynamicResource Brush.Text.Secondary}"
                                         Text="{Binding HeaderAction, StringFormat={} {0}, Mode=OneWay}" />
                                 </TextBlock>
                                 <TextBlock
                                     Margin="0,6,0,0"
                                     FontFamily="{StaticResource Regular}"
                                     FontSize="9"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding Message, Mode=OneWay}"
                                     TextWrapping="Wrap" />
 <ItemsControl Margin="0,4.5,0,0" ItemsSource="{Binding Details, Mode=OneWay}" ItemTemplate="{StaticResource FloatingNotificationDetailTemplate}">

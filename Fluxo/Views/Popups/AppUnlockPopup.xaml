@@ -10,7 +10,7 @@
             <TextBlock
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Secondary}"
+                Foreground="{DynamicResource Brush.Text.Secondary}"
                 Text="Enter the unlock password."
                 TextWrapping="Wrap" />
 
@@ -25,7 +25,7 @@
                 Margin="0,8,0,0"
                 FontFamily="{StaticResource Medium}"
                 FontSize="11"
-                Foreground="{StaticResource Brush.Danger}"
+                Foreground="{DynamicResource Brush.Danger}"
                 Text="Password does not match."
                 Visibility="Collapsed" />
 

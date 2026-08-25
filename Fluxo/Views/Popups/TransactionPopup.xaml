@@ -27,10 +27,10 @@
 </ResourceDictionary.MergedDictionaries>
 
 <Style x:Key="TransactionFeedbackIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
-    <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+    <Setter Property="Color" Value="{DynamicResource Brush.Danger}" />
     <Style.Triggers>
         <DataTrigger Binding="{Binding HasErrors, Mode=OneWay}" Value="False">
-            <Setter Property="Color" Value="{StaticResource Brush.Warning}" />
+            <Setter Property="Color" Value="{DynamicResource Brush.Warning}" />
         </DataTrigger>
     </Style.Triggers>
 </Style>
@@ -71,7 +71,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="{TemplateBinding FontSize}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{TemplateBinding Content}" />
                         </StackPanel>
                     </Border>
@@ -164,11 +164,11 @@
             <Style x:Key="TransactionWarningTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource Medium}" />
                 <Setter Property="FontSize" Value="12" />
-                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                 <Setter Property="TextWrapping" Value="Wrap" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsWarning, Mode=OneWay}" Value="True">
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -282,7 +282,7 @@
                                     <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
                                 </Trigger>
                                 <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{StaticResource Brush.Danger}" />
+                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
                                 </DataTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -333,7 +333,7 @@
                         Height="8"
                         Margin="0,5,10,0"
                         VerticalAlignment="Top"
-                        Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
+                        Fill="{Binding TagHexCode, FallbackValue={DynamicResource Brush.Mint}, TargetNullValue={DynamicResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
                         <TextBlock
                             FontFamily="{DynamicResource Bold}"
@@ -379,7 +379,7 @@
                         Height="8"
                         Margin="0,5,10,0"
                         VerticalAlignment="Top"
-                        Fill="{Binding Tag.HexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
+                        Fill="{Binding Tag.HexCode, FallbackValue={DynamicResource Brush.Mint}, TargetNullValue={DynamicResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
                         <TextBlock
                             FontFamily="{DynamicResource Bold}"
@@ -567,8 +567,8 @@
                         <Border
                             Margin="0,6,0,0"
                             Padding="10"
-                            Background="{StaticResource Brush.Background.Elevated}"
-                            BorderBrush="{StaticResource Brush.Border.Subtle}"
+                            Background="{DynamicResource Brush.Background.Elevated}"
+                            BorderBrush="{DynamicResource Brush.Border.Subtle}"
                             BorderThickness="1"
                             CornerRadius="8">
                             <ItemsControl ItemTemplate="{StaticResource TransactionWarningTemplate}" ItemsSource="{Binding Warnings, Mode=OneWay}" />
@@ -645,7 +645,7 @@
 <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="SplitProgressBarStyle">
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
-                                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -815,10 +815,10 @@
                                             Grid.Column="2"
                                             ButtonIcon="{StaticResource Pin}"
                                             ButtonSize="38"
-                                            CheckedBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
+                                            CheckedBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
                                             CornerRadius="12"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsPinned, Mode=TwoWay}"
                                             IsEnabled="{Binding CanPinTransaction, Mode=OneWay}"
@@ -937,11 +937,11 @@
                                         </Grid.ColumnDefinitions>
                                         <customControls:BalloonRadioButton
                                             Grid.Column="0"
-                                            CheckedBackground="{StaticResource Brush.Success}"
+                                            CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsRegularMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
@@ -951,11 +951,11 @@
                                         <customControls:BalloonRadioButton
                                             Grid.Column="2"
                                             Margin="8,0,0,0"
-                                            CheckedBackground="{StaticResource Brush.Success}"
+                                            CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsRecurring, Mode=TwoWay}"
                                             IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
@@ -965,11 +965,11 @@
                                         <customControls:BalloonRadioButton
                                             Grid.Column="4"
                                             Margin="8,0,0,0"
-                                            CheckedBackground="{StaticResource Brush.Success}"
+                                            CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsInstallments, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseInstallments, Mode=OneWay}"
@@ -979,11 +979,11 @@
                                         <customControls:BalloonRadioButton
                                             Grid.Column="6"
                                             Margin="8,0,0,0"
-                                            CheckedBackground="{StaticResource Brush.Success}"
+                                            CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsUnpostedIoUMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
@@ -993,11 +993,11 @@
                                         <customControls:BalloonRadioButton
                                             Grid.Column="8"
                                             Margin="8,0,0,0"
-                                            CheckedBackground="{StaticResource Brush.Success}"
+                                            CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
@@ -1010,7 +1010,7 @@
                                         HorizontalAlignment="Center"
                                         FontFamily="{StaticResource Bold}"
                                         FontSize="11"
-                                        Foreground="{StaticResource Brush.Text.Secondary}"
+                                        Foreground="{DynamicResource Brush.Text.Secondary}"
                                         Text="{Binding TransactionModeDescription, Mode=OneWay}"
                                         TextWrapping="Wrap" />
                                 </StackPanel>
@@ -1137,11 +1137,11 @@
                                                 <StackPanel Orientation="Horizontal">
                                                     <customControls:BalloonRadioButton
                                                         ButtonIcon="{StaticResource Home}"
-                                                        CheckedBackground="{StaticResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Mint}"
                                                         CornerRadius="8"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
-                                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         IconSize="12"
                                                         IsChecked="{Binding IsNeedsCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
@@ -1150,11 +1150,11 @@
                                                     <customControls:BalloonRadioButton
                                                         Margin="8,0,0,0"
                                                         ButtonIcon="{StaticResource ShoppingBag}"
-                                                        CheckedBackground="{StaticResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Mint}"
                                                         CornerRadius="8"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
-                                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         IconSize="12"
                                                         IsChecked="{Binding IsWantsCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
@@ -1163,11 +1163,11 @@
                                                     <customControls:BalloonRadioButton
                                                         Margin="8,0,0,0"
                                                         ButtonIcon="{StaticResource TrendingUp}"
-                                                        CheckedBackground="{StaticResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Mint}"
                                                         CornerRadius="8"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
-                                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         IconSize="12"
                                                         IsChecked="{Binding IsInvestCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
@@ -1176,11 +1176,11 @@
                                                     <customControls:BalloonRadioButton
                                                         Margin="8,0,0,0"
                                                         ButtonIcon="{StaticResource CreditCardOff}"
-                                                        CheckedBackground="{StaticResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Mint}"
                                                         CornerRadius="8"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
-                                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         IconSize="12"
                                                         IsChecked="{Binding IsExcludedCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
@@ -1255,8 +1255,8 @@
                                                 Grid.Column="2"
                                                 ButtonSize="38"
                                                 CornerRadius="12"
-                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                 IconSize="14"
                                                 IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                                 ToolTip="Transaction mode">
@@ -1264,41 +1264,41 @@
                                                     <customControls:BalloonToggleState
                                                         ButtonIcon="{StaticResource RegularRepeat}"
                                                         ButtonText="Recurring"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                                                        HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                                                        HoverBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         OnChecked="{Binding HandleRecurringModeClickCommand, Mode=OneWay}" />
                                                     <customControls:BalloonToggleState
                                                         ButtonIcon="{StaticResource CreditCardClockOutline}"
                                                         ButtonText="Installments"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                                                        HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                                                        HoverBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         OnChecked="{Binding HandleInstallmentsModeClickCommand, Mode=OneWay}" />
                                                     <customControls:BalloonToggleState
                                                         ButtonIcon="{StaticResource CreditCardMinusSolid}"
                                                         ButtonText="{Binding IoUTooltip, Mode=OneWay}"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                                                        HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
+                                                        HoverBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         OnChecked="{Binding HandleIoUModeClickCommand, Mode=OneWay}" />
                                                     <customControls:BalloonToggleState
                                                         ButtonIcon="{StaticResource CreditCardOff}"
                                                         ButtonText="Exclude"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                                                        HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
+                                                        HoverBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         OnChecked="{Binding HandleExcludeModeClickCommand, Mode=OneWay}" />
                                                     <customControls:BalloonToggleState
                                                         ButtonIcon="{StaticResource CreditCardXRegular}"
                                                         ButtonText="Set as Debt and Exclude"
-                                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                                                        HoverBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
+                                                        HoverBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                         OnChecked="{Binding HandleExcludedIoUModeClickCommand, Mode=OneWay}" />
                                                 </customControls:BalloonToggle.States>
                                             </customControls:BalloonToggle>
                                             <customControls:BalloonCheckBox
                                                 Grid.Column="4"
                                                 ButtonSize="38"
-                                                CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                 IsChecked="{Binding IsPinned, Mode=TwoWay}"
                                                 IsEnabled="{Binding CanPinTransaction, Mode=OneWay}"
                                                 ToolTip="Pinned"
@@ -1693,7 +1693,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
-                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Foreground="{DynamicResource Brush.Text.Muted}"
                         Text="Splitting not available"
                         Visibility="{Binding ShowInvalidSplitPlaceholder, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <customControls:FadingScrollViewer
@@ -1719,7 +1719,7 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock
                                             FontFamily="{StaticResource Bold}"
-                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Foreground="{DynamicResource Brush.Text.Primary}"
                                             Text="{Binding RootTransaction.Name, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis" />
                                         <StackPanel
@@ -1728,7 +1728,7 @@
                                             <TextBlock
                                                 HorizontalAlignment="Right"
                                                 FontFamily="{StaticResource Bold}"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="{Binding RootTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                                             <components:Icon
                                                 DataContext="{Binding RootTransaction, Mode=OneWay}"
@@ -1752,7 +1752,7 @@
                                         <TextBlock
                                             VerticalAlignment="Center"
                                             FontFamily="{StaticResource Medium}"
-                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Foreground="{DynamicResource Brush.Text.Primary}"
                                             Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                             <Run Text="{Binding SplitAmountRemaining, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                                             <Run Text="{Binding SplitAmountStatus, Mode=OneWay}" />
@@ -1768,8 +1768,8 @@
                                                 Command="{Binding SplitEquallyCommand, Mode=OneWay}"
                                                 CommandParameter="{x:Null}"
                                                 CornerRadius="8"
-                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                 ShouldShowText="True" />
                                             <customControls:BalloonButton
                                                 ButtonIcon="{StaticResource RegularUndo}"
@@ -1777,8 +1777,8 @@
                                                 Command="{Binding ResetSplitCommand, Mode=OneWay}"
                                                 CommandParameter="{x:Null}"
                                                 CornerRadius="8"
-                                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                                 ShouldShowText="True" />
                                         </StackPanel>
                                     </Grid>
@@ -1808,7 +1808,7 @@
                                     Width="1"
                                     Height="20"
                                     HorizontalAlignment="Center"
-                                    Background="{StaticResource Brush.Border.Strong}" />
+                                    Background="{DynamicResource Brush.Border.Strong}" />
                                 <customControls:BalloonButton
                                     Margin="2,4,0,0"
                                     HorizontalAlignment="Left"

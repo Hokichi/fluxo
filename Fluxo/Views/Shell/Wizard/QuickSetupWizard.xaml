@@ -14,17 +14,17 @@
             <TextBlock
                 FontFamily="{StaticResource Bold}"
                 FontSize="18"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="flux" />
             <TextBlock
                 FontFamily="{StaticResource Bold}"
                 FontSize="18"
-                Foreground="{StaticResource Brush.Mint}"
+                Foreground="{DynamicResource Brush.Mint}"
                 Text="o" />
             <TextBlock
                 FontFamily="{StaticResource Bold}"
                 FontSize="18"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text=" Quick Setup" />
         </StackPanel>
     </customControls:BasePopup.PopupTitleContent>

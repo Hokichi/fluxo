@@ -5,7 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
+                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Themes/Dark.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />

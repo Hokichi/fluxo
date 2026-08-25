@@ -9,8 +9,8 @@
                 Height="60"
                 Margin="0,0,0,10"
                 Padding="4,4,8,4"
-                Background="{StaticResource Brush.Background.Elevated}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Elevated}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="8">
                 <Grid>
@@ -25,8 +25,8 @@
                     <Border
                         Width="36"
                         Height="36"
-                        Background="{StaticResource Brush.Background.Deepened}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Deepened}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="4">
                         <StackPanel VerticalAlignment="Center">
@@ -34,14 +34,14 @@
                                 HorizontalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
-                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
                                 Text="{Binding MonthText}" />
                             <TextBlock
                                 Margin="0,2,0,0"
                                 HorizontalAlignment="Center"
                                 FontFamily="{StaticResource Black}"
                                 FontSize="14"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding DayText}" />
                         </StackPanel>
                     </Border>
@@ -50,14 +50,14 @@
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             FontSize="13"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Title}"
                             TextTrimming="CharacterEllipsis" />
                         <TextBlock
                             Margin="0,4,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding AmountText}"
                             TextTrimming="CharacterEllipsis" />
                     </StackPanel>
@@ -69,15 +69,15 @@
                         Padding="8,4"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Background="{StaticResource Brush.Background.Deepened}"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        Background="{DynamicResource Brush.Background.Deepened}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="8">
                         <TextBlock
                             HorizontalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             FontSize="10"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding EventTypeText}"
                             TextTrimming="CharacterEllipsis" />
                     </Border>
@@ -85,8 +85,8 @@
             </Border>
             <DataTemplate.Triggers>
                 <Trigger SourceName="UpcomingEventItemSurface" Property="IsMouseOver" Value="True">
-                    <Setter TargetName="UpcomingEventItemSurface" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                    <Setter TargetName="UpcomingEventItemSurface" Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                    <Setter TargetName="UpcomingEventItemSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    <Setter TargetName="UpcomingEventItemSurface" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                 </Trigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -104,7 +104,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Bold}"
                 FontSize="13"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="Upcoming Events" />
 
             <Grid Grid.Row="2">
@@ -120,7 +120,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="No upcoming events."
                     TextAlignment="Center"
                     TextWrapping="Wrap"

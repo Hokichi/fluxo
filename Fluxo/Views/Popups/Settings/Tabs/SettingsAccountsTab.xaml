@@ -46,12 +46,12 @@
                         <StackPanel Grid.Column="1">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Name}" />
                             <TextBlock
                                 Margin="0,5,0,0"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding TypeDisplayName}" />
                         </StackPanel>
                         <TextBlock
@@ -59,7 +59,7 @@
                             Margin="16,0,0,0"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             ToolTip="{Binding PrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyFullDisplayConverter}}">
                             <Run Text="{Binding PrimaryAmount, Mode=OneWay, Converter={StaticResource NumberWithCommasConverter}}" />
                         </TextBlock>
@@ -73,13 +73,13 @@
                                 <components:Icon
                                     Margin="6"
                                     Path="{StaticResource Unpin}"
-                                    Color="{StaticResource Brush.Warning}" />
+                                    Color="{DynamicResource Brush.Warning}" />
                             </Border>
                             <Border Style="{StaticResource StateIconBadgeStyle}" Visibility="{Binding IsEnabled, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <components:Icon
                                     Margin="6"
                                     Path="{StaticResource LightningSlashFill}"
-                                    Color="{StaticResource Brush.Danger}" />
+                                    Color="{DynamicResource Brush.Danger}" />
                             </Border>
                         </StackPanel>
                         <StackPanel
@@ -94,30 +94,30 @@
                             <customControls:BalloonButton
                                 ButtonIcon="{StaticResource Delete}"
                                 Click="OnRowActionClick"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                                 Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                                 Tag="Accounts:Delete"
                                 ToolTip="Delete" />
                             <customControls:BalloonCheckBox
-                                CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                                CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                 CheckedIcon="{StaticResource Unpin}"
                                 CheckedText="Unpin"
                                 Click="OnRowActionClick"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                 IsChecked="{Binding IsUnpinned, Converter={StaticResource BoolNegationConverter}, Mode=OneWay}"
                                 Style="{StaticResource HeaderCheckBoxStyle}"
                                 Tag="Accounts:PinToggle"
                                 UncheckedIcon="{StaticResource Pin}"
                                 UncheckedText="Pin" />
                             <customControls:BalloonCheckBox
-                                CheckedBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
+                                CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
                                 CheckedIcon="{StaticResource LightningSlashFill}"
                                 CheckedText="Disable"
                                 Click="OnRowActionClick"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                 IsChecked="{Binding IsEnabled, Mode=OneWay}"
                                 Style="{StaticResource HeaderCheckBoxStyle}"
                                 Tag="Accounts:EnableToggle"
@@ -129,12 +129,12 @@
                 <Border
                     Height="1.5"
                     Margin="12"
-                    Background="{StaticResource Brush.Border.Subtle}" />
+                    Background="{DynamicResource Brush.Border.Subtle}" />
             </StackPanel>
             <DataTemplate.Triggers>
                 <Trigger SourceName="ItemRoot" Property="IsMouseOver" Value="True">
-                    <Setter TargetName="ItemRoot" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                    <Setter TargetName="ItemRoot" Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+                    <Setter TargetName="ItemRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    <Setter TargetName="ItemRoot" Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
                     <Setter TargetName="RowActions" Property="Visibility" Value="Visible" />
                     <Setter TargetName="RowActions" Property="Opacity" Value="1" />
                     <Setter TargetName="RowActions" Property="IsHitTestVisible" Value="True" />
@@ -147,7 +147,7 @@
                     <Setter TargetName="RowActions" Property="IsHitTestVisible" Value="False" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter TargetName="ItemRoot" Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                    <Setter TargetName="ItemRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -169,7 +169,7 @@
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
                     FontSize="16"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Accounts" />
                 <StackPanel
                     Grid.Column="1"
@@ -178,20 +178,20 @@
                     <customControls:BalloonButton
                         ButtonIcon="{StaticResource Delete}"
                         Click="OnBatchActionClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                         Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                         Tag="Accounts:Delete"
                         ToolTip="Delete selected"
                         IsEnabled="{Binding HasCheckedAccounts}"
                         Visibility="{Binding IsAccountChecksEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <customControls:BalloonCheckBox
-                        CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                        CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                         CheckedIcon="{StaticResource Unpin}"
                         CheckedText="Unpin Selected"
                         Click="OnBatchActionClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                         IsChecked="{Binding ShowAccountUnpinActionButton, Mode=OneWay}"
                         IsEnabled="{Binding HasCheckedAccounts}"
                         Style="{StaticResource HeaderCheckBoxStyle}"
@@ -200,12 +200,12 @@
                         UncheckedText="Pin Selected"
                         Visibility="{Binding IsAccountChecksEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <customControls:BalloonCheckBox
-                        CheckedBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
+                        CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
                         CheckedIcon="{StaticResource LightningSlashFill}"
                         CheckedText="Disable Selected"
                         Click="OnBatchActionClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                         IsChecked="{Binding ShowAccountDisableActionButton, Mode=OneWay}"
                         IsEnabled="{Binding HasCheckedAccounts}"
                         Style="{StaticResource HeaderCheckBoxStyle}"
@@ -214,24 +214,24 @@
                         UncheckedText="Enable Selected"
                         Visibility="{Binding IsAccountChecksEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <customControls:BalloonCheckBox
-                        CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                        CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                         CheckedIcon="{StaticResource UncheckAll}"
                         CheckedText="Uncheck All"
                         Click="OnSelectionActionClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                         IsChecked="{Binding AreAllAccountsChecked, Mode=OneWay}"
                         Style="{StaticResource HeaderCheckBoxStyle}"
                         UncheckedIcon="{StaticResource CheckAll}"
                         UncheckedText="Check All"
                         Visibility="{Binding IsAccountChecksEnabled, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <customControls:BalloonCheckBox
-                        CheckedBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
+                        CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                         CheckedIcon="{StaticResource DisableChecks}"
                         CheckedText="Disable Selection"
                         Click="OnChecksToggleClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                         IsChecked="{Binding IsAccountChecksEnabled, Mode=OneWay}"
                         Style="{StaticResource HeaderCheckBoxStyle}"
                         UncheckedIcon="{StaticResource EnableChecks}"
@@ -239,8 +239,8 @@
                     <customControls:BalloonButton
                         ButtonIcon="{StaticResource PlusSolid}"
                         Click="OnAddPlaceholderClick"
-                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                         Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                         Tag="Add New Account"
                         ToolTip="Add source" />
@@ -251,7 +251,7 @@
                 Margin="0,0,0,16"
                 FontFamily="{StaticResource Medium}"
                 FontSize="11"
-                Foreground="{StaticResource Brush.Text.Secondary}"
+                Foreground="{DynamicResource Brush.Text.Secondary}"
                 Text="Modify, disable or unpin your accounts" />
             <customControls:FadingScrollViewer
                 Grid.Row="2"
@@ -272,7 +272,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Bold}"
                 FontSize="13"
-                Foreground="{StaticResource Brush.Text.Secondary}"
+                Foreground="{DynamicResource Brush.Text.Secondary}"
                 Text="No Account Available"
                 Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
         </Grid>

@@ -11,8 +11,8 @@
             <Border
                 Height="24"
                 Padding="12,0"
-                Background="{StaticResource Brush.Background.Surface}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Surface}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="12"
                 Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}">
@@ -26,7 +26,7 @@
                         Margin="8,0,0,0"
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding Name}" />
                 </StackPanel>
             </Border>
@@ -72,12 +72,12 @@
 <Style x:Key="TagToggleButtonStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
         <Setter Property="Height" Value="24" />
         <Setter Property="Padding" Value="12,0" />
-        <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Template">
@@ -101,17 +101,17 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
-                <Setter Property="Foreground" Value="{StaticResource Brush.Background.Surface}" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
             </Trigger>
             <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
-                <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
-                <Setter Property="Foreground" Value="{StaticResource Brush.Background.Surface}" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -172,8 +172,8 @@
                     x:Name="AllTagUnselected"
                     Height="24"
                     Padding="12,0"
-                    Background="{StaticResource Brush.Background.Surface}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Surface}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="12"
                     Cursor="Hand" Style="{StaticResource VisibleBudgetTagBorderStyle}">
@@ -184,7 +184,7 @@
                     <TextBlock
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="All" />
                 </Border>
 
@@ -192,7 +192,7 @@
                     x:Name="AllTagSelected"
                     Height="24"
                     Padding="12,0"
-                    Background="{StaticResource Brush.Mint}"
+                    Background="{DynamicResource Brush.Mint}"
                     BorderThickness="1"
                     CornerRadius="12"
                     Cursor="Hand" Style="{StaticResource HiddenBudgetTagBorderStyle}">
@@ -203,7 +203,7 @@
                     <TextBlock
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        Foreground="{StaticResource Brush.Background.Surface}"
+                        Foreground="{DynamicResource Brush.Background.Surface}"
                         Text="All" />
                 </Border>
             </Grid>
@@ -240,8 +240,8 @@
                 VerticalOffset="8">
                 <Border
                     Padding="12"
-                    Background="{StaticResource Brush.Background.Elevated}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Elevated}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="16">
                     <Grid MaxWidth="320">
@@ -254,7 +254,7 @@
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="More tags" />
 
                         <customControls:FadingScrollViewer
@@ -284,7 +284,7 @@
             <components:TransactionsList
                 Title="NEEDS"
                 DeleteCommand="{Binding DeleteExpenseLogCommand}"
-                DotColor="{StaticResource Brush.Category.Needs}"
+                DotColor="{DynamicResource Brush.Category.Needs}"
                 EmptyActionText="No transaction found"
                 IsEmptyActionVisible="False"
                 IsListEmpty="{Binding IsTransactionsEmpty}"

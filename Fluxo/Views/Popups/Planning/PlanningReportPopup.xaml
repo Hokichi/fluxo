@@ -15,14 +15,14 @@
         <Style x:Key="SummaryLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
         <Style x:Key="TableHeaderTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="TextAlignment" Value="Left" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
@@ -36,22 +36,22 @@
             <Setter Property="CurveHeight" Value="8" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="IconSize" Value="8" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
-            <Setter Property="DefaultBackground" Value="{StaticResource Brush.Background.Surface}" />
-            <Setter Property="HoveredBackground" Value="{StaticResource Brush.Danger}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="DefaultBackground" Value="{DynamicResource Brush.Background.Surface}" />
+            <Setter Property="HoveredBackground" Value="{DynamicResource Brush.Danger}" />
         </Style>
 
         <Style x:Key="ReportAddButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
             <Setter Property="Height" Value="34" />
             <Setter Property="Padding" Value="12,0" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -67,8 +67,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="AddRowButtonBorder" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+                                <Setter TargetName="AddRowButtonBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -90,7 +90,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}, Path=(ItemsControl.AlternationIndex), Converter={StaticResource SourceSequenceLabelConverter}}" />
 
                 <customControls:MoneyTextBox
@@ -108,8 +108,8 @@
                     ButtonIcon="{StaticResource Close}"
                     Click="OnRemoveIncomeClick"
                     Style="{StaticResource ReportIconBalloonButtonStyle}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}" />
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}" />
             </Grid>
         </DataTemplate>
 
@@ -150,8 +150,8 @@
                     ButtonIcon="{StaticResource Close}"
                     Click="OnRemoveExpenseClick"
                     Style="{StaticResource ReportIconBalloonButtonStyle}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}" />
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}" />
             </Grid>
         </DataTemplate>
 
@@ -214,19 +214,19 @@
                                     <Ellipse
                                         Width="164"
                                         Height="164"
-                                        Stroke="{StaticResource Brush.Background.Hover}"
+                                        Stroke="{DynamicResource Brush.Background.Hover}"
                                         StrokeThickness="18" />
 
                                     <Path
                                         Data="{Binding NeedsRatio, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=164}"
-                                        Stroke="{StaticResource Brush.Category.Needs}"
+                                        Stroke="{DynamicResource Brush.Category.Needs}"
                                         StrokeEndLineCap="Flat"
                                         StrokeStartLineCap="Flat"
                                         StrokeThickness="18" />
 
                                     <Path
                                         Data="{Binding WantsRatio, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=164}"
-                                        Stroke="{StaticResource Brush.Category.Wants}"
+                                        Stroke="{DynamicResource Brush.Category.Wants}"
                                         StrokeEndLineCap="Flat"
                                         StrokeStartLineCap="Flat"
                                         StrokeThickness="18">
@@ -237,7 +237,7 @@
 
                                     <Path
                                         Data="{Binding InvestRatio, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=164}"
-                                        Stroke="{StaticResource Brush.Category.Investments}"
+                                        Stroke="{DynamicResource Brush.Category.Investments}"
                                         StrokeEndLineCap="Flat"
                                         StrokeStartLineCap="Flat"
                                         StrokeThickness="18">
@@ -258,17 +258,17 @@
                                             <TextBlock
                                                 FontFamily="{StaticResource Bold}"
                                                 FontSize="14"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="Needs" />
                                             <TextBlock
                                                 HorizontalAlignment="Right"
                                                 FontFamily="{StaticResource Bold}"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="{Binding NeedsPercent, StringFormat={}{0}%}" />
                                         </Grid>
                                         <Slider
                                             Margin="0,8,0,0"
-                                            Foreground="{StaticResource Brush.Category.Needs}"
+                                            Foreground="{DynamicResource Brush.Category.Needs}"
                                             IsSnapToTickEnabled="True"
                                             Maximum="100"
                                             Minimum="0"
@@ -284,17 +284,17 @@
                                             <TextBlock
                                                 FontFamily="{StaticResource Bold}"
                                                 FontSize="14"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="Wants" />
                                             <TextBlock
                                                 HorizontalAlignment="Right"
                                                 FontFamily="{StaticResource Bold}"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="{Binding WantsPercent, StringFormat={}{0}%}" />
                                         </Grid>
                                         <Slider
                                             Margin="0,8,0,0"
-                                            Foreground="{StaticResource Brush.Category.Wants}"
+                                            Foreground="{DynamicResource Brush.Category.Wants}"
                                             IsSnapToTickEnabled="True"
                                             Maximum="100"
                                             Minimum="0"
@@ -310,17 +310,17 @@
                                             <TextBlock
                                                 FontFamily="{StaticResource Bold}"
                                                 FontSize="14"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="Invest" />
                                             <TextBlock
                                                 HorizontalAlignment="Right"
                                                 FontFamily="{StaticResource Bold}"
-                                                Foreground="{StaticResource Brush.Text.Primary}"
+                                                Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="{Binding InvestPercent, StringFormat={}{0}%}" />
                                         </Grid>
                                         <Slider
                                             Margin="0,8,0,0"
-                                            Foreground="{StaticResource Brush.Category.Investments}"
+                                            Foreground="{DynamicResource Brush.Category.Investments}"
                                             IsSnapToTickEnabled="True"
                                             Maximum="100"
                                             Minimum="0"
@@ -374,13 +374,13 @@
                                                 Canvas.Top="4"
                                                 Width="72"
                                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
-                                                Stroke="{StaticResource Brush.Background.Hover}"
+                                                Stroke="{DynamicResource Brush.Background.Hover}"
                                                 StrokeThickness="8" />
                                             <Path
                                                 Canvas.Left="8"
                                                 Canvas.Top="8"
                                                 Data="{Binding AnimatedNeedsUsage, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=64}"
-                                                Stroke="{StaticResource Brush.Category.Needs}"
+                                                Stroke="{DynamicResource Brush.Category.Needs}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -389,7 +389,7 @@
                                                 Canvas.Left="8"
                                                 Canvas.Top="8"
                                                 Data="{Binding AnimatedNeedsOverflow, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=64}"
-                                                Stroke="{StaticResource Brush.Danger}"
+                                                Stroke="{DynamicResource Brush.Danger}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -401,7 +401,7 @@
                                             VerticalAlignment="Center"
                                             FontFamily="{StaticResource Bold}"
                                             FontSize="12"
-                                            Foreground="{StaticResource Brush.Category.Needs}"
+                                            Foreground="{DynamicResource Brush.Category.Needs}"
                                             Text="{Binding AnimatedNeedsUsagePercent, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, StringFormat={}{0:0}%}" />
                                     </Grid>
 
@@ -411,7 +411,7 @@
                                         HorizontalAlignment="Center"
                                         FontFamily="{StaticResource Medium}"
                                         FontSize="11"
-                                        Foreground="{StaticResource Brush.Text.Secondary}">
+                                        Foreground="{DynamicResource Brush.Text.Secondary}">
                                         <Run Text="{Binding NeedsSpent, Converter={StaticResource MoneyDisplayConverter}}" />
                                         <Run Text="/" />
                                         <Run Text="{Binding NeedsAllocated, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -449,13 +449,13 @@
                                                 Canvas.Top="4"
                                                 Width="72"
                                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
-                                                Stroke="{StaticResource Brush.Background.Hover}"
+                                                Stroke="{DynamicResource Brush.Background.Hover}"
                                                 StrokeThickness="8" />
                                             <Path
                                                 Canvas.Left="8"
                                                 Canvas.Top="8"
                                                 Data="{Binding AnimatedWantsUsage, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=64}"
-                                                Stroke="{StaticResource Brush.Category.Wants}"
+                                                Stroke="{DynamicResource Brush.Category.Wants}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -464,7 +464,7 @@
                                                 Canvas.Left="8"
                                                 Canvas.Top="8"
                                                 Data="{Binding AnimatedWantsOverflow, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=64}"
-                                                Stroke="{StaticResource Brush.Danger}"
+                                                Stroke="{DynamicResource Brush.Danger}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -476,7 +476,7 @@
                                             VerticalAlignment="Center"
                                             FontFamily="{StaticResource Bold}"
                                             FontSize="12"
-                                            Foreground="{StaticResource Brush.Category.Wants}"
+                                            Foreground="{DynamicResource Brush.Category.Wants}"
                                             Text="{Binding AnimatedWantsUsagePercent, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, StringFormat={}{0:0}%}" />
                                     </Grid>
 
@@ -486,7 +486,7 @@
                                         HorizontalAlignment="Center"
                                         FontFamily="{StaticResource Medium}"
                                         FontSize="11"
-                                        Foreground="{StaticResource Brush.Text.Secondary}">
+                                        Foreground="{DynamicResource Brush.Text.Secondary}">
                                         <Run Text="{Binding WantsSpent, Converter={StaticResource MoneyDisplayConverter}}" />
                                         <Run Text="/" />
                                         <Run Text="{Binding WantsAllocated, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -524,13 +524,13 @@
                                                 Canvas.Top="4"
                                                 Width="72"
                                                 Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
-                                                Stroke="{StaticResource Brush.Background.Hover}"
+                                                Stroke="{DynamicResource Brush.Background.Hover}"
                                                 StrokeThickness="8" />
                                             <Path
                                                 Canvas.Left="8"
                                                 Canvas.Top="8"
                                                 Data="{Binding AnimatedInvestUsage, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=64}"
-                                                Stroke="{StaticResource Brush.Category.Investments}"
+                                                Stroke="{DynamicResource Brush.Category.Investments}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -539,7 +539,7 @@
                                                 Canvas.Left="8"
                                                 Canvas.Top="8"
                                                 Data="{Binding AnimatedInvestOverflow, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=64}"
-                                                Stroke="{StaticResource Brush.Danger}"
+                                                Stroke="{DynamicResource Brush.Danger}"
                                                 StrokeEndLineCap="Round"
                                                 StrokeLineJoin="Round"
                                                 StrokeStartLineCap="Round"
@@ -551,7 +551,7 @@
                                             VerticalAlignment="Center"
                                             FontFamily="{StaticResource Bold}"
                                             FontSize="12"
-                                            Foreground="{StaticResource Brush.Category.Investments}"
+                                            Foreground="{DynamicResource Brush.Category.Investments}"
                                             Text="{Binding AnimatedInvestUsagePercent, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, StringFormat={}{0:0}%}" />
                                     </Grid>
 
@@ -561,7 +561,7 @@
                                         HorizontalAlignment="Center"
                                         FontFamily="{StaticResource Medium}"
                                         FontSize="11"
-                                        Foreground="{StaticResource Brush.Text.Secondary}">
+                                        Foreground="{DynamicResource Brush.Text.Secondary}">
                                         <Run Text="{Binding InvestSpent, Converter={StaticResource MoneyDisplayConverter}}" />
                                         <Run Text="/" />
                                         <Run Text="{Binding InvestAllocated, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -590,7 +590,7 @@
                                     VerticalAlignment="Bottom"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="16"
-                                    Foreground="{StaticResource Brush.Success}"
+                                    Foreground="{DynamicResource Brush.Success}"
                                     Text="{Binding TotalIncome, StringFormat={}{0:N0}}"
                                     ToolTip="{Binding TotalIncome, StringFormat={}{0:N0}, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </Grid>
@@ -604,7 +604,7 @@
                                     VerticalAlignment="Bottom"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="16"
-                                    Foreground="{StaticResource Brush.Danger}"
+                                    Foreground="{DynamicResource Brush.Danger}"
                                     Text="{Binding TotalExpenses, StringFormat={}{0:N0}}"
                                     ToolTip="{Binding TotalExpenses, StringFormat={}{0:N0}, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </Grid>
@@ -618,7 +618,7 @@
                                     VerticalAlignment="Bottom"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="16"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="{Binding Balance, StringFormat={}{0:N0}}"
                                     ToolTip="{Binding Balance, StringFormat={}{0:N0}, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </Grid>
@@ -637,8 +637,8 @@
                                         ButtonText="Load Recurring"
                                         Click="OnLoadRecurringIncomesClick"
                                         CornerRadius="8"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                                         IconSize="10"
                                         ShouldExpand="True" />
 
@@ -648,8 +648,8 @@
                                         ButtonText="Add Income"
                                         Click="OnAddIncomeClick"
                                         CornerRadius="8"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                                         IconSize="8"
                                         ShouldExpand="True" />
                                 </StackPanel>
@@ -682,7 +682,7 @@
                                                 Grid.Row="1"
                                                 Height="1"
                                                 Margin="0,0,0,10"
-                                                Background="{StaticResource Brush.Text.Muted}"
+                                                Background="{DynamicResource Brush.Text.Muted}"
                                                 Opacity="0.25" />
 
                                             <customControls:FadingScrollViewer
@@ -708,8 +708,8 @@
                                         ButtonText="Load Recurring"
                                         Click="OnLoadRecurringExpensesClick"
                                         CornerRadius="8"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                                         IconSize="10"
                                         ShouldExpand="True" />
 
@@ -719,8 +719,8 @@
                                         ButtonText="Add Expense"
                                         Click="OnAddExpenseClick"
                                         CornerRadius="8"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                                         IconSize="8"
                                         ShouldExpand="True" />
                                 </StackPanel>
@@ -757,7 +757,7 @@
                                         <Border
                                             Grid.Row="1"
                                             Height="1"
-                                            Background="{StaticResource Brush.Text.Muted}"
+                                            Background="{DynamicResource Brush.Text.Muted}"
                                             Opacity="0.25" />
 
                                         <customControls:FadingScrollViewer
@@ -773,7 +773,7 @@
                         </StackPanel>
                     </Border>
                     <Border
-                        Background="{StaticResource Brush.Background.Surface}"
+                        Background="{DynamicResource Brush.Background.Surface}"
                         CornerRadius="14"
                         Opacity="0.62"
                         Visibility="{Binding IsAllocationInvalid, Converter={StaticResource BoolToVisibilityConverter}}" />
@@ -782,7 +782,7 @@
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding InvalidAllocationMessage}"
                         TextAlignment="Center"
                         TextWrapping="Wrap"

@@ -10,12 +10,12 @@
 
 <customControls:BasePopup.Resources>
         <Style x:Key="AccountActivityAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
             <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
             <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsExpense}" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                     <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=-{0}}" />
                     <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=-{0}}" />
                 </DataTrigger>
@@ -25,15 +25,15 @@
         <Style x:Key="LeftSideLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
         <Style x:Key="InlineHeaderTextBoxBaseStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="CaretBrush" Value="{StaticResource Brush.Text.Primary}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template" Value="{StaticResource FadingTextBoxContentHostTemplate}" />
         </Style>
@@ -43,7 +43,7 @@
             BasedOn="{StaticResource InlineHeaderTextBoxBaseStyle}"
             TargetType="TextBox">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
             <Setter Property="HorizontalContentAlignment" Value="Right" />
             <Setter Property="TextAlignment" Value="Right" />
             <Setter Property="MinWidth" Value="24" />
@@ -53,8 +53,8 @@
             <Border
                 Margin="0,0,0,10"
                 Padding="12"
-                Background="{StaticResource Brush.Background.Hover}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Hover}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="14">
                 <Grid>
@@ -66,20 +66,20 @@
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Title}" />
                         <TextBlock
                             Margin="0,4,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="10"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding Detail}"
                             TextWrapping="Wrap" />
                         <TextBlock
                             Margin="0,6,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="9"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding Date, StringFormat={}{0:MMM d, yyyy}}" />
                     </StackPanel>
                     <TextBlock
@@ -105,7 +105,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding Label}" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                     <ProgressBar
@@ -116,7 +116,7 @@
                     <ProgressBar
                         Height="5"
                         Margin="0,8,0,0"
-                        Foreground="{StaticResource Brush.Danger}"
+                        Foreground="{DynamicResource Brush.Danger}"
                         Maximum="{Binding ElementName=Root, Path=DataContext.TrendMaximum}"
                         Style="{StaticResource RoundedProgressBarStyle}"
                         Value="{Binding ExpenseAmount, Mode=OneWay}" />
@@ -126,7 +126,7 @@
                         HorizontalAlignment="Right"
                         FontFamily="{StaticResource Medium}"
                         FontSize="10"
-                        Foreground="{StaticResource Brush.Success}"
+                        Foreground="{DynamicResource Brush.Success}"
                         Text="{Binding IncomeAmount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}"
                         ToolTip="{Binding IncomeAmount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
                     <TextBlock
@@ -134,7 +134,7 @@
                         HorizontalAlignment="Right"
                         FontFamily="{StaticResource Medium}"
                         FontSize="10"
-                        Foreground="{StaticResource Brush.Danger}"
+                        Foreground="{DynamicResource Brush.Danger}"
                         Text="{Binding ExpenseAmount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=-{0}}"
                         ToolTip="{Binding ExpenseAmount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=-{0}}" />
                 </StackPanel>
@@ -143,7 +143,7 @@
 
 <Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountDisableButtonStyle">
                                     <Setter Property="ButtonIcon" Value="{StaticResource LightningSlashFill}" />
-                                    <Setter Property="HoveredBackground" Value="{StaticResource Brush.Warning}" />
+                                    <Setter Property="HoveredBackground" Value="{DynamicResource Brush.Warning}" />
                                     <Setter Property="ToolTip" Value="Disable source" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsEnabled}" Value="False">
@@ -164,7 +164,7 @@
 
 <Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountPinButtonStyle">
                                     <Setter Property="ButtonIcon" Value="{StaticResource Unpin}" />
-                                    <Setter Property="HoveredBackground" Value="{StaticResource Brush.BalloonButton.Background.Default.Hovered}" />
+                                    <Setter Property="HoveredBackground" Value="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}" />
                                     <Setter Property="ToolTip" Value="Unpin source" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsUnpinned}" Value="True">
@@ -197,24 +197,24 @@
                 <Border
                     Width="56"
                     Height="56"
-                    Background="{StaticResource Brush.Background.Hover}"
+                    Background="{DynamicResource Brush.Background.Hover}"
                     CornerRadius="28">
                     <components:Icon
                         Margin="14"
                         Path="{StaticResource Bank}"
-                        Color="{StaticResource Brush.Mint}" />
+                        Color="{DynamicResource Brush.Mint}" />
                 </Border>
 
                 <StackPanel Grid.Column="2" VerticalAlignment="Center">
                     <TextBlock
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Foreground="{DynamicResource Brush.Text.Muted}"
                         Text="{Binding AccountType}" />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="22"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding NameText}"
                         Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                     <TextBox
@@ -232,14 +232,14 @@
                         HorizontalAlignment="Right"
                         FontFamily="{StaticResource Medium}"
                         FontSize="10"
-                        Foreground="{StaticResource Brush.Text.Muted}"
+                        Foreground="{DynamicResource Brush.Text.Muted}"
                         Text="{Binding PrimaryAmountLabel}" />
                     <TextBlock
                         Margin="0,6,0,0"
                         HorizontalAlignment="Right"
                         FontFamily="{StaticResource Bold}"
                         FontSize="26"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         ToolTip="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyFullDisplayConverter}}"
                         Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                         <Run Text="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
@@ -296,7 +296,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding MoneyIn, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding MoneyIn, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </TextBlock>
@@ -310,7 +310,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding MoneyOut, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding MoneyOut, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </TextBlock>
@@ -324,7 +324,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding SpentAmountText, Converter={StaticResource MoneyFullDisplayConverter}}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <Run Text="{Binding SpentAmountText, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
@@ -345,7 +345,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding AccountLimitText, Converter={StaticResource MoneyFullDisplayConverter}}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <Run Text="{Binding AccountLimitText, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -366,7 +366,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding MonthlyDueDateDisplay}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <TextBox
@@ -392,7 +392,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding DeductSourceDisplay}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <ComboBox
@@ -418,7 +418,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource NumberWithCommasConverter}}" />
                             </TextBlock>
@@ -432,7 +432,7 @@
                             <TextBlock
                                 Grid.Column="1"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Secondary}"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding ApyText, StringFormat={}{0}%}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <customControls:MoneyTextBox
@@ -454,44 +454,44 @@
                         Rows="2">
 <customControls:BalloonButton
                             Click="OnDisableButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Caution.Hovered}" Style="{StaticResource AccountDisableButtonStyle}">
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Caution.Hovered}" Style="{StaticResource AccountDisableButtonStyle}">
 
                         </customControls:BalloonButton>
 <customControls:BalloonButton
                             Click="OnEditButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             ToolTip="{Binding EditButtonLabel}" Style="{StaticResource AccountEditButtonStyle}">
 
                         </customControls:BalloonButton>
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource Exchange}"
                             Click="OnTransferButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                             IsEnabled="{Binding CanTransfer}"
                             Style="{StaticResource DetailActionBalloonButtonStyle}"
                             ToolTip="Transfer funds" />
 <customControls:BalloonButton
                             Click="OnPinOrUnpinButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             IsEnabled="{Binding CanPinOrUnpin}" Style="{StaticResource AccountPinButtonStyle}">
 
                         </customControls:BalloonButton>
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource SourceSwitch}"
                             Click="OnBackToSourcesButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.NavInfo}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.NavInfo.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.NavInfo.Hovered}"
                             Style="{StaticResource DetailActionBalloonButtonStyle}"
                             ToolTip="Back to sources" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource Delete}"
                             Click="OnDeleteButtonClick"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                             IsEnabled="{Binding CanDelete}"
                             Style="{StaticResource DetailActionBalloonButtonStyle}"
                             ToolTip="Delete source" />
@@ -509,7 +509,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="14"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="History" />
                     <Grid Grid.Row="2">
                         <customControls:FadingScrollViewer
@@ -524,7 +524,7 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Medium}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="No history found"
                             Visibility="{Binding HasRecentActivities, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                     </Grid>

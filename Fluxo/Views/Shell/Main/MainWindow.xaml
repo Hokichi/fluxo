@@ -33,11 +33,11 @@
 
             <Style x:Key="QuickSearchResultIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
                 <Setter Property="Path" Value="{StaticResource BanknoteArrowDown}" />
-                <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+                <Setter Property="Color" Value="{DynamicResource Brush.Danger}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding IsIncome}" Value="True">
                         <Setter Property="Path" Value="{StaticResource BanknoteArrowUp}" />
-                        <Setter Property="Color" Value="{StaticResource Brush.Success}" />
+                        <Setter Property="Color" Value="{DynamicResource Brush.Success}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -61,7 +61,7 @@
                 <Setter Property="Cursor" Value="Hand" />
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                        <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -98,7 +98,7 @@
 
             <Style x:Key="FloatingSideNavigationRailStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                 <Setter Property="Padding" Value="10,0" />
-                <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
                 <Setter Property="CornerRadius">
                     <Setter.Value>
                         <MultiBinding Converter="{StaticResource CornerRadiusConverter}">
@@ -114,7 +114,7 @@
                             BlurRadius="5"
                             Opacity="0.5"
                             ShadowDepth="0"
-                            Color="{StaticResource Color.Mint}" />
+                            Color="{DynamicResource Color.Mint}" />
                     </Setter.Value>
                 </Setter>
             </Style>
@@ -128,7 +128,7 @@
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
@@ -142,15 +142,15 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
-                                    <Setter TargetName="ButtonSurface" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                                    <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                                    <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                    <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
                                     <Setter TargetName="ButtonSurface" Property="BorderThickness" Value="1" />
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Foreground" Value="{StaticResource Brush.Background.Main}" />
-                                    <Setter TargetName="ButtonSurface" Property="Background" Value="{StaticResource Brush.Mint}" />
-                                    <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Main}" />
+                                    <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Mint}" />
+                                    <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                                     <Setter TargetName="ButtonSurface" Property="BorderThickness" Value="1" />
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
@@ -191,6 +191,36 @@
                 </Style.Triggers>
             </Style>
 
+            <Style
+                x:Key="HeaderThemeToggleStyle"
+                BasedOn="{StaticResource ToggleSwitchStyle}"
+                TargetType="ToggleButton">
+                <Setter Property="Height" Value="24" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Opacity" Value="0.85" />
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Opacity" Value="0.7" />
+                    </Trigger>
+                    <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <DropShadowEffect
+                                    BlurRadius="8"
+                                    Opacity="0.9"
+                                    ShadowDepth="0"
+                                    Color="{DynamicResource Color.Border.Focus}" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Cursor" Value="Arrow" />
+                        <Setter Property="Opacity" Value="0.4" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
             <DataTemplate x:Key="HeaderSearchResultItemTemplate">
                 <Border MouseLeftButtonUp="OnHeaderSearchResultItemClick" Style="{StaticResource HeaderSearchResultItemStyle}">
                     <Grid>
@@ -205,7 +235,7 @@
                             Height="32"
                             Margin="0,0,10,0"
                             VerticalAlignment="Center"
-                            Background="{StaticResource Brush.Background.Surface}"
+                            Background="{DynamicResource Brush.Background.Surface}"
                             CornerRadius="16">
                             <components:Icon
                                 Width="15"
@@ -220,7 +250,7 @@
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap" />
@@ -228,7 +258,7 @@
                                 <TextBlock
                                     FontFamily="{StaticResource Regular}"
                                     FontSize="10"
-                                    Foreground="{StaticResource Brush.Text.Muted}"
+                                    Foreground="{DynamicResource Brush.Text.Muted}"
                                     Text="{Binding Date, Converter={StaticResource DateTimeToRelativeDateConverter}}" />
 
                                 <Border
@@ -268,7 +298,7 @@
                                 HorizontalAlignment="Right"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}}"
                                 ToolTip="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}}" />
                             <TextBlock
@@ -277,7 +307,7 @@
                                 HorizontalAlignment="Right"
                                 FontFamily="{StaticResource Regular}"
                                 FontSize="10"
-                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
                                 Text="{Binding AccountName}"
                                 TextTrimming="CharacterEllipsis"
                                 TextWrapping="NoWrap" />
@@ -293,11 +323,11 @@
                         </ControlTemplate>
 
 <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="HistoryItemBorderStyle">
-                                                        <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+                                                        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
                                                         <Setter Property="Opacity" Value="1" />
                                                         <Style.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                                                <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                                                             </Trigger>
                                                             <DataTrigger Binding="{Binding IsReverted, Mode=OneWay}" Value="True">
                                                                 <Setter Property="Opacity" Value="0.55" />
@@ -329,21 +359,21 @@
                                                         <TextBlock
                                                             FontFamily="{StaticResource Medium}"
                                                             FontSize="13"
-                                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                                            Foreground="{DynamicResource Brush.Text.Primary}"
                                                             Text="{Binding Title, Mode=OneWay}"
                                                             TextWrapping="Wrap" />
                                                         <TextBlock
                                                             Margin="0,3,0,0"
                                                             FontFamily="{StaticResource Regular}"
                                                             FontSize="12"
-                                                            Foreground="{StaticResource Brush.Text.Secondary}"
+                                                            Foreground="{DynamicResource Brush.Text.Secondary}"
                                                             Text="{Binding Summary, Mode=OneWay}"
                                                             TextWrapping="Wrap" />
 <TextBlock
                                                             Margin="0,3,0,0"
                                                             FontFamily="{StaticResource Regular}"
                                                             FontSize="11"
-                                                            Foreground="{StaticResource Brush.Text.Muted}"
+                                                            Foreground="{DynamicResource Brush.Text.Muted}"
                                                             Text="{Binding Details, Mode=OneWay}"
                                                             TextWrapping="Wrap" Style="{StaticResource HistoryDetailsVisibilityStyle}">
 
@@ -352,7 +382,7 @@
                                                             Margin="0,3,0,0"
                                                             FontFamily="{StaticResource Medium}"
                                                             FontSize="11"
-                                                            Foreground="{StaticResource Brush.Text.Muted}"
+                                                            Foreground="{DynamicResource Brush.Text.Muted}"
                                                             Text="Reverted" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding IsReverted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
 
                                                         </TextBlock>
@@ -366,8 +396,8 @@
                                                             ButtonIcon="{StaticResource History}"
                                                             ButtonText="Revert to here"
                                                             Click="OnRevertToHistoryItemClick"
-                                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                                             IconSize="12"
                                                             IsEnabled="{Binding CanRevertToHere, Mode=OneWay}"
                                                             ShouldExpand="True"
@@ -376,12 +406,12 @@
                                                             Margin="8,0,0,0"
                                                             AutomationProperties.Name="Toggle history action"
                                                             ButtonSize="30"
-                                                            CheckedBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
+                                                            CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
                                                             CheckedIcon="{StaticResource RegularRedo}"
                                                             CheckedText="Reapply"
                                                             Click="OnHistoryActionClick"
-                                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                                             IconSize="11"
                                                             IsChecked="{Binding IsReverted, Mode=OneWay}"
                                                             ShouldExpand="True"
@@ -395,20 +425,20 @@
     </Window.Resources>
 
     <Grid x:Name="MainGrid" Margin="8">
-        <Border Background="{StaticResource Brush.Background.Main}" CornerRadius="8">
+        <Border Background="{DynamicResource Brush.Background.Main}" CornerRadius="8">
             <Border.Effect>
                 <DropShadowEffect
                     BlurRadius="10"
                     Opacity="1"
                     ShadowDepth="0"
-                    Color="{StaticResource Color.Background.Deepened}" />
+                    Color="{DynamicResource Color.Background.Deepened}" />
             </Border.Effect>
         </Border>
 
         <Border
             x:Name="RootBorder"
-            Background="{StaticResource Brush.Background.Main}"
-            BorderBrush="{StaticResource Brush.Border.Subtle}"
+            Background="{DynamicResource Brush.Background.Main}"
+            BorderBrush="{DynamicResource Brush.Border.Subtle}"
             BorderThickness="1"
             CornerRadius="8"
             MouseMove="MainWindow_OnMouseMove">
@@ -450,7 +480,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Black}"
                                 FontSize="18"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="flux" />
 
                             <TextBlock
@@ -458,7 +488,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Black}"
                                 FontSize="18"
-                                Foreground="{StaticResource Brush.Mint}"
+                                Foreground="{DynamicResource Brush.Mint}"
                                 Text="o" />
 
                             <Border Height="32" Style="{StaticResource VerticalSeparatorBorderStyle}" />
@@ -468,7 +498,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="14"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding ActivePageTitle, RelativeSource={RelativeSource AncestorType=Window}}" />
                         </StackPanel>
 
@@ -493,8 +523,7 @@
                                     x:Name="HeaderSearchButton"
                                     ButtonIcon="{StaticResource MagnifyingGlass}"
                                     Click="OnHeaderSearchButtonClick"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                     IconSize="11"
                                     Style="{StaticResource HeaderButtonStyle}" />
 
@@ -502,8 +531,8 @@
                                     x:Name="HeaderSearchInputBorder"
                                     Width="160"
                                     Padding="10,6"
-                                    Background="{StaticResource Brush.Background.Surface}"
-                                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                    Background="{DynamicResource Brush.Background.Surface}"
+                                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                     BorderThickness="1"
                                     CornerRadius="12"
                                     Visibility="Collapsed">
@@ -518,7 +547,7 @@
                                             Height="12"
                                             VerticalAlignment="Center"
                                             Path="{StaticResource MagnifyingGlass}"
-                                            Color="{StaticResource Brush.Text.Muted}" />
+                                            Color="{DynamicResource Brush.Text.Muted}" />
 
                                         <TextBox
                                             x:Name="HeaderSearchBox"
@@ -527,10 +556,10 @@
                                             VerticalContentAlignment="Center"
                                             Background="Transparent"
                                             BorderThickness="0"
-                                            CaretBrush="{StaticResource Brush.Text.Primary}"
+                                            CaretBrush="{DynamicResource Brush.Text.Primary}"
                                             FontFamily="{StaticResource Regular}"
                                             FontSize="13"
-                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Foreground="{DynamicResource Brush.Text.Primary}"
                                             PreviewKeyDown="OnHeaderSearchBoxPreviewKeyDown"
                                             TextChanged="OnHeaderSearchTextChanged"
                                             Template="{StaticResource FadingTextBoxContentHostTemplate}" />
@@ -550,8 +579,8 @@
                                         x:Name="HeaderSearchResultsBorder"
                                         Width="300"
                                         Padding="6"
-                                        Background="{StaticResource Brush.Background.Elevated}"
-                                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                        Background="{DynamicResource Brush.Background.Elevated}"
+                                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                         BorderThickness="1"
                                         CornerRadius="12">
                                         <Grid>
@@ -561,7 +590,7 @@
                                                 HorizontalAlignment="Center"
                                                 FontFamily="{StaticResource Medium}"
                                                 FontSize="14"
-                                                Foreground="{StaticResource Brush.Text.Muted}"
+                                                Foreground="{DynamicResource Brush.Text.Muted}"
                                                 Text="No transaction found"
                                                 Visibility="Collapsed" />
                                             <ItemsControl x:Name="HeaderSearchResultsList" ItemTemplate="{StaticResource HeaderSearchResultItemTemplate}" />
@@ -569,13 +598,41 @@
                                     </Border>
                                 </Popup>
                             </Grid>
+
+                            <StackPanel
+                                Margin="12,0,8,0"
+                                VerticalAlignment="Center"
+                                Orientation="Horizontal">
+                                <components:Icon
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Color="{DynamicResource Brush.Text.Primary}"
+                                    IsHitTestVisible="False"
+                                    Path="{StaticResource Sun}" />
+                                <ToggleButton
+                                    x:Name="HeaderThemeToggle"
+                                    Margin="8,0"
+                                    AutomationProperties.HelpText="Sun selects light theme; moon selects dark theme."
+                                    AutomationProperties.Name="Switch application theme"
+                                    Click="OnHeaderThemeToggleClick"
+                                    Style="{StaticResource HeaderThemeToggleStyle}"
+                                    ToolTip="Switch between light and dark theme" />
+                                <components:Icon
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Color="{DynamicResource Brush.Text.Primary}"
+                                    IsHitTestVisible="False"
+                                    Path="{StaticResource Moon}" />
+                            </StackPanel>
+
                             <customControls:BalloonButton
                                 x:Name="HeaderHistoryButton"
                                 AutomationProperties.Name="Toggle history"
                                 ButtonIcon="{StaticResource History}"
                                 Click="OnHeaderHistoryButtonClick"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="11"
                                 Style="{StaticResource HeaderButtonDisableWhenAppLockedStyle}" />
 
@@ -584,8 +641,7 @@
                                     x:Name="HeaderNotificationButton"
                                     ButtonIcon="{StaticResource Bell}"
                                     Click="OnHeaderNotificationButtonClick"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                     IconSize="11"
                                     Style="{StaticResource HeaderButtonDisableWhenAppLockedStyle}" />
 
@@ -596,9 +652,9 @@
                                     Margin="0,1,0,0"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top"
-                                    Fill="{StaticResource Brush.Danger}"
+                                    Fill="{DynamicResource Brush.Danger}"
                                     IsHitTestVisible="False"
-                                    Stroke="{StaticResource Brush.Background.Main}"
+                                    Stroke="{DynamicResource Brush.Background.Main}"
                                     StrokeThickness="1"
                                     Visibility="{Binding Dashboard.NotificationPanel.HasNotifications, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                             </Grid>
@@ -626,8 +682,7 @@
                                 ButtonIcon="{StaticResource BarsSolid}"
                                 Click="OnHeaderMenuButtonClick"
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="9"
                                 MouseEnter="OnHeaderMenuButtonMouseEnter"
                                 MouseLeave="OnHeaderMenuButtonMouseLeave"
@@ -646,8 +701,8 @@
                                     x:Name="HeaderMenuPopupRoot"
                                     Width="220"
                                     Padding="8"
-                                    Background="{StaticResource Brush.Background.Elevated}"
-                                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                    Background="{DynamicResource Brush.Background.Elevated}"
+                                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                     BorderThickness="1"
                                     CornerRadius="18"
                                     MouseEnter="OnHeaderMenuPopupMouseEnter"
@@ -658,7 +713,7 @@
                                             <Setter Property="HorizontalAlignment" Value="Right" />
                                             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
                                             <Setter Property="FontSize" Value="11" />
-                                            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                                             <Setter Property="Visibility" Value="Collapsed" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Button}}" Value="True">
@@ -685,12 +740,12 @@
                                                     Width="14"
                                                     Height="14"
                                                     Path="{StaticResource AppsSolid}"
-                                                    Color="{StaticResource Brush.Mint}" />
+                                                    Color="{DynamicResource Brush.Mint}" />
                                                 <TextBlock
                                                     Grid.Column="2"
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Bold}"
-                                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Quick Access" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -715,12 +770,12 @@
                                                     Width="14"
                                                     Height="14"
                                                     Path="{StaticResource Bank}"
-                                                    Color="{StaticResource Brush.Mint}" />
+                                                    Color="{DynamicResource Brush.Mint}" />
                                                 <TextBlock
                                                     Grid.Column="2"
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Bold}"
-                                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Accounts" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -742,12 +797,12 @@
                                                     Width="14"
                                                     Height="14"
                                                     Path="{StaticResource KeyboardBoxFill}"
-                                                    Color="{StaticResource Brush.Info}" />
+                                                    Color="{DynamicResource Brush.Info}" />
                                                 <TextBlock
                                                     Grid.Column="2"
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Bold}"
-                                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Hotkeys" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -769,12 +824,12 @@
                                                     Width="14"
                                                     Height="14"
                                                     Path="{StaticResource Cog}"
-                                                    Color="{StaticResource Brush.Info}" />
+                                                    Color="{DynamicResource Brush.Info}" />
                                                 <TextBlock
                                                     Grid.Column="2"
                                                     VerticalAlignment="Center"
                                                     FontFamily="{StaticResource Bold}"
-                                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Settings" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -789,17 +844,16 @@
                             <Border
                                 Width="1"
                                 Margin="16,0,8,0"
-                                Background="{StaticResource Brush.Background.Hover}"
+                                Background="{DynamicResource Brush.Background.Hover}"
                                 SnapsToDevicePixels="True" />
 
                             <customControls:BalloonCheckBox
                                 x:Name="HeaderAppLockButton"
-                                CheckedBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
+                                CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
                                 CheckedIcon="{StaticResource LockOpen}"
                                 CheckedText="Unlock fluxo"
                                 Click="OnHeaderAppLockButtonClick"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 IconSize="12"
                                 IsChecked="{Binding IsAppLocked, Mode=OneWay}"
                                 ShouldExpand="True"
@@ -813,16 +867,16 @@
                                 ButtonIcon="{StaticResource PlusSolid}"
                                 ButtonText="New Transaction"
                                 Click="OnHeaderQuickAddButtonClick"
-                                DefaultBackground="{StaticResource Brush.Mint}"
-                                Foreground="{StaticResource Brush.Text.Primary.Inverted}"
-                                HoveredBackground="{StaticResource Brush.Mint.Muted}"
+                                DefaultBackground="{DynamicResource Brush.Mint}"
+                                Foreground="{DynamicResource Brush.Text.Primary.Inverted}"
+                                HoveredBackground="{DynamicResource Brush.Mint.Muted}"
                                 ShouldExpand="True"
                                 Style="{StaticResource HeaderButtonDisableWhenAppLockedAndSufficientFundsActionGateLockedStyle}" />
 
                             <Border
                                 Width="1"
                                 Margin="16,0,8,0"
-                                Background="{StaticResource Brush.Background.Hover}"
+                                Background="{DynamicResource Brush.Background.Hover}"
                                 SnapsToDevicePixels="True" />
 
                             <customControls:BalloonButton
@@ -830,8 +884,7 @@
                                 ButtonText="Minimize"
                                 Command="{x:Static SystemCommands.MinimizeWindowCommand}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 ShouldExpand="True"
                                 Style="{StaticResource HeaderButtonStyle}" />
 
@@ -840,8 +893,7 @@
                                 ButtonIcon="{StaticResource ExpandAlt}"
                                 ButtonText="Maximize"
                                 Click="OnExpandRestoreWindow"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                                 ShouldExpand="True"
                                 Style="{StaticResource HeaderButtonStyle}" />
 
@@ -850,8 +902,8 @@
                                 ButtonText="Close"
                                 Command="{x:Static SystemCommands.CloseWindowCommand}"
                                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                                DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                                HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                                 ShouldExpand="True"
                                 Style="{StaticResource HeaderButtonStyle}" />
                         </StackPanel>
@@ -896,19 +948,19 @@
                             <TextBlock
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="18"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Insufficient fund. Please include a account with sufficient funds to start using "
                                 TextAlignment="Center" />
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock
                                     FontFamily="{StaticResource Black}"
                                     FontSize="18"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="flux" />
                                 <TextBlock
                                     FontFamily="{StaticResource Black}"
                                     FontSize="18"
-                                    Foreground="{StaticResource Brush.Mint}"
+                                    Foreground="{DynamicResource Brush.Mint}"
                                     Text="o" />
                             </StackPanel>
                         </StackPanel>
@@ -932,17 +984,17 @@
                         <TextBlock
                             FontFamily="{StaticResource Black}"
                             FontSize="18"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="flux" />
                         <TextBlock
                             FontFamily="{StaticResource Black}"
                             FontSize="18"
-                            Foreground="{StaticResource Brush.Mint}"
+                            Foreground="{DynamicResource Brush.Mint}"
                             Text="o" />
                         <TextBlock
                             FontFamily="{StaticResource Medium}"
                             FontSize="18"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text=" is locked" />
                     </StackPanel>
                 </Button>
@@ -1022,8 +1074,8 @@
                     Padding="20"
                     HorizontalAlignment="Right"
                     Panel.ZIndex="31"
-                    Background="{StaticResource Brush.Background.Elevated}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Elevated}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="18"
                     Visibility="Collapsed">
@@ -1045,13 +1097,13 @@
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="20"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="History" />
                                 <TextBlock
                                     Margin="0,4,0,0"
                                     FontFamily="{StaticResource Regular}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Muted}"
+                                    Foreground="{DynamicResource Brush.Text.Muted}"
                                     Text="Actions from this session, oldest first" />
                             </StackPanel>
                             <StackPanel
@@ -1064,8 +1116,8 @@
                                     ButtonIcon="{StaticResource RegularUndo}"
                                     ButtonText="Undo"
                                     Click="OnHistoryUndoButtonClick"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                                     IconSize="12"
                                     IsEnabled="False"
                                     ShouldExpand="True" />
@@ -1076,8 +1128,8 @@
                                     ButtonIcon="{StaticResource RegularRedo}"
                                     ButtonText="Redo"
                                     Click="OnHistoryRedoButtonClick"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Neutral}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                                     IconSize="12"
                                     IsEnabled="False"
                                     ShouldExpand="True" />
@@ -1096,7 +1148,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="13"
-                                Foreground="{StaticResource Brush.Text.Muted}"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
                                 Text="No actions logged this session" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding HasItems, ElementName=HistoryItemsControl, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
 
                             </TextBlock>
@@ -1106,7 +1158,7 @@
                 <Border
                     x:Name="PopupOverlay"
                     Panel.ZIndex="30"
-                    Background="{StaticResource Brush.Overlay}"
+                    Background="{DynamicResource Brush.Overlay}"
                     CornerRadius="16"
                     IsHitTestVisible="False"
                     MouseLeftButtonDown="OnPopupOverlayMouseLeftButtonDown"

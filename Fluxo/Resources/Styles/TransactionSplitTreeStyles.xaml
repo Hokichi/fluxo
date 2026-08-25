@@ -10,7 +10,7 @@
         <Setter Property="Height" Value="12" />
         <Setter Property="Margin" Value="0,3,0,0" />
         <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="Color" Value="{StaticResource Brush.Danger}" />
+        <Setter Property="Color" Value="{DynamicResource Brush.Danger}" />
         <Setter Property="Path" Value="{StaticResource ExclamationTriangle}" />
         <Setter Property="Visibility" Value="Collapsed" />
         <Style.Triggers>
@@ -22,7 +22,7 @@
                     <Condition Binding="{Binding IsValid, Mode=OneWay}" Value="True" />
                     <Condition Binding="{Binding HasWarnings, Mode=OneWay}" Value="True" />
                 </MultiDataTrigger.Conditions>
-                <Setter Property="Color" Value="{StaticResource Brush.Warning}" />
+                <Setter Property="Color" Value="{DynamicResource Brush.Warning}" />
                 <Setter Property="Visibility" Value="Visible" />
             </MultiDataTrigger>
         </Style.Triggers>
@@ -46,8 +46,8 @@
     </Style>
 
     <Style x:Key="SplitTransactionCardStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Padding" Value="16" />
@@ -67,10 +67,10 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
             </Trigger>
             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TreeViewItem}}" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -81,7 +81,7 @@
         TargetType="Button">
         <Style.Triggers>
             <DataTrigger Binding="{Binding SelectedSplitTransaction, Mode=OneWay}" Value="{x:Null}">
-                <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -102,7 +102,7 @@
                 <Border
                     Width="1"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Border.Strong}" />
+                    Background="{DynamicResource Brush.Border.Strong}" />
                 <customControls:BalloonButton
                     Grid.Row="1"
                     Margin="0,4"
@@ -116,7 +116,7 @@
                     Grid.Row="2"
                     Width="1"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Border.Strong}" />
+                    Background="{DynamicResource Brush.Border.Strong}" />
             </Grid>
             <Button
                 Grid.Column="2"
@@ -137,7 +137,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis" />
                         <components:Icon
@@ -151,7 +151,7 @@
                         <TextBlock
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                     </StackPanel>
                 </Grid>
@@ -165,7 +165,7 @@
         TargetType="ProgressBar">
         <Style.Triggers>
             <DataTrigger Binding="{Binding HasChildAmountOverflow, Mode=OneWay}" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -187,7 +187,7 @@
                     <Border
                         Width="1"
                         HorizontalAlignment="Center"
-                        Background="{StaticResource Brush.Border.Strong}" />
+                        Background="{DynamicResource Brush.Border.Strong}" />
                     <customControls:BalloonButton
                         Grid.Row="1"
                         Margin="0,4"
@@ -201,7 +201,7 @@
                         Grid.Row="2"
                         Width="1"
                         HorizontalAlignment="Center"
-                        Background="{StaticResource Brush.Border.Strong}" />
+                        Background="{DynamicResource Brush.Border.Strong}" />
                 </Grid>
                 <Button
                     Grid.Column="2"
@@ -224,7 +224,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="{Binding Name, Mode=OneWay}"
                                     TextTrimming="CharacterEllipsis" />
                                 <components:Icon
@@ -238,7 +238,7 @@
                                 <TextBlock
                                     HorizontalAlignment="Right"
                                     FontFamily="{StaticResource Bold}"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="{Binding Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                             </StackPanel>
                         </Grid>
@@ -258,7 +258,7 @@
                             <TextBlock
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Medium}"
-                                Foreground="{StaticResource Brush.Text.Primary}">
+                                Foreground="{DynamicResource Brush.Text.Primary}">
                                 <Run Text="{Binding ChildAmountDisplay, Mode=OneWay, StringFormat={}{0:#,##0}}" />
                                 <Run Text="{Binding ChildAmountStatus, Mode=OneWay}" />
                             </TextBlock>
@@ -270,8 +270,8 @@
                                     Command="{Binding SplitsViewModel.SplitEquallyCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                     CommandParameter="{Binding}"
                                     CornerRadius="8"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     ShouldShowText="True" />
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource RegularUndo}"
@@ -279,8 +279,8 @@
                                     Command="{Binding SplitsViewModel.ResetSplitCommand, RelativeSource={RelativeSource AncestorType=Window}, Mode=OneWay}"
                                     CommandParameter="{Binding}"
                                     CornerRadius="8"
-                                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                     ShouldShowText="True" />
                             </StackPanel>
                         </Grid>
@@ -295,7 +295,7 @@
                 <Border
                     Width="1"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Border.Strong}" />
+                    Background="{DynamicResource Brush.Border.Strong}" />
                 <StackPanel Grid.Column="1" Margin="0,4,0,0">
                     <TreeView
                         Margin="-32,0,0,0"
@@ -310,7 +310,7 @@
                             Width="1"
                             Height="20"
                             HorizontalAlignment="Center"
-                            Background="{StaticResource Brush.Border.Strong}" />
+                            Background="{DynamicResource Brush.Border.Strong}" />
                         <customControls:BalloonButton
                             Margin="2,4,0,0"
                             HorizontalAlignment="Left"

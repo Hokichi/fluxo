@@ -41,7 +41,7 @@
         <Border
             x:Name="SettingsSideMenu"
             Padding="12"
-            Background="{StaticResource Brush.Background.Surface}"
+            Background="{DynamicResource Brush.Background.Surface}"
             CornerRadius="8">
             <StackPanel>
                 <RadioButton

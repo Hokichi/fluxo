@@ -17,7 +17,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource SemiBold}" />
             <Setter Property="FontSize" Value="10" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
         <Style x:Key="DashboardAccountsScrollButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
@@ -29,7 +29,7 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -41,8 +41,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
-                                <Setter TargetName="ButtonSurface" Property="Background" Value="{StaticResource Brush.Background.Surface}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                                <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.85" />
@@ -189,28 +189,28 @@
                             <Ellipse
                                 Width="6"
                                 Height="6"
-                                Fill="{StaticResource Brush.Account.Checking}" />
+                                Fill="{DynamicResource Brush.Account.Checking}" />
                             <TextBlock Style="{StaticResource DashboardAccountLegendLabelStyle}" Text="Checking" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse
                                 Width="6"
                                 Height="6"
-                                Fill="{StaticResource Brush.Account.Cash}" />
+                                Fill="{DynamicResource Brush.Account.Cash}" />
                             <TextBlock Style="{StaticResource DashboardAccountLegendLabelStyle}" Text="Cash" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse
                                 Width="6"
                                 Height="6"
-                                Fill="{StaticResource Brush.Account.Credit}" />
+                                Fill="{DynamicResource Brush.Account.Credit}" />
                             <TextBlock Style="{StaticResource DashboardAccountLegendLabelStyle}" Text="Credit" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Ellipse
                                 Width="6"
                                 Height="6"
-                                Fill="{StaticResource Brush.Account.Saving}" />
+                                Fill="{DynamicResource Brush.Account.Saving}" />
                             <TextBlock Style="{StaticResource DashboardAccountLegendLabelStyle}" Text="Saving" />
                         </StackPanel>
                     </customControls:SpacedUniformGrid>

@@ -24,16 +24,16 @@
                         <components:Icon
                             x:Name="CheckGlyph"
                             Path="{StaticResource CheckboxBlankOutline}"
-                            Color="{StaticResource Brush.Text.Muted}" />
+                            Color="{DynamicResource Brush.Text.Muted}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="CheckSurface" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                            <Setter TargetName="CheckSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="CheckSurface" Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                            <Setter TargetName="CheckSurface" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                             <Setter TargetName="CheckGlyph" Property="Path" Value="{StaticResource EnableChecks}" />
-                            <Setter TargetName="CheckGlyph" Property="Color" Value="{StaticResource Brush.Mint}" />
+                            <Setter TargetName="CheckGlyph" Property="Color" Value="{DynamicResource Brush.Mint}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -42,7 +42,7 @@
     </Style>
 
     <Style x:Key="ItemCheckBoxWithContentStyle" BasedOn="{StaticResource BaseCheckBoxStyle}" TargetType="CheckBox">
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{StaticResource Medium}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -59,7 +59,7 @@
                                 x:Name="CheckGlyph"
                                 Margin="2,2,4,4"
                                 Path="{StaticResource CheckboxBlankOutline}"
-                                Color="{StaticResource Brush.Text.Muted}" />
+                                Color="{DynamicResource Brush.Text.Muted}" />
                         </Border>
 
                         <ContentPresenter
@@ -71,13 +71,13 @@
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="CheckSurface" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                            <Setter TargetName="CheckSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="CheckSurface" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-                            <Setter TargetName="CheckSurface" Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
+                            <Setter TargetName="CheckSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            <Setter TargetName="CheckSurface" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
                             <Setter TargetName="CheckGlyph" Property="Path" Value="{StaticResource EnableChecks}" />
-                            <Setter TargetName="CheckGlyph" Property="Color" Value="{StaticResource Brush.Mint}" />
+                            <Setter TargetName="CheckGlyph" Property="Color" Value="{DynamicResource Brush.Mint}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Root" Property="Opacity" Value="0.4" />
@@ -93,8 +93,8 @@
         <Setter Property="Height" Value="22" />
         <Setter Property="Margin" Value="8,0,0,0" />
         <Setter Property="CornerRadius" Value="11" />
-        <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Brush.Border.Subtle}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 </ResourceDictionary>

@@ -8,10 +8,10 @@
             <Setter Property="Grid.ColumnSpan" Value="3" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsExpenseMode}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Danger}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Danger}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsIncomeMode}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding HasSecondaryBar}" Value="True">
                     <Setter Property="Grid.ColumnSpan" Value="1" />
@@ -28,10 +28,10 @@
                     <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsSecondaryExpenseMode}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Danger}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Danger}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsSecondaryIncomeMode}" Value="True">
-                    <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
+                    <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding HasSecondaryBar}" Value="True">
                     <Setter Property="Grid.ColumnSpan" Value="1" />
@@ -41,7 +41,7 @@
         </Style>
 
         <Style x:Key="AnalyticsValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="Height" Value="16" />
             <Setter Property="LayoutTransform">
                 <Setter.Value>
@@ -50,7 +50,7 @@
             </Setter>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
-                    <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding RotateLabelVertical}" Value="True">
                     <Setter Property="LayoutTransform">
@@ -85,7 +85,7 @@
                         Margin="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="4"
                         RenderTransformOrigin="0.5,1"
@@ -101,7 +101,7 @@
                         Margin="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        BorderBrush="{StaticResource Brush.Border.Subtle}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
                         BorderThickness="1"
                         CornerRadius="4"
                         RenderTransformOrigin="0.5,1"
@@ -119,7 +119,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="13"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="{Binding Label}" Style="{StaticResource AnalyticsValueTextStyle}">
 
                 </TextBlock>
@@ -147,12 +147,12 @@
                             VerticalAlignment="Bottom"
                             FontFamily="{StaticResource Bold}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding Mode=OneWay}" />
                         <Border
                             Grid.Column="1"
                             VerticalAlignment="Bottom"
-                            BorderBrush="{StaticResource Brush.Border.Subtle}"
+                            BorderBrush="{DynamicResource Brush.Border.Subtle}"
                             BorderThickness="0,0,0,1" />
                     </Grid>
                 </DataTemplate>

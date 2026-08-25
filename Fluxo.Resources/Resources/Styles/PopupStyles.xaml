@@ -11,7 +11,7 @@
         <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
     </Style>
 
     <Style x:Key="PopupFieldHeaderGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
@@ -21,7 +21,7 @@
     <Style x:Key="CompactPopupFieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
     </Style>
 
     <ItemsPanelTemplate x:Key="PopupWrapItemsPanelTemplate">
@@ -32,7 +32,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type c:BasePopup}">
-                    <Border Background="{StaticResource Brush.Background.Popup}" CornerRadius="16">
+                    <Border Background="{DynamicResource Brush.Background.Popup}" CornerRadius="16">
                         <Grid x:Name="PART_ContentRoot">
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="HeaderRow" Height="61" />
@@ -58,7 +58,7 @@
                                             VerticalAlignment="Center"
                                             FontFamily="{StaticResource Bold}"
                                             FontSize="18"
-                                            Foreground="{StaticResource Brush.Text.Primary}"
+                                            Foreground="{DynamicResource Brush.Text.Primary}"
                                             Text="{TemplateBinding PopupTitle}"
                                             Visibility="Collapsed" />
                                         <ContentPresenter
@@ -72,8 +72,8 @@
                                         Grid.Column="1"
                                         ButtonIcon="{StaticResource Close}"
                                         ButtonText="Close"
-                                        DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                                        HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                                         ShouldExpand="True"
                                         Style="{StaticResource HeaderButtonStyle}"
                                         SubText="Esc"
@@ -84,7 +84,7 @@
                                 <Border
                                     x:Name="TopContentSeparator"
                                     Grid.Row="1"
-                                    Background="{StaticResource Brush.Border.Subtle}" />
+                                    Background="{DynamicResource Brush.Border.Subtle}" />
                             </Grid>
 
                             <ContentPresenter Grid.Row="1" Margin="0,16" />
@@ -98,7 +98,7 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Border x:Name="BottomContentSeparator" Background="{StaticResource Brush.Border.Subtle}" />
+                                <Border x:Name="BottomContentSeparator" Background="{DynamicResource Brush.Border.Subtle}" />
 
                                 <Grid Grid.Row="1" Margin="24,12">
                                     <Grid.ColumnDefinitions>
@@ -116,8 +116,8 @@
                                             x:Name="PART_BackButton"
                                             ButtonIcon="{StaticResource AngleLeft}"
                                             ButtonText="Back"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Backspace"
@@ -142,8 +142,8 @@
                                             x:Name="PART_ProceedButton"
                                             ButtonIcon="{StaticResource Check}"
                                             ButtonText="Proceed"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Enter" />
@@ -152,8 +152,8 @@
                                             Margin="8,0,0,0"
                                             ButtonIcon="{StaticResource Ban}"
                                             ButtonText="Cancel"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Esc" />
@@ -168,8 +168,8 @@
                                             x:Name="PART_DiscardButton"
                                             ButtonIcon="{StaticResource Ban}"
                                             ButtonText="Discard"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Esc" />
@@ -184,8 +184,8 @@
                                             x:Name="PART_SaveButton"
                                             ButtonIcon="{StaticResource ContentSave}"
                                             ButtonText="Save"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                                             IsEnabled="{TemplateBinding IsSaveButtonEnabled}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
@@ -201,8 +201,8 @@
                                             x:Name="PART_NextButton"
                                             ButtonIcon="{StaticResource AngleRight}"
                                             ButtonText="Next"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Default}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Default.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
                                             IsEnabled="{TemplateBinding CanGoNext}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
@@ -212,8 +212,8 @@
                                             Margin="8,0,0,0"
                                             ButtonIcon="{StaticResource AngleDoubleRight}"
                                             ButtonText="Skip"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             SubText="Ctrl+Enter"
@@ -223,8 +223,8 @@
                                             x:Name="PART_FinishButton"
                                             ButtonIcon="{StaticResource Check}"
                                             ButtonText="Finish"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                                             IsEnabled="{TemplateBinding CanFinish}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
@@ -241,8 +241,8 @@
                                             x:Name="PART_DeleteButton"
                                             ButtonIcon="{StaticResource Delete}"
                                             ButtonText="Delete"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Destructive}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanDelete,
@@ -258,8 +258,8 @@
                                             x:Name="PART_EditButton"
                                             ButtonIcon="{StaticResource Pen}"
                                             ButtonText="Edit"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanEdit,
@@ -269,8 +269,8 @@
                                             Margin="8,0,0,0"
                                             ButtonIcon="{StaticResource CloneRegular}"
                                             ButtonText="Clone"
-                                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             ShouldShowText="True"
                                             Style="{StaticResource HeaderButtonStyle}"
                                             Visibility="{TemplateBinding CanClone,
@@ -282,7 +282,7 @@
                             <Rectangle
                                 x:Name="PART_PopupOverlay"
                                 Grid.RowSpan="3"
-                                Fill="{StaticResource Brush.Overlay}"
+                                Fill="{DynamicResource Brush.Overlay}"
                                 Opacity="0"
                                 Visibility="Collapsed" />
                         </Grid>

@@ -12,7 +12,6 @@
     <UserControl.Resources>
 <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />
@@ -31,16 +30,16 @@
             <Style x:Key="ChecklistStateStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource Bold}" />
                 <Setter Property="FontSize" Value="11" />
-                <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding State}" Value="{x:Static models:ChecklistStepState.Running}">
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Warning}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
                     </DataTrigger>
                     <DataTrigger Binding="{Binding State}" Value="{x:Static models:ChecklistStepState.Success}">
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Success}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
                     </DataTrigger>
                     <DataTrigger Binding="{Binding State}" Value="{x:Static models:ChecklistStepState.Failed}">
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -49,8 +48,8 @@
                             <Border
                                 Margin="0,0,0,10"
                                 Padding="14,12"
-                                Background="{StaticResource Brush.Background.Surface}"
-                                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Background.Surface}"
+                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                 BorderThickness="1"
                                 CornerRadius="12">
                                 <Grid>
@@ -63,7 +62,7 @@
                                         VerticalAlignment="Center"
                                         FontFamily="{StaticResource Medium}"
                                         FontSize="12"
-                                        Foreground="{StaticResource Brush.Text.Primary}"
+                                        Foreground="{DynamicResource Brush.Text.Primary}"
                                         Text="{Binding Label}" />
 
                                     <TextBlock
@@ -92,7 +91,7 @@
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
                     FontSize="24"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Installing fluxo" />
 
                 <TextBlock
@@ -100,7 +99,7 @@
                     Margin="0,8,0,0"
                     FontFamily="{StaticResource Medium}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding StatusMessage}"
                     TextWrapping="Wrap" />
 

@@ -10,7 +10,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         <Setter Property="FontFamily" Value="{StaticResource Medium}" />
         <Setter Property="FontSize" Value="10" />
         <Setter Property="Padding" Value="8,2" />
@@ -28,7 +28,7 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
             </Trigger>
             <DataTrigger Binding="{Binding IsAtCurrentPeriod}" Value="True">
                 <Setter Property="Visibility" Value="Collapsed" />

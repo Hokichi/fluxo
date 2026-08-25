@@ -63,7 +63,7 @@ public sealed class BasePopupApplicationMainWindowTests
     {
         foreach (var resource in new[]
                  {
-                     "Theme.xaml", "Fonts.xaml", "Icons.xaml", "Converters.xaml",
+                     "Themes/Dark.xaml", "Fonts.xaml", "Icons.xaml", "Converters.xaml",
                      "Styles/ContainerStyles.xaml", "Styles/ButtonStyles.xaml", "Styles/TextBoxStyles.xaml",
                      "Styles/GlobalStyles.xaml", "Styles/PopupStyles.xaml"
                  })

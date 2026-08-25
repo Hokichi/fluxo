@@ -12,7 +12,7 @@
         <Style x:Key="TrayMenuOptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
         <Style x:Key="TrayMenuButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
@@ -34,11 +34,11 @@
                             <ContentPresenter
                                 TextElement.FontFamily="{StaticResource Black}"
                                 TextElement.FontSize="13"
-                                TextElement.Foreground="{StaticResource Brush.Text.Primary}" />
+                                TextElement.Foreground="{DynamicResource Brush.Text.Primary}" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{StaticResource Brush.Background.Hover}" />
+                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
                                 <Setter TargetName="ItemBackground" Property="Opacity" Value="0.9" />
@@ -53,8 +53,8 @@
     <Border
         Margin="8"
         Padding="10"
-        Background="{StaticResource Brush.Background.Surface}"
-        BorderBrush="{StaticResource Brush.Border.Subtle}"
+        Background="{DynamicResource Brush.Background.Surface}"
+        BorderBrush="{DynamicResource Brush.Border.Subtle}"
         BorderThickness="1"
         CornerRadius="12">
         <StackPanel Width="220">
@@ -65,12 +65,12 @@
                 <TextBlock
                     FontFamily="{StaticResource Black}"
                     FontSize="16"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="flux" />
                 <TextBlock
                     FontFamily="{StaticResource Black}"
                     FontSize="16"
-                    Foreground="{StaticResource Brush.Mint}"
+                    Foreground="{DynamicResource Brush.Mint}"
                     Text="o" />
             </StackPanel>
 
@@ -84,7 +84,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Black}"
                         FontSize="13"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
             </Button>
@@ -98,7 +98,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Black}"
                         FontSize="13"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
             </Button>

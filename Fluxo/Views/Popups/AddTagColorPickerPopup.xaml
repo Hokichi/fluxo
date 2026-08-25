@@ -10,8 +10,8 @@
 
 <ControlTemplate TargetType="Thumb" x:Key="HueSliderThumbTemplate">
                                                     <Border
-                                                        Background="{StaticResource Brush.Background.Surface}"
-                                                        BorderBrush="{StaticResource Brush.Text.Primary}"
+                                                        Background="{DynamicResource Brush.Background.Surface}"
+                                                        BorderBrush="{DynamicResource Brush.Text.Primary}"
                                                         BorderThickness="1"
                                                         CornerRadius="4" />
                                                 </ControlTemplate>
@@ -97,7 +97,7 @@
                                 x:Name="ColorHandle"
                                 Width="14"
                                 Height="14"
-                                Stroke="{StaticResource Brush.Background.Surface}"
+                                Stroke="{DynamicResource Brush.Background.Surface}"
                                 StrokeThickness="2" />
                         </Canvas>
                     </Grid>

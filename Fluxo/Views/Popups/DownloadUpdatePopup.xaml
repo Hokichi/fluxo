@@ -11,8 +11,8 @@
     <Grid>
         <Border
             Padding="28"
-            Background="{StaticResource Brush.Background.Elevated}"
-            BorderBrush="{StaticResource Brush.Border.Subtle}"
+            Background="{DynamicResource Brush.Background.Elevated}"
+            BorderBrush="{DynamicResource Brush.Border.Subtle}"
             BorderThickness="1"
             CornerRadius="22">
             <Grid>
@@ -28,7 +28,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="18"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
 
@@ -39,7 +39,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="28"
-                    Foreground="{StaticResource Brush.Mint}"
+                    Foreground="{DynamicResource Brush.Mint}"
                     Text="0%" />
 
                 <components:FluxoWave

@@ -17,19 +17,19 @@
         <Style x:Key="AnalyticsSectionTitleStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
         <Style x:Key="AnalyticsCardLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
         <Style x:Key="AnalyticsHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Secondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
@@ -38,14 +38,14 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="Text" Value="No Data Found" />
         </Style>
 
         <Style x:Key="AnalyticsCardProgressBarStyle" BasedOn="{StaticResource BaseProgressBarStyle}" TargetType="ProgressBar">
             <Setter Property="Height" Value="6" />
-            <Setter Property="Background" Value="{StaticResource Brush.Background.Hover}" />
-            <Setter Property="Foreground" Value="{StaticResource Brush.Mint}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ProgressBar">
@@ -84,7 +84,7 @@
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Medium}"
                         FontSize="14"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding TagName}" />
                 </StackPanel>
 
@@ -103,7 +103,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Light}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding TotalText}" />
             </Grid>
         </DataTemplate>
@@ -112,20 +112,20 @@
             <Border
                 Margin="0,0,0,10"
                 Padding="10"
-                Background="{StaticResource Brush.Background.Surface}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Surface}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="10">
                 <StackPanel>
                     <Grid>
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}" />
                         <TextBlock
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Medium}"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding ProgressPercent, StringFormat={}{0:F0}%}" />
                     </Grid>
 
@@ -138,7 +138,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Medium}"
                         FontSize="11"
-                        Foreground="{StaticResource Brush.Text.Secondary}">
+                        Foreground="{DynamicResource Brush.Text.Secondary}">
                         <Run Text="{Binding CurrentAmount, StringFormat={}{0:N0}}" />
                         <Run Text=" / " />
                         <Run Text="{Binding TargetAmount, StringFormat={}{0:N0}}" />
@@ -165,7 +165,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Muted}"
+                Foreground="{DynamicResource Brush.Text.Muted}"
                 Text="From" />
             <components:DateSelector
                 x:Name="AnalyticsStartDateSelector"
@@ -176,7 +176,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Muted}"
+                Foreground="{DynamicResource Brush.Text.Muted}"
                 Text="To" />
             <components:DateSelector
                 x:Name="AnalyticsEndDateSelector"
@@ -201,7 +201,7 @@
                         Margin="0,6,0,0"
                         FontFamily="{StaticResource Bold}"
                         FontSize="26"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="{Binding TotalIncomeText}" />
                 </StackPanel>
             </Border>
@@ -213,7 +213,7 @@
                         Margin="0,6,0,0"
                         FontFamily="{StaticResource Bold}"
                         FontSize="26"
-                        Foreground="{StaticResource Brush.Danger}"
+                        Foreground="{DynamicResource Brush.Danger}"
                         Text="{Binding TotalExpenseText}" />
                 </StackPanel>
             </Border>
@@ -225,7 +225,7 @@
                         Margin="0,6,0,0"
                         FontFamily="{StaticResource Bold}"
                         FontSize="26"
-                        Foreground="{StaticResource Brush.Info}"
+                        Foreground="{DynamicResource Brush.Info}"
                         Text="{Binding NetValueText}" />
                 </StackPanel>
             </Border>
@@ -331,19 +331,19 @@
                                     <Ellipse
                                         Width="164"
                                         Height="164"
-                                        Stroke="{StaticResource Brush.Background.Hover}"
+                                        Stroke="{DynamicResource Brush.Background.Hover}"
                                         StrokeThickness="18" />
 
                                     <Path
                                         Data="{Binding NeedsRatio, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=164}"
-                                        Stroke="{StaticResource Brush.Category.Needs}"
+                                        Stroke="{DynamicResource Brush.Category.Needs}"
                                         StrokeEndLineCap="Flat"
                                         StrokeStartLineCap="Flat"
                                         StrokeThickness="18" />
 
                                     <Path
                                         Data="{Binding WantsRatio, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=164}"
-                                        Stroke="{StaticResource Brush.Category.Wants}"
+                                        Stroke="{DynamicResource Brush.Category.Wants}"
                                         StrokeEndLineCap="Flat"
                                         StrokeStartLineCap="Flat"
                                         StrokeThickness="18">
@@ -354,7 +354,7 @@
 
                                     <Path
                                         Data="{Binding InvestRatio, Converter={StaticResource ProgressToArcGeometryConverter}, ConverterParameter=164}"
-                                        Stroke="{StaticResource Brush.Category.Investments}"
+                                        Stroke="{DynamicResource Brush.Category.Investments}"
                                         StrokeEndLineCap="Flat"
                                         StrokeStartLineCap="Flat"
                                         StrokeThickness="18">
@@ -386,7 +386,7 @@
                                     Width="8"
                                     Height="8"
                                     VerticalAlignment="Center"
-                                    Fill="{StaticResource Brush.Category.Needs}" />
+                                    Fill="{DynamicResource Brush.Category.Needs}" />
                                 <TextBlock
                                     Grid.Row="0"
                                     Grid.Column="2"
@@ -394,7 +394,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="Needs" />
                                 <TextBlock
                                     Grid.Row="0"
@@ -403,7 +403,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Medium}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding NeedsPercent, StringFormat={}{0}%}" />
 
                                 <Ellipse
@@ -412,7 +412,7 @@
                                     Width="8"
                                     Height="8"
                                     VerticalAlignment="Center"
-                                    Fill="{StaticResource Brush.Category.Wants}" />
+                                    Fill="{DynamicResource Brush.Category.Wants}" />
                                 <TextBlock
                                     Grid.Row="2"
                                     Grid.Column="2"
@@ -420,7 +420,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="Wants" />
                                 <TextBlock
                                     Grid.Row="2"
@@ -429,7 +429,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Medium}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding WantsPercent, StringFormat={}{0}%}" />
 
                                 <Ellipse
@@ -438,7 +438,7 @@
                                     Width="8"
                                     Height="8"
                                     VerticalAlignment="Center"
-                                    Fill="{StaticResource Brush.Category.Investments}" />
+                                    Fill="{DynamicResource Brush.Category.Investments}" />
                                 <TextBlock
                                     Grid.Row="4"
                                     Grid.Column="2"
@@ -446,7 +446,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Primary}"
+                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                     Text="Invest" />
                                 <TextBlock
                                     Grid.Row="4"
@@ -455,7 +455,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Medium}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding InvestPercent, StringFormat={}{0}%}" />
                             </Grid>
                         </Grid>

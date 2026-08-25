@@ -11,7 +11,7 @@
             <TextBlock
                 FontFamily="{StaticResource Bold}"
                 FontSize="14"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="{Binding PlaceholderTitle}"
                 TextWrapping="Wrap" />
 
@@ -19,7 +19,7 @@
                 Margin="0,12,0,0"
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
-                Foreground="{StaticResource Brush.Text.Secondary}"
+                Foreground="{DynamicResource Brush.Text.Secondary}"
                 Text="{Binding PlaceholderMessage}"
                 TextWrapping="Wrap" />
         </StackPanel>

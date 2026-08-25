@@ -8,8 +8,8 @@
             <Border
                 Margin="0,0,0,10"
                 Padding="10"
-                Background="{StaticResource Brush.Background.Elevated}"
-                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                Background="{DynamicResource Brush.Background.Elevated}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                 BorderThickness="1"
                 CornerRadius="16">
                 <Grid>
@@ -19,7 +19,7 @@
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="12"
-                                Foreground="{StaticResource Brush.Text.Primary}"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding Header}"
                                 TextWrapping="Wrap" />
 
@@ -29,14 +29,14 @@
                                 Height="18"
                                 Margin="6,0,0,0"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource Brush.Mint}"
+                                Background="{DynamicResource Brush.Mint}"
                                 CornerRadius="9">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="10"
-                                    Foreground="{StaticResource Brush.Text.Primary.Inverted}"
+                                    Foreground="{DynamicResource Brush.Text.Primary.Inverted}"
                                     Text="{Binding Count}" />
                             </Border>
                         </StackPanel>
@@ -45,7 +45,7 @@
                             Margin="0,4,0,0"
                             FontFamily="{StaticResource Medium}"
                             FontSize="9"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding LatestCreatedOn, Converter={StaticResource DateTimeToRelativeDateConverter}}" />
                     </StackPanel>
 
@@ -61,8 +61,8 @@
                             ButtonText="Process"
                             Command="{Binding DataContext.OpenNotificationActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.ConfirmSave.Hovered}"
                             ShouldExpand="True"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
                             Visibility="{Binding HasActionCta, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
@@ -74,8 +74,8 @@
                             ButtonText="Clear"
                             Command="{Binding DataContext.ClearNotificationGroupCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding}"
-                            DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                             IconSize="11"
                             ShouldExpand="True"
                             Style="{StaticResource ToolbarActionBalloonButtonStyle}"
@@ -88,7 +88,7 @@
 
     <Border
         Width="480"
-        Background="{StaticResource Brush.Background.Popup}"
+        Background="{DynamicResource Brush.Background.Popup}"
         Style="{StaticResource CardBorderStyle}">
         <Grid>
             <Grid.RowDefinitions>
@@ -102,7 +102,7 @@
                 VerticalAlignment="Center"
                 FontFamily="{StaticResource Bold}"
                 FontSize="13"
-                Foreground="{StaticResource Brush.Text.Primary}"
+                Foreground="{DynamicResource Brush.Text.Primary}"
                 Text="Notifications" />
 
             <Grid Grid.Row="2">
@@ -121,7 +121,7 @@
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
-                    Foreground="{StaticResource Brush.Text.Muted}"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="You're all caught up."
                     TextAlignment="Center"
                     TextWrapping="Wrap" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding HasNotifications, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
@@ -142,8 +142,8 @@
                     ButtonIcon="{StaticResource SleepLine}"
                     ButtonText="Snooze"
                     Command="{Binding SnoozeAllNotificationsCommand}"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Caution}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Caution.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Caution.Hovered}"
                     ShouldExpand="True"
                     Style="{StaticResource ToolbarActionBalloonButtonStyle}" />
                 <customControls:BalloonButton
@@ -154,8 +154,8 @@
                     ButtonIcon="{StaticResource Delete}"
                     ButtonText="Clear All"
                     Command="{Binding ClearAllNotificationsCommand}"
-                    DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
-                    HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
+                    DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                    HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     ShouldExpand="True"
                     Style="{StaticResource ToolbarActionBalloonButtonStyle}" />
             </StackPanel>

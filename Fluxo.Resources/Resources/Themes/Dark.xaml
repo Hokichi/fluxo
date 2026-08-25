@@ -1,0 +1,237 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  =============================  -->
+    <!--  BACKGROUND ELEVATION  -->
+    <!--  Ordered dark → light.  -->
+    <!--  Deepened sits below Surface  -->
+    <!--  (recessed inputs/insets).  -->
+    <!--  Popup sits between Deepened  -->
+    <!--  and Surface — modal chrome.  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Background.Main">#060A08</Color>
+    <Color x:Key="Color.Background.Deepened">#0B1410</Color>
+    <Color x:Key="Color.Background.Popup">#0E1B16</Color>
+    <Color x:Key="Color.Background.Surface">#11231C</Color>
+    <Color x:Key="Color.Background.Elevated">#193329</Color>
+    <Color x:Key="Color.Background.Hover">#234438</Color>
+
+    <SolidColorBrush x:Key="Brush.Background.Main" Color="{StaticResource Color.Background.Main}" />
+    <SolidColorBrush x:Key="Brush.Background.Deepened" Color="{StaticResource Color.Background.Deepened}" />
+    <SolidColorBrush x:Key="Brush.Background.Popup" Color="{StaticResource Color.Background.Popup}" />
+    <SolidColorBrush x:Key="Brush.Background.Surface" Color="{StaticResource Color.Background.Surface}" />
+    <SolidColorBrush x:Key="Brush.Background.Elevated" Color="{StaticResource Color.Background.Elevated}" />
+    <SolidColorBrush x:Key="Brush.Background.Hover" Color="{StaticResource Color.Background.Hover}" />
+
+    <!--  =============================  -->
+    <!--  ACCENT (MINT GREEN)  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Mint">#50C99A</Color>
+    <Color x:Key="Color.Mint.Muted">#3AA67A</Color>
+    <Color x:Key="Color.Mint.Tint">#0D3024</Color>
+
+    <SolidColorBrush x:Key="Brush.Mint" Color="{StaticResource Color.Mint}" />
+    <SolidColorBrush x:Key="Brush.Mint.Muted" Color="{StaticResource Color.Mint.Muted}" />
+    <SolidColorBrush x:Key="Brush.Mint.Tint" Color="{StaticResource Color.Mint.Tint}" />
+
+    <!--  =============================  -->
+    <!--  TEXT  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Text.Primary">#F2F6F3</Color>
+    <Color x:Key="Color.Text.Secondary">#B5C4BA</Color>
+    <Color x:Key="Color.Text.Muted">#84988D</Color>
+    <Color x:Key="Color.Text.Primary.Inverted">#07110D</Color>
+    <Color x:Key="Color.Text.Secondary.Inverted">#10251B</Color>
+    <Color x:Key="Color.Text.Muted.Inverted">#1E3A2C</Color>
+    <Color x:Key="Color.Text.Recurring">#FFD37A</Color>
+
+    <SolidColorBrush x:Key="Brush.Text.Primary" Color="{StaticResource Color.Text.Primary}" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="{StaticResource Color.Text.Secondary}" />
+    <SolidColorBrush x:Key="Brush.Text.Muted" Color="{StaticResource Color.Text.Muted}" />
+    <SolidColorBrush x:Key="Brush.Text.Primary.Inverted" Color="{StaticResource Color.Text.Primary.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary.Inverted" Color="{StaticResource Color.Text.Secondary.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Text.Muted.Inverted" Color="{StaticResource Color.Text.Muted.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Text.Recurring" Color="{StaticResource Color.Text.Recurring}" />
+
+    <!--  =============================  -->
+    <!--  BORDER  -->
+    <!--  Three-step structural ramp:  -->
+    <!--  Subtle  — dividers, rows  -->
+    <!--  Default — cards, popups,  -->
+    <!--  inputs at rest  -->
+    <!--  Strong  — input hover,  -->
+    <!--  active row  -->
+    <!--  Four semantic states follow.  -->
+    <!--  Accent.Muted — selected but  -->
+    <!--  unfocused (mint @ ~35% alpha).  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Border.Subtle">#20362D</Color>
+    <Color x:Key="Color.Border.Default">#5E806D</Color>
+    <Color x:Key="Color.Border.Strong">#82A894</Color>
+
+    <Color x:Key="Color.Border.Focus">#50C99A</Color>
+    <Color x:Key="Color.Border.Danger">#FF7179</Color>
+    <Color x:Key="Color.Border.Warning">#F2A93B</Color>
+    <Color x:Key="Color.Border.Info">#6AADFF</Color>
+
+    <Color x:Key="Color.Border.Accent.Muted">#6650C99A</Color>
+
+    <SolidColorBrush x:Key="Brush.Border.Subtle" Color="{StaticResource Color.Border.Subtle}" />
+    <SolidColorBrush x:Key="Brush.Border.Default" Color="{StaticResource Color.Border.Default}" />
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="{StaticResource Color.Border.Strong}" />
+    <SolidColorBrush x:Key="Brush.Border.Focus" Color="{StaticResource Color.Border.Focus}" />
+    <SolidColorBrush x:Key="Brush.Border.Danger" Color="{StaticResource Color.Border.Danger}" />
+    <SolidColorBrush x:Key="Brush.Border.Warning" Color="{StaticResource Color.Border.Warning}" />
+    <SolidColorBrush x:Key="Brush.Border.Info" Color="{StaticResource Color.Border.Info}" />
+    <SolidColorBrush x:Key="Brush.Border.Accent.Muted" Color="{StaticResource Color.Border.Accent.Muted}" />
+
+    <!--  =============================  -->
+    <!--  STATE / SEMANTIC  -->
+    <!--  Success is intentionally  -->
+    <!--  distinct from Color.Mint so  -->
+    <!--  success badges and primary  -->
+    <!--  CTAs don't look identical.  -->
+    <!--  Each state ships with a dark  -->
+    <!--  tint for surface backgrounds.  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Success">#69D7A9</Color>
+    <Color x:Key="Color.Warning">#F2A93B</Color>
+    <Color x:Key="Color.Danger">#FF7179</Color>
+    <Color x:Key="Color.Info">#6AADFF</Color>
+
+    <Color x:Key="Color.Success.Dark">#12382A</Color>
+    <Color x:Key="Color.Warning.Dark">#3A280B</Color>
+    <Color x:Key="Color.Danger.Dark">#3A1519</Color>
+    <Color x:Key="Color.Info.Dark">#102C47</Color>
+
+    <SolidColorBrush x:Key="Brush.Success" Color="{StaticResource Color.Success}" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="{StaticResource Color.Warning}" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="{StaticResource Color.Danger}" />
+    <SolidColorBrush x:Key="Brush.Info" Color="{StaticResource Color.Info}" />
+    <SolidColorBrush x:Key="Brush.Success.Dark" Color="{StaticResource Color.Success.Dark}" />
+    <SolidColorBrush x:Key="Brush.Warning.Dark" Color="{StaticResource Color.Warning.Dark}" />
+    <SolidColorBrush x:Key="Brush.Danger.Dark" Color="{StaticResource Color.Danger.Dark}" />
+    <SolidColorBrush x:Key="Brush.Info.Dark" Color="{StaticResource Color.Info.Dark}" />
+
+    <!--  =============================  -->
+    <!--  CATEGORY  -->
+    <!--  Needs  — neutral white  -->
+    <!--  Wants  — powder blue  -->
+    <!--  Savings — mint (shares accent,  -->
+    <!--  intentional: badges not CTAs)  -->
+    <!--  Each ships with a tinted dark  -->
+    <!--  surface for chip backgrounds.  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Category.Needs">#DCE7E0</Color>
+    <Color x:Key="Color.Category.Wants">#78BFE6</Color>
+    <Color x:Key="Color.Category.Investments">#50C99A</Color>
+
+    <Color x:Key="Color.Category.Needs.Dark">#1A2A23</Color>
+    <Color x:Key="Color.Category.Wants.Dark">#102B38</Color>
+    <Color x:Key="Color.Category.Investments.Dark">#0D3024</Color>
+
+    <SolidColorBrush x:Key="Brush.Category.Needs" Color="{StaticResource Color.Category.Needs}" />
+    <SolidColorBrush x:Key="Brush.Category.Wants" Color="{StaticResource Color.Category.Wants}" />
+    <SolidColorBrush x:Key="Brush.Category.Investments" Color="{StaticResource Color.Category.Investments}" />
+    <SolidColorBrush x:Key="Brush.Category.Needs.Dark" Color="{StaticResource Color.Category.Needs.Dark}" />
+    <SolidColorBrush x:Key="Brush.Category.Wants.Dark" Color="{StaticResource Color.Category.Wants.Dark}" />
+    <SolidColorBrush x:Key="Brush.Category.Investments.Dark" Color="{StaticResource Color.Category.Investments.Dark}" />
+
+    <!--  =============================  -->
+    <!--  ACCOUNTS  -->
+    <!--  Accent — text/icon tint  -->
+    <!--  Dark   — chip/badge surface  -->
+    <!--  Cash uses a cool neutral gray.  -->
+    <!--  Checking aliases Color.Info  -->
+    <!--  for token efficiency.  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Account.Checking">#6AADFF</Color>
+    <Color x:Key="Color.Account.Cash">#BAC5BE</Color>
+    <Color x:Key="Color.Account.Credit">#AA8BEE</Color>
+    <Color x:Key="Color.Account.Saving">#E0BB58</Color>
+
+    <Color x:Key="Color.Account.Checking.Inverted">#102C47</Color>
+    <Color x:Key="Color.Account.Cash.Inverted">#18211C</Color>
+    <Color x:Key="Color.Account.Credit.Inverted">#261A3C</Color>
+    <Color x:Key="Color.Account.Saving.Inverted">#382B0C</Color>
+
+    <SolidColorBrush x:Key="Brush.Account.Checking" Color="{StaticResource Color.Account.Checking}" />
+    <SolidColorBrush x:Key="Brush.Account.Cash" Color="{StaticResource Color.Account.Cash}" />
+    <SolidColorBrush x:Key="Brush.Account.Credit" Color="{StaticResource Color.Account.Credit}" />
+    <SolidColorBrush x:Key="Brush.Account.Saving" Color="{StaticResource Color.Account.Saving}" />
+    <SolidColorBrush x:Key="Brush.Account.Checking.Inverted" Color="{StaticResource Color.Account.Checking.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Account.Cash.Inverted" Color="{StaticResource Color.Account.Cash.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Account.Credit.Inverted" Color="{StaticResource Color.Account.Credit.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Account.Saving.Inverted" Color="{StaticResource Color.Account.Saving.Inverted}" />
+
+    <!--  =============================  -->
+    <!--  RESERVED  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Reserved">#70897B</Color>
+    <SolidColorBrush x:Key="Brush.Reserved" Color="{StaticResource Color.Reserved}" />
+
+    <Color x:Key="Color.Background.Recurring">#3A2A0B</Color>
+    <SolidColorBrush x:Key="Brush.Background.Recurring" Color="{StaticResource Color.Background.Recurring}" />
+
+    <!--  =============================  -->
+    <!--  OVERLAY  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.Overlay">#B8000000</Color>
+    <SolidColorBrush x:Key="Brush.Overlay" Color="{StaticResource Color.Overlay}" />
+
+
+
+    <!--  =============================  -->
+    <!--  BALLOON BUTTON BACKGROUND  -->
+    <!--  =============================  -->
+
+    <Color x:Key="Color.BalloonButton.Background.Default">#123A34</Color>
+    <Color x:Key="Color.BalloonButton.Background.Default.Hovered">#184B43</Color>
+
+    <Color x:Key="Color.BalloonButton.Background.ConfirmSave">#173C2A</Color>
+    <Color x:Key="Color.BalloonButton.Background.ConfirmSave.Hovered">#1F5138</Color>
+
+    <Color x:Key="Color.BalloonButton.Background.Destructive">#3A171A</Color>
+    <Color x:Key="Color.BalloonButton.Background.Destructive.Hovered">#512126</Color>
+
+    <Color x:Key="Color.BalloonButton.Background.Caution">#3A2C0C</Color>
+    <Color x:Key="Color.BalloonButton.Background.Caution.Hovered">#4B3910</Color>
+
+    <Color x:Key="Color.BalloonButton.Background.NavInfo">#142D43</Color>
+    <Color x:Key="Color.BalloonButton.Background.NavInfo.Hovered">#1B3B57</Color>
+
+    <Color x:Key="Color.BalloonButton.Background.Surface">#14251E</Color>
+    <Color x:Key="Color.BalloonButton.Background.Surface.Hovered">#1C342A</Color>
+
+    <Color x:Key="Color.BalloonButton.Background.Neutral.Hovered">#21372E</Color>
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Default" Color="{StaticResource Color.BalloonButton.Background.Default}" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Default.Hovered" Color="{StaticResource Color.BalloonButton.Background.Default.Hovered}" />
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.ConfirmSave" Color="{StaticResource Color.BalloonButton.Background.ConfirmSave}" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.ConfirmSave.Hovered" Color="{StaticResource Color.BalloonButton.Background.ConfirmSave.Hovered}" />
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Destructive" Color="{StaticResource Color.BalloonButton.Background.Destructive}" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Destructive.Hovered" Color="{StaticResource Color.BalloonButton.Background.Destructive.Hovered}" />
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Caution" Color="{StaticResource Color.BalloonButton.Background.Caution}" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Caution.Hovered" Color="{StaticResource Color.BalloonButton.Background.Caution.Hovered}" />
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.NavInfo" Color="{StaticResource Color.BalloonButton.Background.NavInfo}" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.NavInfo.Hovered" Color="{StaticResource Color.BalloonButton.Background.NavInfo.Hovered}" />
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Surface" Color="{StaticResource Color.BalloonButton.Background.Surface}" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Surface.Hovered" Color="{StaticResource Color.BalloonButton.Background.Surface.Hovered}" />
+
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Neutral" Color="Transparent" />
+    <SolidColorBrush x:Key="Brush.BalloonButton.Background.Neutral.Hovered" Color="{StaticResource Color.BalloonButton.Background.Neutral.Hovered}" />
+
+</ResourceDictionary>

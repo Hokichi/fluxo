@@ -17,8 +17,8 @@
 
         <Border
             Padding="28"
-            Background="{StaticResource Brush.Background.Popup}"
-            BorderBrush="{StaticResource Brush.Border.Subtle}"
+            Background="{DynamicResource Brush.Background.Popup}"
+            BorderBrush="{DynamicResource Brush.Border.Subtle}"
             BorderThickness="1"
             CornerRadius="22">
             <StackPanel VerticalAlignment="Center">
@@ -26,8 +26,8 @@
                     Width="72"
                     Height="72"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Background.Elevated}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Elevated}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="36">
                     <Image
@@ -43,12 +43,12 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="24"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="flux" />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="24"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
             </StackPanel>

@@ -11,15 +11,15 @@
     <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
         <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
     </Style>
 
     <Style x:Key="WizardCircleActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Width" Value="44" />
         <Setter Property="Height" Value="44" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
-        <Setter Property="Foreground" Value="{StaticResource Brush.Background.Surface}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
             <Setter.Value>
@@ -32,7 +32,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ButtonBackground" Property="Background" Value="{StaticResource Brush.Mint.Muted}" />
+                            <Setter TargetName="ButtonBackground" Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="ButtonBackground" Property="Opacity" Value="0.85" />

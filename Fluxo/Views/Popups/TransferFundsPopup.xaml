@@ -27,7 +27,7 @@
         <TextBlock
             Grid.Row="2"
             FontFamily="{StaticResource Medium}"
-            Foreground="{StaticResource Brush.Text.Secondary}"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
             Text="{Binding SourceName}" />
 
         <TextBlock

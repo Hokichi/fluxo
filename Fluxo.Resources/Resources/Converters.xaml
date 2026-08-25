@@ -19,7 +19,7 @@
     <converters:BackgroundToForegroundConverter x:Key="BackgroundToForegroundConverter" />
     <converters:WizardStepForegroundConverter
         x:Key="WizardStepForegroundConverter"
-        CurrentBrush="{StaticResource Brush.Text.Primary}"
-        CompletedBrush="{StaticResource Brush.Text.Muted}"
-        FutureBrush="{StaticResource Brush.Text.Secondary}" />
+        CompletedBrushKey="Brush.Text.Muted"
+        CurrentBrushKey="Brush.Text.Primary"
+        FutureBrushKey="Brush.Text.Secondary" />
 </ResourceDictionary>

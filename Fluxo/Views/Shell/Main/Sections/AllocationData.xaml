@@ -7,28 +7,28 @@
 <UserControl.Resources>
 
 <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="NeedsAllocationProgressStyle">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Needs}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Category.Needs}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsNeedsOverflowing}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
 
 <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="WantsAllocationProgressStyle">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Wants}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Category.Wants}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsWantsOverflowing}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
 
 <Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="InvestmentAllocationProgressStyle">
-                                <Setter Property="Foreground" Value="{StaticResource Brush.Category.Investments}" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Category.Investments}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsInvestOverflowing}" Value="True">
-                                        <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
+                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -51,13 +51,13 @@
                             <Ellipse
                                 Width="8"
                                 Height="8"
-                                Fill="{StaticResource Brush.Category.Needs}" />
+                                Fill="{DynamicResource Brush.Category.Needs}" />
                             <TextBlock
                                 Margin="8,0,0,0"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource ExtraBold}"
                                 FontSize="14"
-                                Foreground="{StaticResource Brush.Category.Needs}"
+                                Foreground="{DynamicResource Brush.Category.Needs}"
                                 Text="NEEDS" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -68,20 +68,20 @@
                                 VerticalAlignment="Center"
                                 Path="{StaticResource ExclamationTriangle}"
                                 Visibility="{Binding IsNeedsOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                                Color="{StaticResource Brush.Danger}" />
+                                Color="{DynamicResource Brush.Danger}" />
                             <Border
                                 Height="24"
                                 Padding="12,0"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource Brush.Background.Deepened}"
-                                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Background.Deepened}"
+                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                 BorderThickness="2"
                                 CornerRadius="4">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Light}"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding NeedsAllocationPercentage, Mode=OneWay, StringFormat={}{0}%}" />
                             </Border>
                         </StackPanel>
@@ -91,17 +91,17 @@
                         <Run
                             FontFamily="{StaticResource Bold}"
                             FontSize="24"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding NeedsSpent, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         <Run
                             FontFamily="{StaticResource Regular}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="/" />
                         <Run
                             FontFamily="{StaticResource Regular}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding NeedsAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
@@ -118,7 +118,7 @@
                         <TextBlock
                             FontFamily="{StaticResource Light}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}">
+                            Foreground="{DynamicResource Brush.Text.Muted}">
                             <Run Text="{Binding NeedsRemainingDisplay, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             <Run Text="{Binding NeedsRemainingLabel, Mode=OneWay}" />
                         </TextBlock>
@@ -127,7 +127,7 @@
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Light}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding NeedsPercentage, Mode=OneWay, StringFormat={}{0}% spent}" />
                     </Grid>
                 </StackPanel>
@@ -142,13 +142,13 @@
                             <Ellipse
                                 Width="8"
                                 Height="8"
-                                Fill="{StaticResource Brush.Category.Wants}" />
+                                Fill="{DynamicResource Brush.Category.Wants}" />
                             <TextBlock
                                 Margin="8,0,0,0"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource ExtraBold}"
                                 FontSize="14"
-                                Foreground="{StaticResource Brush.Category.Wants}"
+                                Foreground="{DynamicResource Brush.Category.Wants}"
                                 Text="WANTS" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -159,19 +159,19 @@
                                 VerticalAlignment="Center"
                                 Path="{StaticResource ExclamationTriangle}"
                                 Visibility="{Binding IsWantsOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                                Color="{StaticResource Brush.Danger}" />
+                                Color="{DynamicResource Brush.Danger}" />
                             <Border
                                 Height="24"
                                 Padding="12,0"
-                                Background="{StaticResource Brush.Background.Deepened}"
-                                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Background.Deepened}"
+                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                 BorderThickness="2"
                                 CornerRadius="4">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Light}"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding WantsAllocationPercentage, Mode=OneWay, StringFormat={}{0}%}" />
                             </Border>
                         </StackPanel>
@@ -181,17 +181,17 @@
                         <Run
                             FontFamily="{StaticResource Bold}"
                             FontSize="24"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding WantsSpent, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         <Run
                             FontFamily="{StaticResource Regular}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="/" />
                         <Run
                             FontFamily="{StaticResource Regular}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding WantsAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
@@ -208,7 +208,7 @@
                         <TextBlock
                             FontFamily="{StaticResource Light}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}">
+                            Foreground="{DynamicResource Brush.Text.Muted}">
                             <Run Text="{Binding WantsRemainingDisplay, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             <Run Text="{Binding WantsRemainingLabel, Mode=OneWay}" />
                         </TextBlock>
@@ -217,7 +217,7 @@
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Light}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding WantsPercentage, Mode=OneWay, StringFormat={}{0}% spent}" />
                     </Grid>
                 </StackPanel>
@@ -232,13 +232,13 @@
                             <Ellipse
                                 Width="8"
                                 Height="8"
-                                Fill="{StaticResource Brush.Category.Investments}" />
+                                Fill="{DynamicResource Brush.Category.Investments}" />
                             <TextBlock
                                 Margin="8,2,0,0"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource ExtraBold}"
                                 FontSize="14"
-                                Foreground="{StaticResource Brush.Category.Investments}"
+                                Foreground="{DynamicResource Brush.Category.Investments}"
                                 Text="INVEST" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -249,20 +249,20 @@
                                 VerticalAlignment="Center"
                                 Path="{StaticResource ExclamationTriangle}"
                                 Visibility="{Binding IsInvestOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                                Color="{StaticResource Brush.Danger}" />
+                                Color="{DynamicResource Brush.Danger}" />
                             <Border
                                 Height="24"
                                 Padding="12,0"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource Brush.Background.Deepened}"
-                                BorderBrush="{StaticResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Background.Deepened}"
+                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                 BorderThickness="2"
                                 CornerRadius="4">
                                 <TextBlock
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Light}"
-                                    Foreground="{StaticResource Brush.Text.Secondary}"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
                                     Text="{Binding InvestAllocationPercentage, Mode=OneWay, StringFormat={}{0}%}" />
                             </Border>
                         </StackPanel>
@@ -272,17 +272,17 @@
                         <Run
                             FontFamily="{StaticResource Bold}"
                             FontSize="24"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding InvestSpent, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                         <Run
                             FontFamily="{StaticResource Regular}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="/" />
                         <Run
                             FontFamily="{StaticResource Regular}"
                             FontSize="16"
-                            Foreground="{StaticResource Brush.Text.Secondary}"
+                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding InvestAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
@@ -299,7 +299,7 @@
                         <TextBlock
                             FontFamily="{StaticResource Light}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}">
+                            Foreground="{DynamicResource Brush.Text.Muted}">
                             <Run Text="{Binding InvestRemainingDisplay, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             <Run Text="{Binding InvestRemainingLabel, Mode=OneWay}" />
                         </TextBlock>
@@ -308,7 +308,7 @@
                             HorizontalAlignment="Right"
                             FontFamily="{StaticResource Light}"
                             FontSize="12"
-                            Foreground="{StaticResource Brush.Text.Muted}"
+                            Foreground="{DynamicResource Brush.Text.Muted}"
                             Text="{Binding InvestPercentage, Mode=OneWay, StringFormat={}{0}% spent}" />
                     </Grid>
                 </StackPanel>

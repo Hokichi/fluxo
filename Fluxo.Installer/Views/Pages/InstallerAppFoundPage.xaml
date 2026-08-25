@@ -12,7 +12,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />
@@ -33,14 +32,14 @@
                 TargetType="Button">
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="{StaticResource Brush.Mint}" />
-                        <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint}" />
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Background.Hover}" />
+                        <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Hover}" />
                     </Trigger>
                     <Trigger Property="IsPressed" Value="True">
-                        <Setter Property="Background" Value="{StaticResource Brush.Mint.Muted}" />
-                        <Setter Property="BorderBrush" Value="{StaticResource Brush.Mint.Muted}" />
-                        <Setter Property="Foreground" Value="{StaticResource Brush.Background.Deepened}" />
+                        <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint.Muted}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Deepened}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -61,8 +60,8 @@
                     Width="72"
                     Height="72"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Background.Surface}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Surface}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="36">
                     <Image
@@ -76,7 +75,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="28"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="fluxo" />
 
                 <StackPanel

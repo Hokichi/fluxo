@@ -16,8 +16,8 @@
                     Width="84"
                     Height="84"
                     HorizontalAlignment="Center"
-                    Background="{StaticResource Brush.Background.Surface}"
-                    BorderBrush="{StaticResource Brush.Border.Subtle}"
+                    Background="{DynamicResource Brush.Background.Surface}"
+                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="42">
                     <Image
@@ -32,20 +32,20 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="28"
-                        Foreground="{StaticResource Brush.Text.Primary}">
+                        Foreground="{DynamicResource Brush.Text.Primary}">
                         <Run Text="Welcome to" />
                         <Run Text="flux" />
                     </TextBlock>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="28"
-                        Foreground="{StaticResource Brush.Text.Primary}">
-                        <Run Foreground="{StaticResource Brush.Mint}" Text="o" />
+                        Foreground="{DynamicResource Brush.Text.Primary}">
+                        <Run Foreground="{DynamicResource Brush.Mint}" Text="o" />
                     </TextBlock>
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="28"
-                        Foreground="{StaticResource Brush.Text.Primary}">
+                        Foreground="{DynamicResource Brush.Text.Primary}">
                         <Run Text=", " />
                         <Run Text="{Binding ResolvedUsername, Mode=OneWay}" />
                     </TextBlock>
@@ -55,7 +55,7 @@
                     HorizontalAlignment="Center"
                     FontFamily="{StaticResource Medium}"
                     FontSize="12"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="Your dashboard, goals, and reminders are ready to go."
                     TextAlignment="Center" />
                 <Button
@@ -67,7 +67,7 @@
                         Width="16"
                         Height="16"
                         Path="{StaticResource RocketSolid}"
-                        Color="{StaticResource Brush.Background.Surface}" />
+                        Color="{DynamicResource Brush.Background.Surface}" />
                 </Button>
             </StackPanel>
         </Grid>

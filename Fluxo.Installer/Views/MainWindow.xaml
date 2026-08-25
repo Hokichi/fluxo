@@ -15,7 +15,6 @@
     <Window.Resources>
 <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Theme.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Fonts.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Icons.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Converters.xaml" />
@@ -101,8 +100,8 @@
     <Border
         Margin="16"
         Padding="24"
-        Background="{StaticResource Brush.Background.Main}"
-        BorderBrush="{StaticResource Brush.Border.Subtle}"
+        Background="{DynamicResource Brush.Background.Main}"
+        BorderBrush="{DynamicResource Brush.Border.Subtle}"
         BorderThickness="1"
         CornerRadius="16">
         <Grid>
@@ -121,17 +120,17 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Welcome to " />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="flux" />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{StaticResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Mint}"
                         Text="o" />
                 </StackPanel>
 

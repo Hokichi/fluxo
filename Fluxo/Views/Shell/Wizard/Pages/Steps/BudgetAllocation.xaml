@@ -22,7 +22,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="14"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Needs" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <customControls:BalloonButton
@@ -37,7 +37,7 @@
                             Width="56"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding NeedsAllocationPercentage, StringFormat={}{0}%}"
                             TextAlignment="Center" />
                         <customControls:BalloonButton
@@ -63,7 +63,7 @@
                     Grid.Row="2"
                     HorizontalAlignment="Right"
                     FontFamily="{StaticResource Medium}"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}}"
                     ToolTip="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
             </Grid>
@@ -83,7 +83,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="14"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Wants" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <customControls:BalloonButton
@@ -98,7 +98,7 @@
                             Width="56"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding WantsAllocationPercentage, StringFormat={}{0}%}"
                             TextAlignment="Center" />
                         <customControls:BalloonButton
@@ -124,7 +124,7 @@
                     Grid.Row="2"
                     HorizontalAlignment="Right"
                     FontFamily="{StaticResource Medium}"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}}"
                     ToolTip="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
             </Grid>
@@ -144,7 +144,7 @@
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
                         FontSize="14"
-                        Foreground="{StaticResource Brush.Text.Primary}"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Invest" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <customControls:BalloonButton
@@ -159,7 +159,7 @@
                             Width="56"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
-                            Foreground="{StaticResource Brush.Text.Primary}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding InvestAllocationPercentage, StringFormat={}{0}%}"
                             TextAlignment="Center" />
                         <customControls:BalloonButton
@@ -185,7 +185,7 @@
                     Grid.Row="2"
                     HorizontalAlignment="Right"
                     FontFamily="{StaticResource Medium}"
-                    Foreground="{StaticResource Brush.Text.Secondary}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
                     Text="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}}"
                     ToolTip="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
             </Grid>
@@ -194,7 +194,7 @@
         <TextBlock
             Margin="0,8,0,0"
             FontFamily="{StaticResource Bold}"
-            Foreground="{StaticResource Brush.Danger}"
+            Foreground="{DynamicResource Brush.Danger}"
             Text="{Binding BudgetAllocationErrorMessage}"
             Visibility="{Binding HasBudgetAllocationError, Converter={StaticResource BoolToVisibilityConverter}}" />
 
@@ -202,7 +202,7 @@
             Margin="0,20,0,12"
             FontFamily="{StaticResource Bold}"
             FontSize="16"
-            Foreground="{StaticResource Brush.Text.Primary}"
+            Foreground="{DynamicResource Brush.Text.Primary}"
             Text="Configuration" />
 
         <Border Style="{StaticResource CardBorderStyle}">
@@ -214,7 +214,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Spending Limit" />
                 <customControls:MoneyTextBox
                     Grid.Column="1"
@@ -233,7 +233,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Allocation Period" />
                 <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding AllocationPeriod, Mode=TwoWay}">
                     <customControls:SegmentedToggleOption Content="Weekly" Value="{x:Static enums:AllocationPeriod.Weekly}" />
@@ -254,7 +254,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Budget Rollover" />
                 <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding RolloverPolicy, Mode=TwoWay}">
                     <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:RolloverPolicy.None}" />
@@ -273,7 +273,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    Foreground="{StaticResource Brush.Text.Primary}"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="Overspend Behavior" />
                 <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding OverspendPolicy, Mode=TwoWay}">
                     <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:OverspendPolicy.Ignore}" />

@@ -18,11 +18,13 @@ using Fluxo.DataModels.Messages;
 using Fluxo.Helpers.MainWindow;
 using Fluxo.Helpers.Settings;
 using Fluxo.Resources.Infrastructure;
+using Fluxo.Resources.Theming;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Dialogs;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Theming;
 using Fluxo.Services.Updates;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
@@ -81,6 +83,7 @@ public partial class MainWindow : Window, IPopupHost
     private readonly DispatcherTimer _appAutoLockActiveDelayTimer = new() { Interval = AppAutoLockActiveDelay };
     private readonly DispatcherTimer _appAutoLockCountdownTimer = new();
     private readonly IAppDataService _appData;
+    private readonly ThemeService _themeService;
     private readonly LogMemoryManager _logMemoryManager;
     private readonly MainVM _mainVM;
     private readonly IDialogService _dialogService;
@@ -136,6 +139,7 @@ public partial class MainWindow : Window, IPopupHost
     public MainWindow(
         MainVM mainVM,
         IAppDataService appData,
+        ThemeService themeService,
         IDialogService dialogService,
         IServiceProvider serviceProvider,
         FloatingNotificationOverlayWindow floatingNotificationOverlay,
@@ -147,6 +151,7 @@ public partial class MainWindow : Window, IPopupHost
 
         _mainVM = mainVM;
         _appData = appData;
+        _themeService = themeService;
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
         _floatingNotificationOverlay = floatingNotificationOverlay;
@@ -157,6 +162,7 @@ public partial class MainWindow : Window, IPopupHost
                 .FirstOrDefault(popup => popup.IsOwnedBy(ownerToken)));
         _appUpdateService = appUpdateService;
         _appUpdateInteractionService = appUpdateInteractionService;
+        HeaderThemeToggle.IsChecked = _themeService.CurrentTheme == ApplicationTheme.Dark;
         _logMemoryManager = new LogMemoryManager(_appData, _mainVM.ReloadCurrentDataAsync);
         WeakReferenceMessenger.Default.Register<MainWindow, NavigateToLedgerRequestedMessage>(
             this,
@@ -215,6 +221,33 @@ public partial class MainWindow : Window, IPopupHost
         _headerMenuCloseTimer.Tick += OnHeaderMenuCloseTimerTick;
         _appAutoLockActiveDelayTimer.Tick += OnAppAutoLockActiveDelayTimerTick;
         _appAutoLockCountdownTimer.Tick += OnAppAutoLockCountdownTimerTick;
+    }
+
+    internal static ApplicationTheme ResolveThemeFromToggle(bool? isChecked)
+    {
+        return isChecked == true ? ApplicationTheme.Dark : ApplicationTheme.Light;
+    }
+
+    private async void OnHeaderThemeToggleClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton toggle)
+            return;
+
+        toggle.IsEnabled = false;
+
+        try
+        {
+            await _themeService.SwitchThemeAsync(ResolveThemeFromToggle(toggle.IsChecked));
+        }
+        catch (Exception exception)
+        {
+            toggle.IsChecked = _themeService.CurrentTheme == ApplicationTheme.Dark;
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception, "switch application theme");
+        }
+        finally
+        {
+            toggle.IsEnabled = true;
+        }
     }
 
     private void MainWindow_OnMouseMove(object sender, MouseEventArgs e)
