@@ -630,7 +630,7 @@
                             <Border
                                 Width="1"
                                 Margin="16,0,8,0"
-                                Background="{DynamicResource Brush.Background.Hover}"
+                                Background="{DynamicResource Brush.Border.Subtle}"
                                 SnapsToDevicePixels="True" />
 
                             <customControls:BalloonCheckBox
@@ -662,7 +662,7 @@
                             <Border
                                 Width="1"
                                 Margin="16,0,8,0"
-                                Background="{DynamicResource Brush.Background.Hover}"
+                                Background="{DynamicResource Brush.Border.Subtle}"
                                 SnapsToDevicePixels="True" />
 
                             <customControls:BalloonButton
