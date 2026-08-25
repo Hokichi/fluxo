@@ -1,11 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Fluxo.DataModels.Popups.GlobalSearch;
 using Fluxo.Helpers.MainWindow;
-using Fluxo.Resources.CustomControls;
 
 namespace Fluxo.Views.Popups;
 
@@ -15,7 +13,7 @@ public partial class GlobalSearchPopup : BasePopup
     private IReadOnlyList<GlobalSearchResult> _candidates = [];
     private IReadOnlyList<GlobalSearchResultGroup> _groups = [];
 
-    internal ObservableCollection<GlobalSearchResult> VisibleResults { get; } = [];
+    public ObservableCollection<GlobalSearchResult> VisibleResults { get; } = [];
 
     internal GlobalSearchResultType? SelectedType { get; private set; }
 
@@ -26,6 +24,7 @@ public partial class GlobalSearchPopup : BasePopup
         _candidateTask = candidateTask ?? throw new ArgumentNullException(nameof(candidateTask));
         InitializeComponent();
         DataContext = this;
+        ResultsListBox.ItemsSource = VisibleResults;
         StateText.Text = "Loading search...";
         Loaded += OnLoadedAsync;
     }
@@ -39,8 +38,9 @@ public partial class GlobalSearchPopup : BasePopup
     {
         _groups = GlobalSearchEngine.Search(_candidates, query);
         SelectedType = GlobalSearchEngine.ResolveSelectedType(_groups, SelectedType);
-        RebuildTypeOptions();
+        RebuildResultTypes();
         RefreshVisibleResults();
+        UpdateResultContentVisibility(query);
         UpdateStateMessage(query);
     }
 
@@ -50,7 +50,7 @@ public partial class GlobalSearchPopup : BasePopup
             return;
 
         SelectedType = type;
-        ResultTypeGroup.SelectedValue = type;
+        ResultTypesListBox.SelectedItem = _groups.First(group => group.Type == type);
         RefreshVisibleResults();
     }
 
@@ -81,7 +81,7 @@ public partial class GlobalSearchPopup : BasePopup
             return;
         }
 
-        if (ResultTypeGroup.IsKeyboardFocusWithin && e.Key is Key.Left or Key.Right)
+        if (ResultTypesListBox.IsKeyboardFocusWithin && e.Key is Key.Left or Key.Right)
         {
             MoveSelectedType(e.Key == Key.Right ? 1 : -1);
             e.Handled = true;
@@ -97,7 +97,7 @@ public partial class GlobalSearchPopup : BasePopup
         {
             _candidates = await _candidateTask;
             QueryTextBox.IsEnabled = true;
-            StateText.Text = "Type at least 4 characters.";
+            StateText.Visibility = Visibility.Collapsed;
             QueryTextBox.Focus();
             QueryTextBox.SelectAll();
         }
@@ -115,31 +115,24 @@ public partial class GlobalSearchPopup : BasePopup
         RefreshResults(QueryTextBox.Text);
     }
 
-    private void OnResultTypeSelected(object sender, RoutedEventArgs e)
+    private void OnResultTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (ResultTypeGroup.SelectedValue is GlobalSearchResultType type)
-            SelectType(type);
+        if (ResultTypesListBox.SelectedItem is GlobalSearchResultGroup group)
+        {
+            SelectType(group.Type);
+            return;
+        }
+
+        if (SelectedType is not null)
+            ResultTypesListBox.SelectedItem = _groups.FirstOrDefault(group => group.Type == SelectedType);
     }
 
     private void OnResultMouseLeftButtonUp(object sender, MouseButtonEventArgs e) => ActivateSelectedResult();
 
-    private void RebuildTypeOptions()
+    private void RebuildResultTypes()
     {
-        ResultTypeGroup.Items.Clear();
-        foreach (var group in _groups)
-        {
-            var option = new SegmentedToggleOption
-            {
-                Content = group,
-                ContentTemplate = (DataTemplate)FindResource("GlobalSearchTypePillContentTemplate"),
-                IsSelected = group.Type == SelectedType,
-                Value = group.Type
-            };
-            AutomationProperties.SetName(option, group.Name);
-            ResultTypeGroup.Items.Add(option);
-        }
-
-        ResultTypeGroup.SelectedValue = SelectedType;
+        ResultTypesListBox.ItemsSource = _groups;
+        ResultTypesListBox.SelectedItem = _groups.FirstOrDefault(group => group.Type == SelectedType);
     }
 
     private void RefreshVisibleResults()
@@ -159,11 +152,23 @@ public partial class GlobalSearchPopup : BasePopup
     private void UpdateStateMessage(string? query)
     {
         var normalizedQuery = query?.Trim();
-        StateText.Text = string.IsNullOrEmpty(normalizedQuery) || normalizedQuery.Length < 4
-            ? "Type at least 4 characters."
-            : _groups.Count == 0
-                ? "No matching results. Try another name."
-                : string.Empty;
+        if (string.IsNullOrEmpty(normalizedQuery) || normalizedQuery.Length < 4)
+        {
+            StateText.Text = string.Empty;
+            StateText.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        StateText.Text = _groups.Count == 0 ? "No matching results. Try another name." : string.Empty;
+        StateText.Visibility = _groups.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void UpdateResultContentVisibility(string? query)
+    {
+        var isEligibleQuery = query?.Trim().Length >= 4;
+        ResultContent.Visibility = isEligibleQuery && _groups.Count > 0
+            ? Visibility.Visible
+            : Visibility.Collapsed;
     }
 
     private void MoveSelectedType(int offset)
@@ -177,7 +182,9 @@ public partial class GlobalSearchPopup : BasePopup
 
         var nextIndex = (currentIndex + offset + _groups.Count) % _groups.Count;
         SelectType(_groups[nextIndex].Type);
-        if (ResultTypeGroup.Items[nextIndex] is SegmentedToggleOption option)
+        if (ResultTypesListBox.ItemContainerGenerator.ContainerFromIndex(nextIndex) is ListBoxItem option)
             option.Focus();
+        else
+            ResultTypesListBox.Focus();
     }
 }

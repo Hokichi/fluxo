@@ -6,28 +6,113 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     Mode="None"
     PopupTitle="Search">
-
     <customControls:BasePopup.Resources>
-        <DataTemplate x:Key="GlobalSearchTypePillContentTemplate">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Name, Mode=OneWay}" />
-                <components:Icon
-                    x:Name="SelectedCheck"
-                    Width="10"
-                    Height="10"
-                    Margin="6,0,0,0"
-                    Color="{DynamicResource Brush.Mint}"
-                    Path="{StaticResource Check}"
-                    Visibility="Collapsed" />
-            </StackPanel>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsSelected, Mode=OneWay, RelativeSource={RelativeSource AncestorType=customControls:SegmentedToggleOption}}" Value="True">
-                    <Setter TargetName="SelectedCheck" Property="Visibility" Value="Visible" />
-                </DataTrigger>
-            </DataTemplate.Triggers>
+        <ItemsPanelTemplate x:Key="GlobalSearchTypeItemsPanelTemplate">
+            <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+        <Style
+            x:Key="GlobalSearchTypeListBoxStyle"
+            BasedOn="{StaticResource BaseListBoxStyle}"
+            TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+        </Style>
+        <Style
+            x:Key="GlobalSearchTypeListBoxItemStyle"
+            BasedOn="{StaticResource BaseListBoxItemStyle}"
+            TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style
+            x:Key="GlobalSearchTypePillRadioStyle"
+            BasedOn="{StaticResource BaseRadioButtonStyle}"
+            TargetType="RadioButton">
+            <Setter Property="Height" Value="28" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border
+                            x:Name="PillBorder"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="14">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Text="{TemplateBinding Content}" />
+                                <components:Icon
+                                    x:Name="SelectedCheck"
+                                    Width="10"
+                                    Height="10"
+                                    Margin="6,0,0,0"
+                                    Path="{StaticResource Check}"
+                                    Visibility="Collapsed"
+                                    Color="{DynamicResource Brush.Mint}" />
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
+                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                                <Setter TargetName="SelectedCheck" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="PillBorder" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate x:Key="GlobalSearchTypePillTemplate">
+            <RadioButton
+                AutomationProperties.Name="{Binding Name, Mode=OneWay}"
+                Content="{Binding Name, Mode=OneWay}"
+                IsChecked="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Mode=TwoWay}"
+                Style="{StaticResource GlobalSearchTypePillRadioStyle}" />
         </DataTemplate>
-
-        <Style x:Key="GlobalSearchResultIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+        <Style
+            x:Key="GlobalSearchResultIconStyle"
+            BasedOn="{StaticResource BaseIconStyle}"
+            TargetType="components:Icon">
             <Setter Property="Width" Value="16" />
             <Setter Property="Height" Value="16" />
             <Setter Property="Color" Value="{DynamicResource Brush.Text.Secondary}" />
@@ -52,7 +137,6 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-
         <DataTemplate x:Key="GlobalSearchResultItemTemplate">
             <Grid Margin="12,8">
                 <Grid.ColumnDefinitions>
@@ -79,8 +163,11 @@
                     TextTrimming="CharacterEllipsis" />
             </Grid>
         </DataTemplate>
-
-        <Style x:Key="GlobalSearchResultItemContainerStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+        <Style
+            x:Key="GlobalSearchResultItemContainerStyle"
+            BasedOn="{StaticResource BaseListBoxItemStyle}"
+            TargetType="ListBoxItem">
+            <Setter Property="AutomationProperties.Name" Value="{Binding Name, Mode=OneWay}" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="1" />
@@ -101,6 +188,9 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
                             </Trigger>
+                            <Trigger Property="IsMouseCaptureWithin" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
+                            </Trigger>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
                                 <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
@@ -116,8 +206,17 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <Style x:Key="GlobalSearchStateTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="GlobalSearchResultsListBoxStyle"
+            BasedOn="{StaticResource BaseListBoxStyle}"
+            TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+        <Style
+            x:Key="GlobalSearchStateTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -127,46 +226,57 @@
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
     </customControls:BasePopup.Resources>
-
-    <Grid Width="720" Height="420" Margin="24,0,24,24">
+    <Grid Width="720" Margin="24,0,24,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="12" />
-            <RowDefinition Height="32" />
-            <RowDefinition Height="20" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="8" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
         <TextBox
             x:Name="QueryTextBox"
             AutomationProperties.Name="Search everything"
             IsEnabled="False"
             Style="{StaticResource RoundedTextInputStyle}"
             TextChanged="OnQueryTextChanged" />
-        <customControls:SegmentedToggleGroup
-            x:Name="ResultTypeGroup"
-            Grid.Row="2"
-            AutomationProperties.Name="Result type"
-            OptionSelected="OnResultTypeSelected" />
-        <TextBlock
-            x:Name="SelectedTypeText"
-            Grid.Row="4"
-            FontFamily="{StaticResource Bold}"
-            FontSize="12"
-            Foreground="{DynamicResource Brush.Text.Secondary}" />
-        <Grid Grid.Row="6">
-            <ListBox
-                x:Name="ResultsListBox"
-                AutomationProperties.Name="Search results"
-                ItemContainerStyle="{StaticResource GlobalSearchResultItemContainerStyle}"
-                ItemTemplate="{StaticResource GlobalSearchResultItemTemplate}"
-                ItemsSource="{Binding VisibleResults, Mode=OneWay}"
-                MouseLeftButtonUp="OnResultMouseLeftButtonUp"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                ScrollViewer.VerticalScrollBarVisibility="Auto" />
-            <TextBlock x:Name="StateText" IsHitTestVisible="False" Style="{StaticResource GlobalSearchStateTextStyle}" />
+        <Grid Grid.Row="2">
+            <Grid x:Name="ResultContent" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32" />
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="8" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <ListBox
+                    x:Name="ResultTypesListBox"
+                    AutomationProperties.Name="Result type"
+                    ItemContainerStyle="{StaticResource GlobalSearchTypeListBoxItemStyle}"
+                    ItemTemplate="{StaticResource GlobalSearchTypePillTemplate}"
+                    ItemsPanel="{StaticResource GlobalSearchTypeItemsPanelTemplate}"
+                    SelectionChanged="OnResultTypeSelectionChanged"
+                    SelectionMode="Single"
+                    Style="{StaticResource GlobalSearchTypeListBoxStyle}" />
+                <TextBlock
+                    x:Name="SelectedTypeText"
+                    Grid.Row="2"
+                    FontFamily="{StaticResource Bold}"
+                    FontSize="12"
+                    Foreground="{DynamicResource Brush.Text.Secondary}" />
+                <ListBox
+                    x:Name="ResultsListBox"
+                    Grid.Row="4"
+                    AutomationProperties.Name="Search results"
+                    ItemContainerStyle="{StaticResource GlobalSearchResultItemContainerStyle}"
+                    ItemTemplate="{StaticResource GlobalSearchResultItemTemplate}"
+                    MouseLeftButtonUp="OnResultMouseLeftButtonUp"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    Style="{StaticResource GlobalSearchResultsListBoxStyle}" />
+            </Grid>
+            <TextBlock
+                x:Name="StateText"
+                IsHitTestVisible="False"
+                Style="{StaticResource GlobalSearchStateTextStyle}" />
         </Grid>
     </Grid>
 </customControls:BasePopup>
