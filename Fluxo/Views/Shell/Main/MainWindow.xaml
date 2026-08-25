@@ -410,15 +410,6 @@
                                     Color="{DynamicResource Brush.Text.Primary}" />
                             </StackPanel>
 
-                            <customControls:BalloonButton
-                                x:Name="HeaderHistoryButton"
-                                AutomationProperties.Name="Toggle history"
-                                ButtonIcon="{StaticResource History}"
-                                Click="OnHeaderHistoryButtonClick"
-                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
-                                IconSize="11"
-                                Style="{StaticResource HeaderButtonDisableWhenAppLockedStyle}" />
-
                             <Grid>
                                 <customControls:BalloonButton
                                     x:Name="HeaderNotificationButton"
@@ -510,6 +501,37 @@
                                     </Border.Resources>
                                     <StackPanel>
                                         <Button
+                                            AutomationProperties.Name="Search"
+                                            Click="OnSearchMenuButtonClick"
+                                            IsEnabled="{Binding IsSufficientFundsActionGateLocked, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+                                            Style="{StaticResource HeaderMenuActionButtonStyle}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="16" />
+                                                    <ColumnDefinition Width="12" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <components:Icon
+                                                    Width="14"
+                                                    Height="14"
+                                                    Path="{StaticResource MagnifyingGlass}"
+                                                    Color="{DynamicResource Brush.Mint}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    FontFamily="{StaticResource Bold}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                                    Text="Search" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    Style="{StaticResource HeaderMenuShortcutTextStyle}"
+                                                    Text="Ctrl+F" />
+                                            </Grid>
+                                        </Button>
+
+                                        <Button
                                             x:Name="QuickAddMenuButton"
                                             Click="OnQuickAddButtonClick"
                                             Style="{StaticResource HeaderMenuActionButtonStyle}"
@@ -570,6 +592,36 @@
                                             </Grid>
                                         </Button>
 
+                                        <Button
+                                            AutomationProperties.Name="History"
+                                            Click="OnHistoryMenuButtonClick"
+                                            Style="{StaticResource HeaderMenuActionButtonStyle}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="16" />
+                                                    <ColumnDefinition Width="12" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <components:Icon
+                                                    Width="14"
+                                                    Height="14"
+                                                    Path="{StaticResource History}"
+                                                    Color="{DynamicResource Brush.Text.Muted}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    FontFamily="{StaticResource Bold}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                                    Text="History" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    Style="{StaticResource HeaderMenuShortcutTextStyle}"
+                                                    Text="Ctrl+H" />
+                                            </Grid>
+                                        </Button>
+
                                         <Button Click="OnHotkeysButtonClick" Style="{StaticResource HeaderMenuActionButtonStyle}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -623,6 +675,36 @@
                                                     Text="Ctrl+," />
                                             </Grid>
                                         </Button>
+
+                                        <Button
+                                            AutomationProperties.Name="Lock"
+                                            Click="OnLockMenuButtonClick"
+                                            Style="{StaticResource HeaderMenuActionButtonStyle}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="16" />
+                                                    <ColumnDefinition Width="12" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="8" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <components:Icon
+                                                    Width="14"
+                                                    Height="14"
+                                                    Path="{StaticResource Lock}"
+                                                    Color="{DynamicResource Brush.Text.Muted}" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    FontFamily="{StaticResource Bold}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                                    Text="Lock" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    Style="{StaticResource HeaderMenuShortcutTextStyle}"
+                                                    Text="Ctrl+Shift+L" />
+                                            </Grid>
+                                        </Button>
                                     </StackPanel>
                                 </Border>
                             </Popup>
@@ -632,20 +714,6 @@
                                 Margin="16,0,8,0"
                                 Background="{DynamicResource Brush.Border.Subtle}"
                                 SnapsToDevicePixels="True" />
-
-                            <customControls:BalloonCheckBox
-                                x:Name="HeaderAppLockButton"
-                                CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
-                                CheckedIcon="{StaticResource LockOpen}"
-                                CheckedText="Unlock fluxo"
-                                Click="OnHeaderAppLockButtonClick"
-                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
-                                IconSize="12"
-                                IsChecked="{Binding IsAppLocked, Mode=OneWay}"
-                                ShouldExpand="True"
-                                Style="{StaticResource HeaderCheckBoxStyle}"
-                                UncheckedIcon="{StaticResource Lock}"
-                                UncheckedText="Lock fluxo" />
 
                             <customControls:BalloonButton
                                 x:Name="HeaderQuickAddButton"

@@ -1140,16 +1140,6 @@ public partial class MainWindow : Window, IPopupHost
         OpenAddNewTransactionPopup();
     }
 
-    private void OnHeaderAppLockButtonClick(object sender, RoutedEventArgs e)
-    {
-        if (IsAppLocked())
-            UnlockAppUiFromUser();
-        else
-            LockAppUiFromUser();
-
-        HeaderAppLockButton.IsChecked = _mainVM.IsAppLocked;
-    }
-
     private void OnHeaderNotificationButtonClick(object sender, RoutedEventArgs e)
     {
         if (IsAppLocked())
@@ -1158,10 +1148,22 @@ public partial class MainWindow : Window, IPopupHost
         ToggleHeaderNotificationPopup();
     }
 
-    private void OnHeaderHistoryButtonClick(object sender, RoutedEventArgs e)
+    private async void OnSearchMenuButtonClick(object sender, RoutedEventArgs e)
     {
-        if (!IsAppLocked())
-            ToggleHistoryDrawer();
+        CloseHeaderMenu();
+        if (!IsSufficientFundsActionGateLocked())
+            await OpenGlobalSearchAsync();
+    }
+
+    private void OnHistoryMenuButtonClick(object sender, RoutedEventArgs e)
+    {
+        CloseHeaderMenu();
+        ToggleHistoryDrawer();
+    }
+
+    private void OnLockMenuButtonClick(object sender, RoutedEventArgs e)
+    {
+        LockAppUiFromUser();
     }
 
     private void ToggleHeaderNotificationPopup()
@@ -2424,9 +2426,6 @@ public partial class MainWindow : Window, IPopupHost
 
     private void RefreshAppLockVisualState()
     {
-        if (HeaderAppLockButton is not null)
-            HeaderAppLockButton.IsChecked = _mainVM.IsAppLocked;
-
         RefreshActivePageTitle();
         SetDashboardMainContentHitTestVisible(!_mainVM.IsAppLocked);
 

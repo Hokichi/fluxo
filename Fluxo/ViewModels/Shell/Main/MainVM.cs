@@ -61,8 +61,6 @@ public partial class MainVM : ObservableRecipient
     public bool IsSufficientFundsActionGateLocked => Dashboard.IsSufficientFundsActionGateLocked;
     public bool HasUiLockingPassword => _appLockHelper.HasUiLockingPassword;
     public bool IsAnyActionGateLocked => IsAppLocked || IsSufficientFundsActionGateLocked;
-    public string AppLockButtonText => IsAppLocked ? "Unlock fluxo" : "Lock fluxo";
-
     public ObservableCollection<AccountVM> Accounts => Dashboard.Accounts;
 
     public void ToggleAccountFilter(AccountVM? account)
@@ -179,6 +177,5 @@ public partial class MainVM : ObservableRecipient
     partial void OnIsAppLockedChanged(bool value)
     {
         OnPropertyChanged(nameof(IsAnyActionGateLocked));
-        OnPropertyChanged(nameof(AppLockButtonText));
     }
 }
