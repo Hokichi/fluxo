@@ -110,6 +110,7 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
+        await RestoreThemeAsync();
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         try
@@ -168,7 +169,6 @@ public partial class App : Application
                         LogStartupStage("main view model initialization", StartupStageState.Completed);
                     },
                     () => _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup));
-                await RestoreThemeAsync();
                 await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
             }
             finally

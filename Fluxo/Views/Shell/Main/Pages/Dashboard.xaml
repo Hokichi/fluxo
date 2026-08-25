@@ -66,34 +66,33 @@
             DataContext="{Binding ViewModeToggle}" />
 
         <Grid x:Name="MainContentGrid" Margin="0,60,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="1" Margin="0,0,0,8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="8" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="8" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="8" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="8" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
                 <sections:SpentAllowancePanel
                     x:Name="SpentAllowancePanelHost"
-                    Height="120"
-                    VerticalAlignment="Top"
                     DataContext="{Binding SpentAllowancePanel}" />
 
                 <sections:AllocationData
                     x:Name="AllocationDataHost"
-                    Grid.Column="2"
+                    Grid.Row="2"
                     DataContext="{Binding AllocationData}" />
 
-            </Grid>
-
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -217,32 +216,27 @@
                 </Grid>
             </Grid>
 
-            <Grid Grid.Row="3" Margin="0,8,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
-                    <ColumnDefinition Width="8" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+                <sections:RecentActivities
+                    x:Name="RecentActivitiesHost"
+                    Grid.Row="6"
+                    DataContext="{Binding BudgetPanel}" />
+            </Grid>
 
-                <sections:RecentActivities x:Name="RecentActivitiesHost" DataContext="{Binding BudgetPanel}" />
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-                <Grid Grid.Column="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+                <sections:SavingGoalsPanel
+                    x:Name="SavingGoalsPanelHost"
+                    DataContext="{Binding SavingGoalsPanel}" />
 
-                    <sections:SavingGoalsPanel
-                        x:Name="SavingGoalsPanelHost"
-                        Grid.Column="0"
-                        DataContext="{Binding SavingGoalsPanel}" />
-
-                    <sections:UpcomingEventsPanel
-                        x:Name="UpcomingEventsPanelHost"
-                        Grid.Row="2"
-                        DataContext="{Binding UpcomingEventsPanel}" />
-                </Grid>
+                <sections:UpcomingEventsPanel
+                    x:Name="UpcomingEventsPanelHost"
+                    Grid.Row="2"
+                    DataContext="{Binding UpcomingEventsPanel}" />
             </Grid>
         </Grid>
     </Grid>

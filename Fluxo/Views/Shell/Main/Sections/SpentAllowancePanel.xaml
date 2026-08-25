@@ -5,11 +5,10 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
 
     <customControls:SpacedUniformGrid
-        Width="400"
         VerticalAlignment="Center"
-        Columns="2"
+        Columns="4"
         HorizontalGap="8"
-        Rows="2"
+        Rows="1"
         VerticalGap="8">
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid VerticalAlignment="Center">
