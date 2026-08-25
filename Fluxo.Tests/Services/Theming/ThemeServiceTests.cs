@@ -45,6 +45,25 @@ public sealed class ThemeServiceTests
     }
 
     [Fact]
+    public async Task RestoreBeforeCacheAsync_ValidPreference_AppliesStoredThemeWithoutUsingCache()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        var appliedThemes = new List<ApplicationTheme>();
+        var service = CreateService(appData, appliedThemes, ApplicationTheme.Dark);
+
+        await service.RestoreBeforeCacheAsync(_ => Task.FromResult<UserSettings?>(new UserSettings
+        {
+            Name = UserSettingNames.CurrentTheme,
+            Value = nameof(ApplicationTheme.Light)
+        }));
+
+        Assert.Equal([ApplicationTheme.Light], appliedThemes);
+        await appData.DidNotReceive().GetUserSettingByNameAsync(
+            Arg.Any<string>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task RestoreAsync_InvalidPreference_FallsBackToDarkAndRepairsStoredValue()
     {
         var setting = new UserSettings { Name = UserSettingNames.CurrentTheme, Value = "unknown" };

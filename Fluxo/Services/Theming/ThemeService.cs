@@ -28,6 +28,19 @@ public sealed class ThemeService
 
     public ApplicationTheme CurrentTheme => _getCurrentTheme();
 
+    internal async Task<ApplicationTheme> RestoreBeforeCacheAsync(
+        Func<CancellationToken, Task<UserSettings?>> getSettingAsync,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(getSettingAsync);
+
+        var setting = await getSettingAsync(cancellationToken);
+        var theme = ParseTheme(setting?.Value);
+
+        _applyTheme(theme);
+        return theme;
+    }
+
     public async Task<ApplicationTheme> RestoreAsync(CancellationToken cancellationToken = default)
     {
         var setting = await _appData

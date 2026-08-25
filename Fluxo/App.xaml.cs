@@ -110,7 +110,6 @@ public partial class App : Application
         }
 
         base.OnStartup(e);
-        await RestoreThemeAsync();
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         try
@@ -124,6 +123,7 @@ public partial class App : Application
             LogStartupStage("database migration", StartupStageState.Started);
             await MigrateDatabaseAsync(_dataOperationRunner);
             LogStartupStage("database migration", StartupStageState.Completed);
+            await RestoreThemeBeforeCacheAsync();
             LogStartupStage("budget allocation period sync", StartupStageState.Started);
             await SyncBudgetAllocationPeriodAsync();
             LogStartupStage("budget allocation period sync", StartupStageState.Completed);
@@ -169,6 +169,7 @@ public partial class App : Application
                         LogStartupStage("main view model initialization", StartupStageState.Completed);
                     },
                     () => _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup));
+                await RestoreThemeAsync();
                 await _uiSettleAwaiter.WaitForUiReadyAsync(loaderPopup);
             }
             finally
@@ -378,13 +379,25 @@ public partial class App : Application
         }
     }
 
-    private async Task RestoreThemeAsync()
+    private Task RestoreThemeBeforeCacheAsync()
+    {
+        return RestoreThemeAsync(cancellationToken => _themeService.RestoreBeforeCacheAsync(
+            operationToken => _dataOperationRunner.RunAsync(
+                "resolve saved theme",
+                (scope, ct) => scope.UnitOfWork.UserSettings.GetByNameAsync(UserSettingNames.CurrentTheme, ct),
+                operationToken),
+            cancellationToken));
+    }
+
+    private Task RestoreThemeAsync() => RestoreThemeAsync(_themeService.RestoreAsync);
+
+    private async Task RestoreThemeAsync(Func<CancellationToken, Task<ApplicationTheme>> restoreAsync)
     {
         LogStartupStage("theme restoration", StartupStageState.Started);
 
         try
         {
-            await _themeService.RestoreAsync();
+            await restoreAsync(CancellationToken.None);
             LogStartupStage("theme restoration", StartupStageState.Completed);
         }
         catch (Exception exception)
