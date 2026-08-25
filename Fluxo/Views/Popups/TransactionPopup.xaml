@@ -19,7 +19,6 @@
     mc:Ignorable="d">
 
     <customControls:BasePopup.Resources>
-
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionSplitTreeStyles.xaml" />
@@ -985,9 +984,9 @@
                                             Grid.Column="0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsRegularMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
@@ -999,9 +998,9 @@
                                             Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsRecurring, Mode=TwoWay}"
                                             IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
@@ -1013,9 +1012,9 @@
                                             Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsInstallments, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseInstallments, Mode=OneWay}"
@@ -1027,9 +1026,9 @@
                                             Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsUnpostedIoUMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
@@ -1041,9 +1040,9 @@
                                             Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             CornerRadius="8"
-                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
-                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                                             IconSize="14"
                                             IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
@@ -1179,7 +1178,7 @@
                                                 <StackPanel Orientation="Horizontal">
                                                     <customControls:BalloonRadioButton
                                                         ButtonIcon="{StaticResource Home}"
-                                                        CheckedBackground="{DynamicResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Success}"
                                                         CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
@@ -1192,7 +1191,7 @@
                                                     <customControls:BalloonRadioButton
                                                         Margin="8,0,0,0"
                                                         ButtonIcon="{StaticResource ShoppingBag}"
-                                                        CheckedBackground="{DynamicResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Success}"
                                                         CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
@@ -1205,7 +1204,7 @@
                                                     <customControls:BalloonRadioButton
                                                         Margin="8,0,0,0"
                                                         ButtonIcon="{StaticResource TrendingUp}"
-                                                        CheckedBackground="{DynamicResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Success}"
                                                         CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
@@ -1218,7 +1217,7 @@
                                                     <customControls:BalloonRadioButton
                                                         Margin="8,0,0,0"
                                                         ButtonIcon="{StaticResource CreditCardOff}"
-                                                        CheckedBackground="{DynamicResource Brush.Mint}"
+                                                        CheckedBackground="{DynamicResource Brush.Success}"
                                                         CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"

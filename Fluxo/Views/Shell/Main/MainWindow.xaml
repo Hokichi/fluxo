@@ -314,6 +314,13 @@
             BorderThickness="1"
             CornerRadius="8"
             MouseMove="MainWindow_OnMouseMove">
+            <Border.Clip>
+                <MultiBinding Converter="{StaticResource BorderCornerClipConverter}">
+                    <Binding Path="CornerRadius" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                </MultiBinding>
+            </Border.Clip>
             <Grid>
                 <Grid x:Name="ContentGrid" Margin="0,16,0,0">
                     <Grid.RowDefinitions>
@@ -340,12 +347,16 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
-                            <Image
+
+                            <Rectangle
                                 Width="24"
                                 Height="24"
                                 VerticalAlignment="Center"
-                                Source="/Fluxo.Resources;component/Resources/fluxo.ico"
-                                Stretch="Uniform" />
+                                Fill="{StaticResource Brush.Mint}">
+                                <Rectangle.OpacityMask>
+                                    <ImageBrush ImageSource="/Fluxo.Resources;component/Resources/fluxo.ico" Stretch="Uniform" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
 
                             <TextBlock
                                 Margin="8,1,0,0"
@@ -385,30 +396,34 @@
                                 VerticalAlignment="Center"
                                 Orientation="Horizontal">
                                 <components:Icon
-                                    Width="14"
-                                    Height="14"
+                                    Width="12"
+                                    Height="12"
                                     VerticalAlignment="Center"
                                     IsHitTestVisible="False"
                                     Path="{StaticResource Sun}"
                                     Color="{DynamicResource Brush.Text.Primary}" />
                                 <ToggleButton
                                     x:Name="HeaderThemeToggle"
-                                    Width="40"
                                     Height="20"
-                                    Margin="8,0"
+                                    Margin="12,0"
                                     AutomationProperties.HelpText="Sun selects light theme; moon selects dark theme."
                                     AutomationProperties.Name="Switch application theme"
                                     Click="OnHeaderThemeToggleClick"
-                                    Style="{StaticResource HeaderThemeToggleStyle}"
-                                    ToolTip="Switch between light and dark theme" />
+                                    Style="{StaticResource HeaderThemeToggleStyle}" />
                                 <components:Icon
-                                    Width="14"
-                                    Height="14"
+                                    Width="10"
+                                    Height="10"
                                     VerticalAlignment="Center"
                                     IsHitTestVisible="False"
                                     Path="{StaticResource Moon}"
                                     Color="{DynamicResource Brush.Text.Primary}" />
                             </StackPanel>
+
+                            <Border
+                                Width="1"
+                                Margin="8,0,8,0"
+                                Background="{DynamicResource Brush.Border.Strong}"
+                                SnapsToDevicePixels="True" />
 
                             <Grid>
                                 <customControls:BalloonButton
@@ -712,7 +727,7 @@
                             <Border
                                 Width="1"
                                 Margin="16,0,8,0"
-                                Background="{DynamicResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Border.Strong}"
                                 SnapsToDevicePixels="True" />
 
                             <customControls:BalloonButton
@@ -730,7 +745,7 @@
                             <Border
                                 Width="1"
                                 Margin="16,0,8,0"
-                                Background="{DynamicResource Brush.Border.Subtle}"
+                                Background="{DynamicResource Brush.Border.Strong}"
                                 SnapsToDevicePixels="True" />
 
                             <customControls:BalloonButton
@@ -1012,9 +1027,9 @@
                 </Border>
                 <Border
                     x:Name="PopupOverlay"
+                    Margin="-12"
                     Panel.ZIndex="30"
                     Background="{DynamicResource Brush.Overlay}"
-                    CornerRadius="16"
                     IsHitTestVisible="False"
                     MouseLeftButtonDown="OnPopupOverlayMouseLeftButtonDown"
                     Opacity="0"

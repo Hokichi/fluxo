@@ -11,8 +11,11 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-<UserControl.Resources>
-        <Style x:Key="TransactionRowBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+    <UserControl.Resources>
+        <Style
+            x:Key="TransactionRowBorderStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <MultiDataTrigger>
@@ -25,7 +28,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="TransactionChildRowBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+        <Style
+            x:Key="TransactionChildRowBorderStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <MultiDataTrigger>
@@ -37,7 +43,10 @@
                     <MultiDataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="2" Duration="0:0:0.15">
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    To="2"
+                                    Duration="0:0:0.15">
                                     <DoubleAnimation.EasingFunction>
                                         <CubicEase EasingMode="EaseOut" />
                                     </DoubleAnimation.EasingFunction>
@@ -48,7 +57,10 @@
                     <MultiDataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.15">
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    To="0"
+                                    Duration="0:0:0.15">
                                     <DoubleAnimation.EasingFunction>
                                         <CubicEase EasingMode="EaseOut" />
                                     </DoubleAnimation.EasingFunction>
@@ -60,7 +72,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="TransactionRowLayoutStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="TransactionRowLayoutStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -70,7 +85,10 @@
                     <MultiDataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="4" Duration="0:0:0.15">
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    To="4"
+                                    Duration="0:0:0.15">
                                     <DoubleAnimation.EasingFunction>
                                         <CubicEase EasingMode="EaseOut" />
                                     </DoubleAnimation.EasingFunction>
@@ -81,7 +99,10 @@
                     <MultiDataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)" To="0" Duration="0:0:0.15">
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                                    To="0"
+                                    Duration="0:0:0.15">
                                     <DoubleAnimation.EasingFunction>
                                         <CubicEase EasingMode="EaseOut" />
                                     </DoubleAnimation.EasingFunction>
@@ -93,7 +114,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="TransactionAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="TransactionAmountTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsExpense}" Value="True">
@@ -102,20 +126,26 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="TransactionsListHeaderText" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="TransactionsListHeaderText"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
-        <Style x:Key="TransactionsListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
+        <Style
+            x:Key="TransactionsListViewItemStyle"
+            BasedOn="{StaticResource BaseListViewItemStyle}"
+            TargetType="ListViewItem">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0,0,0,12" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        <Setter Property="Template" Value="{StaticResource PlainListViewItemTemplate}" />
+            <Setter Property="Template" Value="{StaticResource PlainListViewItemTemplate}" />
         </Style>
 
         <DataTemplate x:Key="TransactionsListItemTemplate">
@@ -146,12 +176,11 @@
                 </customControls:SwipeRevealContainer.RightContent>
 
                 <Grid>
-<Border
+                    <Border
                         Margin="0,1,16,1"
                         Background="{Binding TagHexCode, FallbackValue=Transparent, TargetNullValue=Transparent}"
-                        CornerRadius="12 0 0 12" Style="{StaticResource TransactionRowBorderStyle}">
-
-                    </Border>
+                        CornerRadius="12 0 0 12"
+                        Style="{StaticResource TransactionRowBorderStyle}" />
 
                     <Border CornerRadius="12">
                         <Border.Clip>
@@ -161,11 +190,12 @@
                                 <Binding Path="ActualHeight" RelativeSource="{RelativeSource FindAncestor, AncestorType=Grid}" />
                             </MultiBinding>
                         </Border.Clip>
-<Border
+                        <Border
                             x:Name="ExpenseItemBGBorder"
                             Background="{DynamicResource Brush.Background.Hover}"
                             ClipToBounds="True"
-                            CornerRadius="12" Style="{StaticResource TransactionChildRowBorderStyle}">
+                            CornerRadius="12"
+                            Style="{StaticResource TransactionChildRowBorderStyle}">
                             <Border.RenderTransform>
                                 <TranslateTransform />
                             </Border.RenderTransform>
@@ -187,7 +217,7 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-<Grid MinWidth="0" Style="{StaticResource TransactionRowLayoutStyle}">
+                            <Grid MinWidth="0" Style="{StaticResource TransactionRowLayoutStyle}">
                                 <Grid.RenderTransform>
                                     <TranslateTransform />
                                 </Grid.RenderTransform>
@@ -225,14 +255,13 @@
                                 MinWidth="0"
                                 Margin="4,0"
                                 HorizontalAlignment="Right">
-<TextBlock
+                                <TextBlock
                                     HorizontalAlignment="Right"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="14"
+                                    Style="{StaticResource TransactionAmountTextStyle}"
                                     Text="{Binding AmountText}"
-                                    ToolTip="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}}" Style="{StaticResource TransactionAmountTextStyle}">
-
-                                </TextBlock>
+                                    ToolTip="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}}" />
                                 <TextBlock
                                     MaxWidth="120"
                                     Margin="0,4,0,0"
@@ -250,78 +279,81 @@
             </customControls:SwipeRevealContainer>
         </DataTemplate>
 
-<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="TransactionsEmptyStateTextStyle">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding IsListEmpty, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" Value="True" />
-                                        <Condition Binding="{Binding IsEmptyActionVisible, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" Value="False" />
-                                    </MultiDataTrigger.Conditions>
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
+        <Style
+            x:Key="TransactionsEmptyStateTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsListEmpty, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" Value="True" />
+                        <Condition Binding="{Binding IsEmptyActionVisible, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
 
-<ControlTemplate TargetType="{x:Type customControls:FadingScrollViewer}" x:Key="TransactionsFadingScrollViewerTemplate">
-                            <Grid x:Name="Grid" Background="{TemplateBinding Background}">
-                                <Border x:Name="PART_ScrollContentPresenterContainer">
-                                    <ScrollContentPresenter
-                                        x:Name="PART_ScrollContentPresenter"
-                                        Margin="{TemplateBinding Padding}"
-                                        CanContentScroll="{TemplateBinding CanContentScroll}"
-                                        CanHorizontallyScroll="False"
-                                        CanVerticallyScroll="False"
-                                        Content="{TemplateBinding Content}" />
-                                </Border>
+        <ControlTemplate x:Key="TransactionsFadingScrollViewerTemplate" TargetType="{x:Type customControls:FadingScrollViewer}">
+            <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                <Border x:Name="PART_ScrollContentPresenterContainer">
+                    <ScrollContentPresenter
+                        x:Name="PART_ScrollContentPresenter"
+                        Margin="{TemplateBinding Padding}"
+                        CanContentScroll="{TemplateBinding CanContentScroll}"
+                        CanHorizontallyScroll="False"
+                        CanVerticallyScroll="False"
+                        Content="{TemplateBinding Content}" />
+                </Border>
 
-                                <ScrollBar
-                                    x:Name="PART_VerticalScrollBar"
-                                    Margin="0,0,-16,0"
-                                    HorizontalAlignment="Right"
-                                    AutomationProperties.AutomationId="VerticalScrollBar"
-                                    Cursor="Arrow"
-                                    IsHitTestVisible="False"
-                                    Maximum="{TemplateBinding ScrollableHeight}"
-                                    Minimum="0"
-                                    Opacity="0"
-                                    ViewportSize="{TemplateBinding ViewportHeight}"
-                                    Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                                    Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+                <ScrollBar
+                    x:Name="PART_VerticalScrollBar"
+                    Margin="0,0,-16,0"
+                    HorizontalAlignment="Right"
+                    AutomationProperties.AutomationId="VerticalScrollBar"
+                    Cursor="Arrow"
+                    IsHitTestVisible="False"
+                    Maximum="{TemplateBinding ScrollableHeight}"
+                    Minimum="0"
+                    Opacity="0"
+                    ViewportSize="{TemplateBinding ViewportHeight}"
+                    Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                    Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                                <ScrollBar
-                                    x:Name="PART_HorizontalScrollBar"
-                                    Margin="0"
-                                    VerticalAlignment="Bottom"
-                                    AutomationProperties.AutomationId="HorizontalScrollBar"
-                                    Cursor="Arrow"
-                                    IsHitTestVisible="False"
-                                    Maximum="{TemplateBinding ScrollableWidth}"
-                                    Minimum="0"
-                                    Opacity="0"
-                                    Orientation="Horizontal"
-                                    ViewportSize="{TemplateBinding ViewportWidth}"
-                                    Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                                    Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="PART_VerticalScrollBar" Property="IsHitTestVisible" Value="True" />
-                                    <Setter TargetName="PART_VerticalScrollBar" Property="Opacity" Value="1" />
-                                    <Setter TargetName="PART_HorizontalScrollBar" Property="IsHitTestVisible" Value="True" />
-                                    <Setter TargetName="PART_HorizontalScrollBar" Property="Opacity" Value="1" />
-                                </Trigger>
-                                <Trigger SourceName="PART_VerticalScrollBar" Property="IsMouseCaptureWithin" Value="True">
-                                    <Setter TargetName="PART_VerticalScrollBar" Property="IsHitTestVisible" Value="True" />
-                                    <Setter TargetName="PART_VerticalScrollBar" Property="Opacity" Value="1" />
-                                </Trigger>
-                                <Trigger SourceName="PART_HorizontalScrollBar" Property="IsMouseCaptureWithin" Value="True">
-                                    <Setter TargetName="PART_HorizontalScrollBar" Property="IsHitTestVisible" Value="True" />
-                                    <Setter TargetName="PART_HorizontalScrollBar" Property="Opacity" Value="1" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-</UserControl.Resources>
+                <ScrollBar
+                    x:Name="PART_HorizontalScrollBar"
+                    Margin="0"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.AutomationId="HorizontalScrollBar"
+                    Cursor="Arrow"
+                    IsHitTestVisible="False"
+                    Maximum="{TemplateBinding ScrollableWidth}"
+                    Minimum="0"
+                    Opacity="0"
+                    Orientation="Horizontal"
+                    ViewportSize="{TemplateBinding ViewportWidth}"
+                    Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                    Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="PART_VerticalScrollBar" Property="IsHitTestVisible" Value="True" />
+                    <Setter TargetName="PART_VerticalScrollBar" Property="Opacity" Value="1" />
+                    <Setter TargetName="PART_HorizontalScrollBar" Property="IsHitTestVisible" Value="True" />
+                    <Setter TargetName="PART_HorizontalScrollBar" Property="Opacity" Value="1" />
+                </Trigger>
+                <Trigger SourceName="PART_VerticalScrollBar" Property="IsMouseCaptureWithin" Value="True">
+                    <Setter TargetName="PART_VerticalScrollBar" Property="IsHitTestVisible" Value="True" />
+                    <Setter TargetName="PART_VerticalScrollBar" Property="Opacity" Value="1" />
+                </Trigger>
+                <Trigger SourceName="PART_HorizontalScrollBar" Property="IsMouseCaptureWithin" Value="True">
+                    <Setter TargetName="PART_HorizontalScrollBar" Property="IsHitTestVisible" Value="True" />
+                    <Setter TargetName="PART_HorizontalScrollBar" Property="Opacity" Value="1" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </UserControl.Resources>
 
     <Grid VerticalAlignment="Stretch" ClipToBounds="True">
         <Grid.RowDefinitions>
@@ -380,23 +412,23 @@
                 Opacity="0.25" />
 
             <Grid Grid.Row="2">
-<TextBlock
+                <TextBlock
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
                     FontSize="14"
                     Foreground="{DynamicResource Brush.Text.Muted}"
-                    Text="{Binding EmptyActionText, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" Style="{StaticResource TransactionsEmptyStateTextStyle}">
+                    Style="{StaticResource TransactionsEmptyStateTextStyle}"
+                    Text="{Binding EmptyActionText, RelativeSource={RelativeSource AncestorType={x:Type local:TransactionsList}}}" />
 
-                </TextBlock>
-
-<customControls:FadingScrollViewer
+                <customControls:FadingScrollViewer
                     Margin="4,0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     FadedEdgeThickness="20"
                     HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto" Template="{StaticResource TransactionsFadingScrollViewerTemplate}">
+                    Template="{StaticResource TransactionsFadingScrollViewerTemplate}"
+                    VerticalScrollBarVisibility="Auto">
 
                     <ListView
                         Padding="0"

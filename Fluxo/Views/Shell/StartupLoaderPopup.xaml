@@ -30,10 +30,15 @@
                     BorderBrush="{DynamicResource Brush.Border.Subtle}"
                     BorderThickness="1"
                     CornerRadius="36">
-                    <Image
-                        Margin="18"
-                        Source="/Fluxo.Resources;component/Resources/fluxo.ico"
-                        Stretch="Uniform" />
+
+                    <Rectangle
+                        Width="36"
+                        Height="36"
+                        Fill="{StaticResource Brush.Mint}">
+                        <Rectangle.OpacityMask>
+                            <ImageBrush ImageSource="/Fluxo.Resources;component/Resources/fluxo.ico" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
                 </Border>
 
                 <StackPanel

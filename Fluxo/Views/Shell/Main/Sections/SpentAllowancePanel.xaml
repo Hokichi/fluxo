@@ -14,7 +14,8 @@
             <Grid VerticalAlignment="Center">
                 <TextBlock
                     VerticalAlignment="Center"
-                    FontFamily="{StaticResource Light}"
+                    FontFamily="{StaticResource Medium}"
+                    FontSize="10"
                     Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="SPENT" />
 
@@ -22,7 +23,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    FontSize="18"
+                    FontSize="16"
                     Foreground="{DynamicResource Brush.Text.Primary}"
                     Text="{Binding TotalSpent, Converter={StaticResource NumberWithCommasConverter}}"
                     ToolTip="{Binding TotalSpent, Converter={StaticResource MoneyFullDisplayConverter}}" />
@@ -33,7 +34,8 @@
             <Grid VerticalAlignment="Center">
                 <TextBlock
                     VerticalAlignment="Center"
-                    FontFamily="{StaticResource Light}"
+                    FontFamily="{StaticResource Medium}"
+                    FontSize="10"
                     Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="EARNED" />
 
@@ -41,7 +43,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    FontSize="18"
+                    FontSize="16"
                     Foreground="{Binding TotalEarned, Converter={StaticResource DifferenceToBrushConverter}}"
                     Text="{Binding TotalEarned, Converter={StaticResource NumberWithCommasConverter}}"
                     ToolTip="{Binding TotalEarned, Converter={StaticResource MoneyFullDisplayConverter}}" />
@@ -52,7 +54,8 @@
             <Grid VerticalAlignment="Center">
                 <TextBlock
                     VerticalAlignment="Center"
-                    FontFamily="{StaticResource Light}"
+                    FontFamily="{StaticResource Medium}"
+                    FontSize="10"
                     Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="ALLOWANCE" />
 
@@ -62,12 +65,12 @@
                     ToolTip="{Binding Allowance, Converter={StaticResource MoneyFullDisplayConverter}}">
                     <Run
                         FontFamily="{StaticResource Bold}"
-                        FontSize="18"
+                        FontSize="16"
                         Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding Allowance, Converter={StaticResource NumberWithCommasConverter}}" />
                     <Run
                         FontFamily="{StaticResource Medium}"
-                        FontSize="12"
+                        FontSize="10"
                         Foreground="{DynamicResource Brush.Text.Secondary}"
                         Text="/ day" />
                 </TextBlock>
@@ -78,7 +81,8 @@
             <Grid VerticalAlignment="Center">
                 <TextBlock
                     VerticalAlignment="Center"
-                    FontFamily="{StaticResource Light}"
+                    FontFamily="{StaticResource Medium}"
+                    FontSize="10"
                     Foreground="{DynamicResource Brush.Text.Muted}"
                     Text="NET" />
 
@@ -86,7 +90,7 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     FontFamily="{StaticResource Bold}"
-                    FontSize="18"
+                    FontSize="16"
                     Foreground="{Binding Net, Converter={StaticResource DifferenceToBrushConverter}}"
                     Text="{Binding Net, Converter={StaticResource NumberWithCommasConverter}}"
                     ToolTip="{Binding Net, Converter={StaticResource MoneyFullDisplayConverter}}" />
