@@ -73,7 +73,10 @@
                                         IsHitTestVisible="False"
                                         Stretch="Uniform">
                                         <Path.Fill>
-                                            <Binding ElementName="PART_Shape" Path="Fill" Converter="{StaticResource BackgroundToForegroundConverter}" />
+                                            <Binding
+                                                Converter="{StaticResource BackgroundToForegroundConverter}"
+                                                ElementName="PART_Shape"
+                                                Path="Fill" />
                                         </Path.Fill>
                                     </Path>
                                 </Grid>
@@ -96,7 +99,10 @@
                                             TextTrimming="CharacterEllipsis"
                                             TextWrapping="NoWrap">
                                             <TextBlock.Foreground>
-                                                <Binding ElementName="PART_Shape" Path="Fill" Converter="{StaticResource BackgroundToForegroundConverter}" />
+                                                <Binding
+                                                    Converter="{StaticResource BackgroundToForegroundConverter}"
+                                                    ElementName="PART_Shape"
+                                                    Path="Fill" />
                                             </TextBlock.Foreground>
                                         </TextBlock>
                                         <TextBlock
@@ -111,7 +117,10 @@
                                             TextWrapping="NoWrap"
                                             Visibility="Collapsed">
                                             <TextBlock.Foreground>
-                                                <Binding ElementName="PART_Shape" Path="Fill" Converter="{StaticResource BackgroundToForegroundConverter}" />
+                                                <Binding
+                                                    Converter="{StaticResource BackgroundToForegroundConverter}"
+                                                    ElementName="PART_Shape"
+                                                    Path="Fill" />
                                             </TextBlock.Foreground>
                                         </TextBlock>
                                     </StackPanel>
@@ -325,7 +334,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="PopupTextButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="PopupTextButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="14,0" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
@@ -360,7 +372,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="TabButtonStyle" BasedOn="{StaticResource BaseRadioButtonStyle}" TargetType="RadioButton">
+    <Style
+        x:Key="TabButtonStyle"
+        BasedOn="{StaticResource BaseRadioButtonStyle}"
+        TargetType="RadioButton">
         <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="Height" Value="42" />
         <Setter Property="Foreground" Value="{StaticResource Brush.Text.Muted}" />
@@ -429,8 +444,10 @@
         <Setter Property="HoveredBackground" Value="{StaticResource Brush.Background.Hover}" />
     </Style>
 
-
-    <Style x:Key="ToggleSwitchStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
+    <Style
+        x:Key="ToggleSwitchStyle"
+        BasedOn="{StaticResource BaseToggleButtonStyle}"
+        TargetType="ToggleButton">
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="20" />
         <Setter Property="Cursor" Value="Hand" />
@@ -488,7 +505,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="AddTileButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="AddTileButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -549,7 +569,10 @@
         </Border>
     </ControlTemplate>
 
-    <Style x:Key="ActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="ActionButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Height" Value="40" />
         <Setter Property="MinWidth" Value="120" />
         <Setter Property="Padding" Value="18,0" />
@@ -589,8 +612,10 @@
         <Setter Property="DefaultBackground" Value="{StaticResource Brush.Background.Main}" />
     </Style>
 
-
-    <Style x:Key="CalendarNavButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="CalendarNavButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Width" Value="28" />
         <Setter Property="Height" Value="28" />
         <Setter Property="Background" Value="Transparent" />
@@ -617,7 +642,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="HeaderActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="HeaderActionButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -646,7 +674,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarDayButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="CalendarDayButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Width" Value="34" />
         <Setter Property="Height" Value="34" />
         <Setter Property="Margin" Value="2" />
@@ -705,7 +736,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarChoiceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="CalendarChoiceButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Width" Value="78" />
         <Setter Property="Height" Value="38" />
         <Setter Property="Margin" Value="4" />
@@ -752,8 +786,10 @@
         <Setter Property="MinWidth" Value="90" />
     </Style>
 
-
-    <Style x:Key="OptionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="OptionButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Margin" Value="0,0,0,10" />
         <Setter Property="Padding" Value="14,12" />
         <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
@@ -825,7 +861,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="DialogActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="DialogActionButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="MinWidth" Value="92" />
         <Setter Property="Margin" Value="0,0,0,0" />
         <Setter Property="Padding" Value="16,10" />
@@ -887,7 +926,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
 
     <SolidColorBrush
         x:Key="SegmentedToggleSubtleSelectedBackgroundBrush"
@@ -980,10 +1018,6 @@
         </Style.Triggers>
     </Style>
 
-
-
-
-
     <Style
         x:Key="HeaderButtonStyle"
         BasedOn="{StaticResource MainWindowBalloonButtonChromeStyle}"
@@ -992,7 +1026,10 @@
         <Setter Property="IconSize" Value="8" />
     </Style>
 
-    <Style x:Key="HeaderMenuActionButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="HeaderMenuActionButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -1028,7 +1065,10 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="TextOnlyButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="TextOnlyButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -1052,7 +1092,10 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="DashedButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="DashedButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Width" Value="60" />
         <Setter Property="Height" Value="60" />
         <Setter Property="Background" Value="Transparent" />
@@ -1131,9 +1174,10 @@
         </Setter>
     </Style>
 
-
-
-    <Style x:Key="SpinnerArrowButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+    <Style
+        x:Key="SpinnerArrowButtonStyle"
+        BasedOn="{StaticResource BaseButtonStyle}"
+        TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />

@@ -5,16 +5,19 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:controls="clr-namespace:Fluxo.Views.Shell.Main.Controls"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dataEnums="clr-namespace:Fluxo.Data.Enums;assembly=Fluxo.Data"
     xmlns:main="clr-namespace:Fluxo.ViewModels.Shell.Main"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="LedgerRoot"
     d:DataContext="{d:DesignInstance Type=main:LedgerVM}"
     mc:Ignorable="d">
 
-<UserControl.Resources>
-        <Style x:Key="LedgerChildRowBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+    <UserControl.Resources>
+        <Style
+            x:Key="LedgerChildRowBorderStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Brush.Background.Surface}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsMouseOver, ElementName=ChildRowRoot}" Value="True">
@@ -23,13 +26,19 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="LedgerChildActionsGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="LedgerChildActionsGridStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="IsHitTestVisible" Value="True" />
             <Setter Property="Opacity" Value="1" />
         </Style>
 
-        <Style x:Key="LedgerRowActionsBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+        <Style
+            x:Key="LedgerRowActionsBorderStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="IsEnabled" Value="True" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding DataContext.IsSelectionModeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
@@ -38,7 +47,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="LedgerDrawerBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+        <Style
+            x:Key="LedgerDrawerBorderStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
             <Setter Property="IsHitTestVisible" Value="True" />
             <Setter Property="Opacity" Value="1" />
@@ -49,7 +61,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="LedgerSignedAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="LedgerSignedAmountTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="Foreground" Value="{StaticResource Brush.Danger}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Kind}" Value="{x:Static dataEnums:LedgerTransactionKind.Income}">
@@ -58,7 +73,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="LedgerFilterComboBoxItemStyle" BasedOn="{StaticResource BaseComboBoxItemStyle}" TargetType="ComboBoxItem">
+        <Style
+            x:Key="LedgerFilterComboBoxItemStyle"
+            BasedOn="{StaticResource BaseComboBoxItemStyle}"
+            TargetType="ComboBoxItem">
             <Setter Property="Height" Value="36" />
             <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -125,7 +143,10 @@
             </Setter>
         </Style>
 
-        <Style x:Key="LedgerFilterComboStyle" BasedOn="{StaticResource BaseComboBoxStyle}" TargetType="ComboBox">
+        <Style
+            x:Key="LedgerFilterComboStyle"
+            BasedOn="{StaticResource BaseComboBoxStyle}"
+            TargetType="ComboBox">
             <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
             <Setter Property="Height" Value="34" />
             <Setter Property="Background" Value="{StaticResource Brush.Background.Elevated}" />
@@ -386,7 +407,10 @@
                 Text="{Binding Mode=OneWay}" />
         </DataTemplate>
 
-        <Style x:Key="LedgerListViewItemStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
+        <Style
+            x:Key="LedgerListViewItemStyle"
+            BasedOn="{StaticResource BaseListViewItemStyle}"
+            TargetType="ListViewItem">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -414,9 +438,8 @@
                 <Border
                     x:Name="ChildRowSurface"
                     Margin="0,0,0,8"
-                    CornerRadius="8" Style="{StaticResource LedgerChildRowBorderStyle}">
-
-                </Border>
+                    CornerRadius="8"
+                    Style="{StaticResource LedgerChildRowBorderStyle}" />
 
                 <Grid Margin="0,0,0,8">
                     <Grid.ColumnDefinitions>
@@ -444,30 +467,32 @@
                             FontSize="13"
                             Foreground="{StaticResource Brush.Text.Primary}"
                             Text="{Binding Name, Mode=OneWay}" />
-<Border
+                        <Border
                             Margin="8,4,0,0"
                             Padding="8,3"
                             VerticalAlignment="Center"
                             Background="{StaticResource Brush.Background.Hover}"
-                            CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            CornerRadius="4"
+                            Style="{StaticResource BaseBorderStyle}"
+                            Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
                                 Foreground="{StaticResource Brush.Text.Primary}"
                                 Text="GOAL" />
-
                         </Border>
-<Border
+                        <Border
                             Margin="6,0,0,0"
                             Padding="5,1"
                             Background="#FFEBD2"
-                            CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            CornerRadius="4"
+                            Style="{StaticResource BaseBorderStyle}"
+                            Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
                                 Foreground="#7A4A00"
                                 Text="RECURRING" />
-
                         </Border>
                     </StackPanel>
 
@@ -490,7 +515,8 @@
                         Grid.Column="3"
                         MaxWidth="160"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Center" Style="{StaticResource LedgerChildActionsGridStyle}">
+                        VerticalAlignment="Center"
+                        Style="{StaticResource LedgerChildActionsGridStyle}">
                         <Grid.RenderTransform>
                             <TranslateTransform />
                         </Grid.RenderTransform>
@@ -513,7 +539,6 @@
                                 </TextBlock.Foreground>
                             </TextBlock>
                         </Border>
-
                     </Grid>
 
                     <Border
@@ -553,7 +578,6 @@
                             <TranslateTransform />
                         </TextBlock.RenderTransform>
                     </TextBlock>
-
                 </Grid>
                 <Grid.Triggers>
                     <EventTrigger RoutedEvent="MouseEnter">
@@ -619,7 +643,6 @@
                         </BeginStoryboard>
                     </EventTrigger>
                 </Grid.Triggers>
-
             </Grid>
         </DataTemplate>
 
@@ -675,31 +698,33 @@
                                     Foreground="{StaticResource Brush.Text.Primary.Dark}"
                                     Text="{Binding VisibleChildCount, Mode=OneWay}" />
                             </Border>
-<Border
+                            <Border
                                 Margin="8,4,0,0"
                                 Padding="8,3"
                                 VerticalAlignment="Center"
                                 Background="{StaticResource Brush.Background.Hover}"
-                                CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                CornerRadius="4"
+                                Style="{StaticResource BaseBorderStyle}"
+                                Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
                                     Foreground="{StaticResource Brush.Text.Primary}"
                                     Text="GOAL" />
-
                             </Border>
 
-<Border
+                            <Border
                                 Margin="6,0,0,0"
                                 Padding="5,1"
                                 Background="#FFEBD2"
-                                CornerRadius="4" Style="{StaticResource BaseBorderStyle}" Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                CornerRadius="4"
+                                Style="{StaticResource BaseBorderStyle}"
+                                Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
                                     Foreground="#7A4A00"
                                     Text="RECURRING" />
-
                             </Border>
                         </StackPanel>
 
@@ -744,7 +769,6 @@
                                     </TextBlock.Foreground>
                                 </TextBlock>
                             </Border>
-
                         </Grid>
 
                         <Grid
@@ -770,7 +794,6 @@
                                     Foreground="{StaticResource Brush.Mint}"
                                     Text="{Binding AccountName}" />
                             </Border>
-
                         </Grid>
 
                         <TextBlock
@@ -787,7 +810,6 @@
                                 <TranslateTransform />
                             </TextBlock.RenderTransform>
                         </TextBlock>
-
 
                         <Border
                             x:Name="RowActions"
@@ -819,7 +841,6 @@
                                     Style="{StaticResource HeaderButtonStyle}"
                                     ToolTip="Delete" />
                             </StackPanel>
-
                         </Border>
                     </Grid>
                     <Border.Triggers>
@@ -896,7 +917,6 @@
                             </BeginStoryboard>
                         </EventTrigger>
                     </Border.Triggers>
-
                 </Border>
                 <Grid Visibility="{Binding IsChildrenExpanded, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
@@ -916,7 +936,10 @@
             </StackPanel>
         </DataTemplate>
 
-        <Style x:Key="LedgerGroupItemStyle" BasedOn="{StaticResource BaseGroupItemStyle}" TargetType="GroupItem">
+        <Style
+            x:Key="LedgerGroupItemStyle"
+            BasedOn="{StaticResource BaseGroupItemStyle}"
+            TargetType="GroupItem">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="GroupItem">
@@ -1021,15 +1044,18 @@
 
         <GroupStyle x:Key="LedgerGroupStyle" ContainerStyle="{StaticResource LedgerGroupItemStyle}" />
 
-<Style BasedOn="{StaticResource HeaderButtonStyle}" TargetType="customControls:BalloonButton" x:Key="LedgerSortButtonStyle">
-                            <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownWideNarrow}" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding AmountSortDirection}" Value="Ascending">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownNarrowWide}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-</UserControl.Resources>
+        <Style
+            x:Key="LedgerSortButtonStyle"
+            BasedOn="{StaticResource HeaderButtonStyle}"
+            TargetType="customControls:BalloonButton">
+            <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownWideNarrow}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding AmountSortDirection}" Value="Ascending">
+                    <Setter Property="ButtonIcon" Value="{StaticResource ArrowDownNarrowWide}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
 
     <Grid Margin="24,0,24,0">
         <Grid x:Name="LedgerContentGrid">
@@ -1340,16 +1366,15 @@
                     SelectionChanged="OnGroupingModeSelectionChanged"
                     Style="{StaticResource LedgerGroupingComboStyle}"
                     Tag="Group By" />
-<customControls:BalloonButton
+                <customControls:BalloonButton
                     Grid.Column="8"
                     ButtonSize="34"
                     Click="OnOrderingButtonClick"
                     DefaultBackground="{StaticResource Brush.BalloonButton.Background.Surface}"
                     HoveredBackground="{StaticResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="14"
-                    IsEnabled="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolNegationConverter}}" Style="{StaticResource LedgerSortButtonStyle}">
-
-                </customControls:BalloonButton>
+                    IsEnabled="{Binding IsSelectionModeEnabled, Converter={StaticResource BoolNegationConverter}}"
+                    Style="{StaticResource LedgerSortButtonStyle}" />
             </Grid>
 
             <Grid Grid.Row="3">
