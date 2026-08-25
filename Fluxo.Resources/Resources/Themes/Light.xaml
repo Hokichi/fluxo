@@ -1,13 +1,23 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!--  =============================  -->
     <!--  BACKGROUND ELEVATION  -->
+    <!--  Widened vs. the previous pass: -->
+    <!--  the old ramp packed all six    -->
+    <!--  steps into L 89.8%-100%, which -->
+    <!--  is why cards/chips vanished    -->
+    <!--  into the page. Now spans       -->
+    <!--  ~L 85%-100%, matching the      -->
+    <!--  proportional spread used in    -->
+    <!--  Dark.xaml's ramp.              -->
+    <!--  =============================  -->
 
-    <Color x:Key="Color.Background.Main">#F0F5F1</Color>
-    <Color x:Key="Color.Background.Deepened">#E0EAE2</Color>
-    <Color x:Key="Color.Background.Popup">#FCFEFC</Color>
-    <Color x:Key="Color.Background.Surface">#F8FBF8</Color>
+    <Color x:Key="Color.Background.Main">#E2ECE5</Color>
+    <Color x:Key="Color.Background.Deepened">#D2E1D7</Color>
+    <Color x:Key="Color.Background.Popup">#EEF5F0</Color>
+    <Color x:Key="Color.Background.Surface">#F5FAF6</Color>
     <Color x:Key="Color.Background.Elevated">#FFFFFF</Color>
-    <Color x:Key="Color.Background.Hover">#E5F4E9</Color>
+    <Color x:Key="Color.Background.Hover">#DCEEE2</Color>
 
     <SolidColorBrush x:Key="Brush.Background.Main" Color="{StaticResource Color.Background.Main}" />
     <SolidColorBrush x:Key="Brush.Background.Deepened" Color="{StaticResource Color.Background.Deepened}" />
@@ -16,17 +26,28 @@
     <SolidColorBrush x:Key="Brush.Background.Elevated" Color="{StaticResource Color.Background.Elevated}" />
     <SolidColorBrush x:Key="Brush.Background.Hover" Color="{StaticResource Color.Background.Hover}" />
 
+    <!--  =============================  -->
     <!--  ACCENT (MINT GREEN)  -->
+    <!--  Deepened from #1B7150 so it    -->
+    <!--  carries the same visual        -->
+    <!--  weight against Surface that    -->
+    <!--  Dark.xaml's Mint carries       -->
+    <!--  (was 5.7:1, now 6.7:1).        -->
+    <!--  =============================  -->
 
-    <Color x:Key="Color.Mint">#1B7150</Color>
-    <Color x:Key="Color.Mint.Muted">#2A805D</Color>
-    <Color x:Key="Color.Mint.Tint">#DBF4E6</Color>
+    <Color x:Key="Color.Mint">#146449</Color>
+    <Color x:Key="Color.Mint.Muted">#1F6E4E</Color>
+    <Color x:Key="Color.Mint.Tint">#D7F0E1</Color>
 
     <SolidColorBrush x:Key="Brush.Mint" Color="{StaticResource Color.Mint}" />
     <SolidColorBrush x:Key="Brush.Mint.Muted" Color="{StaticResource Color.Mint.Muted}" />
     <SolidColorBrush x:Key="Brush.Mint.Tint" Color="{StaticResource Color.Mint.Tint}" />
 
     <!--  TEXT  -->
+    <!--  Unchanged — already well clear -->
+    <!--  of AA against the new surfaces  -->
+    <!--  (Primary 15.2:1, Secondary      -->
+    <!--  7.2:1, Muted 4.9:1).            -->
 
     <Color x:Key="Color.Text.Primary">#14251D</Color>
     <Color x:Key="Color.Text.Secondary">#3E5A4B</Color>
@@ -44,16 +65,29 @@
     <SolidColorBrush x:Key="Brush.Text.Muted.Inverted" Color="{StaticResource Color.Text.Muted.Inverted}" />
     <SolidColorBrush x:Key="Brush.Text.Recurring" Color="{StaticResource Color.Text.Recurring}" />
 
+    <!--  =============================  -->
     <!--  BORDER  -->
+    <!--  Subtle darkened from #D3E0D7   -->
+    <!--  to #C3D3C8 (1.31:1 -> 1.48:1). -->
+    <!--  Still decorative-only — do NOT -->
+    <!--  use it for card/chip outlines. -->
+    <!--  Default is unchanged and is    -->
+    <!--  already solid at 3.3:1; use IT -->
+    <!--  for anything that needs to     -->
+    <!--  read as a real boundary        -->
+    <!--  (cards, chips, inputs).        -->
+    <!--  Focus now matches the new      -->
+    <!--  Mint value.                    -->
+    <!--  =============================  -->
 
-    <Color x:Key="Color.Border.Subtle">#D3E0D7</Color>
+    <Color x:Key="Color.Border.Subtle">#C3D3C8</Color>
     <Color x:Key="Color.Border.Default">#788F82</Color>
     <Color x:Key="Color.Border.Strong">#526C5E</Color>
-    <Color x:Key="Color.Border.Focus">#1B7150</Color>
+    <Color x:Key="Color.Border.Focus">#146449</Color>
     <Color x:Key="Color.Border.Danger">#B72F40</Color>
     <Color x:Key="Color.Border.Warning">#8B5A00</Color>
     <Color x:Key="Color.Border.Info">#2268BC</Color>
-    <Color x:Key="Color.Border.Accent.Muted">#731B7150</Color>
+    <Color x:Key="Color.Border.Accent.Muted">#73146449</Color>
 
     <SolidColorBrush x:Key="Brush.Border.Subtle" Color="{StaticResource Color.Border.Subtle}" />
     <SolidColorBrush x:Key="Brush.Border.Default" Color="{StaticResource Color.Border.Default}" />
@@ -65,6 +99,7 @@
     <SolidColorBrush x:Key="Brush.Border.Accent.Muted" Color="{StaticResource Color.Border.Accent.Muted}" />
 
     <!--  STATE / SEMANTIC  -->
+    <!--  Unchanged.  -->
 
     <Color x:Key="Color.Success">#1F7653</Color>
     <Color x:Key="Color.Warning">#8B5A00</Color>
@@ -86,6 +121,13 @@
     <SolidColorBrush x:Key="Brush.Info.Dark" Color="{StaticResource Color.Info.Dark}" />
 
     <!--  CATEGORY  -->
+    <!--  Unchanged. Worth a follow-up   -->
+    <!--  pass: these ".Dark" tints now  -->
+    <!--  sit close to the new Surface/  -->
+    <!--  Popup values and may want      -->
+    <!--  re-checking once borders move  -->
+    <!--  to Border.Default in the view  -->
+    <!--  XAML.                          -->
 
     <Color x:Key="Color.Category.Needs">#45594E</Color>
     <Color x:Key="Color.Category.Wants">#216F9C</Color>
@@ -103,6 +145,7 @@
     <SolidColorBrush x:Key="Brush.Category.Investments.Dark" Color="{StaticResource Color.Category.Investments.Dark}" />
 
     <!--  ACCOUNTS  -->
+    <!--  Unchanged.  -->
 
     <Color x:Key="Color.Account.Checking">#2268BC</Color>
     <Color x:Key="Color.Account.Cash">#56665D</Color>
@@ -124,6 +167,7 @@
     <SolidColorBrush x:Key="Brush.Account.Saving.Inverted" Color="{StaticResource Color.Account.Saving.Inverted}" />
 
     <!--  RESERVED / RECURRING  -->
+    <!--  Unchanged.  -->
 
     <Color x:Key="Color.Reserved">#3F454B</Color>
     <SolidColorBrush x:Key="Brush.Reserved" Color="{StaticResource Color.Reserved}" />
@@ -132,11 +176,13 @@
     <SolidColorBrush x:Key="Brush.Background.Recurring" Color="{StaticResource Color.Background.Recurring}" />
 
     <!--  OVERLAY  -->
+    <!--  Unchanged.  -->
 
     <Color x:Key="Color.Overlay">#73000000</Color>
     <SolidColorBrush x:Key="Brush.Overlay" Color="{StaticResource Color.Overlay}" />
 
     <!--  BALLOON BUTTON BACKGROUND  -->
+    <!--  Unchanged.  -->
 
     <Color x:Key="Color.BalloonButton.Background.Default">#D9F1E5</Color>
     <Color x:Key="Color.BalloonButton.Background.Default.Hovered">#C5E8D5</Color>
@@ -156,7 +202,7 @@
     <Color x:Key="Color.BalloonButton.Background.Surface">#EFF5F1</Color>
     <Color x:Key="Color.BalloonButton.Background.Surface.Hovered">#E0EAE2</Color>
 
-    <Color x:Key="Color.BalloonButton.Background.Neutral.Hovered">#E5F4E9</Color>
+    <Color x:Key="Color.BalloonButton.Background.Neutral.Hovered">#DCEEE2</Color>
 
     <SolidColorBrush x:Key="Brush.BalloonButton.Background.Default" Color="{StaticResource Color.BalloonButton.Background.Default}" />
     <SolidColorBrush x:Key="Brush.BalloonButton.Background.Default.Hovered" Color="{StaticResource Color.BalloonButton.Background.Default.Hovered}" />

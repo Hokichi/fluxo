@@ -8,6 +8,8 @@ public static class ThemeManager
 
     public static ApplicationTheme CurrentTheme { get; private set; } = ApplicationTheme.Dark;
 
+    public static event EventHandler? ThemeChanged;
+
     public static void SwitchTheme(ApplicationTheme theme)
     {
         var application = Application.Current
@@ -29,6 +31,7 @@ public static class ThemeManager
         applicationResources.MergedDictionaries[themeIndex] = targetTheme;
 
         CurrentTheme = theme;
+        ThemeChanged?.Invoke(null, EventArgs.Empty);
     }
 
     private static ResourceDictionary? FindActiveTheme(ResourceDictionary resources)

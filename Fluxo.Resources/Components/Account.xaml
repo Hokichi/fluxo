@@ -11,8 +11,11 @@
     Visibility="{Binding PinnedOnUI, Converter={StaticResource BoolToVisibilityConverter}}"
     mc:Ignorable="d">
 
-<UserControl.Resources>
-        <Style x:Key="AccountAccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+    <UserControl.Resources>
+        <Style
+            x:Key="AccountAccentStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Checking">
                     <Setter Property="Background" Value="{DynamicResource Brush.Account.Checking}" />
@@ -33,38 +36,41 @@
             </Style.Triggers>
         </Style>
 
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="AccountStateBorderStyle">
-                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-                    <Setter Property="Opacity" Value="0" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </DataTrigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0.5"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-</UserControl.Resources>
+        <Style
+            x:Key="AccountStateBorderStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+            <Setter Property="Opacity" Value="0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                </DataTrigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0.5"
+                                    Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:0.2" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
 
     <Grid>
         <Border
@@ -74,12 +80,13 @@
             Opacity="0.1"
             Style="{StaticResource AccountAccentStyle}" />
 
-<Border
+        <Border
             x:Name="AccountCard"
             BorderThickness="0"
             CornerRadius="8"
             MouseLeftButtonDown="OnRootMouseLeftButtonDown"
-            PreviewMouseRightButtonUp="OnRootPreviewMouseRightButtonUp" Style="{StaticResource AccountStateBorderStyle}">
+            PreviewMouseRightButtonUp="OnRootPreviewMouseRightButtonUp"
+            Style="{StaticResource AccountStateBorderStyle}">
             <Border.Background>
                 <SolidColorBrush Color="{DynamicResource Color.Background.Deepened}" />
             </Border.Background>

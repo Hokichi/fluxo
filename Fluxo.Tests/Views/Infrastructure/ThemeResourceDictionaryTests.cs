@@ -1,7 +1,9 @@
+using System.Globalization;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Fluxo.Resources.Converters;
 using Fluxo.Resources.Theming;
 using Xunit;
 
@@ -36,7 +38,7 @@ public sealed class ThemeResourceDictionaryTests
             resources.MergedDictionaries.Add(LoadTheme("Dark"));
             var consumer = CreateBrushConsumer(resources);
 
-            Assert.Equal(Color.FromRgb(0x06, 0x0A, 0x08), GetBackgroundColor(consumer));
+            Assert.Equal(Color.FromRgb(0x09, 0x0B, 0x0E), GetBackgroundColor(consumer));
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Light);
 
@@ -45,7 +47,7 @@ public sealed class ThemeResourceDictionaryTests
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Dark);
 
-            Assert.Equal(Color.FromRgb(0x06, 0x0A, 0x08), GetBackgroundColor(consumer));
+            Assert.Equal(Color.FromRgb(0x09, 0x0B, 0x0E), GetBackgroundColor(consumer));
             Assert.Equal(ApplicationTheme.Dark, ThemeManager.CurrentTheme);
         });
     }
@@ -76,6 +78,36 @@ public sealed class ThemeResourceDictionaryTests
             Assert.Equal(Color.FromRgb(0xF0, 0xF5, 0xF1), GetBackgroundColor(consumer));
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Dark);
+        });
+    }
+
+    [Fact]
+    public void SwitchTheme_UpdatesDifferenceToBrushConverterForeground()
+    {
+        RunOnStaThread(() =>
+        {
+            var application = Application.Current ?? new Application();
+            var originalResources = application.Resources;
+            var resources = new ResourceDictionary();
+            resources.MergedDictionaries.Add(LoadTheme("Dark"));
+            application.Resources = resources;
+
+            try
+            {
+                var foreground = Assert.IsType<SolidColorBrush>(new DifferenceToBrushConverter()
+                    .Convert(0m, typeof(Brush), null, CultureInfo.InvariantCulture));
+                var consumer = new TextBlock { Foreground = foreground };
+
+                ThemeManager.SwitchTheme(resources, ApplicationTheme.Light);
+
+                Assert.Equal(Color.FromRgb(0x14, 0x25, 0x1D), foreground.Color);
+                Assert.Same(foreground, consumer.Foreground);
+            }
+            finally
+            {
+                ThemeManager.SwitchTheme(resources, ApplicationTheme.Dark);
+                application.Resources = originalResources;
+            }
         });
     }
 

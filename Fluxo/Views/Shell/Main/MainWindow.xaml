@@ -26,12 +26,15 @@
     </Window.CommandBindings>
 
     <Window.Resources>
-<ResourceDictionary>
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/MainWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="QuickSearchResultIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Style
+                x:Key="QuickSearchResultIconStyle"
+                BasedOn="{StaticResource BaseIconStyle}"
+                TargetType="components:Icon">
                 <Setter Property="Path" Value="{StaticResource BanknoteArrowDown}" />
                 <Setter Property="Color" Value="{DynamicResource Brush.Danger}" />
                 <Style.Triggers>
@@ -42,7 +45,10 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="QuickSearchTagBadgeStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Style
+                x:Key="QuickSearchTagBadgeStyle"
+                BasedOn="{StaticResource BaseBorderStyle}"
+                TargetType="Border">
                 <Setter Property="Visibility" Value="Visible" />
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding TagName}" Value="{x:Null}">
@@ -54,7 +60,10 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="HeaderSearchResultItemStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Style
+                x:Key="HeaderSearchResultItemStyle"
+                BasedOn="{StaticResource BaseBorderStyle}"
+                TargetType="Border">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="CornerRadius" Value="12" />
                 <Setter Property="Padding" Value="12,10" />
@@ -66,7 +75,10 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="HeaderSearchRegionLockAndGateStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+            <Style
+                x:Key="HeaderSearchRegionLockAndGateStyle"
+                BasedOn="{StaticResource BaseGridStyle}"
+                TargetType="Grid">
                 <Setter Property="IsEnabled" Value="True" />
                 <Setter Property="Visibility" Value="Visible" />
                 <Style.Triggers>
@@ -79,7 +91,10 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="DashboardSpendingAmountGateLockedContentStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+            <Style
+                x:Key="DashboardSpendingAmountGateLockedContentStyle"
+                BasedOn="{StaticResource BaseGridStyle}"
+                TargetType="Grid">
                 <Setter Property="IsHitTestVisible" Value="True" />
                 <Setter Property="Effect" Value="{x:Null}" />
                 <Setter Property="Opacity" Value="1" />
@@ -96,7 +111,10 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="FloatingSideNavigationRailStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Style
+                x:Key="FloatingSideNavigationRailStyle"
+                BasedOn="{StaticResource BaseBorderStyle}"
+                TargetType="Border">
                 <Setter Property="Padding" Value="10,0" />
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
                 <Setter Property="CornerRadius">
@@ -119,7 +137,10 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="FloatingSideNavigationButtonStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
+            <Style
+                x:Key="FloatingSideNavigationButtonStyle"
+                BasedOn="{StaticResource BaseToggleButtonStyle}"
+                TargetType="ToggleButton">
                 <Setter Property="Width" Value="40" />
                 <Setter Property="Height" Value="40" />
                 <Setter Property="Padding" Value="0" />
@@ -241,9 +262,8 @@
                                 Width="15"
                                 Height="15"
                                 HorizontalAlignment="Center"
-                                VerticalAlignment="Center" Style="{StaticResource QuickSearchResultIconStyle}">
-
-                            </components:Icon>
+                                VerticalAlignment="Center"
+                                Style="{StaticResource QuickSearchResultIconStyle}" />
                         </Border>
 
                         <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -266,7 +286,8 @@
                                     Margin="8,0,0,0"
                                     Padding="5,2"
                                     VerticalAlignment="Center"
-                                    Background="{Binding TagBrush}" Style="{StaticResource QuickSearchTagBadgeStyle}">
+                                    Background="{Binding TagBrush}"
+                                    Style="{StaticResource QuickSearchTagBadgeStyle}">
 
                                     <Border.CornerRadius>
                                         <MultiBinding Converter="{StaticResource CornerRadiusConverter}">
@@ -316,112 +337,118 @@
                 </Border>
             </DataTemplate>
 
-<ControlTemplate TargetType="Button" x:Key="AppLockOverlayButtonTemplate">
-                            <Border Background="{TemplateBinding Background}">
-                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            </Border>
-                        </ControlTemplate>
+            <ControlTemplate x:Key="AppLockOverlayButtonTemplate" TargetType="Button">
+                <Border Background="{TemplateBinding Background}">
+                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                </Border>
+            </ControlTemplate>
 
-<Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border" x:Key="HistoryItemBorderStyle">
-                                                        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
-                                                        <Setter Property="Opacity" Value="1" />
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                                            </Trigger>
-                                                            <DataTrigger Binding="{Binding IsReverted, Mode=OneWay}" Value="True">
-                                                                <Setter Property="Opacity" Value="0.55" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
+            <Style
+                x:Key="HistoryItemBorderStyle"
+                BasedOn="{StaticResource BaseBorderStyle}"
+                TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+                <Setter Property="Opacity" Value="1" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    </Trigger>
+                    <DataTrigger Binding="{Binding IsReverted, Mode=OneWay}" Value="True">
+                        <Setter Property="Opacity" Value="0.55" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="HistoryDetailsVisibilityStyle">
-                                                                    <Setter Property="Visibility" Value="Visible" />
-                                                                    <Style.Triggers>
-                                                                        <Trigger Property="Text" Value="">
-                                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                                        </Trigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
+            <Style
+                x:Key="HistoryDetailsVisibilityStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Visible" />
+                <Style.Triggers>
+                    <Trigger Property="Text" Value="">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
 
-<DataTemplate x:Key="HistoryItemTemplate">
-<Border
-                                                Margin="0,0,0,8"
-                                                Padding="12"
-                                                CornerRadius="12" Style="{StaticResource HistoryItemBorderStyle}">
+            <DataTemplate x:Key="HistoryItemTemplate">
+                <Border
+                    Margin="0,0,0,8"
+                    Padding="12"
+                    CornerRadius="12"
+                    Style="{StaticResource HistoryItemBorderStyle}">
 
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*" />
-                                                        <ColumnDefinition Width="Auto" />
-                                                    </Grid.ColumnDefinitions>
-                                                    <StackPanel VerticalAlignment="Center">
-                                                        <TextBlock
-                                                            FontFamily="{StaticResource Medium}"
-                                                            FontSize="13"
-                                                            Foreground="{DynamicResource Brush.Text.Primary}"
-                                                            Text="{Binding Title, Mode=OneWay}"
-                                                            TextWrapping="Wrap" />
-                                                        <TextBlock
-                                                            Margin="0,3,0,0"
-                                                            FontFamily="{StaticResource Regular}"
-                                                            FontSize="12"
-                                                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                                                            Text="{Binding Summary, Mode=OneWay}"
-                                                            TextWrapping="Wrap" />
-<TextBlock
-                                                            Margin="0,3,0,0"
-                                                            FontFamily="{StaticResource Regular}"
-                                                            FontSize="11"
-                                                            Foreground="{DynamicResource Brush.Text.Muted}"
-                                                            Text="{Binding Details, Mode=OneWay}"
-                                                            TextWrapping="Wrap" Style="{StaticResource HistoryDetailsVisibilityStyle}">
-
-                                                        </TextBlock>
-<TextBlock
-                                                            Margin="0,3,0,0"
-                                                            FontFamily="{StaticResource Medium}"
-                                                            FontSize="11"
-                                                            Foreground="{DynamicResource Brush.Text.Muted}"
-                                                            Text="Reverted" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding IsReverted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-
-                                                        </TextBlock>
-                                                    </StackPanel>
-                                                    <StackPanel
-                                                        Grid.Column="1"
-                                                        Margin="12,0,0,0"
-                                                        Orientation="Horizontal">
-                                                        <customControls:BalloonButton
-                                                            AutomationProperties.Name="Revert to here"
-                                                            ButtonIcon="{StaticResource History}"
-                                                            ButtonText="Revert to here"
-                                                            Click="OnRevertToHistoryItemClick"
-                                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
-                                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
-                                                            IconSize="12"
-                                                            IsEnabled="{Binding CanRevertToHere, Mode=OneWay}"
-                                                            ShouldExpand="True"
-                                                            Visibility="{Binding IsReverted, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
-                                                        <customControls:BalloonCheckBox
-                                                            Margin="8,0,0,0"
-                                                            AutomationProperties.Name="Toggle history action"
-                                                            ButtonSize="30"
-                                                            CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
-                                                            CheckedIcon="{StaticResource RegularRedo}"
-                                                            CheckedText="Reapply"
-                                                            Click="OnHistoryActionClick"
-                                                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
-                                                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
-                                                            IconSize="11"
-                                                            IsChecked="{Binding IsReverted, Mode=OneWay}"
-                                                            ShouldExpand="True"
-                                                            UncheckedIcon="{StaticResource RegularUndo}"
-                                                            UncheckedText="Revert" />
-                                                    </StackPanel>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-</ResourceDictionary>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock
+                                FontFamily="{StaticResource Medium}"
+                                FontSize="13"
+                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                Text="{Binding Title, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Margin="0,3,0,0"
+                                FontFamily="{StaticResource Regular}"
+                                FontSize="12"
+                                Foreground="{DynamicResource Brush.Text.Secondary}"
+                                Text="{Binding Summary, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Margin="0,3,0,0"
+                                FontFamily="{StaticResource Regular}"
+                                FontSize="11"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
+                                Style="{StaticResource HistoryDetailsVisibilityStyle}"
+                                Text="{Binding Details, Mode=OneWay}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Margin="0,3,0,0"
+                                FontFamily="{StaticResource Medium}"
+                                FontSize="11"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
+                                Style="{StaticResource BaseTextBlockStyle}"
+                                Text="Reverted"
+                                Visibility="{Binding IsReverted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </StackPanel>
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="12,0,0,0"
+                            Orientation="Horizontal">
+                            <customControls:BalloonButton
+                                AutomationProperties.Name="Revert to here"
+                                ButtonIcon="{StaticResource History}"
+                                ButtonText="Revert to here"
+                                Click="OnRevertToHistoryItemClick"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                IconSize="12"
+                                IsEnabled="{Binding CanRevertToHere, Mode=OneWay}"
+                                ShouldExpand="True"
+                                Visibility="{Binding IsReverted, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                            <customControls:BalloonCheckBox
+                                Margin="8,0,0,0"
+                                AutomationProperties.Name="Toggle history action"
+                                ButtonSize="30"
+                                CheckedBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                CheckedIcon="{StaticResource RegularRedo}"
+                                CheckedText="Reapply"
+                                Click="OnHistoryActionClick"
+                                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Neutral}"
+                                HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                                IconSize="11"
+                                IsChecked="{Binding IsReverted, Mode=OneWay}"
+                                ShouldExpand="True"
+                                UncheckedIcon="{StaticResource RegularUndo}"
+                                UncheckedText="Revert" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid x:Name="MainGrid" Margin="8">
@@ -561,8 +588,8 @@
                                             FontSize="13"
                                             Foreground="{DynamicResource Brush.Text.Primary}"
                                             PreviewKeyDown="OnHeaderSearchBoxPreviewKeyDown"
-                                            TextChanged="OnHeaderSearchTextChanged"
-                                            Template="{StaticResource FadingTextBoxContentHostTemplate}" />
+                                            Template="{StaticResource FadingTextBoxContentHostTemplate}"
+                                            TextChanged="OnHeaderSearchTextChanged" />
                                     </Grid>
                                 </Border>
 
@@ -607,11 +634,13 @@
                                     Width="14"
                                     Height="14"
                                     VerticalAlignment="Center"
-                                    Color="{DynamicResource Brush.Text.Primary}"
                                     IsHitTestVisible="False"
-                                    Path="{StaticResource Sun}" />
+                                    Path="{StaticResource Sun}"
+                                    Color="{DynamicResource Brush.Text.Primary}" />
                                 <ToggleButton
                                     x:Name="HeaderThemeToggle"
+                                    Width="40"
+                                    Height="20"
                                     Margin="8,0"
                                     AutomationProperties.HelpText="Sun selects light theme; moon selects dark theme."
                                     AutomationProperties.Name="Switch application theme"
@@ -622,9 +651,9 @@
                                     Width="14"
                                     Height="14"
                                     VerticalAlignment="Center"
-                                    Color="{DynamicResource Brush.Text.Primary}"
                                     IsHitTestVisible="False"
-                                    Path="{StaticResource Moon}" />
+                                    Path="{StaticResource Moon}"
+                                    Color="{DynamicResource Brush.Text.Primary}" />
                             </StackPanel>
 
                             <customControls:BalloonButton
@@ -708,7 +737,10 @@
                                     MouseEnter="OnHeaderMenuPopupMouseEnter"
                                     MouseLeave="OnHeaderMenuPopupMouseLeave">
                                     <Border.Resources>
-                                        <Style x:Key="HeaderMenuShortcutTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                                        <Style
+                                            x:Key="HeaderMenuShortcutTextStyle"
+                                            BasedOn="{StaticResource BaseTextBlockStyle}"
+                                            TargetType="TextBlock">
                                             <Setter Property="VerticalAlignment" Value="Center" />
                                             <Setter Property="HorizontalAlignment" Value="Right" />
                                             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -933,10 +965,12 @@
                     </Grid>
                 </Grid>
 
-<Grid
+                <Grid
                     x:Name="DashboardSpendingAmountGateOverlay"
                     Grid.RowSpan="3"
-                    Panel.ZIndex="10" Style="{StaticResource BaseGridStyle}" Visibility="{Binding IsDashboardSpendingAmountGateLocked, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Panel.ZIndex="10"
+                    Style="{StaticResource BaseGridStyle}"
+                    Visibility="{Binding IsDashboardSpendingAmountGateLocked, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
 
                     <Button
                         x:Name="DashboardSpendingAmountGateActionButton"
@@ -967,7 +1001,7 @@
                     </Button>
                 </Grid>
 
-<Button
+                <Button
                     x:Name="AppLockOverlay"
                     Margin="200,76,200,48"
                     HorizontalContentAlignment="Center"
@@ -978,7 +1012,8 @@
                     Click="OnAppLockOverlayClick"
                     Cursor="Hand"
                     FocusVisualStyle="{x:Null}"
-                    Visibility="{Binding IsAppLocked, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" Template="{StaticResource AppLockOverlayButtonTemplate}">
+                    Template="{StaticResource AppLockOverlayButtonTemplate}"
+                    Visibility="{Binding IsAppLocked, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
@@ -1138,20 +1173,18 @@
 
                         <Grid Grid.Row="1" Margin="0,18,0,0">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
-<ItemsControl x:Name="HistoryItemsControl" ItemTemplate="{StaticResource HistoryItemTemplate}">
-
-                                </ItemsControl>
+                                <ItemsControl x:Name="HistoryItemsControl" ItemTemplate="{StaticResource HistoryItemTemplate}" />
                             </ScrollViewer>
 
-<TextBlock
+                            <TextBlock
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontFamily="{StaticResource Medium}"
                                 FontSize="13"
                                 Foreground="{DynamicResource Brush.Text.Muted}"
-                                Text="No actions logged this session" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding HasItems, ElementName=HistoryItemsControl, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
-
-                            </TextBlock>
+                                Style="{StaticResource BaseTextBlockStyle}"
+                                Text="No actions logged this session"
+                                Visibility="{Binding HasItems, ElementName=HistoryItemsControl, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                         </Grid>
                     </Grid>
                 </Border>

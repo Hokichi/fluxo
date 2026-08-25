@@ -20,148 +20,160 @@
 
     <customControls:BasePopup.Resources>
 
-<ResourceDictionary>
+        <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionSplitTreeStyles.xaml" />
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionBalanceUpdateStyles.xaml" />
-</ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>
 
-<Style x:Key="TransactionFeedbackIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
-    <Setter Property="Color" Value="{DynamicResource Brush.Danger}" />
-    <Style.Triggers>
-        <DataTrigger Binding="{Binding HasErrors, Mode=OneWay}" Value="False">
-            <Setter Property="Color" Value="{DynamicResource Brush.Warning}" />
-        </DataTrigger>
-    </Style.Triggers>
-</Style>
+            <Style
+                x:Key="TransactionFeedbackIconStyle"
+                BasedOn="{StaticResource BaseIconStyle}"
+                TargetType="components:Icon">
+                <Setter Property="Color" Value="{DynamicResource Brush.Danger}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding HasErrors, Mode=OneWay}" Value="False">
+                        <Setter Property="Color" Value="{DynamicResource Brush.Warning}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style
-        x:Key="PopupTagItemRadioStyle"
-        BasedOn="{StaticResource BaseRadioButtonStyle}"
-        TargetType="RadioButton">
-        <Setter Property="Height" Value="28" />
-        <Setter Property="Padding" Value="12,0" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-        <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="RadioButton">
-                    <Border
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="14">
-                        <StackPanel Orientation="Horizontal">
-                            <Ellipse
-                                x:Name="ColorDot"
-                                Width="6"
-                                Height="6"
-                                VerticalAlignment="Center"
-                                Fill="{Binding HexCode}" />
-                            <TextBlock
-                                x:Name="TagText"
-                                Margin="6,0,0,0"
-                                VerticalAlignment="Center"
-                                FontFamily="{TemplateBinding FontFamily}"
-                                FontSize="{TemplateBinding FontSize}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
-                                Text="{TemplateBinding Content}" />
-                        </StackPanel>
-                    </Border>
+            <Style
+                x:Key="PopupTagItemRadioStyle"
+                BasedOn="{StaticResource BaseRadioButtonStyle}"
+                TargetType="RadioButton">
+                <Setter Property="Height" Value="28" />
+                <Setter Property="Padding" Value="12,0" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Border
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="14">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse
+                                        x:Name="ColorDot"
+                                        Width="6"
+                                        Height="6"
+                                        VerticalAlignment="Center"
+                                        Fill="{Binding HexCode}" />
+                                    <TextBlock
+                                        x:Name="TagText"
+                                        Margin="6,0,0,0"
+                                        VerticalAlignment="Center"
+                                        FontFamily="{TemplateBinding FontFamily}"
+                                        FontSize="{TemplateBinding FontSize}"
+                                        Foreground="{DynamicResource Brush.Text.Primary}"
+                                        Text="{TemplateBinding Content}" />
+                                </StackPanel>
+                            </Border>
 
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
-                            <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-            </Trigger>
-            <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="{Binding HexCode}" />
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                                    <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Background" Value="{Binding HexCode}" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.4" />
+                        <Setter Property="Cursor" Value="Arrow" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style
+                x:Key="PopupTagButtonStyle"
+                BasedOn="{StaticResource BaseButtonStyle}"
+                TargetType="Button">
+                <Setter Property="Height" Value="28" />
+                <Setter Property="Padding" Value="12,0" />
+                <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
                 <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.4" />
-                <Setter Property="Cursor" Value="Arrow" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-<Style x:Key="PopupTagButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
-        <Setter Property="Height" Value="28" />
-        <Setter Property="Padding" Value="12,0" />
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
-        <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
-        <Setter Property="FontSize" Value="12" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Grid>
-                        <Border
-                            x:Name="Fill"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="14"
-                            Opacity="0" />
-                        <Rectangle
-                            RadiusX="14"
-                            RadiusY="14"
-                            Stroke="{TemplateBinding Foreground}"
-                            StrokeDashArray="5,3"
-                            StrokeThickness="1" />
-                        <TextBlock
-                            Margin="{TemplateBinding Padding}"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="Center"
-                            FontFamily="{TemplateBinding FontFamily}"
-                            FontSize="{TemplateBinding FontSize}"
-                            Foreground="{TemplateBinding Foreground}"
-                            Text="{TemplateBinding Content}" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Fill" Property="Opacity" Value="1" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.4" />
-                <Setter Property="Cursor" Value="Arrow" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+                <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Border
+                                    x:Name="Fill"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="14"
+                                    Opacity="0" />
+                                <Rectangle
+                                    RadiusX="14"
+                                    RadiusY="14"
+                                    Stroke="{TemplateBinding Foreground}"
+                                    StrokeDashArray="5,3"
+                                    StrokeThickness="1" />
+                                <TextBlock
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="Center"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    Text="{TemplateBinding Content}" />
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Fill" Property="Opacity" Value="1" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.4" />
+                        <Setter Property="Cursor" Value="Arrow" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
 
-            <Style x:Key="SectionLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Style
+                x:Key="SectionLabelStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="Margin" Value="0,0,0,8" />
                 <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
                 <Setter Property="FontSize" Value="11" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             </Style>
 
-            <Style x:Key="TransactionWarningTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Style
+                x:Key="TransactionWarningTextStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource Medium}" />
                 <Setter Property="FontSize" Value="12" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
@@ -173,7 +185,10 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="PopupFieldBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Style
+                x:Key="PopupFieldBorderStyle"
+                BasedOn="{StaticResource BaseBorderStyle}"
+                TargetType="Border">
                 <Setter Property="Padding" Value="12,10" />
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
@@ -181,14 +196,20 @@
                 <Setter Property="CornerRadius" Value="12" />
             </Style>
 
-            <Style x:Key="PopupTagListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
+            <Style
+                x:Key="PopupTagListBoxStyle"
+                BasedOn="{StaticResource BaseListBoxStyle}"
+                TargetType="ListBox">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="HorizontalContentAlignment" Value="Left" />
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-            <Style x:Key="PopupTagListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+            <Style
+                x:Key="PopupTagListBoxItemStyle"
+                BasedOn="{StaticResource BaseListBoxItemStyle}"
+                TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,8,0" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
@@ -210,7 +231,10 @@
                     Style="{StaticResource PopupTagItemRadioStyle}" />
             </DataTemplate>
 
-            <Style x:Key="TransactionNameSuggestionListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
+            <Style
+                x:Key="TransactionNameSuggestionListBoxStyle"
+                BasedOn="{StaticResource BaseListBoxStyle}"
+                TargetType="ListBox">
                 <Setter Property="MinWidth" Value="260" />
                 <Setter Property="MaxHeight" Value="220" />
                 <Setter Property="Padding" Value="6" />
@@ -220,7 +244,10 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             </Style>
 
-            <Style x:Key="TransactionNameSuggestionListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+            <Style
+                x:Key="TransactionNameSuggestionListBoxItemStyle"
+                BasedOn="{StaticResource BaseListBoxItemStyle}"
+                TargetType="ListBoxItem">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -247,13 +274,19 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="TransactionHistoryListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
+            <Style
+                x:Key="TransactionHistoryListBoxStyle"
+                BasedOn="{StaticResource BaseListBoxStyle}"
+                TargetType="ListBox">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-            <Style x:Key="TransactionHistoryListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+            <Style
+                x:Key="TransactionHistoryListBoxItemStyle"
+                BasedOn="{StaticResource BaseListBoxItemStyle}"
+                TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,0,8" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
@@ -290,7 +323,10 @@
                 </Setter>
             </Style>
 
-            <Style x:Key="TransactionQueueListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+            <Style
+                x:Key="TransactionQueueListBoxItemStyle"
+                BasedOn="{StaticResource BaseListBoxItemStyle}"
+                TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,0,8" />
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
@@ -333,7 +369,7 @@
                         Height="8"
                         Margin="0,5,10,0"
                         VerticalAlignment="Top"
-                        Fill="{Binding TagHexCode, FallbackValue={DynamicResource Brush.Mint}, TargetNullValue={DynamicResource Brush.Mint}, Mode=OneWay}" />
+                        Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
                         <TextBlock
                             FontFamily="{DynamicResource Bold}"
@@ -379,7 +415,7 @@
                         Height="8"
                         Margin="0,5,10,0"
                         VerticalAlignment="Top"
-                        Fill="{Binding Tag.HexCode, FallbackValue={DynamicResource Brush.Mint}, TargetNullValue={DynamicResource Brush.Mint}, Mode=OneWay}" />
+                        Fill="{Binding Tag.HexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
                         <TextBlock
                             FontFamily="{DynamicResource Bold}"
@@ -395,9 +431,7 @@
                             Text="{Binding Account.Name, Mode=OneWay}"
                             TextTrimming="CharacterEllipsis" />
                     </StackPanel>
-                    <StackPanel
-                        Grid.Column="2"
-                        Margin="12,0,0,0">
+                    <StackPanel Grid.Column="2" Margin="12,0,0,0">
                         <TextBlock
                             HorizontalAlignment="Right"
                             FontFamily="{DynamicResource Bold}"
@@ -554,9 +588,8 @@
                         Width="10"
                         Height="10"
                         Path="{StaticResource ExclamationTriangle}"
-                        Visibility="{Binding HasFeedback, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Style="{StaticResource TransactionFeedbackIconStyle}">
-
-                    </components:Icon>
+                        Style="{StaticResource TransactionFeedbackIconStyle}"
+                        Visibility="{Binding HasFeedback, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
                     <Popup
                         AllowsTransparency="True"
                         IsOpen="{Binding IsMouseOver, ElementName=FeedbackIcon, Mode=OneWay}"
@@ -577,95 +610,110 @@
                 </Grid>
             </DataTemplate>
 
-<Style BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid" x:Key="TransactionPopupRootGridStyle">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsViewOnly, Mode=OneWay}" Value="True">
-                            <Setter Property="Focusable" Value="False" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
+            <Style
+                x:Key="TransactionPopupRootGridStyle"
+                BasedOn="{StaticResource BaseGridStyle}"
+                TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsViewOnly, Mode=OneWay}" Value="True">
+                        <Setter Property="Focusable" Value="False" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="BulkQueueColumnStyle">
-                            <Setter Property="Width" Value="220" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
-                                    <Setter Property="Width" Value="0" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
+            <Style
+                x:Key="BulkQueueColumnStyle"
+                BasedOn="{StaticResource BaseColumnDefinitionStyle}"
+                TargetType="ColumnDefinition">
+                <Setter Property="Width" Value="220" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
+                        <Setter Property="Width" Value="0" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="BulkQueueGutterColumnStyle">
-                            <Setter Property="Width" Value="20" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
-                                    <Setter Property="Width" Value="0" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
+            <Style
+                x:Key="BulkQueueGutterColumnStyle"
+                BasedOn="{StaticResource BaseColumnDefinitionStyle}"
+                TargetType="ColumnDefinition">
+                <Setter Property="Width" Value="20" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsBulkMode, Mode=OneWay}" Value="False">
+                        <Setter Property="Width" Value="0" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="RightFormDividerColumnStyle">
-                            <Setter Property="Width" Value="20" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ShowRightFormDivider, Mode=OneWay}" Value="False">
-                                    <Setter Property="Width" Value="0" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
+            <Style
+                x:Key="RightFormDividerColumnStyle"
+                BasedOn="{StaticResource BaseColumnDefinitionStyle}"
+                TargetType="ColumnDefinition">
+                <Setter Property="Width" Value="20" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ShowRightFormDivider, Mode=OneWay}" Value="False">
+                        <Setter Property="Width" Value="0" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<DataTemplate x:Key="TransactionQueueGroupHeaderTemplate">
-                                    <TextBlock
-                                        Margin="0,0,0,8"
-                                        FontFamily="{DynamicResource Bold}"
-                                        FontSize="11"
-                                        Foreground="{DynamicResource Brush.Text.Muted}"
-                                        Text="{Binding Name, StringFormat={}{0:ddd, MMM d, yyyy}}" />
-                                </DataTemplate>
+            <DataTemplate x:Key="TransactionQueueGroupHeaderTemplate">
+                <TextBlock
+                    Margin="0,0,0,8"
+                    FontFamily="{DynamicResource Bold}"
+                    FontSize="11"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
+                    Text="{Binding Name, StringFormat={}{0:ddd, MMM d, yyyy}}" />
+            </DataTemplate>
 
-<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="CategoryFieldColumnStyle">
-                                                        <Setter Property="Width" Value="Auto" />
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
-                                                                <Setter Property="Width" Value="0" />
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding DataContext.IsRepayment, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="True">
-                                                                <Setter Property="Width" Value="*" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
+            <Style
+                x:Key="CategoryFieldColumnStyle"
+                BasedOn="{StaticResource BaseColumnDefinitionStyle}"
+                TargetType="ColumnDefinition">
+                <Setter Property="Width" Value="Auto" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
+                        <Setter Property="Width" Value="0" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding DataContext.IsRepayment, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="True">
+                        <Setter Property="Width" Value="*" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style BasedOn="{StaticResource BaseColumnDefinitionStyle}" TargetType="ColumnDefinition" x:Key="CategoryFieldGutterColumnStyle">
-                                                        <Setter Property="Width" Value="16" />
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
-                                                                <Setter Property="Width" Value="0" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
+            <Style
+                x:Key="CategoryFieldGutterColumnStyle"
+                BasedOn="{StaticResource BaseColumnDefinitionStyle}"
+                TargetType="ColumnDefinition">
+                <Setter Property="Width" Value="16" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.ShowCategoryOrRepaymentField, ElementName=CategoryAccountGrid, Mode=OneWay}" Value="False">
+                        <Setter Property="Width" Value="0" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="SplitProgressBarStyle">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
-                                                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-</ResourceDictionary>
+            <Style
+                x:Key="SplitProgressBarStyle"
+                BasedOn="{StaticResource RoundedProgressBarStyle}"
+                TargetType="ProgressBar">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding HasSplitAmountOverflow, Mode=OneWay}" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
     </customControls:BasePopup.Resources>
 
     <Border Padding="20,4,20,20">
-<Grid Style="{StaticResource TransactionPopupRootGridStyle}">
+        <Grid Style="{StaticResource TransactionPopupRootGridStyle}">
 
             <Grid.ColumnDefinitions>
-<ColumnDefinition Style="{StaticResource BulkQueueColumnStyle}">
-
-                </ColumnDefinition>
-<ColumnDefinition Style="{StaticResource BulkQueueGutterColumnStyle}">
-
-                </ColumnDefinition>
+                <ColumnDefinition Style="{StaticResource BulkQueueColumnStyle}" />
+                <ColumnDefinition Style="{StaticResource BulkQueueGutterColumnStyle}" />
                 <ColumnDefinition Width="720" />
-<ColumnDefinition Style="{StaticResource RightFormDividerColumnStyle}">
-
-                </ColumnDefinition>
+                <ColumnDefinition Style="{StaticResource RightFormDividerColumnStyle}" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -698,9 +746,7 @@
                     SelectedItem="{Binding SelectedQueuedTransaction, Mode=TwoWay}"
                     Style="{StaticResource TransactionHistoryListBoxStyle}">
                     <ListBox.GroupStyle>
-<GroupStyle HeaderTemplate="{StaticResource TransactionQueueGroupHeaderTemplate}">
-
-                        </GroupStyle>
+                        <GroupStyle HeaderTemplate="{StaticResource TransactionQueueGroupHeaderTemplate}" />
                     </ListBox.GroupStyle>
                 </ListBox>
             </StackPanel>
@@ -1098,12 +1144,8 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
-<ColumnDefinition Style="{StaticResource CategoryFieldColumnStyle}">
-
-                                            </ColumnDefinition>
-<ColumnDefinition Style="{StaticResource CategoryFieldGutterColumnStyle}">
-
-                                            </ColumnDefinition>
+                                            <ColumnDefinition Style="{StaticResource CategoryFieldColumnStyle}" />
+                                            <ColumnDefinition Style="{StaticResource CategoryFieldGutterColumnStyle}" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
 
@@ -1722,28 +1764,23 @@
                                             Foreground="{DynamicResource Brush.Text.Primary}"
                                             Text="{Binding RootTransaction.Name, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis" />
-                                        <StackPanel
-                                            Grid.Column="1"
-                                            Margin="12,0,0,0">
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
                                             <TextBlock
                                                 HorizontalAlignment="Right"
                                                 FontFamily="{StaticResource Bold}"
                                                 Foreground="{DynamicResource Brush.Text.Primary}"
                                                 Text="{Binding RootTransaction.Amount, Mode=OneWay, StringFormat={}{0:#,##0}}" />
-                                            <components:Icon
-                                                DataContext="{Binding RootTransaction, Mode=OneWay}"
-                                                Style="{StaticResource TransactionCardStatusIconStyle}" />
+                                            <components:Icon DataContext="{Binding RootTransaction, Mode=OneWay}" Style="{StaticResource TransactionCardStatusIconStyle}" />
                                         </StackPanel>
                                     </Grid>
-<ProgressBar
+                                    <ProgressBar
                                         Grid.Row="1"
                                         Height="12"
                                         Margin="0,12,0,0"
                                         Maximum="{Binding RootTransaction.Amount, Mode=OneWay}"
+                                        Style="{StaticResource SplitProgressBarStyle}"
                                         Visibility="{Binding CanModifySplitTree, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                        Value="{Binding RootTransaction.ChildAmountTotal, Mode=OneWay}" Style="{StaticResource SplitProgressBarStyle}">
-
-                                    </ProgressBar>
+                                        Value="{Binding RootTransaction.ChildAmountTotal, Mode=OneWay}" />
                                     <Grid Grid.Row="2" Margin="0,8,0,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
