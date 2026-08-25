@@ -1577,7 +1577,7 @@ public partial class MainWindow : Window, IPopupHost
         if (goal is null)
             return;
 
-        _dialogService.ShowAddSavingGoal(new AddSavingGoalVM(_mainVM, appData)
+        _dialogService.ShowAddSavingGoal(new AddSavingGoalVM(appData)
         {
             EditingId = goal.Id,
             NameText = goal.Name,
@@ -1974,8 +1974,7 @@ public partial class MainWindow : Window, IPopupHost
         var reconciliationVm = new AccountReconciliationVM(
             _mainVM.BudgetPanel.Accounts,
             account,
-            appData,
-            _mainVM.ReloadCurrentDataAsync);
+            appData);
         _dialogService.ShowAccountReconciliation(reconciliationVm, this);
     }
 

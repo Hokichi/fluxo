@@ -249,7 +249,7 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
 
     private async Task<BudgetAllocation> LoadBudgetAllocationAsync(CancellationToken cancellationToken)
     {
-        return await _appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
+        return await _appData.GetBudgetAllocationAsync(cancellationToken);
     }
 
     private static void ApplyExpense(AccountVM account, decimal amount)

@@ -13,7 +13,7 @@ public sealed class QuickSetupWizardDraftCollectionTests
     public void QuickSetupWizardDraftCollection_NextTempId_DecrementsForEachNewSource()
     {
         var unitOfWork = Substitute.For<IUnitOfWork>();
-        var vm = new QuickSetupWizardAccountsVM(null!, new AppDataService(unitOfWork),
+        var vm = new QuickSetupWizardAccountsVM(new AppDataService(unitOfWork),
             new WeakReferenceMessenger());
 
         var first = vm.GetNextTemporaryId();

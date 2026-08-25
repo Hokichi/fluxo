@@ -54,9 +54,9 @@ public partial class UpcomingEventsPanelVM : ObservableRecipient, IRecipient<Das
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
-        var recurring = await _appData.GetRecurringTransactionsAsync(cancellationToken).ConfigureAwait(false);
-        var goals = await _appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false);
-        var accounts = await _appData.GetAccountsAsync(cancellationToken).ConfigureAwait(false);
+        var recurring = await _appData.GetRecurringTransactionsAsync(cancellationToken);
+        var goals = await _appData.GetSavingGoalsAsync(cancellationToken);
+        var accounts = await _appData.GetAccountsAsync(cancellationToken);
         var snapshot = new UpcomingEventsSnapshot(recurring, goals, accounts);
 
         var recurringDtos = _mapper.Map<IReadOnlyList<RecurringTransactionDto>>(snapshot.RecurringTransactions);

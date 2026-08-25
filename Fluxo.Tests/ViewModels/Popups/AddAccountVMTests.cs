@@ -4,6 +4,8 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Helpers.Popups;
+using CommunityToolkit.Mvvm.Messaging;
+using Fluxo.Resources.Resources.Messages;
 using NSubstitute;
 using Xunit;
 
@@ -25,7 +27,6 @@ public sealed class AddAccountVMTests
     public void AddAccountVM_PopupTitle_WhenEditingAccount_UsesAccountCopy()
     {
         var sut = new AddAccountVM(
-            mainViewModel: null!,
             appData: null!)
         {
             EditingId = 7
@@ -37,8 +38,8 @@ public sealed class AddAccountVMTests
     [Fact]
     public void AddAccountVM_NotificationAction_ReflectsCreateOrEditMode()
     {
-        var create = new AddAccountVM(mainViewModel: null!, appData: null!);
-        var edit = new AddAccountVM(mainViewModel: null!, appData: null!) { EditingId = 7 };
+        var create = new AddAccountVM(appData: null!);
+        var edit = new AddAccountVM(appData: null!) { EditingId = 7 };
 
         Assert.Equal("Added", create.NotificationAction);
         Assert.Equal("Updated", edit.NotificationAction);
@@ -340,7 +341,6 @@ public sealed class AddAccountVMTests
                 }
             ]));
         var sut = new AddAccountVM(
-            mainViewModel: null!,
             appData: appData);
         await sut.LoadDeductSourcesAsync();
         sut.NameText = "checking";
@@ -426,11 +426,73 @@ public sealed class AddAccountVMTests
         Assert.Equal(100m, savedInput?.MaximumSpending);
     }
 
+    [Fact]
+    public async Task AddAccountVM_SaveAsync_WhenInvalidationFailsAfterSave_ReturnsSuccess()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Account>>([]));
+        appData.AddAccountAsync(Arg.Any<Account>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        var sut = new AddAccountVM(appData)
+        {
+            NameText = "Checking",
+            SelectedAccountType = AccountType.Checking,
+            PrimaryAmountText = 100m
+        };
+        var recipient = new object();
+        WeakReferenceMessenger.Default.Register<DashboardDataInvalidatedMessage>(
+            recipient,
+            (_, _) => throw new InvalidOperationException("invalidation failed"));
+
+        try
+        {
+            var result = await sut.SaveAsync();
+
+            Assert.True(result.IsSuccess, result.ErrorMessage);
+            await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            WeakReferenceMessenger.Default.UnregisterAll(recipient);
+        }
+    }
+
+    [Fact]
+    public async Task AddAccountVM_SaveAsync_WithCreditAutomation_CommitsOnce()
+    {
+        var checking = new Account
+        {
+            Id = 1,
+            Name = "Checking",
+            AccountType = AccountType.Checking,
+            IsEnabled = true
+        };
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Account>>([checking]));
+        appData.GetTagsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
+        appData.AddAccountAsync(Arg.Any<Account>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        appData.AddTagAsync(Arg.Any<Tag>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        appData.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        appData.AddRecurringTransactionAsync(Arg.Any<RecurringTransaction>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        var sut = new AddAccountVM(appData);
+        ConfigureValidCreditFields(sut);
+
+        var result = await sut.SaveAsync();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        _ = appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
     private static AddAccountVM CreateSut(
         Func<AddAccountInput, Task<AddAccountResult>>? saveDraftAsync = null)
     {
         return new AddAccountVM(
-            mainViewModel: null!,
             appData: null!,
             saveDraftAsync: saveDraftAsync);
     }

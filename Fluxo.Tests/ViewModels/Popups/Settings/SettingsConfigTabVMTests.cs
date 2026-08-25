@@ -240,7 +240,7 @@ public sealed class SettingsConfigTabVMTests
         vm.RolloverPolicy = RolloverPolicy.Pooled;
         vm.OverspendPolicy = OverspendPolicy.SoftDebt;
 
-        var (result, actions) = await vm.BuildApplyChangesAsync();
+        var (result, actions, _) = await vm.BuildApplyChangesAsync();
 
         Assert.True(result.IsSuccess);
         Assert.Empty(actions);
@@ -261,7 +261,7 @@ public sealed class SettingsConfigTabVMTests
         vm.AllocationPeriod = AllocationPeriod.Yearly;
         vm.PeriodStart = 12;
 
-        var (result, _) = await vm.BuildApplyChangesAsync();
+        var (result, _, _) = await vm.BuildApplyChangesAsync();
 
         Assert.True(result.IsSuccess);
         Assert.Equal(12, unitOfWork.BudgetAllocationEntity!.PeriodStart);
@@ -288,7 +288,7 @@ public sealed class SettingsConfigTabVMTests
 
         vm.RolloverPolicy = RolloverPolicy.Pooled;
 
-        var (result, _) = await vm.BuildApplyChangesAsync();
+        var (result, _, _) = await vm.BuildApplyChangesAsync();
 
         Assert.True(result.IsSuccess);
         Assert.Equal(new DateTime(2026, 2, 10), unitOfWork.BudgetAllocationEntity!.LastRolloverPeriodStart);

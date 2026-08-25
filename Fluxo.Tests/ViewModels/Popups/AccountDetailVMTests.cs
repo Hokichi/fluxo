@@ -117,6 +117,22 @@ public sealed class AccountDetailVMTests
         Assert.Equal("Delete Main and all of its data?\n\n**THIS ACTION CANNOT BE UNDONE**", message);
     }
 
+    [Fact]
+    public async Task AccountDetailVM_ToggleEnabledAsync_WhenDashboardReloadFailsAfterSave_ReturnsSuccess()
+    {
+        var source = CreateSource(1, "Checking", AccountType.Checking);
+        var appData = CreateAppData([source], [], []);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        var sut = new AccountDetailVM(null!, source.Id, appData);
+        await sut.LoadAsync();
+
+        var result = await sut.ToggleEnabledAsync();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.False(source.IsEnabled);
+        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
     private static IAppDataService CreateAppData(
         IReadOnlyList<Account> sources,
         IReadOnlyList<Transaction> expenseLogs,

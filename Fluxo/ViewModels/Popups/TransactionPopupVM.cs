@@ -21,6 +21,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Persistence;
 using Fluxo.Services.Transactions;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Shell;
@@ -39,6 +40,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
     private IReadOnlyList<AccountVM>? _accountsOverride;
     private Func<RecurringDraftSaveInput, Task<TransactionPopupSubmissionResult>>? _saveRecurringDraftAsync;
     private readonly List<SavingGoalVM> _orderedGoals = [];
+    private readonly List<(TransactionVM Node, Transaction Entity)> _stagedSplitEntities = [];
     private readonly IMessenger _messenger;
     private readonly TransactionPopupMessageToken _messageToken;
     private readonly TransactionPersistenceHelper _persistence;
@@ -1484,6 +1486,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
 
             var invalidationScope = DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications;
             int? persistedTransactionId = null;
+            RecurringTransaction? createdRecurringTransaction = null;
+            using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
 
             if (!input.IsRecurring)
             {
@@ -1519,15 +1523,22 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                         AllowMaximumSpendingOverflow: allowMaximumSpendingOverflow,
                         IsRepayment: input.IsRepayment,
                         RelatedRecurringTransactionId: input.RelatedRecurringTransactionId,
-                        SuppressNotificationInvalidation: IsProcessingSession));
+                        SuppressNotificationInvalidation: IsProcessingSession,
+                        DeferCommit: true));
                 if (persistenceResult.RequiresConfirmation)
                     return TransactionPopupSubmissionResult.Confirmation(persistenceResult.ErrorMessage);
                 if (!persistenceResult.IsSuccess)
                     return TransactionPopupSubmissionResult.Failure(persistenceResult.ErrorMessage);
-                persistedTransactionId = persistenceResult.TransactionId;
-                var splitResult = await PersistSplitTreeAsync(persistedTransactionId.Value);
+                var persistedTransaction = persistenceResult.Transaction
+                    ?? throw new InvalidOperationException("Unable to stage the transaction.");
+                var splitResult = await PersistSplitTreeAsync(persistedTransaction);
                 if (!splitResult.IsSuccess)
                     return splitResult;
+
+                await persistenceBatch.SaveChangesAsync();
+                AssignPersistedSplitIds();
+                _persistence.PublishPostCommit(persistenceResult);
+                persistedTransactionId = persistedTransaction.Id;
 
             }
             else
@@ -1564,22 +1575,40 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
                 else
                     await _appData.AddRecurringTransactionAsync(recurring);
 
-                await _appData.SaveChangesAsync();
+                await persistenceBatch.SaveChangesAsync();
                 if (input.EditingRecurringTransactionId is not > 0)
-                    _messenger.Send(new NotificationEntityCreatedMessage(NotificationEntityKind.RecurringTransaction, recurring.Id));
+                    createdRecurringTransaction = recurring;
             }
-            if (IsProcessingSession)
-                invalidationScope &= ~DashboardDataInvalidationScope.Notifications;
 
-            if (input.IsRecurring)
-                _messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
+            try
+            {
+                if (createdRecurringTransaction is not null)
+                {
+                    _messenger.Send(new NotificationEntityCreatedMessage(
+                        NotificationEntityKind.RecurringTransaction,
+                        createdRecurringTransaction.Id));
+                }
 
-            if (resetAfterSave)
-                ResetAfterSaveAndCreateNew();
+                if (IsProcessingSession)
+                    invalidationScope &= ~DashboardDataInvalidationScope.Notifications;
 
-            var savedType = input.IsGoal ? "Goal contribution" : input.IsExpense ? "Expense" : "Income";
-            FloatingNotificationPublisher.Success(
-                input.Name, $"{savedType} was recorded.", true, "Added");
+                if (input.IsRecurring)
+                    _messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
+
+                if (resetAfterSave)
+                    ResetAfterSaveAndCreateNew();
+
+                var savedType = input.IsGoal ? "Goal contribution" : input.IsExpense ? "Expense" : "Income";
+                FloatingNotificationPublisher.Success(
+                    input.Name, $"{savedType} was recorded.", true, "Added");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The transaction was saved, but the current UI could not be refreshed.");
+            }
+
             return TransactionPopupSubmissionResult.Success(persistedTransactionId);
         }
         catch (Exception exception)
@@ -2487,8 +2516,9 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         PublishSplitContext();
     }
 
-    private async Task<TransactionPopupSubmissionResult> PersistSplitTreeAsync(int rootTransactionId)
+    private async Task<TransactionPopupSubmissionResult> PersistSplitTreeAsync(Transaction rootTransaction)
     {
+        _stagedSplitEntities.Clear();
         var account = await _appData.GetAccountByIdAsync(_currentRootTransaction.SourceAccountId);
         if (account is null)
             return TransactionPopupSubmissionResult.Failure("Please select a valid account.");
@@ -2497,38 +2527,37 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             .Where(transaction => !transaction.IsForDeletion)
             .ToDictionary(transaction => transaction.Id);
         var existingRootChildIds = existing.Values
-            .Where(transaction => transaction.ParentTransactionId == rootTransactionId)
+            .Where(transaction => transaction.ParentTransactionId == rootTransaction.Id)
             .Select(transaction => transaction.Id)
             .ToHashSet();
         var retainedIds = new HashSet<int>();
 
         foreach (var child in _currentRootTransaction.ChildTransactions)
         {
-            var childEntity = await PersistSplitNodeAsync(child, rootTransactionId, account, existing, retainedIds);
+            var childEntity = await PersistSplitNodeAsync(child, rootTransaction, account, existing, retainedIds);
             if (childEntity is null)
                 continue;
 
             foreach (var grandchild in child.ChildTransactions)
-                await PersistSplitNodeAsync(grandchild, childEntity.Id, account, existing, retainedIds);
+                await PersistSplitNodeAsync(grandchild, childEntity, account, existing, retainedIds);
         }
 
         foreach (var transaction in existing.Values.Where(transaction =>
                      transaction.ParentTransactionId is not null &&
                      !retainedIds.Contains(transaction.Id) &&
-                     (transaction.ParentTransactionId == rootTransactionId ||
+                     (transaction.ParentTransactionId == rootTransaction.Id ||
                       existingRootChildIds.Contains(transaction.ParentTransactionId.Value))))
         {
             transaction.IsForDeletion = true;
             _appData.UpdateTransaction(transaction);
         }
 
-        await _appData.SaveChangesAsync();
         return TransactionPopupSubmissionResult.Success();
     }
 
     private async Task<Transaction?> PersistSplitNodeAsync(
         TransactionVM node,
-        int parentTransactionId,
+        Transaction parentTransaction,
         Account account,
         IReadOnlyDictionary<int, Transaction> existing,
         ISet<int> retainedIds)
@@ -2553,7 +2582,8 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         transaction.ExpenseCategory = node.IsLeaf ? node.ExpenseCategory : null;
         transaction.Tag = tag;
         transaction.TagId = tag?.Id;
-        transaction.ParentTransactionId = parentTransactionId;
+        transaction.ParentTransactionId = parentTransaction.Id > 0 ? parentTransaction.Id : null;
+        transaction.ParentTransaction = parentTransaction.Id > 0 ? null : parentTransaction;
         transaction.IsIoU = node.IsIoU;
         transaction.ShouldAffectBalance = node.ShouldAffectBalance;
         transaction.IsForDeletion = false;
@@ -2561,10 +2591,7 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
         if (transaction.Id > 0)
             _appData.UpdateTransaction(transaction);
         else
-        {
             await _appData.AddTransactionAsync(transaction);
-            await _appData.SaveChangesAsync();
-        }
 
         if (transaction.Id > 0)
         {
@@ -2572,7 +2599,16 @@ public partial class TransactionPopupVM : ObservableValidator, IDisposable
             retainedIds.Add(transaction.Id);
         }
 
+        _stagedSplitEntities.Add((node, transaction));
+
         return transaction;
+    }
+
+    private void AssignPersistedSplitIds()
+    {
+        foreach (var (node, entity) in _stagedSplitEntities)
+            node.Id = entity.Id;
+        _stagedSplitEntities.Clear();
     }
 
     private async Task LoadSplitTreeAsync(int rootTransactionId)

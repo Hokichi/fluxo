@@ -14,6 +14,7 @@ using Fluxo.Services.History;
 using Fluxo.Services.Ui;
 using Fluxo.Services.Updates;
 using Fluxo.ViewModels.Shell;
+using PersonalizationSettingsSnapshot = Fluxo.DataModels.Popups.Settings.PersonalizationSettingsSnapshot.PersonalizationSettingsSnapshot;
 
 namespace Fluxo.ViewModels.Popups.Settings;
 
@@ -188,55 +189,68 @@ public partial class SettingsPersonalizationTabVM : ObservableObject
         List<ILogMemoryAction> Actions,
         string? OldUsername,
         string? NewUsername,
-        bool ShouldRunAtStartup)>
+        PersonalizationSettingsSnapshot Snapshot)>
         BuildApplyChangesAsync()
     {
         var actions = new List<ILogMemoryAction>();
+        var snapshot = CaptureCurrentSnapshot();
 
         await SettingsShared.UpdateUserSettingAsync(_appData, UserSettingNames.PreferredDisplayName,
-            string.IsNullOrWhiteSpace(PreferredAppName) ? null : PreferredAppName.Trim(), actions);
+            string.IsNullOrWhiteSpace(snapshot.PreferredAppName) ? null : snapshot.PreferredAppName, actions);
 
-        foreach (var notificationSetting in NotificationSettings)
-            await SettingsShared.UpdateUserSettingAsync(_appData, notificationSetting.SettingName,
-                notificationSetting.IsEnabled.ToString(CultureInfo.InvariantCulture), actions);
+        foreach (var notificationSetting in snapshot.NotificationSettings)
+            await SettingsShared.UpdateUserSettingAsync(_appData, notificationSetting.Key,
+                notificationSetting.Value.ToString(CultureInfo.InvariantCulture), actions);
 
         await SettingsShared.UpdateUserSettingAsync(_appData, UserSettingNames.ShouldRunAtStartup,
-            ShouldRunAtStartup.ToString(CultureInfo.InvariantCulture), actions);
+            snapshot.ShouldRunAtStartup.ToString(CultureInfo.InvariantCulture), actions);
 
         await SettingsShared.UpdateUserSettingAsync(_appData, UserSettingNames.CloseBehavior,
-            CloseBehavior.ToString(), actions);
+            snapshot.CloseBehavior.ToString(), actions);
 
         await SettingsShared.UpdateUserSettingAsync(_appData, UserSettingNames.IsAppAutoLocked,
-            IsAppAutoLocked.ToString(CultureInfo.InvariantCulture), actions);
+            snapshot.IsAppAutoLocked.ToString(CultureInfo.InvariantCulture), actions);
 
         await SettingsShared.UpdateUserSettingAsync(_appData, UserSettingNames.AppAutoLockedInterval,
-            Math.Max(1, AppAutoLockedInterval).ToString(CultureInfo.InvariantCulture), actions);
+            Math.Max(1, snapshot.AppAutoLockedInterval).ToString(CultureInfo.InvariantCulture), actions);
 
-        var protectedPassword = _passwordProtector.Protect(UiLockingPassword);
+        var protectedPassword = _passwordProtector.Protect(snapshot.UiLockingPassword);
         await SettingsShared.UpdateUserSettingAsync(_appData, UserSettingNames.UILockingPassword,
             string.IsNullOrWhiteSpace(protectedPassword) ? null : protectedPassword, actions);
 
-        var newUsername = string.IsNullOrWhiteSpace(PreferredAppName) ? "User" : PreferredAppName.Trim();
+        var newUsername = string.IsNullOrWhiteSpace(snapshot.PreferredAppName) ? "User" : snapshot.PreferredAppName;
         var oldUsername = string.IsNullOrWhiteSpace(_savedPreferredAppName) ? "User" : _savedPreferredAppName;
-        return (SettingsOperationResult.Success(), actions, oldUsername, newUsername, ShouldRunAtStartup);
+        return (SettingsOperationResult.Success(), actions, oldUsername, newUsername, snapshot);
     }
 
-    public void CommitSavedState()
+    public void CommitSavedState(PersonalizationSettingsSnapshot snapshot)
     {
-        _savedPreferredAppName = (PreferredAppName ?? string.Empty).Trim();
-        _savedShouldRunAtStartup = ShouldRunAtStartup;
-        _savedCloseBehavior = CloseBehavior;
-        _savedIsAppAutoLocked = IsAppAutoLocked;
-        _savedAppAutoLockedInterval = AppAutoLockedInterval;
-        _savedUiLockingPassword = UiLockingPassword;
+        _savedPreferredAppName = snapshot.PreferredAppName;
+        _savedShouldRunAtStartup = snapshot.ShouldRunAtStartup;
+        _savedCloseBehavior = snapshot.CloseBehavior;
+        _savedIsAppAutoLocked = snapshot.IsAppAutoLocked;
+        _savedAppAutoLockedInterval = snapshot.AppAutoLockedInterval;
+        _savedUiLockingPassword = snapshot.UiLockingPassword;
         _savedNotificationSettings.Clear();
-        foreach (var setting in NotificationSettings)
-            _savedNotificationSettings[setting.SettingName] = setting.IsEnabled;
+        foreach (var setting in snapshot.NotificationSettings)
+            _savedNotificationSettings[setting.Key] = setting.Value;
         OnPropertyChanged(nameof(HasPendingPasswordChange));
         OnPropertyChanged(nameof(HasPendingNotificationChanges));
         RaiseAutoLockPendingProperties();
         PublishPendingState();
     }
+
+    private PersonalizationSettingsSnapshot CaptureCurrentSnapshot() => new(
+        (PreferredAppName ?? string.Empty).Trim(),
+        ShouldRunAtStartup,
+        CloseBehavior,
+        IsAppAutoLocked,
+        AppAutoLockedInterval,
+        UiLockingPassword ?? string.Empty,
+        NotificationSettings.ToDictionary(
+            setting => setting.SettingName,
+            setting => setting.IsEnabled,
+            StringComparer.Ordinal));
 
     public void RevertChanges()
     {

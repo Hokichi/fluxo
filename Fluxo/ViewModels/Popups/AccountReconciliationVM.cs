@@ -10,6 +10,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Persistence;
 using Fluxo.ViewModels.Entities;
 using Fluxo.Helpers.Popups;
 
@@ -19,7 +20,6 @@ namespace Fluxo.ViewModels.Popups;
 public partial class AccountReconciliationVM : ObservableObject
 {
     private readonly IAppDataService _appData;
-    private readonly Func<Task> _reloadCurrentDataAsync;
 
     [ObservableProperty] private decimal _amountText;
     [ObservableProperty] private bool _isSaving;
@@ -28,16 +28,13 @@ public partial class AccountReconciliationVM : ObservableObject
     public AccountReconciliationVM(
         IEnumerable<AccountVM> accounts,
         AccountVM promptSource,
-        IAppDataService appData,
-        Func<Task> reloadCurrentDataAsync)
+        IAppDataService appData)
     {
         ArgumentNullException.ThrowIfNull(accounts);
         ArgumentNullException.ThrowIfNull(promptSource);
         ArgumentNullException.ThrowIfNull(appData);
-        ArgumentNullException.ThrowIfNull(reloadCurrentDataAsync);
 
         _appData = appData;
-        _reloadCurrentDataAsync = reloadCurrentDataAsync;
 
         AccountsView = AccountComboBoxViewFactory.CreateGroupedByTypeThenName(
             Accounts,
@@ -83,6 +80,7 @@ public partial class AccountReconciliationVM : ObservableObject
         bool shouldLogTransaction,
         CancellationToken cancellationToken = default)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         if (IsSaving)
             return AccountReconciliationSaveResult.Failure("This reconciliation is already being saved.");
 
@@ -136,22 +134,31 @@ public partial class AccountReconciliationVM : ObservableObject
 
             _appData.UpdateAccount(account);
 
-            await _appData.SaveChangesAsync(cancellationToken);
+            await persistenceBatch.SaveChangesAsync(cancellationToken);
 
             TransactionVM? createdTransaction = null;
-            if (transaction is not null && reconciliationTag is not null)
+            try
             {
-                createdTransaction = CreateTransactionViewModel(transaction, account, reconciliationTag);
-                WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
-                    new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(transaction))));
+                if (transaction is not null && reconciliationTag is not null)
+                {
+                    createdTransaction = CreateTransactionViewModel(transaction, account, reconciliationTag);
+                    WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
+                        new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(transaction))));
+                }
+
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+
+                FloatingNotificationPublisher.Success(
+                    account.Name, $"{input.Amount:N2} was reconciled.", true, "Reconciled");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The account was reconciled, but the current UI could not be refreshed.");
             }
 
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-            await _reloadCurrentDataAsync();
-
-            FloatingNotificationPublisher.Success(
-                account.Name, $"{input.Amount:N2} was reconciled.", true, "Reconciled");
             return AccountReconciliationSaveResult.Success(createdTransaction);
         }
         catch (Exception exception)

@@ -578,7 +578,7 @@ public partial class BudgetAllocationPanelVM : ObservableRecipient,
 
     private async Task<BudgetAllocation> LoadBudgetAllocationAsync(CancellationToken cancellationToken)
     {
-        return await _appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
+        return await _appData.GetBudgetAllocationAsync(cancellationToken);
     }
 
     private static int ConvertThresholdToPercentage(decimal threshold)

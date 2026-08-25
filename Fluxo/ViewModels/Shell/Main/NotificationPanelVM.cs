@@ -9,6 +9,7 @@ using Fluxo.Core.Constants;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Dialogs;
+using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
 using Fluxo.Services.Updates;
 using Fluxo.ViewModels.Entities;
@@ -129,11 +130,28 @@ public partial class NotificationPanelVM : ObservableRecipient,
             _ = LoadAsync();
     }
 
-    public async void Receive(NotificationEntityCreatedMessage message)
+    public void Receive(NotificationEntityCreatedMessage message)
     {
-        var evaluation = await _evaluator.EvaluateEntityAsync(message.Value.Kind, message.Value.EntityId);
-        ReplaceNotifications(Notifications.Concat(evaluation.Notifications).GroupBy(item => item.Type).Select(group => group.Last()).ToList());
-        Messenger.Send(new StartupNotificationStateChangedMessage(evaluation));
+        _ = HandleNotificationEntityCreatedAsync(message);
+    }
+
+    internal async Task HandleNotificationEntityCreatedAsync(NotificationEntityCreatedMessage message)
+    {
+        try
+        {
+            var evaluation = await _evaluator.EvaluateEntityAsync(message.Value.Kind, message.Value.EntityId);
+            ReplaceNotifications(Notifications.Concat(evaluation.Notifications)
+                .GroupBy(item => item.Type)
+                .Select(group => group.Last())
+                .ToList());
+            Messenger.Send(new StartupNotificationStateChangedMessage(evaluation));
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "Unable to refresh notifications for a newly created entity.");
+        }
     }
 
     public static DateTime? ResolveRecurringTransactionDueDate(RecurringTransactionVM transaction, DateTime today) => transaction.RecurringPeriod switch
@@ -149,7 +167,7 @@ public partial class NotificationPanelVM : ObservableRecipient,
     {
         var setting = await _appData.GetUserSettingByNameAsync(
             UserSettingNames.NotificationsSnoozeEndDate,
-            cancellationToken).ConfigureAwait(false);
+            cancellationToken);
         return setting is not null && DateTime.TryParseExact(setting.Value, "O", CultureInfo.InvariantCulture,
             DateTimeStyles.RoundtripKind, out var endDate) && endDate > DateTime.Now;
     }

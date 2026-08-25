@@ -1,17 +1,10 @@
-using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Interfaces;
-using Fluxo.Core.Interfaces.Repositories;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
-using Fluxo.Services.Persistence;
-using Fluxo.Tests.TestDoubles;
 using Fluxo.ViewModels.Popups.Settings;
-using Fluxo.ViewModels.Shell;
-using Fluxo.ViewModels.Shell.Main;
 using NSubstitute;
 using Xunit;
 
@@ -146,6 +139,41 @@ public sealed class SettingsIoUsTabVMTests
     }
 
     [Fact]
+    public async Task SettingsIoUsTabVM_ResolveAsync_WhenRefreshFailsAfterSave_ReturnsSuccess()
+    {
+        var account = new Account
+        {
+            Id = 10,
+            Name = "Checking",
+            AccountType = AccountType.Checking,
+            Balance = 100m
+        };
+        var transaction = new Transaction
+        {
+            Id = 1,
+            Type = TransactionType.Expense,
+            Name = "Lunch lend",
+            Amount = 25m,
+            IsIoU = true,
+            ShouldAffectBalance = true,
+            Account = account,
+            SourceAccountId = account.Id
+        };
+        var appData = CreateAppData([transaction], [], [account]);
+        var vm = CreateVm(appData);
+        await vm.LoadAsync();
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException<IReadOnlyList<Transaction>>(
+                new InvalidOperationException("refresh failed")));
+
+        var result = await vm.ResolveAsync(vm.Items.Single());
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.False(transaction.IsIoU);
+        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task SettingsIoUsTabVM_ResolveAsync_DebtCreatesBudgetReconciliationExpenseAndClearsFlag()
     {
         var account = new Account
@@ -262,11 +290,9 @@ public sealed class SettingsIoUsTabVMTests
     {
         messenger ??= new WeakReferenceMessenger();
         return new SettingsIoUsTabVM(
-            CreateMainViewModel(messenger),
             appData,
             messenger,
-            () => new DateTime(2026, 6, 20),
-            () => Task.CompletedTask);
+            () => new DateTime(2026, 6, 20));
     }
 
     private static IAppDataService CreateAppData(
@@ -308,51 +334,5 @@ public sealed class SettingsIoUsTabVMTests
             .Returns(Task.CompletedTask);
 
         return appData;
-    }
-
-    private static MainVM CreateMainViewModel(IMessenger messenger)
-    {
-        var mapper = Substitute.For<IMapper>();
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var userSettings = Substitute.For<IUserSettingsRepository>();
-        userSettings.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<UserSettings>>([]));
-        unitOfWork.UserSettings.Returns(userSettings);
-        var incomeLogs = Substitute.For<ITransactionRepository>();
-        incomeLogs.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
-        unitOfWork.Transactions.Returns(incomeLogs);
-
-        var runner = new InlineDataOperationRunner(unitOfWork);
-        var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
-        var dashboard = new DashboardVM(
-            new NotificationPanelVM(
-                Substitute.For<ITransactionService>(),
-                Substitute.For<IAccountService>(),
-                appData,
-                mapper,
-                messenger: messenger),
-            new BudgetAllocationPanelVM(
-                Substitute.For<ITransactionService>(),
-                Substitute.For<IAccountService>(),
-                Substitute.For<ITagService>(),
-                appData,
-                mapper,
-                messenger),
-            new SpentAllowancePanelVM(
-                Substitute.For<ITransactionService>(),
-                Substitute.For<IAccountService>(),
-                appData,
-                mapper,
-                messenger),
-            new SavingGoalsPanelVM(appData, mapper, messenger),
-            new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
-            new MainViewModeToggleVM(messenger));
-
-        return new MainVM(
-            appData,
-            dashboard,
-            new DaySpinnerVM(messenger),
-            null);
     }
 }

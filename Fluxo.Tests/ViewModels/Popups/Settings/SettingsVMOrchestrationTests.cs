@@ -1,5 +1,6 @@
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
+using Fluxo.Core.Entities;
 using Fluxo.Core.Interfaces;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Repositories;
@@ -18,6 +19,153 @@ namespace Fluxo.Tests.ViewModels.Popups.Settings;
 
 public sealed class SettingsVMOrchestrationTests
 {
+    [Fact]
+    public async Task ApplyConfigurationAsync_WhenSaveFails_RevertsPendingSettings()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new InvalidOperationException("save failed")));
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger);
+        await settings.BudgetTab.LoadAsync();
+        await settings.PersonalizationTab.LoadAsync();
+        settings.PersonalizationTab.ShouldRunAtStartup = true;
+
+        var result = await settings.ApplyConfigurationAsync();
+
+        Assert.False(result.IsSuccess);
+        Assert.False(settings.PersonalizationTab.ShouldRunAtStartup);
+        Assert.False(settings.HasPendingConfigurationChanges);
+    }
+
+    [Fact]
+    public async Task ApplyConfigurationAsync_WhenStagingFails_DiscardsBatchAndRevertsPendingSettings()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(
+            Task.FromResult(new BudgetAllocation()),
+            Task.FromException<BudgetAllocation>(new InvalidOperationException("staging failed")));
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger);
+        await settings.BudgetTab.LoadAsync();
+        await settings.PersonalizationTab.LoadAsync();
+        settings.PersonalizationTab.ShouldRunAtStartup = true;
+
+        var result = await settings.ApplyConfigurationAsync();
+
+        Assert.False(result.IsSuccess);
+        Assert.False(settings.PersonalizationTab.ShouldRunAtStartup);
+        Assert.False(settings.HasPendingConfigurationChanges);
+        appData.Received(1).DiscardPendingChanges();
+    }
+
+    [Fact]
+    public async Task ApplyConfigurationAsync_WhenRefreshFailsAfterSave_KeepsCommittedSettings()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        var settingsReadCount = 0;
+        appData.GetUserSettingsAsync(Arg.Any<CancellationToken>()).Returns(_ =>
+            settingsReadCount++ == 0
+                ? Task.FromResult<IReadOnlyList<UserSettings>>([])
+                : Task.FromException<IReadOnlyList<UserSettings>>(
+                    new InvalidOperationException("refresh failed")));
+        var mainViewModel = CreateMainViewModel(messenger, appData);
+        var settings = CreateApplySettingsViewModel(mainViewModel, appData, messenger);
+        await settings.BudgetTab.LoadAsync();
+        await settings.PersonalizationTab.LoadAsync();
+        settings.PersonalizationTab.ShouldRunAtStartup = true;
+
+        var result = await settings.ApplyConfigurationAsync();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.True(settings.PersonalizationTab.ShouldRunAtStartup);
+        Assert.False(settings.HasPendingConfigurationChanges);
+    }
+
+    [Fact]
+    public async Task ApplyConfigurationAsync_WhenSettingChangesDuringSave_CommitsOnlyPersistedRevision()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        var saveCompletion = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(saveCompletion.Task);
+        var startupRegistration = Substitute.For<IStartupRegistrationService>();
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger, startupRegistration);
+        await settings.BudgetTab.LoadAsync();
+        await settings.PersonalizationTab.LoadAsync();
+        settings.PersonalizationTab.ShouldRunAtStartup = true;
+
+        var saveTask = settings.ApplyConfigurationAsync();
+        _ = appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        settings.PersonalizationTab.ShouldRunAtStartup = false;
+        saveCompletion.SetResult();
+
+        var result = await saveTask;
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.True(settings.HasPendingConfigurationChanges);
+        startupRegistration.Received(1).SetRunAtStartup(true);
+    }
+
+    [Fact]
+    public async Task ResetAllSettingsAsync_WhenSaveFails_DoesNotChangeStartupRegistration()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new InvalidOperationException("save failed")));
+        var startupRegistration = Substitute.For<IStartupRegistrationService>();
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger, startupRegistration);
+
+        var result = await settings.ResetAllSettingsAsync();
+
+        Assert.False(result.IsSuccess);
+        startupRegistration.DidNotReceive().SetRunAtStartup(Arg.Any<bool>());
+    }
+
+    [Fact]
+    public async Task ResetAllSettingsAsync_WhenRefreshFailsAfterSave_ReturnsSuccess()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger);
+
+        var result = await settings.ResetAllSettingsAsync();
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task DeleteAllDataAsync_WhenSaveFails_DoesNotChangeStartupRegistration()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        ConfigureEmptyDeleteData(appData);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromException(new InvalidOperationException("save failed")));
+        var startupRegistration = Substitute.For<IStartupRegistrationService>();
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger, startupRegistration);
+
+        var result = await settings.DeleteAllDataAsync(keepSettings: false);
+
+        Assert.False(result.IsSuccess);
+        startupRegistration.DidNotReceive().SetRunAtStartup(Arg.Any<bool>());
+    }
+
+    [Fact]
+    public async Task DeleteAllDataAsync_WhenRefreshFailsAfterSave_ReturnsSuccess()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var appData = CreateSettingsAppData();
+        ConfigureEmptyDeleteData(appData);
+        var settings = CreateApplySettingsViewModel(null!, appData, messenger);
+
+        var result = await settings.DeleteAllDataAsync(keepSettings: true);
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+    }
+
     [Fact]
     public void SettingsVMOrchestration_MessageContracts_AreAccessible()
     {
@@ -107,9 +255,9 @@ public sealed class SettingsVMOrchestrationTests
             new SettingsBudgetTabVM(() => mainViewModel.BudgetPanel.TotalIncomeAmount, appData, messenger),
             new SettingsAccountsTabVM(mainViewModel, appData, messenger),
             new SettingsRecurringTransactionsTabVM(appData, messenger),
-            new SettingsGoalsTabVM(mainViewModel, appData, messenger),
-            new SettingsIoUsTabVM(mainViewModel, appData, messenger),
-            new SettingsTagsTabVM(mainViewModel, appData, messenger),
+            new SettingsGoalsTabVM(appData, messenger),
+            new SettingsIoUsTabVM(appData, messenger),
+            new SettingsTagsTabVM(appData, messenger),
             new SettingsPersonalizationTabVM(appData, messenger),
             messenger);
 
@@ -120,6 +268,16 @@ public sealed class SettingsVMOrchestrationTests
     {
         var mapper = Substitute.For<IMapper>();
         var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
+
+        return CreateMainViewModel(messenger, appData, mapper);
+    }
+
+    private static MainVM CreateMainViewModel(
+        IMessenger messenger,
+        IAppDataService appData,
+        IMapper? mapper = null)
+    {
+        mapper ??= Substitute.For<IMapper>();
 
         var dashboard = new DashboardVM(
             new NotificationPanelVM(
@@ -150,6 +308,65 @@ public sealed class SettingsVMOrchestrationTests
             dashboard,
             new DaySpinnerVM(messenger),
             null);
+    }
+
+    private static SettingsVM CreateApplySettingsViewModel(
+        MainVM mainViewModel,
+        IAppDataService appData,
+        IMessenger messenger,
+        IStartupRegistrationService? startupRegistration = null)
+    {
+        return new SettingsVM(
+            mainViewModel,
+            appData,
+            startupRegistration ?? Substitute.For<IStartupRegistrationService>(),
+            Substitute.For<IUiSettleAwaiter>(),
+            new SettingsBudgetTabVM(() => 0m, appData, messenger),
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            new SettingsPersonalizationTabVM(
+                appData,
+                messenger,
+                passwordProtector: new PassThroughUiLockPasswordProtector()),
+            messenger);
+    }
+
+    private static IAppDataService CreateSettingsAppData()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(new BudgetAllocation
+        {
+            NeedsThreshold = 50,
+            WantsThreshold = 30,
+            InvestThreshold = 20
+        });
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Account>>([]));
+        appData.GetUserSettingsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<UserSettings>>([]));
+        appData.GetUserSettingByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<UserSettings?>(null));
+        appData.AddUserSettingAsync(Arg.Any<UserSettings>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        return appData;
+    }
+
+    private static void ConfigureEmptyDeleteData(IAppDataService appData)
+    {
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Transaction>>([]));
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<SavingGoal>>([]));
+        appData.GetTagsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Tag>>([]));
+        appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<RecurringTransaction>>([]));
+        appData.AddTagAsync(Arg.Any<Tag>(), Arg.Any<CancellationToken>())
+            .Returns(Task.CompletedTask);
     }
 
     private static IUnitOfWork CreateUnitOfWork()
@@ -206,4 +423,5 @@ public sealed class SettingsVMOrchestrationTests
             return Task.CompletedTask;
         }
     }
+
 }

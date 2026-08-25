@@ -10,13 +10,11 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Helpers.Popups;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
 
 public partial class QuickSetupWizardAccountsVM : ObservableObject
 {
-    private readonly MainVM _mainViewModel;
     private readonly IAppDataService _appData;
     private readonly IMessenger _messenger;
     private readonly Dictionary<int, QuickSetupWizardDraftAccount> _draftSources = [];
@@ -28,11 +26,9 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
     [ObservableProperty] private bool _isStep2Active;
 
     public QuickSetupWizardAccountsVM(
-        MainVM mainViewModel,
         IAppDataService appData,
         IMessenger? messenger = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _messenger = messenger ?? WeakReferenceMessenger.Default;
     }
@@ -85,7 +81,6 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
     public AddAccountVM CreateAddViewModel()
     {
         return new AddAccountVM(
-            _mainViewModel,
             _appData,
             saveDraftAsync: input => SaveDraftSourceAsync(input, null),
             loadDraftDeductSourcesAsync: editingId =>
@@ -102,7 +97,6 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
             return CreateAddViewModel();
 
         var vm = new AddAccountVM(
-            _mainViewModel,
             _appData,
             saveDraftAsync: input => SaveDraftSourceAsync(input, source.Id),
             loadDraftDeductSourcesAsync: editingId =>

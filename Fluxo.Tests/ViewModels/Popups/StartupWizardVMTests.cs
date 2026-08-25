@@ -279,9 +279,9 @@ public sealed class QuickSetupWizardVMTests
         var messenger = new WeakReferenceMessenger();
         var greeting = new QuickSetupWizardGreetingPageVM();
         var name = new QuickSetupWizardNamePageVM(appData, messenger);
-        var accounts = new QuickSetupWizardAccountsVM(null!, appData, messenger);
+        var accounts = new QuickSetupWizardAccountsVM(appData, messenger);
         var fixedExpenses = new QuickSetupWizardRecurringTransactionsVM(appData, messenger);
-        var savingGoals = new QuickSetupWizardSavingGoalsVM(null!, appData, messenger);
+        var savingGoals = new QuickSetupWizardSavingGoalsVM(appData, messenger);
         var budget = new QuickSetupWizardBudgetAllocationVM(appData, messenger);
         var personalization = new QuickSetupWizardPersonalizationVM(appData, new TestPasswordProtector());
         var notification = new QuickSetupWizardNotificationVM(appData, messenger);

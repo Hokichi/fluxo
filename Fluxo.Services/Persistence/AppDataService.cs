@@ -10,13 +10,15 @@ namespace Fluxo.Services.Persistence;
 public sealed class AppDataService : IAppDataService
 {
     private readonly Lock _pendingLock = new();
-    private readonly List<Func<IUnitOfWork, CancellationToken, Task>> _pending = [];
+    private readonly List<(Guid? ScopeId, Func<IUnitOfWork, CancellationToken, Task> Operation)> _pending = [];
+    private readonly AsyncLocal<Guid?> _activeBatchId = new();
     private readonly SemaphoreSlim _saveGate = new(1, 1);
     private readonly SemaphoreSlim _allocationGate = new(1, 1);
     private readonly IAppDataCache? _cache;
     private readonly AppDataCommitCoordinator? _coordinator;
     private readonly IUnitOfWork? _directUnitOfWork;
     private BudgetAllocation? _pendingAllocation;
+    private Guid? _pendingAllocationBatchId;
 
     public AppDataService(IAppDataCache cache, AppDataCommitCoordinator coordinator)
     {
@@ -192,6 +194,7 @@ public sealed class AppDataService : IAppDataService
 
             var allocation = new BudgetAllocation();
             _pendingAllocation = allocation;
+            _pendingAllocationBatchId = _activeBatchId.Value;
             await Enqueue(
                 (unitOfWork, ct) => unitOfWork.BudgetAllocation.AddAsync(allocation, ct),
                 cancellationToken).ConfigureAwait(false);
@@ -206,12 +209,51 @@ public sealed class AppDataService : IAppDataService
     public void UpdateBudgetAllocation(BudgetAllocation entity) =>
         Enqueue(unitOfWork => unitOfWork.BudgetAllocation.Update(entity));
 
-    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    public void DiscardPendingChanges()
+    {
+        DiscardPendingChanges(_activeBatchId.Value);
+    }
+
+    internal (Guid ScopeId, Guid? PreviousScopeId) EnterPersistenceBatch()
+    {
+        var previousScopeId = _activeBatchId.Value;
+        var scopeId = Guid.NewGuid();
+        _activeBatchId.Value = scopeId;
+        return (scopeId, previousScopeId);
+    }
+
+    internal void ExitPersistenceBatch(Guid scopeId, Guid? previousScopeId)
+    {
+        if (_activeBatchId.Value == scopeId)
+            _activeBatchId.Value = previousScopeId;
+    }
+
+    internal void DiscardPendingChanges(Guid? scopeId)
+    {
+        if (_directUnitOfWork is not null)
+            return;
+
+        lock (_pendingLock)
+        {
+            _pending.RemoveAll(item => item.ScopeId == scopeId);
+            if (_pendingAllocationBatchId == scopeId)
+            {
+                _pendingAllocation = null;
+                _pendingAllocationBatchId = null;
+            }
+        }
+    }
+
+    public Task SaveChangesAsync(CancellationToken cancellationToken = default) =>
+        SaveChangesAsync(_activeBatchId.Value, cancellationToken);
+
+    internal async Task SaveChangesAsync(Guid? scopeId, CancellationToken cancellationToken = default)
     {
         if (_directUnitOfWork is not null)
         {
             await _directUnitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             _pendingAllocation = null;
+            _pendingAllocationBatchId = null;
             return;
         }
 
@@ -220,14 +262,28 @@ public sealed class AppDataService : IAppDataService
         {
             Func<IUnitOfWork, CancellationToken, Task>[] operations;
             lock (_pendingLock)
-                operations = [.. _pending];
-
-            await _coordinator!.SaveAsync(operations, cancellationToken).ConfigureAwait(false);
-
-            lock (_pendingLock)
             {
-                _pending.RemoveRange(0, operations.Length);
-                _pendingAllocation = null;
+                operations = _pending
+                    .Where(item => item.ScopeId == scopeId)
+                    .Select(item => item.Operation)
+                    .ToArray();
+                _pending.RemoveAll(item => item.ScopeId == scopeId);
+            }
+
+            try
+            {
+                await _coordinator!.SaveAsync(operations, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                lock (_pendingLock)
+                {
+                    if (_pendingAllocationBatchId == scopeId)
+                    {
+                        _pendingAllocation = null;
+                        _pendingAllocationBatchId = null;
+                    }
+                }
             }
         }
         finally
@@ -245,7 +301,7 @@ public sealed class AppDataService : IAppDataService
             return operation(_directUnitOfWork, cancellationToken);
 
         lock (_pendingLock)
-            _pending.Add(operation);
+            _pending.Add((_activeBatchId.Value, operation));
         return Task.CompletedTask;
     }
 
@@ -259,11 +315,11 @@ public sealed class AppDataService : IAppDataService
 
         lock (_pendingLock)
         {
-            _pending.Add((unitOfWork, _) =>
+            _pending.Add((_activeBatchId.Value, (unitOfWork, _) =>
             {
                 operation(unitOfWork);
                 return Task.CompletedTask;
-            });
+            }));
         }
     }
 }

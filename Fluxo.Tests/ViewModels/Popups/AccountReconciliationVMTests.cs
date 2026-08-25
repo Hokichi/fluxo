@@ -1,7 +1,10 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Popups.AccountReconciliation;
+using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using NSubstitute;
@@ -17,7 +20,7 @@ public sealed class AccountReconciliationVMTests
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
 
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () => Task.CompletedTask);
+        var vm = new AccountReconciliationVM(sources, sources[2], appData);
 
         Assert.Equal(
             [AccountType.Credit, AccountType.Checking, AccountType.Checking, AccountType.Cash],
@@ -32,7 +35,7 @@ public sealed class AccountReconciliationVMTests
         sources[0].SpentAmount = 80m;
         sources[2].Balance = 500m;
         sources[3].Balance = 75m;
-        var vm = new AccountReconciliationVM(sources, sources[2], Substitute.For<IAppDataService>(), () => Task.CompletedTask);
+        var vm = new AccountReconciliationVM(sources, sources[2], Substitute.For<IAppDataService>());
 
         Assert.Equal("New Balance", vm.NewAmountLabel);
         Assert.Equal("Current Balance", vm.CurrentAmountLabel);
@@ -72,8 +75,6 @@ public sealed class AccountReconciliationVMTests
         };
 
         Transaction? savedTransaction = null;
-        var reloadCount = 0;
-
         appData.GetAccountByIdAsync(3, Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<Account?>(persistedSource));
         appData.GetTagsAsync(Arg.Any<CancellationToken>())
@@ -83,11 +84,7 @@ public sealed class AccountReconciliationVMTests
         appData.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () =>
-        {
-            reloadCount++;
-            return Task.CompletedTask;
-        })
+        var vm = new AccountReconciliationVM(sources, sources[2], appData)
         {
             AmountText = 457.50m
         };
@@ -106,7 +103,6 @@ public sealed class AccountReconciliationVMTests
         Assert.Equal(DateTime.Today, savedTransaction.OccurredOn);
         Assert.False(savedTransaction.IsForDeletion);
         Assert.Equal(457.50m, persistedSource.Balance);
-        Assert.Equal(1, reloadCount);
         appData.Received(1).UpdateAccount(persistedSource);
         await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -141,7 +137,7 @@ public sealed class AccountReconciliationVMTests
         appData.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () => Task.CompletedTask)
+        var vm = new AccountReconciliationVM(sources, sources[2], appData)
         {
             AmountText = 525m
         };
@@ -186,7 +182,7 @@ public sealed class AccountReconciliationVMTests
         appData.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var vm = new AccountReconciliationVM(sources, sources[0], appData, () => Task.CompletedTask)
+        var vm = new AccountReconciliationVM(sources, sources[0], appData)
         {
             AmountText = 50m
         };
@@ -218,7 +214,7 @@ public sealed class AccountReconciliationVMTests
         appData.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () => Task.CompletedTask)
+        var vm = new AccountReconciliationVM(sources, sources[2], appData)
         {
             AmountText = 525m
         };
@@ -230,6 +226,44 @@ public sealed class AccountReconciliationVMTests
         Assert.Equal(525m, persistedSource.Balance);
         await appData.DidNotReceive().AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
         await appData.DidNotReceive().AddTagAsync(Arg.Any<Tag>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task AccountReconciliationVM_SaveAsync_WhenInvalidationFailsAfterSave_ReturnsSuccess()
+    {
+        var sources = CreateSourceViewModels();
+        var appData = Substitute.For<IAppDataService>();
+        var persistedSource = new Account
+        {
+            Id = 3,
+            Name = "Checking",
+            AccountType = AccountType.Checking,
+            Balance = 500m
+        };
+        appData.GetAccountByIdAsync(3, Arg.Any<CancellationToken>()).Returns(persistedSource);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        var vm = new AccountReconciliationVM(sources, sources[2], appData)
+        {
+            AmountText = 525m
+        };
+        var recipient = new object();
+        WeakReferenceMessenger.Default.Register<DashboardDataInvalidatedMessage>(
+            recipient,
+            (_, _) => throw new InvalidOperationException("invalidation failed"));
+
+        AccountReconciliationSaveResult result;
+        try
+        {
+            result = await vm.SaveAsync(shouldLogTransaction: false);
+        }
+        finally
+        {
+            WeakReferenceMessenger.Default.UnregisterAll(recipient);
+        }
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
+        Assert.Equal(525m, persistedSource.Balance);
+        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -250,7 +284,7 @@ public sealed class AccountReconciliationVMTests
         appData.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () => Task.CompletedTask)
+        var vm = new AccountReconciliationVM(sources, sources[2], appData)
         {
             AmountText = 500m
         };
@@ -291,7 +325,7 @@ public sealed class AccountReconciliationVMTests
         appData.SaveChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () => Task.CompletedTask)
+        var vm = new AccountReconciliationVM(sources, sources[2], appData)
         {
             AmountText = 12m
         };
@@ -312,7 +346,7 @@ public sealed class AccountReconciliationVMTests
         var sources = CreateSourceViewModels();
         var appData = Substitute.For<IAppDataService>();
         var changedProperties = new List<string?>();
-        var vm = new AccountReconciliationVM(sources, sources[2], appData, () => Task.CompletedTask);
+        var vm = new AccountReconciliationVM(sources, sources[2], appData);
         vm.PropertyChanged += (_, args) => changedProperties.Add(args.PropertyName);
 
         Assert.False(vm.CanSave);

@@ -5,6 +5,7 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
+using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
 using Fluxo.Services.Transactions;
 using Fluxo.ViewModels.Entities;
@@ -29,6 +30,8 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             ? await AddAsync(loaded, pending, options, cancellationToken)
             : await EditAsync(loaded, pending, options, cancellationToken);
     }
+
+    public void PublishPostCommit(Result result) => PublishPostCommit(result.PostCommit);
 
     public async Task<Result> DeleteAsync(TransactionVM loaded, CancellationToken cancellationToken = default)
     {
@@ -69,14 +72,17 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             : new CompositeLogMemoryAction(
                 "Reverse repayment",
                 snapshots.Select(snapshot => (ILogMemoryAction)new DeleteTransactionMemoryAction(snapshot)).ToList());
-        messenger.Send(new RecordLogMemoryMessage(historyAction));
-        messenger.Send(new DashboardDataInvalidatedMessage(
-            DashboardDataInvalidationScope.Budget |
-            DashboardDataInvalidationScope.Notifications |
-            (plan.Goal is null ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.SavingGoals)));
+        PublishPostCommit(() =>
+        {
+            messenger.Send(new RecordLogMemoryMessage(historyAction));
+            messenger.Send(new DashboardDataInvalidatedMessage(
+                DashboardDataInvalidationScope.Budget |
+                DashboardDataInvalidationScope.Notifications |
+                (plan.Goal is null ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.SavingGoals)));
 
-        if (plan.RepaymentAccountName is { } accountName)
-            FloatingNotificationPublisher.Success(messenger, $"Repayment for {accountName} reversed.", string.Empty);
+            if (plan.RepaymentAccountName is { } accountName)
+                FloatingNotificationPublisher.Success(messenger, $"Repayment for {accountName} reversed.", string.Empty);
+        });
 
         return Result.Success(loaded.Id);
     }
@@ -125,14 +131,24 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             appData.UpdateSavingGoal(goal);
         }
 
-        await appData.SaveChangesAsync(cancellationToken);
-        messenger.Send(new RecordLogMemoryMessage(
-            new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(transaction))));
-        messenger.Send(new DashboardDataInvalidatedMessage(
-            DashboardDataInvalidationScope.Budget |
-            (options.SuppressNotificationInvalidation ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.Notifications) |
-            (goal is null ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.SavingGoals)));
-        return Result.Success(transaction.Id);
+        return await CompleteAsync(
+            transaction,
+            transaction.Id,
+            () =>
+            {
+                messenger.Send(new RecordLogMemoryMessage(
+                    new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(transaction))));
+                messenger.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget |
+                    (options.SuppressNotificationInvalidation
+                        ? DashboardDataInvalidationScope.None
+                        : DashboardDataInvalidationScope.Notifications) |
+                    (goal is null
+                        ? DashboardDataInvalidationScope.None
+                        : DashboardDataInvalidationScope.SavingGoals)));
+            },
+            options,
+            cancellationToken);
     }
 
     private async Task<Result> AddRepaymentAsync(
@@ -163,18 +179,25 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         await appData.AddTransactionAsync(pair.Income, cancellationToken);
         appData.UpdateAccount(source);
         appData.UpdateAccount(target);
-        await appData.SaveChangesAsync(cancellationToken);
-
-        messenger.Send(new RecordLogMemoryMessage(new CompositeLogMemoryAction(
-            "Repayment",
-            [
-                new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Expense)),
-                new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Income))
-            ])));
-        messenger.Send(new DashboardDataInvalidatedMessage(
-            DashboardDataInvalidationScope.Budget |
-            (options.SuppressNotificationInvalidation ? DashboardDataInvalidationScope.None : DashboardDataInvalidationScope.Notifications)));
-        return Result.Success(pair.Expense.Id);
+        return await CompleteAsync(
+            pair.Expense,
+            pair.Expense.Id,
+            () =>
+            {
+                messenger.Send(new RecordLogMemoryMessage(new CompositeLogMemoryAction(
+                    "Repayment",
+                    [
+                        new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Expense)),
+                        new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(pair.Income))
+                    ])));
+                messenger.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget |
+                    (options.SuppressNotificationInvalidation
+                        ? DashboardDataInvalidationScope.None
+                        : DashboardDataInvalidationScope.Notifications)));
+            },
+            options,
+            cancellationToken);
     }
 
     private async Task<Result> EditAsync(
@@ -188,7 +211,7 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             return Result.Failure("Unable to load this transaction.");
 
         if (loaded.HasSameValues(pending))
-            return Result.Success(loaded.Id);
+            return Result.Success(loaded.Id, transaction);
 
         if (options.IsRepayment)
             return await EditRepaymentAsync(loaded, pending, transaction, options, cancellationToken);
@@ -238,21 +261,27 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
             }
         }
 
-        await appData.SaveChangesAsync(cancellationToken);
         var changedFields = GetChangedFields(loaded, pending);
-        messenger.Send(new TransactionDetailUpdatedMessage(new TransactionDetailUpdate(
+        return await CompleteAsync(
+            transaction,
             loaded.Id,
-            new TransactionDetailSnapshot(
-                loaded.Amount,
-                loaded.OccurredOn,
-                loaded.ExpenseCategory ?? ExpenseCategory.Needs,
-                loaded.SourceAccountId,
-                loaded.Tag?.Id ?? 0),
-            changedFields,
-            options.SuppressNotificationInvalidation)));
-        messenger.Send(new RecordLogMemoryMessage(
-            new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
-        return Result.Success(loaded.Id);
+            () =>
+            {
+                messenger.Send(new TransactionDetailUpdatedMessage(new TransactionDetailUpdate(
+                    loaded.Id,
+                    new TransactionDetailSnapshot(
+                        loaded.Amount,
+                        loaded.OccurredOn,
+                        loaded.ExpenseCategory ?? ExpenseCategory.Needs,
+                        loaded.SourceAccountId,
+                        loaded.Tag?.Id ?? 0),
+                    changedFields,
+                    options.SuppressNotificationInvalidation)));
+                messenger.Send(new RecordLogMemoryMessage(
+                    new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
+            },
+            options,
+            cancellationToken);
     }
 
     private async Task<Result> EditGoalAsync(
@@ -310,20 +339,26 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         }
 
         appData.UpdateSavingGoal(goal);
-        await appData.SaveChangesAsync(cancellationToken);
-        messenger.Send(new TransactionDetailUpdatedMessage(new TransactionDetailUpdate(
+        return await CompleteAsync(
+            transaction,
             loaded.Id,
-            new TransactionDetailSnapshot(
-                loaded.Amount,
-                loaded.OccurredOn,
-                loaded.ExpenseCategory ?? ExpenseCategory.Savings,
-                loaded.SourceAccountId,
-                loaded.Tag?.Id ?? tag.Id),
-            GetChangedFields(loaded, pending),
-            options.SuppressNotificationInvalidation)));
-        messenger.Send(new RecordLogMemoryMessage(
-            new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
-        return Result.Success(loaded.Id);
+            () =>
+            {
+                messenger.Send(new TransactionDetailUpdatedMessage(new TransactionDetailUpdate(
+                    loaded.Id,
+                    new TransactionDetailSnapshot(
+                        loaded.Amount,
+                        loaded.OccurredOn,
+                        loaded.ExpenseCategory ?? ExpenseCategory.Savings,
+                        loaded.SourceAccountId,
+                        loaded.Tag?.Id ?? tag.Id),
+                    GetChangedFields(loaded, pending),
+                    options.SuppressNotificationInvalidation)));
+                messenger.Send(new RecordLogMemoryMessage(
+                    new EditTransactionMemoryAction(before, TransactionMemorySnapshot.Create(transaction))));
+            },
+            options,
+            cancellationToken);
     }
 
     private async Task<Result> EditRepaymentAsync(
@@ -405,19 +440,56 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         income.TagId = tag.Id;
         appData.UpdateTransaction(transaction);
         appData.UpdateTransaction(income);
-        await appData.SaveChangesAsync(cancellationToken);
-
-        messenger.Send(new RecordLogMemoryMessage(new CompositeLogMemoryAction(
-            "Repayment",
-            [
-                new EditTransactionMemoryAction(beforeExpense, TransactionMemorySnapshot.Create(transaction)),
-                new EditTransactionMemoryAction(beforeIncome, TransactionMemorySnapshot.Create(income))
-            ])));
         var invalidationScope = DashboardDataInvalidationScope.Budget;
         if (!options.SuppressNotificationInvalidation)
             invalidationScope |= DashboardDataInvalidationScope.Notifications;
-        messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
-        return Result.Success(loaded.Id);
+        return await CompleteAsync(
+            transaction,
+            loaded.Id,
+            () =>
+            {
+                messenger.Send(new RecordLogMemoryMessage(new CompositeLogMemoryAction(
+                    "Repayment",
+                    [
+                        new EditTransactionMemoryAction(beforeExpense, TransactionMemorySnapshot.Create(transaction)),
+                        new EditTransactionMemoryAction(beforeIncome, TransactionMemorySnapshot.Create(income))
+                    ])));
+                messenger.Send(new DashboardDataInvalidatedMessage(invalidationScope));
+            },
+            options,
+            cancellationToken);
+    }
+
+    private async Task<Result> CompleteAsync(
+        TransactionEntity transaction,
+        int transactionId,
+        Action postCommit,
+        SaveOptions options,
+        CancellationToken cancellationToken)
+    {
+        if (options.DeferCommit)
+            return Result.Success(transactionId, transaction, postCommit);
+
+        await appData.SaveChangesAsync(cancellationToken);
+        PublishPostCommit(postCommit);
+        return Result.Success(transaction.Id > 0 ? transaction.Id : transactionId, transaction);
+    }
+
+    private static void PublishPostCommit(Action? postCommit)
+    {
+        if (postCommit is null)
+            return;
+
+        try
+        {
+            postCommit();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "Transaction changes were saved, but the current UI could not be refreshed.");
+        }
     }
 
     private void ApplyAccountEditBalance(
@@ -674,17 +746,25 @@ public sealed class TransactionPersistenceHelper(IAppDataService appData, IMesse
         bool AllowMaximumSpendingOverflow = false,
         bool IsRepayment = false,
         int? RelatedRecurringTransactionId = null,
-        bool SuppressNotificationInvalidation = false);
+        bool SuppressNotificationInvalidation = false,
+        bool DeferCommit = false);
 
     public readonly record struct Result(
         bool IsSuccess,
         string? ErrorMessage,
         bool RequiresConfirmation,
-        int TransactionId)
+        int TransactionId,
+        TransactionEntity? Transaction,
+        Action? PostCommit)
     {
-        public static Result Success(int transactionId) => new(true, null, false, transactionId);
-        public static Result Failure(string? errorMessage) => new(false, errorMessage, false, 0);
-        public static Result Confirmation(string message) => new(false, message, true, 0);
+        public static Result Success(
+            int transactionId,
+            TransactionEntity? transaction = null,
+            Action? postCommit = null) =>
+            new(true, null, false, transactionId, transaction, postCommit);
+
+        public static Result Failure(string? errorMessage) => new(false, errorMessage, false, 0, null, null);
+        public static Result Confirmation(string message) => new(false, message, true, 0, null, null);
     }
 
     private readonly record struct DeletionPlan(

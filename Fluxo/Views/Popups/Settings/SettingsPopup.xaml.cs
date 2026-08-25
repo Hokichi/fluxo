@@ -28,7 +28,7 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
     private bool _allowClose;
     private bool _isLoaded;
     private bool _isHandlingCloseRequest;
-    private bool _isSavingConfiguration;
+    private Task<SettingsOperationResult>? _configurationSaveTask;
     private bool _isSelectingTab;
 
     internal IMessenger Messenger => _messenger;
@@ -58,7 +58,7 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
         catch (Exception exception)
         {
             FluxoLogManager.LogError(exception, "Unable to load settings popup.");
-            ShowMessage(FluxoLogManager.CreateFailureMessage("load settings"), "Settings");
+            TryShowMessage(FluxoLogManager.CreateFailureMessage("load settings"), "Settings");
             _allowClose = true;
             Close();
         }
@@ -66,29 +66,31 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
 
     private async void OnPopupClosing(object? sender, CancelEventArgs e)
     {
-        if (_allowClose || _isHandlingCloseRequest)
+        if (_allowClose)
             return;
 
         e.Cancel = true;
+        if (_isHandlingCloseRequest)
+            return;
+
         _isHandlingCloseRequest = true;
 
         try
         {
-            if (!await CanLeaveCurrentSettingsTabAsync())
-                return;
-
-            if (_viewModel.HasPendingPersonalizationConfigurationChanges &&
-                !(await SaveConfigurationChangesAsync()).IsSuccess)
-            {
-                return;
-            }
-
-            _allowClose = true;
-            await Dispatcher.BeginInvoke(Close, DispatcherPriority.Background);
+            if (_viewModel.HasPendingConfigurationChanges)
+                await SaveConfigurationChangesAsync();
+        }
+        catch (Exception exception)
+        {
+            _viewModel.RevertConfigurationChanges();
+            FluxoLogManager.LogError(exception, "Unable to finish saving settings while closing the popup.");
+            TryShowMessage(FluxoLogManager.CreateFailureMessage("persist settings"), "Settings");
         }
         finally
         {
+            _allowClose = true;
             _isHandlingCloseRequest = false;
+            _ = Dispatcher.BeginInvoke(Close, DispatcherPriority.Background);
         }
     }
 
@@ -344,7 +346,8 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
         if (PreferencesTabButton.IsChecked.GetValueOrDefault() &&
             _viewModel.HasPendingPersonalizationConfigurationChanges)
         {
-            return (await SaveConfigurationChangesAsync()).IsSuccess;
+            var result = await SaveConfigurationChangesAsync();
+            return result.IsSuccess || !_viewModel.HasPendingPersonalizationConfigurationChanges;
         }
 
         if (!BudgetTabButton.IsChecked.GetValueOrDefault() ||
@@ -354,7 +357,10 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
         }
 
         if (_viewModel.CanSaveBudgetConfiguration)
-            return (await SaveConfigurationChangesAsync()).IsSuccess;
+        {
+            var result = await SaveConfigurationChangesAsync();
+            return result.IsSuccess || !_viewModel.HasPendingBudgetConfigurationChanges;
+        }
 
         var message = string.IsNullOrWhiteSpace(_viewModel.BudgetConfigurationErrorMessage)
             ? "Budget Allocation is not valid."
@@ -493,30 +499,59 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
         _messenger.UnregisterAll(this);
     }
 
-    private async Task<SettingsOperationResult> SaveConfigurationChangesAsync()
+    private Task<SettingsOperationResult> SaveConfigurationChangesAsync()
     {
-        if (_isSavingConfiguration)
-            return SettingsOperationResult.Success();
+        if (_configurationSaveTask is not null)
+            return _configurationSaveTask;
 
-        _isSavingConfiguration = true;
-        try
+        var saveTask = SaveConfigurationChangesCoreAsync();
+        _configurationSaveTask = saveTask;
+        return ClearConfigurationSaveTaskAsync(saveTask);
+    }
+
+    private async Task<SettingsOperationResult> SaveConfigurationChangesCoreAsync()
+    {
+        SettingsOperationResult result;
+        do
         {
             var notification = ResolveSaveNotification();
-            var result = await _viewModel.SaveConfigurationChangesAsync();
+            result = await _viewModel.SaveConfigurationChangesAsync();
             if (!result.IsSuccess)
-                ShowMessage(result.ErrorMessage, "Settings");
-            else
+            {
+                TryShowMessage(result.ErrorMessage, "Settings");
+                return result;
+            }
+
+            try
+            {
                 FloatingNotificationPublisher.Success(
                     _messenger,
                     notification.Header,
                     notification.Message,
                     headerAction: notification.Action);
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "Settings were saved, but the success notification could not be shown.");
+            }
+        } while (_viewModel.HasPendingConfigurationChanges);
 
-            return result;
+        return result;
+    }
+
+    private async Task<SettingsOperationResult> ClearConfigurationSaveTaskAsync(
+        Task<SettingsOperationResult> saveTask)
+    {
+        try
+        {
+            return await saveTask;
         }
         finally
         {
-            _isSavingConfiguration = false;
+            if (ReferenceEquals(_configurationSaveTask, saveTask))
+                _configurationSaveTask = null;
         }
     }
 
@@ -552,9 +587,18 @@ public partial class SettingsPopup : BasePopup, IRecipient<SettingsDialogRequest
         return Keyboard.FocusedElement is TextBoxBase or PasswordBox or ComboBox;
     }
 
-    private void ShowMessage(string? message, string title)
+    private void TryShowMessage(string? message, string title)
     {
-        if (!string.IsNullOrWhiteSpace(message))
-            FluxoMessageBox.Show(this, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        if (string.IsNullOrWhiteSpace(message))
+            return;
+
+        try
+        {
+            _dialogService.ShowInformation(message, title, this);
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(exception, "Unable to show a settings message.");
+        }
     }
 }

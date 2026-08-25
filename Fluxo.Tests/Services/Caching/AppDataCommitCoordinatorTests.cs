@@ -1,4 +1,5 @@
 using Fluxo.Core.Entities;
+using Fluxo.Services.Persistence;
 using Xunit;
 
 namespace Fluxo.Tests.Services.Caching;
@@ -73,5 +74,58 @@ public sealed class AppDataCommitCoordinatorTests
         blocker.Release();
         await save;
         Assert.Equal("Pending", Assert.Single(await fixture.Cache.GetAccountsAsync()).Name);
+    }
+
+    [Fact]
+    public async Task FailedSave_DoesNotPersistItsBatchDuringNextSave()
+    {
+        var failure = new FailingSaveChangesInterceptor { IsEnabled = true };
+        await using var fixture = await AppDataCommitCoordinatorFixture.CreateAsync(failure);
+        var appData = fixture.CreateAppDataService();
+        await appData.AddAccountAsync(new Account { Name = "Failed", IsEnabled = true });
+
+        await Assert.ThrowsAnyAsync<Exception>(() => appData.SaveChangesAsync());
+
+        failure.IsEnabled = false;
+        await appData.AddAccountAsync(new Account { Name = "Later", IsEnabled = true });
+        await appData.SaveChangesAsync();
+
+        Assert.Equal("Later", Assert.Single(await fixture.ReadDatabaseAccountsAsync()).Name);
+        Assert.Equal("Later", Assert.Single(await appData.GetAccountsAsync()).Name);
+    }
+
+    [Fact]
+    public async Task DiscardPendingChanges_DoesNotPersistDiscardedBatchDuringNextSave()
+    {
+        await using var fixture = await AppDataCommitCoordinatorFixture.CreateAsync();
+        var appData = fixture.CreateAppDataService();
+        await appData.AddAccountAsync(new Account { Name = "Discarded", IsEnabled = true });
+
+        appData.DiscardPendingChanges();
+        await appData.AddAccountAsync(new Account { Name = "Later", IsEnabled = true });
+        await appData.SaveChangesAsync();
+
+        Assert.Equal("Later", Assert.Single(await fixture.ReadDatabaseAccountsAsync()).Name);
+        Assert.Equal("Later", Assert.Single(await appData.GetAccountsAsync()).Name);
+    }
+
+    [Fact]
+    public async Task ScopedDiscard_DoesNotDiscardOrCommitAnotherScope()
+    {
+        await using var fixture = await AppDataCommitCoordinatorFixture.CreateAsync();
+        var appData = fixture.CreateAppDataService();
+        using var discardedBatch = AppDataPersistenceBatch.Begin(appData);
+        await appData.AddAccountAsync(new Account { Name = "Discarded", IsEnabled = true });
+
+        using (var committedBatch = AppDataPersistenceBatch.Begin(appData))
+        {
+            await appData.AddAccountAsync(new Account { Name = "Committed", IsEnabled = true });
+            await committedBatch.SaveChangesAsync();
+        }
+
+        discardedBatch.Discard();
+
+        Assert.Equal("Committed", Assert.Single(await fixture.ReadDatabaseAccountsAsync()).Name);
+        Assert.Equal("Committed", Assert.Single(await appData.GetAccountsAsync()).Name);
     }
 }

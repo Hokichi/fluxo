@@ -8,32 +8,26 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Logging;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
+using Fluxo.Services.Persistence;
 
 namespace Fluxo.ViewModels.Popups.Settings;
 
 public partial class SettingsIoUsTabVM : ObservableObject
 {
-    private readonly MainVM _mainViewModel;
     private readonly IAppDataService _appData;
     private readonly IMessenger _messenger;
     private readonly Func<DateTime> _todayProvider;
-    private readonly Func<Task> _reloadCurrentDataAsync;
 
     [ObservableProperty] private bool _isResolving;
 
     public SettingsIoUsTabVM(
-        MainVM mainViewModel,
         IAppDataService appData,
         IMessenger? messenger = null,
-        Func<DateTime>? todayProvider = null,
-        Func<Task>? reloadCurrentDataAsync = null)
+        Func<DateTime>? todayProvider = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _messenger = messenger ?? WeakReferenceMessenger.Default;
         _todayProvider = todayProvider ?? (() => DateTime.Today);
-        _reloadCurrentDataAsync = reloadCurrentDataAsync ?? mainViewModel.ReloadCurrentDataAsync;
     }
 
     public ObservableCollection<IoUItemVM> Items { get; } = [];
@@ -81,6 +75,7 @@ public partial class SettingsIoUsTabVM : ObservableObject
             return SettingsOperationResult.Failure("Please choose an account for this unposted debt or IOU.");
 
         IsResolving = true;
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
 
         try
         {
@@ -91,7 +86,21 @@ public partial class SettingsIoUsTabVM : ObservableObject
             if (!result.IsSuccess)
                 return result;
 
-            await LoadAsync(cancellationToken);
+            await persistenceBatch.SaveChangesAsync(cancellationToken);
+
+            try
+            {
+                _messenger.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                await LoadAsync(cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The debt or IOU was resolved, but the current UI could not be refreshed.");
+            }
+
             return SettingsOperationResult.Success();
         }
         catch (Exception exception)
@@ -150,9 +159,6 @@ public partial class SettingsIoUsTabVM : ObservableObject
         _appData.UpdateTransaction(source);
         _appData.UpdateAccount(account);
 
-        await _appData.SaveChangesAsync(cancellationToken);
-
-        await ReloadAfterResolveAsync(cancellationToken);
         return SettingsOperationResult.Success();
     }
 
@@ -201,9 +207,6 @@ public partial class SettingsIoUsTabVM : ObservableObject
         _appData.UpdateTransaction(source);
         _appData.UpdateAccount(account);
 
-        await _appData.SaveChangesAsync(cancellationToken);
-
-        await ReloadAfterResolveAsync(cancellationToken);
         return SettingsOperationResult.Success();
     }
 
@@ -257,13 +260,6 @@ public partial class SettingsIoUsTabVM : ObservableObject
 
         return source.Account ??
                await _appData.GetAccountByIdAsync(source.SourceAccountId, cancellationToken);
-    }
-
-    private async Task ReloadAfterResolveAsync(CancellationToken cancellationToken)
-    {
-        _messenger.Send(new DashboardDataInvalidatedMessage(
-            DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-        await _reloadCurrentDataAsync();
     }
 
     private static void ApplyExpenseToAccount(Account account, decimal amount)

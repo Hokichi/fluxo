@@ -9,12 +9,49 @@ using Fluxo.Tests.TestDoubles;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Shell.Main;
 using NSubstitute;
+using System.Windows.Data;
+using System.Windows.Threading;
 using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Shell.Main;
 
 public class UpcomingEventsPanelVMTests
 {
+    [Fact]
+    public void UpcomingEventsPanelVM_LoadAsync_KeepsBoundCollectionUpdatesOnDispatcher()
+    {
+        RunInSta(() =>
+        {
+            var dispatcher = Dispatcher.CurrentDispatcher;
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(dispatcher));
+            var recurringCompletion = new TaskCompletionSource<IReadOnlyList<RecurringTransaction>>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var appData = Substitute.For<Fluxo.Core.Interfaces.Services.IAppDataService>();
+            appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>())
+                .Returns(recurringCompletion.Task);
+            appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<SavingGoal>>([]));
+            appData.GetAccountsAsync(Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<Account>>([]));
+            var mapper = Substitute.For<IMapper>();
+            mapper.Map<IReadOnlyList<RecurringTransactionDto>>(Arg.Any<object>()).Returns([]);
+            mapper.Map<IReadOnlyList<RecurringTransactionVM>>(Arg.Any<object>()).Returns([]);
+            var vm = new UpcomingEventsPanelVM(appData, mapper, messenger: new WeakReferenceMessenger());
+            _ = CollectionViewSource.GetDefaultView(vm.Events);
+
+            var load = vm.LoadAsync();
+            _ = Task.Run(() => recurringCompletion.SetResult([]));
+            var frame = new DispatcherFrame();
+            _ = load.ContinueWith(
+                _ => dispatcher.BeginInvoke(() => frame.Continue = false),
+                TaskScheduler.Default);
+            Dispatcher.PushFrame(frame);
+
+            load.GetAwaiter().GetResult();
+            Assert.Empty(vm.Events);
+        });
+    }
+
     [Fact]
     public void UpcomingEventsPanelVM_UpcomingEventItemVM_FormatsMonthAndDay()
     {
@@ -421,5 +458,27 @@ public class UpcomingEventsPanelVMTests
             mapper,
             () => today,
             new WeakReferenceMessenger());
+    }
+
+    private static void RunInSta(Action action)
+    {
+        Exception? exception = null;
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception caught)
+            {
+                exception = caught;
+            }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
+        if (exception is not null)
+            throw exception;
     }
 }

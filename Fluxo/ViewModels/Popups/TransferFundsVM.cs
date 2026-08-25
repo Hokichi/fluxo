@@ -9,6 +9,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Persistence;
 using Fluxo.ViewModels.Entities;
 using Fluxo.Helpers.Popups;
 using Fluxo.ViewModels.Shell;
@@ -62,6 +63,7 @@ public partial class TransferFundsVM : ObservableObject
 
     public async Task<TransferFundsResult> SaveAsync()
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         if (IsSaving)
             return TransferFundsResult.Failure("This transfer is already being saved.");
 
@@ -116,22 +118,29 @@ public partial class TransferFundsVM : ObservableObject
             _appData.UpdateAccount(source);
             _appData.UpdateAccount(target);
 
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
 
-            WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
-                new CompositeLogMemoryAction(
-                    "Transfer funds",
-                    [
-                        new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(expense)),
-                        new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(income))
-                    ])));
+            try
+            {
+                WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(
+                    new CompositeLogMemoryAction(
+                        "Transfer funds",
+                        [
+                            new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(expense)),
+                            new AddTransactionMemoryAction(TransactionMemorySnapshot.Create(income))
+                        ])));
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                FloatingNotificationPublisher.Success(
+                    target.Name, $"{input.Amount:N2} was transferred successfully.", true, "Credited");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The transfer was saved, but the current UI could not be refreshed.");
+            }
 
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-
-            await _mainViewModel.ReloadCurrentDataAsync();
-            FloatingNotificationPublisher.Success(
-                target.Name, $"{input.Amount:N2} was transferred successfully.", true, "Credited");
             return TransferFundsResult.Success();
         }
         catch (Exception exception)

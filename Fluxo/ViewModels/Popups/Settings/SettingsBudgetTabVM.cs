@@ -189,38 +189,36 @@ public partial class SettingsBudgetTabVM : ObservableObject
         RaisePendingCategoryProperties();
     }
 
-    public async Task<(SettingsOperationResult Result, List<ILogMemoryAction> Actions)> BuildApplyChangesAsync()
+    public async Task<(
+        SettingsOperationResult Result,
+        List<ILogMemoryAction> Actions,
+        BudgetAllocationSnapshot Snapshot)> BuildApplyChangesAsync()
     {
         ValidateBudgetAllocation();
         if (HasBudgetAllocationError)
-            return (SettingsOperationResult.Failure(BudgetAllocationErrorMessage), []);
+            return (SettingsOperationResult.Failure(BudgetAllocationErrorMessage), [], _savedBudgetAllocation);
 
+        var snapshot = CaptureCurrentSnapshot();
         var allocation = await _appData.GetBudgetAllocationAsync();
-        allocation.NeedsThreshold = NeedsAllocationPercentage;
-        allocation.WantsThreshold = WantsAllocationPercentage;
-        allocation.InvestThreshold = InvestAllocationPercentage;
-        allocation.AllocationLimit = AllocationLimit;
-        allocation.AllocationPeriod = AllocationPeriod;
-        allocation.PeriodStart = BudgetAllocationPeriodRules.ClampPeriodStart(AllocationPeriod, PeriodStart);
-        allocation.RolloverPolicy = RolloverPolicy;
-        allocation.OverspendPolicy = OverspendPolicy;
-        MarkCurrentPeriodWhenRolloverPolicyChangesToEnabled(allocation);
+        allocation.NeedsThreshold = snapshot.Needs;
+        allocation.WantsThreshold = snapshot.Wants;
+        allocation.InvestThreshold = snapshot.Invest;
+        allocation.AllocationLimit = snapshot.AllocationLimit;
+        allocation.AllocationPeriod = snapshot.AllocationPeriod;
+        allocation.PeriodStart = BudgetAllocationPeriodRules.ClampPeriodStart(
+            snapshot.AllocationPeriod,
+            snapshot.PeriodStart);
+        allocation.RolloverPolicy = snapshot.RolloverPolicy;
+        allocation.OverspendPolicy = snapshot.OverspendPolicy;
+        MarkCurrentPeriodWhenRolloverPolicyChangesToEnabled(allocation, snapshot.RolloverPolicy);
         _appData.UpdateBudgetAllocation(allocation);
 
-        return (SettingsOperationResult.Success(), []);
+        return (SettingsOperationResult.Success(), [], snapshot);
     }
 
-    public void CommitSavedState()
+    public void CommitSavedState(BudgetAllocationSnapshot snapshot)
     {
-        _savedBudgetAllocation = new BudgetAllocationSnapshot(
-            NeedsAllocationPercentage,
-            WantsAllocationPercentage,
-            InvestAllocationPercentage,
-            AllocationLimit,
-            AllocationPeriod,
-            PeriodStart,
-            RolloverPolicy,
-            OverspendPolicy);
+        _savedBudgetAllocation = snapshot;
         PublishPendingState();
         RaisePendingCategoryProperties();
     }
@@ -412,10 +410,22 @@ public partial class SettingsBudgetTabVM : ObservableObject
             new SettingsPendingChangesChanged(SettingsTabKey.Budget, HasPendingChanges)));
     }
 
-    private void MarkCurrentPeriodWhenRolloverPolicyChangesToEnabled(BudgetAllocation allocation)
+    private BudgetAllocationSnapshot CaptureCurrentSnapshot() => new(
+        NeedsAllocationPercentage,
+        WantsAllocationPercentage,
+        InvestAllocationPercentage,
+        AllocationLimit,
+        AllocationPeriod,
+        PeriodStart,
+        RolloverPolicy,
+        OverspendPolicy);
+
+    private void MarkCurrentPeriodWhenRolloverPolicyChangesToEnabled(
+        BudgetAllocation allocation,
+        RolloverPolicy rolloverPolicy)
     {
-        if (RolloverPolicy == RolloverPolicy.None ||
-            RolloverPolicy == _savedBudgetAllocation.RolloverPolicy)
+        if (rolloverPolicy == RolloverPolicy.None ||
+            rolloverPolicy == _savedBudgetAllocation.RolloverPolicy)
             return;
 
         var currentPeriod = BudgetAllocationPeriodRules.ResolveCurrentPeriod(

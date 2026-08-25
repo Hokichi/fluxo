@@ -12,9 +12,9 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Persistence;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Shell;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Popups.Settings;
 
@@ -22,7 +22,6 @@ public partial class SettingsGoalsTabVM : ObservableObject
 {
     private const int PageSize = 25;
 
-    private readonly MainVM _mainViewModel;
     private readonly IMessenger _messenger;
     private readonly IAppDataService _appData;
     private readonly HashSet<SettingsSavingGoalItemVM> _savingGoalsVisibleWindow = [];
@@ -33,9 +32,8 @@ public partial class SettingsGoalsTabVM : ObservableObject
     [ObservableProperty] private bool _hasMoreItems;
     [ObservableProperty] private bool _isLoading;
 
-    public SettingsGoalsTabVM(MainVM mainViewModel, IAppDataService appData, IMessenger? messenger = null)
+    public SettingsGoalsTabVM(IAppDataService appData, IMessenger? messenger = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _messenger = messenger ?? WeakReferenceMessenger.Default;
 
@@ -67,7 +65,7 @@ public partial class SettingsGoalsTabVM : ObservableObject
 
     public AddSavingGoalVM CreateAddSavingGoalViewModel()
     {
-        return new AddSavingGoalVM(_mainViewModel, _appData);
+        return new AddSavingGoalVM(_appData);
     }
 
     public async Task<AddSavingGoalVM?> CreateEditSavingGoalViewModelAsync(int savingGoalId)
@@ -76,7 +74,7 @@ public partial class SettingsGoalsTabVM : ObservableObject
         if (goal is null)
             return null;
 
-        return new AddSavingGoalVM(_mainViewModel, _appData)
+        return new AddSavingGoalVM(_appData)
         {
             EditingId = goal.Id,
             NameText = goal.Name,
@@ -134,6 +132,7 @@ public partial class SettingsGoalsTabVM : ObservableObject
         SettingsBatchAction action,
         IReadOnlyCollection<int>? selectedIdsOverride = null)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         var selectedIds = SettingsShared.NormalizeSelectionIds(selectedIdsOverride, SavingGoals.Select(item => item.Id),
             SavingGoals.Where(item => item.IsChecked).Select(item => item.Id));
         var selectedItemIds = selectedIds.ToHashSet();
@@ -184,11 +183,20 @@ public partial class SettingsGoalsTabVM : ObservableObject
             if (actions.Count == 0)
                 return SettingsOperationResult.Failure("Nothing changed for the selected goals.");
 
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogError(exception, "Unable to update selected saving goals from settings.");
+            return SettingsOperationResult.Failure(
+                FluxoLogManager.CreateFailureMessage("update selected goals"));
+        }
+
+        try
+        {
             _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.SavingGoals));
             _messenger.Send(new DashboardDataInvalidatedMessage(
                 DashboardDataInvalidationScope.SavingGoals));
-            await _mainViewModel.ReloadCurrentDataAsync();
             await RefreshSavingGoalsAsync(resetPagination: false);
 
             var actionKey = action.ToString().ToLowerInvariant();
@@ -211,14 +219,15 @@ public partial class SettingsGoalsTabVM : ObservableObject
                 _messenger, header, message,
                 headerAction:
                 char.ToUpperInvariant(verb[0]) + verb[1..]);
-            return SettingsOperationResult.Success();
         }
         catch (Exception exception)
         {
-            FluxoLogManager.LogError(exception, "Unable to update selected saving goals from settings.");
-            return SettingsOperationResult.Failure(
-                FluxoLogManager.CreateFailureMessage("update selected goals"));
+            FluxoLogManager.LogWarning(
+                exception,
+                "Saving goals were updated, but the current UI could not be refreshed.");
         }
+
+        return SettingsOperationResult.Success();
     }
 
     public Task<SettingsOperationResult> ExecuteItemActionAsync(int itemId, SettingsBatchAction action)

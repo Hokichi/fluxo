@@ -140,7 +140,7 @@ public sealed class TransactionPopupMessengerTests
         {
             var messenger = new WeakReferenceMessenger();
             var dialog = Substitute.For<IDialogService>();
-            var tags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            var tags = new SettingsTagsTabVM(Substitute.For<IAppDataService>(), messenger);
             using var root = new ServiceCollection()
                 .AddScoped(_ => tags)
                 .BuildServiceProvider();
@@ -162,8 +162,8 @@ public sealed class TransactionPopupMessengerTests
         {
             var messenger = new WeakReferenceMessenger();
             var dialog = Substitute.For<IDialogService>();
-            var firstTags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
-            var secondTags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            var firstTags = new SettingsTagsTabVM(Substitute.For<IAppDataService>(), messenger);
+            var secondTags = new SettingsTagsTabVM(Substitute.For<IAppDataService>(), messenger);
             using var firstRoot = new ServiceCollection().AddScoped(_ => firstTags).BuildServiceProvider();
             using var secondRoot = new ServiceCollection().AddScoped(_ => secondTags).BuildServiceProvider();
             var owner = new Window();
@@ -190,7 +190,7 @@ public sealed class TransactionPopupMessengerTests
         {
             var messenger = new WeakReferenceMessenger();
             var dialog = Substitute.For<IDialogService>();
-            var tags = new SettingsTagsTabVM(null!, Substitute.For<IAppDataService>(), messenger);
+            var tags = new SettingsTagsTabVM(Substitute.For<IAppDataService>(), messenger);
             using var root = new ServiceCollection().AddScoped(_ => tags).BuildServiceProvider();
             var owner = new Window();
             var requester = Guid.NewGuid();

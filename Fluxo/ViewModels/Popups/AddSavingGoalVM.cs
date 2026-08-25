@@ -5,15 +5,13 @@ using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
-using Fluxo.ViewModels.Shell;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
+using Fluxo.Services.Persistence;
 
 using Fluxo.DataModels.Popups.AddSavingGoal;
 namespace Fluxo.ViewModels.Popups;
 
 public partial class AddSavingGoalVM : ObservableObject
 {
-    private readonly MainVM _mainViewModel;
     private readonly IAppDataService _appData;
     private readonly Func<AddSavingGoalInput, Task<AddSavingGoalResult>>? _saveDraftAsync;
     private FormState _initialState;
@@ -29,11 +27,9 @@ public partial class AddSavingGoalVM : ObservableObject
     public int? EditingId { get; init; }
 
     public AddSavingGoalVM(
-        MainVM mainViewModel,
         IAppDataService appData,
         Func<AddSavingGoalInput, Task<AddSavingGoalResult>>? saveDraftAsync = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _saveDraftAsync = saveDraftAsync;
         _initialState = CaptureState();
@@ -75,6 +71,7 @@ public partial class AddSavingGoalVM : ObservableObject
         if (_saveDraftAsync is not null)
             return await _saveDraftAsync(input);
 
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         IsBusy = true;
 
         try
@@ -106,17 +103,30 @@ public partial class AddSavingGoalVM : ObservableObject
                 createdGoal = savingGoal;
             }
 
-            await _appData.SaveChangesAsync();
-            if (createdGoal is not null)
-                WeakReferenceMessenger.Default.Send(new NotificationEntityCreatedMessage(NotificationEntityKind.SavingGoal, createdGoal.Id));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.SavingGoals));
+            await persistenceBatch.SaveChangesAsync();
+            try
+            {
+                if (createdGoal is not null)
+                {
+                    WeakReferenceMessenger.Default.Send(
+                        new NotificationEntityCreatedMessage(NotificationEntityKind.SavingGoal, createdGoal.Id));
+                }
 
-            FloatingNotificationPublisher.Success(
-                input.Name,
-                IsEditMode ? "Saving goal details were updated." : "Saving goal is ready to track.",
-                true,
-                NotificationAction);
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.SavingGoals));
+                FloatingNotificationPublisher.Success(
+                    input.Name,
+                    IsEditMode ? "Saving goal details were updated." : "Saving goal is ready to track.",
+                    true,
+                    NotificationAction);
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The saving goal was saved, but the current UI could not be refreshed.");
+            }
+
             return AddSavingGoalResult.Success(true);
         }
         catch (Exception exception)

@@ -6,13 +6,11 @@ using Fluxo.Core.Entities;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Popups;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
 
 public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
 {
-    private readonly MainVM _mainViewModel;
     private readonly IAppDataService _appData;
     private readonly IMessenger _messenger;
     private readonly Dictionary<int, QuickSetupWizardDraftSavingGoal> _draftGoals = [];
@@ -23,11 +21,9 @@ public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
     [ObservableProperty] private bool _isStep4Active;
 
     public QuickSetupWizardSavingGoalsVM(
-        MainVM mainViewModel,
         IAppDataService appData,
         IMessenger? messenger = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _messenger = messenger ?? WeakReferenceMessenger.Default;
     }
@@ -37,7 +33,6 @@ public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
     public AddSavingGoalVM CreateAddViewModel()
     {
         return new AddSavingGoalVM(
-            _mainViewModel,
             _appData,
             saveDraftAsync: input => SaveDraftGoalAsync(input, null));
     }
@@ -51,7 +46,6 @@ public partial class QuickSetupWizardSavingGoalsVM : ObservableObject
             return CreateAddViewModel();
 
         return new AddSavingGoalVM(
-            _mainViewModel,
             _appData,
             saveDraftAsync: input => SaveDraftGoalAsync(input, goal.Id))
         {

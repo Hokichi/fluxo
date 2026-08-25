@@ -111,7 +111,7 @@ public partial class MainVM : ObservableRecipient
 
     private async Task LoadUserSettingsAsync()
     {
-        var settings = await _appData.GetUserSettingsAsync().ConfigureAwait(false);
+        var settings = await _appData.GetUserSettingsAsync();
         var settingsByName = settings.ToDictionary(s => s.Name, s => s.Value, StringComparer.Ordinal);
 
         if (settingsByName.TryGetValue(UserSettingNames.PreferredDisplayName, out var name))

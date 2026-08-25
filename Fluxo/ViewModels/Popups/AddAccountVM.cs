@@ -11,8 +11,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
-using Fluxo.ViewModels.Shell;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
+using Fluxo.Services.Persistence;
 using Fluxo.Helpers.Popups;
 
 using Fluxo.DataModels.Popups.AddAccount;
@@ -25,7 +24,6 @@ public partial class AddAccountVM : ObservableValidator
     private const int MaxNameLength = 256;
     private const decimal PercentageMaximum = 100m;
 
-    private readonly MainVM _mainViewModel;
     private readonly IAppDataService _appData;
     private readonly HashSet<string> _knownAccountNames = new(StringComparer.OrdinalIgnoreCase);
     private readonly Func<AddAccountInput, Task<AddAccountResult>>? _saveDraftAsync;
@@ -67,12 +65,10 @@ public partial class AddAccountVM : ObservableValidator
     public int? EditingId { get; set; }
 
     public AddAccountVM(
-        MainVM mainViewModel,
         IAppDataService appData,
         Func<AddAccountInput, Task<AddAccountResult>>? saveDraftAsync = null,
         Func<int?, Task<IReadOnlyList<DeductSourceOption>>>? loadDraftDeductSourcesAsync = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _saveDraftAsync = saveDraftAsync;
         _loadDraftDeductSourcesAsync = loadDraftDeductSourcesAsync;
@@ -399,6 +395,7 @@ public partial class AddAccountVM : ObservableValidator
                 return AddAccountResult.Failure(
                     $"An account named \"{input.Name}\" already exists.");
 
+            using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
             Account account;
             AccountMemorySnapshot? beforeSnapshot = null;
             var previousSpentAmount = 0m;
@@ -411,8 +408,6 @@ public partial class AddAccountVM : ObservableValidator
                     other.IsDefault = false;
                     _appData.UpdateAccount(other);
                 }
-
-                await _appData.SaveChangesAsync();
             }
 
             if (EditingId.HasValue)
@@ -457,11 +452,6 @@ public partial class AddAccountVM : ObservableValidator
                 await _appData.AddAccountAsync(account);
             }
 
-            await _appData.SaveChangesAsync();
-
-            if (!EditingId.HasValue)
-                WeakReferenceMessenger.Default.Send(new NotificationEntityCreatedMessage(NotificationEntityKind.Account, account.Id));
-
             if (!EditingId.HasValue &&
                 account.AccountType == AccountType.Credit &&
                 account.MonthlyDueDate.HasValue &&
@@ -479,18 +469,23 @@ public partial class AddAccountVM : ObservableValidator
                     SourceId = account.DeductSource.Value,
                     TagId = paymentTag?.Id,
                     GoalId = null,
-                    IsEnabled = true
+                    IsEnabled = true,
+                    Tag = paymentTag
                 });
-                await _appData.SaveChangesAsync();
             }
 
-            var afterSnapshot = AccountMemorySnapshot.Create(account);
-            var autoTransactionSnapshot = await TryCreateBalanceUpdateTransactionAsync(
+            var autoTransaction = await TryCreateBalanceUpdateTransactionAsync(
                 _appData,
                 account,
                 previousSpentAmount,
                 input.SpentAmount,
                 EditingId.HasValue);
+            await persistenceBatch.SaveChangesAsync();
+
+            var afterSnapshot = AccountMemorySnapshot.Create(account);
+            var autoTransactionSnapshot = autoTransaction is null
+                ? null
+                : TransactionMemorySnapshot.Create(autoTransaction);
 
             ILogMemoryAction sourceAction = EditingId.HasValue
                 ? new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)
@@ -507,16 +502,30 @@ public partial class AddAccountVM : ObservableValidator
                             shouldAdjustAccountTotals: false)
                     ]);
 
-            WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(historyAction));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+            try
+            {
+                if (!EditingId.HasValue)
+                {
+                    WeakReferenceMessenger.Default.Send(
+                        new NotificationEntityCreatedMessage(NotificationEntityKind.Account, account.Id));
+                }
 
-            await _mainViewModel.ReloadCurrentDataAsync();
-            FloatingNotificationPublisher.Success(
-                input.Name,
-                IsEditMode ? "Account details were updated." : "Account is ready to use.",
-                true,
-                NotificationAction);
+                WeakReferenceMessenger.Default.Send(new RecordLogMemoryMessage(historyAction));
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                FloatingNotificationPublisher.Success(
+                    input.Name,
+                    IsEditMode ? "Account details were updated." : "Account is ready to use.",
+                    true,
+                    NotificationAction);
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The account was saved, but the current UI could not be refreshed.");
+            }
+
             return AddAccountResult.Success(true);
         }
         catch (Exception exception)
@@ -562,7 +571,6 @@ public partial class AddAccountVM : ObservableValidator
         };
 
         await appData.AddTagAsync(balanceUpdateTag);
-        await appData.SaveChangesAsync();
         return balanceUpdateTag;
     }
 
@@ -576,7 +584,7 @@ public partial class AddAccountVM : ObservableValidator
             .FirstOrDefault();
     }
 
-    private static async Task<TransactionMemorySnapshot?> TryCreateBalanceUpdateTransactionAsync(
+    private static async Task<Transaction?> TryCreateBalanceUpdateTransactionAsync(
         IAppDataService appData,
         Account account,
         decimal previousSpentAmount,
@@ -601,13 +609,13 @@ public partial class AddAccountVM : ObservableValidator
             Notes = string.Empty,
             ExpenseCategory = ExpenseCategory.Needs,
             SourceAccountId = account.Id,
-            TagId = balanceUpdateTag.Id
+            Account = account,
+            TagId = balanceUpdateTag.Id,
+            Tag = balanceUpdateTag
         };
 
         await appData.AddTransactionAsync(transaction);
-        await appData.SaveChangesAsync();
-
-        return TransactionMemorySnapshot.Create(transaction);
+        return transaction;
     }
 
     private bool TryBuildInput(

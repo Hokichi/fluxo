@@ -12,6 +12,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Persistence;
 using Fluxo.ViewModels.Popups;
 using Fluxo.Helpers.Popups;
 using Fluxo.ViewModels.Shell;
@@ -69,7 +70,7 @@ public partial class SettingsAccountsTabVM : ObservableObject
 
     public AddAccountVM CreateAddAccountViewModel()
     {
-        return new AddAccountVM(_mainViewModel, _appData);
+        return new AddAccountVM(_appData);
     }
 
     public AccountDetailVM CreateAccountDetailViewModel(int accountId)
@@ -137,12 +138,14 @@ public partial class SettingsAccountsTabVM : ObservableObject
         SettingsBatchAction action,
         IReadOnlyCollection<int>? selectedIdsOverride = null)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         var selectedIds = SettingsShared.NormalizeSelectionIds(selectedIdsOverride, Accounts.Select(item => item.Id),
             Accounts.Where(item => item.IsChecked).Select(item => item.Id));
         if (selectedIds.Length == 0)
             return SettingsOperationResult.Failure("Select at least one account first.");
 
         var actions = new List<ILogMemoryAction>();
+        string[] affectedNames;
 
         try
         {
@@ -220,11 +223,20 @@ public partial class SettingsAccountsTabVM : ObservableObject
             if (actions.Count == 0)
                 return SettingsOperationResult.Failure("Nothing changed for the selected accounts.");
 
-            await _appData.SaveChangesAsync();
+            affectedNames = Accounts.Where(item => selectedIds.Contains(item.Id)).Select(item => item.Name).ToArray();
+            await persistenceBatch.SaveChangesAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogError(exception, "Unable to update selected accounts from settings.");
+            return SettingsOperationResult.Failure(
+                FluxoLogManager.CreateFailureMessage("update selected accounts"));
+        }
+
+        try
+        {
             _messenger.Send(new DashboardDataInvalidatedMessage(
                 DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-            var affectedNames = Accounts.Where(item => selectedIds.Contains(item.Id)).Select(item => item.Name).ToArray();
-            await _mainViewModel.ReloadCurrentDataAsync();
             await RefreshAccountsAsync();
             _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Accounts));
 
@@ -250,14 +262,15 @@ public partial class SettingsAccountsTabVM : ObservableObject
                 _messenger, header, message,
                 headerAction:
                 char.ToUpperInvariant(verb[0]) + verb[1..]);
-            return SettingsOperationResult.Success();
         }
         catch (Exception exception)
         {
-            FluxoLogManager.LogError(exception, "Unable to update selected accounts from settings.");
-            return SettingsOperationResult.Failure(
-                FluxoLogManager.CreateFailureMessage("update selected accounts"));
+            FluxoLogManager.LogWarning(
+                exception,
+                "Accounts were updated, but the current UI could not be refreshed.");
         }
+
+        return SettingsOperationResult.Success();
     }
 
     public Task<SettingsOperationResult> ExecuteItemActionAsync(int itemId, SettingsBatchAction action)

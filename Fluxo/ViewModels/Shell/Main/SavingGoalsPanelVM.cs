@@ -63,7 +63,7 @@ public partial class SavingGoalsPanelVM : ObservableRecipient, IRecipient<Dashbo
         await LoadSavingGoalSettingsAsync(cancellationToken);
 
         var savingGoalDtos = _mapper.Map<IReadOnlyList<SavingGoalDto>>(
-            await _appData.GetSavingGoalsAsync(cancellationToken).ConfigureAwait(false));
+            await _appData.GetSavingGoalsAsync(cancellationToken));
 
         var savingGoals = _mapper.Map<IReadOnlyList<SavingGoalVM>>(savingGoalDtos);
 
@@ -134,7 +134,7 @@ public partial class SavingGoalsPanelVM : ObservableRecipient, IRecipient<Dashbo
 
     private async Task LoadSavingGoalSettingsAsync(CancellationToken cancellationToken)
     {
-        var settings = await _appData.GetUserSettingsAsync(cancellationToken).ConfigureAwait(false);
+        var settings = await _appData.GetUserSettingsAsync(cancellationToken);
         var settingsByName = settings.ToDictionary(
             setting => setting.Name,
             setting => setting.Value,

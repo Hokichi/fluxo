@@ -214,7 +214,7 @@ public partial class AllocationDataVM : ObservableRecipient,
 
     private async Task<BudgetAllocation> LoadBudgetAllocationAsync(CancellationToken cancellationToken)
     {
-        return await _appData.GetBudgetAllocationAsync(cancellationToken).ConfigureAwait(false);
+        return await _appData.GetBudgetAllocationAsync(cancellationToken);
     }
 
     private void RefreshBudgetMetrics()

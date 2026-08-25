@@ -6,10 +6,13 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Logging;
+using Fluxo.Services.Persistence;
 using Fluxo.Services.Ui;
 using Fluxo.Services.History;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Shell.Main;
+using BudgetAllocationSnapshot = Fluxo.DataModels.Popups.Settings.BudgetAllocationSnapshot.BudgetAllocationSnapshot;
+using PersonalizationSettingsSnapshot = Fluxo.DataModels.Popups.Settings.PersonalizationSettingsSnapshot.PersonalizationSettingsSnapshot;
 
 namespace Fluxo.ViewModels.Popups.Settings;
 
@@ -182,14 +185,40 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
 
     public async Task<SettingsOperationResult> ApplyConfigurationAsync()
     {
-        var (budgetResult, budgetActions) = await BudgetTab.BuildApplyChangesAsync();
-        if (!budgetResult.IsSuccess)
-            return budgetResult;
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
+        SettingsOperationResult budgetResult;
+        List<ILogMemoryAction> budgetActions;
+        BudgetAllocationSnapshot budgetSnapshot;
+        SettingsOperationResult personalResult;
+        List<ILogMemoryAction> personalizationActions;
+        PersonalizationSettingsSnapshot personalizationSnapshot;
+        string? oldUsername;
+        string? newUsername;
 
-        var (personalResult, personalizationActions, oldUsername, newUsername, _) =
-            await PersonalizationTab.BuildApplyChangesAsync();
-        if (!personalResult.IsSuccess)
-            return personalResult;
+        try
+        {
+            (budgetResult, budgetActions, budgetSnapshot) = await BudgetTab.BuildApplyChangesAsync();
+            if (!budgetResult.IsSuccess)
+            {
+                RevertConfigurationChanges();
+                return budgetResult;
+            }
+
+            (personalResult, personalizationActions, oldUsername, newUsername, personalizationSnapshot) =
+                await PersonalizationTab.BuildApplyChangesAsync();
+            if (!personalResult.IsSuccess)
+            {
+                RevertConfigurationChanges();
+                return personalResult;
+            }
+        }
+        catch (Exception exception)
+        {
+            RevertConfigurationChanges();
+            FluxoLogManager.LogError(exception, "Unable to prepare settings for persistence.");
+            return SettingsOperationResult.Failure(
+                FluxoLogManager.CreateFailureMessage("prepare settings"));
+        }
 
         var actions = new List<ILogMemoryAction>();
         actions.AddRange(budgetActions);
@@ -202,9 +231,26 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
 
         try
         {
-            _startupRegistrationService.SetRunAtStartup(PersonalizationTab.ShouldRunAtStartup);
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
+        }
+        catch (Exception exception)
+        {
+            RevertConfigurationChanges();
+            FluxoLogManager.LogError(exception, "Unable to persist settings.");
+            return SettingsOperationResult.Failure(
+                FluxoLogManager.CreateFailureMessage("persist settings"));
+        }
 
+        BudgetTab.CommitSavedState(budgetSnapshot);
+        PersonalizationTab.CommitSavedState(personalizationSnapshot);
+        OnPropertyChanged(nameof(HasPendingBudgetConfigurationChanges));
+        OnPropertyChanged(nameof(HasPendingPersonalizationConfigurationChanges));
+        OnPropertyChanged(nameof(HasPendingConfigurationChanges));
+
+        SynchronizeStartupRegistration(personalizationSnapshot.ShouldRunAtStartup);
+
+        try
+        {
             if (!string.Equals(newUsername, oldUsername, StringComparison.Ordinal))
             {
                 var resolvedUsername = newUsername ?? "User";
@@ -223,25 +269,17 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
             }
 
             await _mainViewModel.ReloadUserSettingsAsync();
-            Messenger.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.All));
             await _mainViewModel.ReloadCurrentDataAsync();
             ApplyDashboardSpendingAmountGateState();
-
-            BudgetTab.CommitSavedState();
-            PersonalizationTab.CommitSavedState();
-            OnPropertyChanged(nameof(HasPendingBudgetConfigurationChanges));
-            OnPropertyChanged(nameof(HasPendingPersonalizationConfigurationChanges));
-            OnPropertyChanged(nameof(HasPendingConfigurationChanges));
-
-            return SettingsOperationResult.Success();
         }
         catch (Exception exception)
         {
-            FluxoLogManager.LogError(exception, "Unable to apply settings.");
-            return SettingsOperationResult.Failure(
-                FluxoLogManager.CreateFailureMessage("apply settings"));
+            FluxoLogManager.LogWarning(
+                exception,
+                "Settings were persisted, but the current UI could not be refreshed.");
         }
+
+        return SettingsOperationResult.Success();
     }
 
     public Task<SettingsOperationResult> SaveConfigurationChangesAsync()
@@ -362,32 +400,42 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
 
     public async Task<SettingsOperationResult> ResetAllSettingsAsync()
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         try
         {
             var settings = await _appData.GetUserSettingsAsync();
-            var actions = await ApplySettingsResetPolicyAsync(settings, trackActions: true);
+            await ApplySettingsResetPolicyAsync(settings, trackActions: true);
             await ResetBudgetAllocationToDefaultsAsync(_appData);
-            _startupRegistrationService.SetRunAtStartup(false);
-
-            await _appData.SaveChangesAsync();
-            await _mainViewModel.ReloadUserSettingsAsync();
-            Messenger.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.All));
-            await _mainViewModel.ReloadCurrentDataAsync();
-            await LoadAsync();
-
-            return SettingsOperationResult.Success();
+            await persistenceBatch.SaveChangesAsync();
         }
         catch (Exception exception)
         {
-            FluxoLogManager.LogError(exception, "Unable to reset settings.");
+            FluxoLogManager.LogError(exception, "Unable to persist reset settings.");
             return SettingsOperationResult.Failure(
                 FluxoLogManager.CreateFailureMessage("reset settings"));
         }
+
+        SynchronizeStartupRegistration(false);
+
+        try
+        {
+            await _mainViewModel.ReloadUserSettingsAsync();
+            await _mainViewModel.ReloadCurrentDataAsync();
+            await LoadAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "Settings were reset, but the current UI could not be refreshed.");
+        }
+
+        return SettingsOperationResult.Success();
     }
 
     public async Task<SettingsOperationResult> DeleteAllDataAsync(bool keepSettings)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         try
         {
             var transactions = await _appData.GetTransactionsAsync();
@@ -409,26 +457,35 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
             {
                 await ApplySettingsResetPolicyAsync(settings, trackActions: false);
                 await ApplyDeleteAllDataBudgetAllocationPolicyAsync(_appData, keepSettings);
-                _startupRegistrationService.SetRunAtStartup(false);
             }
 
             await EnsureDeleteAllDataSystemTagsAsync(_appData, tags);
-            await _appData.SaveChangesAsync();
-            await _mainViewModel.ReloadUserSettingsAsync();
-            Messenger.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.All));
-            await _mainViewModel.ReloadCurrentDataAsync();
-            await LoadAsync();
-            await _uiSettleAwaiter.WaitForUiReadyAsync();
-
-            return SettingsOperationResult.Success();
+            await persistenceBatch.SaveChangesAsync();
         }
         catch (Exception exception)
         {
-            FluxoLogManager.LogError(exception, "Unable to delete all data from settings.");
+            FluxoLogManager.LogError(exception, "Unable to persist deletion of all data from settings.");
             return SettingsOperationResult.Failure(
                 FluxoLogManager.CreateFailureMessage("delete all data"));
         }
+        if (!keepSettings)
+            SynchronizeStartupRegistration(false);
+
+        try
+        {
+            await _mainViewModel.ReloadUserSettingsAsync();
+            await _mainViewModel.ReloadCurrentDataAsync();
+            await LoadAsync();
+            await _uiSettleAwaiter.WaitForUiReadyAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "All data was deleted, but the current UI could not be refreshed.");
+        }
+
+        return SettingsOperationResult.Success();
     }
 
     public AddAccountVM CreateAddAccountViewModel()
@@ -745,5 +802,19 @@ public partial class SettingsVM : ObservableRecipient, IRecipient<SettingsPendin
         GoalsTab.IsDashboardSpendingAmountGateLocked = isLocked;
         OnPropertyChanged(nameof(IsDashboardSpendingAmountGateLocked));
         OnPropertyChanged(nameof(IsSufficientFundsActionGateLocked));
+    }
+
+    private void SynchronizeStartupRegistration(bool shouldRunAtStartup)
+    {
+        try
+        {
+            _startupRegistrationService.SetRunAtStartup(shouldRunAtStartup);
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "Settings were persisted, but Windows startup registration could not be synchronized.");
+        }
     }
 }

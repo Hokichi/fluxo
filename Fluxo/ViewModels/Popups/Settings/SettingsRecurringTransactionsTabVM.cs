@@ -9,6 +9,7 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Logging;
+using Fluxo.Services.Persistence;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Shell;
 
@@ -108,6 +109,7 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
         SettingsBatchAction action,
         IReadOnlyCollection<int>? selectedIdsOverride = null)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         var selectedIds = SettingsShared.NormalizeSelectionIds(selectedIdsOverride, RecurringTransactions.Select(item => item.Id),
             RecurringTransactions.Where(item => item.IsChecked).Select(item => item.Id));
         var selectedItemIds = selectedIds.ToHashSet();
@@ -149,13 +151,7 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
                         "Pin and unpin are not supported for recurring transactions.");
             }
 
-            await _appData.SaveChangesAsync();
-            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.RecurringTransactions));
-            _messenger.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-            await RefreshRecurringTransactionsAsync(resetPagination: false);
-
-            return SettingsOperationResult.Success();
+            await persistenceBatch.SaveChangesAsync();
         }
         catch (Exception exception)
         {
@@ -163,6 +159,22 @@ public partial class SettingsRecurringTransactionsTabVM : ObservableObject
             return SettingsOperationResult.Failure(
                 FluxoLogManager.CreateFailureMessage("update selected recurring transactions"));
         }
+
+        try
+        {
+            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.RecurringTransactions));
+            _messenger.Send(new DashboardDataInvalidatedMessage(
+                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+            await RefreshRecurringTransactionsAsync(resetPagination: false);
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "Recurring transactions were updated, but the current UI could not be refreshed.");
+        }
+
+        return SettingsOperationResult.Success();
     }
 
     public Task<SettingsOperationResult> ExecuteItemActionAsync(int itemId, SettingsBatchAction action)

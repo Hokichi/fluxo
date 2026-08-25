@@ -1,7 +1,9 @@
 using Fluxo.Core.Budgeting;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
+using Fluxo.Core.Interfaces.Services;
 using Fluxo.ViewModels.Popups.Settings;
+using NSubstitute;
 using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Popups.Settings;
@@ -91,6 +93,23 @@ public sealed class SettingsTagsTabTests
         Assert.Equal("∞", card.PercentageText);
         Assert.Equal(100d, card.ProgressPercentage);
         Assert.Equal(SettingsTagSpendingState.Success, card.SpendingState);
+    }
+
+    [Fact]
+    public async Task SettingsTagsTab_UpdateTagAsync_RejectsAnotherTagsName()
+    {
+        var edited = new Tag { Id = 1, Name = "Old", HexCode = "#22C55E" };
+        var duplicate = new Tag { Id = 2, Name = "Food", HexCode = "#75AEF5" };
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetTagByIdAsync(edited.Id, Arg.Any<CancellationToken>()).Returns(edited);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Tag>>([edited, duplicate]));
+        var vm = new SettingsTagsTabVM(appData);
+
+        var result = await vm.UpdateTagAsync(edited.Id, duplicate.Name, edited.HexCode);
+
+        Assert.False(result.IsSuccess);
+        await appData.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     private static Transaction Expense(

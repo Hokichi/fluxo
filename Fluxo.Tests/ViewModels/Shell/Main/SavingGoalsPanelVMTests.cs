@@ -9,12 +9,46 @@ using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Shell;
 using Fluxo.ViewModels.Shell.Main;
 using NSubstitute;
+using System.Windows.Data;
+using System.Windows.Threading;
 using Xunit;
 
 namespace Fluxo.Tests.ViewModels.Shell.Main;
 
 public class SavingGoalsPanelVMTests
 {
+    [Fact]
+    public void SavingGoalsPanelVM_LoadAsync_KeepsBoundCollectionUpdatesOnDispatcher()
+    {
+        RunInSta(() =>
+        {
+            var dispatcher = Dispatcher.CurrentDispatcher;
+            SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(dispatcher));
+            var goalsCompletion = new TaskCompletionSource<IReadOnlyList<SavingGoal>>(
+                TaskCreationOptions.RunContinuationsAsynchronously);
+            var appData = Substitute.For<Fluxo.Core.Interfaces.Services.IAppDataService>();
+            appData.GetUserSettingsAsync(Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult<IReadOnlyList<UserSettings>>([]));
+            appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns(goalsCompletion.Task);
+            var mapper = Substitute.For<IMapper>();
+            mapper.Map<IReadOnlyList<SavingGoalDto>>(Arg.Any<object>()).Returns([]);
+            mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns([]);
+            var vm = new SavingGoalsPanelVM(appData, mapper, new WeakReferenceMessenger());
+            _ = CollectionViewSource.GetDefaultView(vm.SavingGoals);
+
+            var load = vm.LoadAsync();
+            _ = Task.Run(() => goalsCompletion.SetResult([]));
+            var frame = new DispatcherFrame();
+            _ = load.ContinueWith(
+                _ => dispatcher.BeginInvoke(() => frame.Continue = false),
+                TaskScheduler.Default);
+            Dispatcher.PushFrame(frame);
+
+            load.GetAwaiter().GetResult();
+            Assert.Empty(vm.SavingGoals);
+        });
+    }
+
     [Fact]
     public void SavingGoalsPanelVM_WeeklyAverageText_UsesCurrentAmountOverCompletedWeeks()
     {
@@ -159,5 +193,27 @@ public class SavingGoalsPanelVMTests
                 CurrentAmount = 100m
             })
             .ToList();
+    }
+
+    private static void RunInSta(Action action)
+    {
+        Exception? exception = null;
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                action();
+            }
+            catch (Exception caught)
+            {
+                exception = caught;
+            }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
+        if (exception is not null)
+            throw exception;
     }
 }

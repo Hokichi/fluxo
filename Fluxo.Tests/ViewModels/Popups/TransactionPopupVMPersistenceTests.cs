@@ -47,6 +47,45 @@ public sealed class TransactionPopupVMPersistenceTests
             Assert.True(result.IsSuccess, result.ErrorMessage);
             Assert.Equal(77, added.Id);
             appData.Received(1).AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>());
+            _ = appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+        });
+    }
+
+    [Fact]
+    public void TransactionPopupVMPersistence_SaveAsync_EditWithSplitCommitsRootAndChildTogether()
+    {
+        RunInSta(() =>
+        {
+            var accountVm = CreateAccountVm();
+            var account = CreateAccount();
+            var transaction = CreateTransaction(account);
+            var appData = CreateAppData(account, transaction);
+            var added = new List<Transaction>();
+            appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+                .Do(call =>
+                {
+                    var child = call.Arg<Transaction>();
+                    child.Id = 70;
+                    added.Add(child);
+                });
+            var peers = TransactionPopupVMFactory.CreatePeers(CreateMainViewModel([accountVm]), appData);
+            peers.Popup.InitializeView(CreateTransactionVm(accountVm));
+            peers.Popup.BeginEditingViewedTransactionAsync().GetAwaiter().GetResult();
+            peers.Popup.SelectedSidePanel = TransactionPopupSidePanel.Split;
+            peers.Splits.AddSplitCommand.Execute(null);
+            _ = Assert.Single(peers.Splits.RootTransaction!.ChildTransactions);
+            peers.Popup.NameText = "Child";
+            peers.Popup.AmountText = 10m;
+            peers.Popup.SelectedExpenseCategory = ExpenseCategory.Needs;
+            peers.Popup.SelectedTag = new TagVM { Id = 1, Name = "General" };
+            peers.Splits.SelectSplitCommand.Execute(null);
+
+            var result = peers.Popup.SaveAsync(false).GetAwaiter().GetResult();
+
+            Assert.True(result.IsSuccess, result.ErrorMessage);
+            _ = Assert.Single(added);
+            appData.Received().UpdateTransaction(transaction);
+            _ = appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
         });
     }
 
@@ -343,6 +382,34 @@ public sealed class TransactionPopupVMPersistenceTests
         await appData.Received(1).AddTagAsync(Arg.Is<Tag>(tag => !tag.IsSystemTag), Arg.Any<CancellationToken>());
         Assert.Contains(DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.SavingGoals |
                         DashboardDataInvalidationScope.Notifications, scopes);
+    }
+
+    [Fact]
+    public async Task TransactionPopupVMPersistence_Add_WhenPostCommitRecipientFails_ReturnsSuccess()
+    {
+        var account = CreateAccount();
+        var appData = CreateAppData(account, CreateTransaction(account));
+        appData.When(data => data.AddTransactionAsync(Arg.Any<Transaction>(), Arg.Any<CancellationToken>()))
+            .Do(call => call.Arg<Transaction>().Id = 77);
+        var messenger = new WeakReferenceMessenger();
+        messenger.Register<RecordLogMemoryMessage>(
+            new object(),
+            static (_, _) => throw new InvalidOperationException("history failed"));
+        var pending = new TransactionVM
+        {
+            Type = TransactionType.Expense,
+            SourceAccountId = account.Id,
+            Name = "Food",
+            Amount = 10m,
+            OccurredOn = DateTime.Today,
+            ExpenseCategory = ExpenseCategory.Needs,
+            Tag = new TagVM { Id = 1, Name = "General" }
+        };
+
+        var result = await new TransactionPersistenceHelper(appData, messenger)
+            .SaveAsync(new(), pending, new());
+
+        Assert.True(result.IsSuccess, result.ErrorMessage);
     }
 
     [Fact]

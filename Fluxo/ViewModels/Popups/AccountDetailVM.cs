@@ -10,6 +10,7 @@ using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.History;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Notifications;
+using Fluxo.Services.Persistence;
 using Fluxo.Helpers.Popups;
 using Fluxo.ViewModels.Shell;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
@@ -178,6 +179,7 @@ public partial class AccountDetailVM : ObservableObject
 
     public async Task<AccountDetailResult> SaveAsync()
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         if (!TryBuildInput(out var input, out var validationMessage))
             return AccountDetailResult.Failure(validationMessage);
 
@@ -204,20 +206,30 @@ public partial class AccountDetailVM : ObservableObject
             ApplyInput(account, input);
 
             _appData.UpdateAccount(account);
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
 
-            var afterSnapshot = AccountMemorySnapshot.Create(account);
-            WeakReferenceMessenger.Default.Send(
-                new RecordLogMemoryMessage(new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
-
-            await MainViewModel.ReloadCurrentDataAsync();
-            await RefreshAsync(true);
+            _savedState = CreateState(account);
+            LoadFromState(_savedState);
             IsEditing = false;
 
-            FloatingNotificationPublisher.Success(
-                input.Name, "Account details were saved.", true, "Updated");
+            try
+            {
+                var afterSnapshot = AccountMemorySnapshot.Create(account);
+                WeakReferenceMessenger.Default.Send(
+                    new RecordLogMemoryMessage(new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)));
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                await RefreshAsync(true);
+                FloatingNotificationPublisher.Success(
+                    input.Name, "Account details were saved.", true, "Updated");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The account was saved, but the current UI could not be refreshed.");
+            }
+
             return AccountDetailResult.Success();
         }
         catch (Exception exception)
@@ -237,7 +249,7 @@ public partial class AccountDetailVM : ObservableObject
         if (account is null)
             return null;
 
-        var viewModel = new AddAccountVM(MainViewModel, _appData);
+        var viewModel = new AddAccountVM(_appData);
         viewModel.InitializeFromAccount(account);
         return viewModel;
     }
@@ -263,6 +275,7 @@ public partial class AccountDetailVM : ObservableObject
 
     public async Task<AccountDetailResult> ToggleVisibilityAsync()
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         if (IsEditing)
             return AccountDetailResult.Failure("Finish editing before hiding or unhiding this source.");
 
@@ -284,22 +297,34 @@ public partial class AccountDetailVM : ObservableObject
 
             account.PinnedOnUI = !account.PinnedOnUI;
             _appData.UpdateAccount(account);
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
 
-            var afterSnapshot = AccountMemorySnapshot.Create(account);
-            WeakReferenceMessenger.Default.Send(
-                new RecordLogMemoryMessage(new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+            _savedState = CreateState(account);
+            LoadFromState(_savedState);
 
-            await MainViewModel.ReloadCurrentDataAsync();
-            await RefreshAsync(true);
+            try
+            {
+                var afterSnapshot = AccountMemorySnapshot.Create(account);
+                WeakReferenceMessenger.Default.Send(
+                    new RecordLogMemoryMessage(new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)));
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                await RefreshAsync(true);
+                FloatingNotificationPublisher.Success(
+                    account.Name,
+                    account.PinnedOnUI
+                        ? "Account was added to the dashboard."
+                        : "Account was removed from the dashboard.",
+                    true,
+                    account.PinnedOnUI ? "Pinned" : "Unpinned");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The account visibility was updated, but the current UI could not be refreshed.");
+            }
 
-            FloatingNotificationPublisher.Success(
-                account.Name,
-                account.PinnedOnUI ? "Account was added to the dashboard." : "Account was removed from the dashboard.",
-                true,
-                account.PinnedOnUI ? "Pinned" : "Unpinned");
             return AccountDetailResult.Success();
         }
         catch (Exception exception)
@@ -315,6 +340,7 @@ public partial class AccountDetailVM : ObservableObject
 
     public async Task<AccountDetailResult> ToggleEnabledAsync()
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         if (IsEditing)
             return AccountDetailResult.Failure("Finish editing before enabling or disabling this source.");
 
@@ -334,22 +360,34 @@ public partial class AccountDetailVM : ObservableObject
             account.IsEnabled = !account.IsEnabled;
             account.PinnedOnUI = account.IsEnabled;
             _appData.UpdateAccount(account);
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
 
-            var afterSnapshot = AccountMemorySnapshot.Create(account);
-            WeakReferenceMessenger.Default.Send(
-                new RecordLogMemoryMessage(new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+            _savedState = CreateState(account);
+            LoadFromState(_savedState);
 
-            await MainViewModel.ReloadCurrentDataAsync();
-            await RefreshAsync(true);
+            try
+            {
+                var afterSnapshot = AccountMemorySnapshot.Create(account);
+                WeakReferenceMessenger.Default.Send(
+                    new RecordLogMemoryMessage(new EditAccountMemoryAction(beforeSnapshot, afterSnapshot)));
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                await RefreshAsync(true);
+                FloatingNotificationPublisher.Success(
+                    account.Name,
+                    account.IsEnabled
+                        ? "Account is available for transactions."
+                        : "Account is unavailable for transactions.",
+                    true,
+                    account.IsEnabled ? "Enabled" : "Disabled");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The account availability was updated, but the current UI could not be refreshed.");
+            }
 
-            FloatingNotificationPublisher.Success(
-                account.Name,
-                account.IsEnabled ? "Account is available for transactions." : "Account is unavailable for transactions.",
-                true,
-                account.IsEnabled ? "Enabled" : "Disabled");
             return AccountDetailResult.Success();
         }
         catch (Exception exception)
@@ -365,6 +403,7 @@ public partial class AccountDetailVM : ObservableObject
 
     public async Task<AccountDetailResult> DeleteAsync()
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         if (IsBusy)
             return AccountDetailResult.Failure("This account is already being updated.");
 
@@ -384,17 +423,24 @@ public partial class AccountDetailVM : ObservableObject
                 _appData.RemoveTransaction(transaction);
 
             _appData.RemoveAccount(account);
-            await _appData.SaveChangesAsync();
+            await persistenceBatch.SaveChangesAsync();
 
-            WeakReferenceMessenger.Default.Send(
-                new RecordLogMemoryMessage(new DeleteAccountMemoryAction(snapshot)));
-            WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
-                DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+            try
+            {
+                WeakReferenceMessenger.Default.Send(
+                    new RecordLogMemoryMessage(new DeleteAccountMemoryAction(snapshot)));
+                WeakReferenceMessenger.Default.Send(new DashboardDataInvalidatedMessage(
+                    DashboardDataInvalidationScope.Budget | DashboardDataInvalidationScope.Notifications));
+                FloatingNotificationPublisher.Success(
+                    account.Name, "Account was permanently removed.", true, "Deleted");
+            }
+            catch (Exception exception)
+            {
+                FluxoLogManager.LogWarning(
+                    exception,
+                    "The account was deleted, but the current UI could not be refreshed.");
+            }
 
-            await MainViewModel.ReloadCurrentDataAsync();
-
-            FloatingNotificationPublisher.Success(
-                account.Name, "Account was permanently removed.", true, "Deleted");
             return AccountDetailResult.Success(true);
         }
         catch (Exception exception)

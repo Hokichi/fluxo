@@ -59,5 +59,6 @@ public interface IAppDataService
     Task<BudgetAllocation> EnsureBudgetAllocationAsync(CancellationToken cancellationToken = default);
     void UpdateBudgetAllocation(BudgetAllocation entity);
 
+    void DiscardPendingChanges();
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

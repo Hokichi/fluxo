@@ -8,10 +8,10 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.Services.Logging;
+using Fluxo.Services.Persistence;
 using Fluxo.ViewModels.Entities;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Shell;
-using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 using System.Globalization;
 
 using Fluxo.DataModels.Popups.Settings.SettingsTagsTab;
@@ -20,13 +20,11 @@ namespace Fluxo.ViewModels.Popups.Settings;
 
 public partial class SettingsTagsTabVM : ObservableObject
 {
-    private readonly MainVM _mainViewModel;
     private readonly IMessenger _messenger;
     private readonly IAppDataService _appData;
 
-    public SettingsTagsTabVM(MainVM mainViewModel, IAppDataService appData, IMessenger? messenger = null)
+    public SettingsTagsTabVM(IAppDataService appData, IMessenger? messenger = null)
     {
-        _mainViewModel = mainViewModel;
         _appData = appData;
         _messenger = messenger ?? WeakReferenceMessenger.Default;
     }
@@ -121,6 +119,7 @@ public partial class SettingsTagsTabVM : ObservableObject
 
     public async Task<SettingsOperationResult> CreateTagAsync(string name, string hexCode, string spendingLimitText)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         var trimmedName = (name ?? string.Empty).Trim();
         var normalizedHexCode = NormalizeHexColor(hexCode);
 
@@ -146,13 +145,7 @@ public partial class SettingsTagsTabVM : ObservableObject
                 SpendingLimit = spendingLimit
             });
 
-            await _appData.SaveChangesAsync();
-            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Tags));
-            _messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.All));
-            await _mainViewModel.ReloadCurrentDataAsync();
-            await RefreshTagsAsync();
-
-            return SettingsOperationResult.Success();
+            await persistenceBatch.SaveChangesAsync();
         }
         catch (Exception exception)
         {
@@ -160,6 +153,21 @@ public partial class SettingsTagsTabVM : ObservableObject
             return SettingsOperationResult.Failure(
                 FluxoLogManager.CreateFailureMessage("create tag"));
         }
+
+        try
+        {
+            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Tags));
+            _messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.All));
+            await RefreshTagsAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "The tag was created, but the current UI could not be refreshed.");
+        }
+
+        return SettingsOperationResult.Success();
     }
 
     public Task<SettingsOperationResult> CreateTagAsync(string name, string hexCode) =>
@@ -179,6 +187,7 @@ public partial class SettingsTagsTabVM : ObservableObject
 
     private async Task<SettingsOperationResult> DeleteTagAsync(int tagId)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         try
         {
             var persistedTag = await _appData.GetTagByIdAsync(tagId);
@@ -192,14 +201,7 @@ public partial class SettingsTagsTabVM : ObservableObject
                     $"{persistedTag.Name} is still assigned to one or more expenses, so it can't be deleted yet.");
 
             _appData.RemoveTag(persistedTag);
-            await _appData.SaveChangesAsync();
-
-            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Tags));
-            _messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.All));
-            await _mainViewModel.ReloadCurrentDataAsync();
-            await RefreshTagsAsync();
-
-            return SettingsOperationResult.Success();
+            await persistenceBatch.SaveChangesAsync();
         }
         catch (Exception exception)
         {
@@ -207,10 +209,26 @@ public partial class SettingsTagsTabVM : ObservableObject
             return SettingsOperationResult.Failure(
                 FluxoLogManager.CreateFailureMessage("delete tag"));
         }
+
+        try
+        {
+            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Tags));
+            _messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.All));
+            await RefreshTagsAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "The tag was deleted, but the current UI could not be refreshed.");
+        }
+
+        return SettingsOperationResult.Success();
     }
 
     public async Task<SettingsOperationResult> UpdateTagAsync(int tagId, string name, string hexCode, string spendingLimitText)
     {
+        using var persistenceBatch = AppDataPersistenceBatch.Begin(_appData);
         var trimmedName = (name ?? string.Empty).Trim();
         var normalizedHexCode = NormalizeHexColor(hexCode);
 
@@ -233,9 +251,9 @@ public partial class SettingsTagsTabVM : ObservableObject
                 return SettingsOperationResult.Failure("System tags can't be edited.");
 
             var existingTags = await _appData.GetTagsAsync();
-            if (existingTags.Any(tag =>
-                    tag.Id != tag.Id &&
-                    string.Equals(tag.Name, trimmedName, StringComparison.OrdinalIgnoreCase)))
+            if (existingTags.Any(existingTag =>
+                    existingTag.Id != tag.Id &&
+                    string.Equals(existingTag.Name, trimmedName, StringComparison.OrdinalIgnoreCase)))
                 return SettingsOperationResult.Failure($"A tag named \"{trimmedName}\" already exists.");
 
             var hasNameChanged = !string.Equals(tag.Name, trimmedName, StringComparison.Ordinal);
@@ -248,14 +266,7 @@ public partial class SettingsTagsTabVM : ObservableObject
             tag.HexCode = normalizedHexCode;
             tag.SpendingLimit = spendingLimit;
             _appData.UpdateTag(tag);
-            await _appData.SaveChangesAsync();
-
-            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Tags));
-            _messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.All));
-            await _mainViewModel.ReloadCurrentDataAsync();
-            await RefreshTagsAsync();
-
-            return SettingsOperationResult.Success();
+            await persistenceBatch.SaveChangesAsync();
         }
         catch (Exception exception)
         {
@@ -263,6 +274,21 @@ public partial class SettingsTagsTabVM : ObservableObject
             return SettingsOperationResult.Failure(
                 FluxoLogManager.CreateFailureMessage("update tag"));
         }
+
+        try
+        {
+            _messenger.Send(new SettingsDataChangedMessage(SettingsDataChangedScope.Tags));
+            _messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.All));
+            await RefreshTagsAsync();
+        }
+        catch (Exception exception)
+        {
+            FluxoLogManager.LogWarning(
+                exception,
+                "The tag was updated, but the current UI could not be refreshed.");
+        }
+
+        return SettingsOperationResult.Success();
     }
 
     public Task<SettingsOperationResult> UpdateTagAsync(int tagId, string name, string hexCode) =>
