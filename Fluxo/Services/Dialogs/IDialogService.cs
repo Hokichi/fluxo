@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using Fluxo.DataModels.Popups.GlobalSearch;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Planning;
 using Fluxo.ViewModels.Popups.Settings;
@@ -18,6 +19,8 @@ public interface IDialogService
     bool? ShowAccountsList(Window? owner = null);
 
     bool? ShowSettings(Window? owner = null);
+    bool? ShowSettings(SettingsSearchTarget target, Window? owner = null);
+    GlobalSearchResult? ShowGlobalSearch(Task<IReadOnlyList<GlobalSearchResult>> candidateTask, Window? owner = null);
     bool? ShowDataManagement(Window? owner = null);
 
     bool? ShowQuickSetupWizard(Window? owner = null);

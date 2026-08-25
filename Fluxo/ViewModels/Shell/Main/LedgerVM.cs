@@ -23,8 +23,7 @@ namespace Fluxo.ViewModels.Shell.Main;
 
 public partial class LedgerVM : ObservableRecipient,
     IRecipient<LedgerDateRangeRequestedMessage>,
-    IRecipient<LedgerAllTimeRequestedMessage>,
-    IRecipient<LedgerSearchTextChangedMessage>
+    IRecipient<LedgerAllTimeRequestedMessage>
 {
     private readonly IAppDataService _appData;
     private readonly ITransactionService _transactionService;
@@ -47,7 +46,6 @@ public partial class LedgerVM : ObservableRecipient,
     [ObservableProperty] private DateTime _startDate = DateTime.Today;
     [ObservableProperty] private DateTime _endDate = DateTime.Today;
     [ObservableProperty] private DateTime _maxSelectableDate = DateTime.Today;
-    [ObservableProperty] private string _searchText = string.Empty;
     [ObservableProperty] private decimal _spentAmount;
     [ObservableProperty] private decimal _earnedAmount;
     [ObservableProperty] private decimal _goalAmount;
@@ -116,7 +114,6 @@ public partial class LedgerVM : ObservableRecipient,
         TagFilters.Where(option => !option.IsAll).ToList();
     public bool HasPendingFilterChanges => CaptureFilterSelectionSnapshot() != _appliedFilterSelection;
     public bool HasActiveFilters =>
-        !string.IsNullOrWhiteSpace(SearchText) ||
         TypeFilterSelectionCount > 0 ||
         AccountFilterSelectionCount > 0 ||
         CategoryFilterSelectionCount > 0 ||
@@ -205,11 +202,6 @@ public partial class LedgerVM : ObservableRecipient,
         await LoadWithFeedbackAsync(cancellationToken);
     }
 
-    public void Receive(LedgerSearchTextChangedMessage message)
-    {
-        SearchText = message.Value;
-    }
-
     [RelayCommand]
     private void ToggleAmountSortDirection()
     {
@@ -277,14 +269,6 @@ public partial class LedgerVM : ObservableRecipient,
             transaction.IsSelectedForBatch = shouldCheck;
 
         RefreshBatchSelectionState();
-    }
-
-    partial void OnSearchTextChanged(string value)
-    {
-        TransactionsView.Refresh();
-        RefreshVisibleChildTransactions();
-        RefreshVisibleTransactionState();
-        OnPropertyChanged(nameof(HasActiveFilters));
     }
 
     partial void OnStartDateChanged(DateTime value)
@@ -696,7 +680,6 @@ public partial class LedgerVM : ObservableRecipient,
         ResetFilter(AccountFilters);
         ResetFilter(CategoryFilters);
         ResetFilter(TagFilters);
-        SearchText = string.Empty;
         ApplyFilters();
     }
 
@@ -897,10 +880,6 @@ public partial class LedgerVM : ObservableRecipient,
 
     private bool MatchesTransactionFilters(LedgerTransactionItemVM transaction)
     {
-        if (!string.IsNullOrWhiteSpace(SearchText) &&
-            transaction.Name.Contains(SearchText.Trim(), StringComparison.OrdinalIgnoreCase) is false)
-            return false;
-
         if (!MatchesFilter(TypeFilters, transaction.Kind))
             return false;
 

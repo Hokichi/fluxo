@@ -16,7 +16,7 @@ public partial class HotkeysOverviewPopup : BasePopup
             new HotkeyItem("Open analytics", Parts("Ctrl", "2")),
             new HotkeyItem("Open calendar", Parts("Ctrl", "3")),
             new HotkeyItem("Open ledger", Parts("Ctrl", "4")),
-            new HotkeyItem("Search", Parts("Ctrl", "F")),
+            new HotkeyItem("Search everything", Parts("Ctrl", "F")),
             new HotkeyItem("Toggle history", Parts("Ctrl", "H")),
             new HotkeyItem("Undo last log action", Parts("Ctrl", "Z")),
             new HotkeyItem("Redo last log action", Parts("Ctrl", "Y")),

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Fluxo.Core.Interfaces.Services;
+using Fluxo.DataModels.Popups.GlobalSearch;
 using Fluxo.ViewModels.Popups;
 using Fluxo.ViewModels.Popups.Planning;
 using Fluxo.ViewModels.Popups.Settings;
@@ -53,6 +54,24 @@ public sealed class DialogService : IDialogService
     public bool? ShowSettings(Window? owner = null)
     {
         return ShowScopedDialog<SettingsPopup>(owner);
+    }
+
+    public bool? ShowSettings(SettingsSearchTarget target, Window? owner = null)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+        using var scope = _serviceProvider.CreateScope();
+        var popup = scope.ServiceProvider.GetRequiredService<SettingsPopup>();
+        popup.ConfigureSearchTarget(target);
+        return ShowDialog(popup, owner);
+    }
+
+    public GlobalSearchResult? ShowGlobalSearch(
+        Task<IReadOnlyList<GlobalSearchResult>> candidateTask,
+        Window? owner = null)
+    {
+        var popup = new GlobalSearchPopup(candidateTask);
+        ShowDialog(popup, owner);
+        return popup.SelectedResult;
     }
 
     public bool? ShowDataManagement(Window? owner = null)

@@ -165,31 +165,12 @@ public sealed class LedgerVMDateRangeTests
     }
 
     [Fact]
-    public async Task LedgerVMDateRange_ApplyFilters_HidesParentWhenNoChildMatches()
-    {
-        var vm = CreateVm(CreateParentWithChildren());
-        await vm.LoadAsync();
-
-        vm.SearchText = "Parent";
-        vm.ApplyFilters();
-
-        Assert.Empty(vm.TransactionsView.Cast<LedgerTransactionItemVM>());
-
-        vm.ClearFilters();
-
-        Assert.Single(vm.TransactionsView.Cast<LedgerTransactionItemVM>());
-    }
-
-    [Fact]
     public async Task LedgerVMDateRange_FiltersAndBulkEdit_TrackDistinctSelectionStates()
     {
         var vm = CreateVm(CreateParentWithChildren());
         await vm.LoadAsync();
 
         Assert.False(vm.HasActiveFilters);
-        vm.SearchText = "Food";
-        Assert.True(vm.HasActiveFilters);
-
         vm.ToggleSelectionModeCommand.Execute(null);
         Assert.True(vm.IsSelectionModeEnabled);
         Assert.False(vm.IsBulkEditEnabled);

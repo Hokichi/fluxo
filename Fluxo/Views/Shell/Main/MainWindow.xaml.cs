@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -72,9 +71,6 @@ public partial class MainWindow : Window, IPopupHost
     private const int FadeDuration = 180; // ms
     private const int StateChangeDuration = 100; // ms
     private const int MainPageTransitionDuration = 300; // ms
-    private const double HeaderSearchCollapsedWidth = 36;
-    private const double HeaderSearchExpandedWidth = 160;
-    private const int HeaderSearchAnimationDuration = 160; // ms
     private const int HistoryDrawerAnimationDuration = 180; // ms
     private static readonly TimeSpan AppAutoLockActiveDelay = TimeSpan.FromSeconds(10);
 
@@ -94,7 +90,6 @@ public partial class MainWindow : Window, IPopupHost
     private readonly IAppUpdateService _appUpdateService;
     private readonly IAppUpdateInteractionService _appUpdateInteractionService;
     private readonly PopupOverlayHandoffState _popupOverlayHandoffState = new();
-    private readonly ObservableCollection<HeaderQuickSearchResult> _headerSearchResults = [];
     private Rect _currentBounds;
     private bool _hasCompletedPendingDeletionCleanup;
     private bool _hasInitializedDashboardPanels;
@@ -107,10 +102,8 @@ public partial class MainWindow : Window, IPopupHost
     private bool _isPointerOverHeaderMenuPopup;
     private bool _isMainPageTransitionActive;
     private bool _isPreparingMainPage;
-    private bool _isHeaderSearchExpanded;
     private bool _isHistoryDrawerOpen;
     private bool _isHistoryDrawerAnimating;
-    private int _headerSearchAnimationGeneration;
     private EventHandler? _popupOverlayDeferredHideTickHandler;
     private MainPage _activeMainPage = MainPage.Dashboard;
     private IServiceScope? _dashboardPageScope;
@@ -179,7 +172,6 @@ public partial class MainWindow : Window, IPopupHost
                     message.Reply(recipient._mainVM.DaySpinner.SelectedDay.Date);
             });
 
-        HeaderSearchResultsList.ItemsSource = _headerSearchResults;
         HistoryItemsControl.ItemsSource = _logMemoryManager.HistoryEntries;
         _logMemoryManager.StateChanged += OnHistoryManagerStateChanged;
         UpdateHistoryAvailability();
@@ -425,7 +417,6 @@ public partial class MainWindow : Window, IPopupHost
         StartAppAutoLockCountdown();
         CloseHeaderMenu();
         CloseHeaderNotificationPopup();
-        CollapseHeaderSearch();
 
         // If close-to-tray happens after a fade-out close animation, the window can
         // remain at zero opacity. Normalize before hiding so next restore is visible.
@@ -814,13 +805,6 @@ public partial class MainWindow : Window, IPopupHost
             return;
         }
 
-        if (_isHeaderSearchExpanded && e.Key == Key.Escape)
-        {
-            CollapseHeaderSearch();
-            e.Handled = true;
-            return;
-        }
-
         if (HeaderNotificationPopup.IsOpen && e.Key == Key.Escape)
         {
             CloseHeaderNotificationPopup();
@@ -882,7 +866,7 @@ public partial class MainWindow : Window, IPopupHost
                 return;
             }
 
-            ExpandHeaderSearch();
+            await OpenGlobalSearchAsync();
             e.Handled = true;
             return;
         }
@@ -1100,14 +1084,6 @@ public partial class MainWindow : Window, IPopupHost
         return false;
     }
 
-    private void OnHeaderSearchButtonClick(object sender, RoutedEventArgs e)
-    {
-        if (IsAppLocked() || IsSufficientFundsActionGateLocked())
-            return;
-
-        ExpandHeaderSearch();
-    }
-
     private async Task ShowUpdateCardAsync()
     {
         try
@@ -1191,163 +1167,6 @@ public partial class MainWindow : Window, IPopupHost
     private void ToggleHeaderNotificationPopup()
     {
         HeaderNotificationPopup.IsOpen = !HeaderNotificationPopup.IsOpen;
-    }
-
-    private void OnHeaderSearchTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (_activeMainPage == MainPage.Ledger)
-            WeakReferenceMessenger.Default.Send(new LedgerSearchTextChangedMessage(HeaderSearchBox.Text));
-
-        UpdateHeaderSearchResults();
-    }
-
-    private void OnHeaderSearchBoxPreviewKeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key != Key.Escape)
-            return;
-
-        CollapseHeaderSearch();
-        e.Handled = true;
-    }
-
-    private void OnHeaderSearchRegionPreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-    {
-        if (!_isHeaderSearchExpanded || e.NewFocus is not DependencyObject newFocus)
-            return;
-
-        if (DependencyObjectTree.IsDescendantOf(newFocus, HeaderSearchRegion))
-            return;
-
-        if (_activeMainPage == MainPage.Ledger && !ShouldCollapseHeaderSearchOnExternalClick())
-            return;
-
-        CollapseHeaderSearch();
-    }
-
-    private void OnHeaderSearchResultItemClick(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is not FrameworkElement { DataContext: HeaderQuickSearchResult result })
-            return;
-
-        CollapseHeaderSearch();
-
-        OpenTransactionDetailPopup(result.Transaction);
-
-        e.Handled = true;
-    }
-
-    private void ExpandHeaderSearch()
-    {
-        if (!_isHeaderSearchExpanded)
-        {
-            _isHeaderSearchExpanded = true;
-            var animationGeneration = ++_headerSearchAnimationGeneration;
-            HeaderSearchButton.Visibility = Visibility.Collapsed;
-            HeaderSearchInputBorder.Visibility = Visibility.Visible;
-            HeaderSearchInputBorder.IsHitTestVisible = true;
-            HeaderSearchInputBorder.Width = HeaderSearchCollapsedWidth;
-            HeaderSearchInputBorder.Opacity = 0;
-            AnimateHeaderSearchInput(HeaderSearchExpandedWidth, 1, () =>
-            {
-                if (animationGeneration == _headerSearchAnimationGeneration)
-                    HeaderSearchInputBorder.Width = HeaderSearchExpandedWidth;
-            });
-        }
-
-        HeaderSearchBox.Focus();
-        HeaderSearchBox.SelectAll();
-        UpdateHeaderSearchResults();
-    }
-
-    private void CollapseHeaderSearch()
-    {
-        if (!_isHeaderSearchExpanded)
-            return;
-
-        _isHeaderSearchExpanded = false;
-        var animationGeneration = ++_headerSearchAnimationGeneration;
-        HeaderSearchResultsPopup.IsOpen = false;
-        HeaderSearchNoResultsText.Visibility = Visibility.Collapsed;
-        HeaderSearchBox.Text = string.Empty;
-        WeakReferenceMessenger.Default.Send(new LedgerSearchTextChangedMessage(string.Empty));
-        _headerSearchResults.Clear();
-        HeaderSearchInputBorder.IsHitTestVisible = false;
-        AnimateHeaderSearchInput(HeaderSearchCollapsedWidth, 0, () =>
-        {
-            if (animationGeneration != _headerSearchAnimationGeneration)
-                return;
-
-            HeaderSearchInputBorder.Visibility = Visibility.Collapsed;
-            HeaderSearchButton.Visibility = Visibility.Visible;
-            HeaderSearchInputBorder.Width = HeaderSearchExpandedWidth;
-            HeaderSearchInputBorder.Opacity = 0;
-        });
-    }
-
-    private void AnimateHeaderSearchInput(double targetWidth, double targetOpacity, Action? completed = null)
-    {
-        var duration = TimeSpan.FromMilliseconds(HeaderSearchAnimationDuration);
-        var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
-        var currentWidth = HeaderSearchInputBorder.ActualWidth > 0
-            ? HeaderSearchInputBorder.ActualWidth
-            : HeaderSearchInputBorder.Width;
-
-        var widthAnimation = new DoubleAnimation(currentWidth, targetWidth, duration)
-        {
-            EasingFunction = easing
-        };
-
-        var opacityAnimation = new DoubleAnimation(HeaderSearchInputBorder.Opacity, targetOpacity, duration)
-        {
-            EasingFunction = easing
-        };
-
-        if (completed is not null)
-            opacityAnimation.Completed += (_, _) => completed();
-
-        HeaderSearchInputBorder.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation);
-        HeaderSearchInputBorder.BeginAnimation(UIElement.OpacityProperty, opacityAnimation);
-    }
-
-    private void UpdateHeaderSearchResults()
-    {
-        if (!_isHeaderSearchExpanded)
-            return;
-
-        if (_activeMainPage == MainPage.Ledger)
-        {
-            HeaderSearchResultsPopup.IsOpen = false;
-            HeaderSearchNoResultsText.Visibility = Visibility.Collapsed;
-            _headerSearchResults.Clear();
-            return;
-        }
-
-        var query = HeaderSearchBox.Text;
-        var matches = HeaderQuickSearchEngine.Search(
-            _mainVM.BudgetPanel.GetAllTransactions(),
-            query).ToList();
-
-        _headerSearchResults.Clear();
-
-        if (matches.Count == 0)
-        {
-            var normalizedQuery = query?.Trim();
-            if (string.IsNullOrEmpty(normalizedQuery) || normalizedQuery.Length <= 3)
-            {
-                HeaderSearchResultsPopup.IsOpen = false;
-                HeaderSearchNoResultsText.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            HeaderSearchResultsPopup.IsOpen = true;
-            HeaderSearchNoResultsText.Visibility = Visibility.Visible;
-            return;
-        }
-
-        HeaderSearchResultsPopup.IsOpen = true;
-        HeaderSearchNoResultsText.Visibility = Visibility.Collapsed;
-        foreach (var match in matches)
-            _headerSearchResults.Add(match);
     }
 
     private void OnQuickAddButtonClick(object sender, RoutedEventArgs e)
@@ -2071,7 +1890,6 @@ public partial class MainWindow : Window, IPopupHost
         if (_isHistoryDrawerOpen || _isHistoryDrawerAnimating || IsAppLocked())
             return;
 
-        CollapseHeaderSearch();
         CloseHeaderNotificationPopup();
         CloseHeaderMenu();
 
@@ -2437,11 +2255,6 @@ public partial class MainWindow : Window, IPopupHost
         if (e.OriginalSource is not DependencyObject source)
             return;
 
-        if (_isHeaderSearchExpanded &&
-            !DependencyObjectTree.IsDescendantOf(source, HeaderSearchRegion) &&
-            ShouldCollapseHeaderSearchOnExternalClick())
-            CollapseHeaderSearch();
-
         if (HeaderNotificationPopup.IsOpen &&
             !DependencyObjectTree.IsDescendantOf(source, HeaderNotificationPanel) &&
             DependencyObjectTree.FindAncestor<BalloonButton>(source) != HeaderNotificationButton)
@@ -2458,7 +2271,6 @@ public partial class MainWindow : Window, IPopupHost
 
     private void OnWindowDeactivated(object? sender, EventArgs e)
     {
-        CollapseHeaderSearch();
         CloseHeaderMenu();
         CloseHeaderNotificationPopup();
         StartAppAutoLockCountdown();
@@ -2587,7 +2399,6 @@ public partial class MainWindow : Window, IPopupHost
 
         CloseHeaderMenu();
         CloseHeaderNotificationPopup();
-        CollapseHeaderSearch();
         _mainVM.LockUi();
         RefreshAppLockVisualState();
     }
@@ -2654,11 +2465,6 @@ public partial class MainWindow : Window, IPopupHost
     private void RefreshActivePageTitle()
     {
         ActivePageTitle = _mainVM.IsAppLocked ? "Locked" : GetMainPageTitle(_activeMainPage);
-    }
-
-    private bool ShouldCollapseHeaderSearchOnExternalClick()
-    {
-        return _activeMainPage != MainPage.Ledger || string.IsNullOrWhiteSpace(HeaderSearchBox.Text);
     }
 
     private bool IsDashboardSpendingAmountGateLocked()
