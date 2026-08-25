@@ -282,7 +282,7 @@
                             <Rectangle
                                 x:Name="PART_PopupOverlay"
                                 Grid.RowSpan="3"
-                                Fill="#80000000"
+                                Fill="{StaticResource Brush.Overlay}"
                                 Opacity="0"
                                 Visibility="Collapsed" />
                         </Grid>

@@ -814,7 +814,7 @@
                                 ButtonText="New Transaction"
                                 Click="OnHeaderQuickAddButtonClick"
                                 DefaultBackground="{StaticResource Brush.Mint}"
-                                Foreground="{StaticResource Brush.Text.Primary.Dark}"
+                                Foreground="{StaticResource Brush.Text.Primary.Inverted}"
                                 HoveredBackground="{StaticResource Brush.Mint.Muted}"
                                 ShouldExpand="True"
                                 Style="{StaticResource HeaderButtonDisableWhenAppLockedAndSufficientFundsActionGateLockedStyle}" />
@@ -1106,7 +1106,7 @@
                 <Border
                     x:Name="PopupOverlay"
                     Panel.ZIndex="30"
-                    Background="Black"
+                    Background="{StaticResource Brush.Overlay}"
                     CornerRadius="16"
                     IsHitTestVisible="False"
                     MouseLeftButtonDown="OnPopupOverlayMouseLeftButtonDown"

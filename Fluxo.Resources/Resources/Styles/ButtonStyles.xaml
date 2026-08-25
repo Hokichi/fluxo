@@ -31,7 +31,7 @@
 
     <Style BasedOn="{StaticResource BaseBalloonControlStyle}" TargetType="{x:Type c:BalloonControl}">
         <Setter Property="Background" Value="{Binding DefaultBackground, RelativeSource={RelativeSource Self}}" />
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text.Primary}" />
         <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Self}, Path=ButtonSize}" />
         <Setter Property="Template">
             <Setter.Value>

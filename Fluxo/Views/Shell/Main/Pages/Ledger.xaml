@@ -484,14 +484,14 @@
                         <Border
                             Margin="6,0,0,0"
                             Padding="5,1"
-                            Background="#FFEBD2"
+                            Background="{StaticResource Brush.Background.Recurring}"
                             CornerRadius="4"
                             Style="{StaticResource BaseBorderStyle}"
                             Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                             <TextBlock
                                 FontFamily="{StaticResource Bold}"
                                 FontSize="9"
-                                Foreground="#7A4A00"
+                                Foreground="{StaticResource Brush.Text.Recurring}"
                                 Text="RECURRING" />
                         </Border>
                     </StackPanel>
@@ -695,7 +695,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Black}"
                                     FontSize="12"
-                                    Foreground="{StaticResource Brush.Text.Primary.Dark}"
+                                    Foreground="{StaticResource Brush.Text.Primary.Inverted}"
                                     Text="{Binding VisibleChildCount, Mode=OneWay}" />
                             </Border>
                             <Border
@@ -716,14 +716,14 @@
                             <Border
                                 Margin="6,0,0,0"
                                 Padding="5,1"
-                                Background="#FFEBD2"
+                                Background="{StaticResource Brush.Background.Recurring}"
                                 CornerRadius="4"
                                 Style="{StaticResource BaseBorderStyle}"
                                 Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                                 <TextBlock
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="9"
-                                    Foreground="#7A4A00"
+                                    Foreground="{StaticResource Brush.Text.Recurring}"
                                     Text="RECURRING" />
                             </Border>
                         </StackPanel>

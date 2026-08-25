@@ -42,16 +42,18 @@
     <Color x:Key="Color.Text.Primary">#E6EAF0</Color>
     <Color x:Key="Color.Text.Secondary">#9BA3AE</Color>
     <Color x:Key="Color.Text.Muted">#6B7280</Color>
-    <Color x:Key="Color.Text.Primary.Dark">#1A1D21</Color>
-    <Color x:Key="Color.Text.Secondary.Dark">#20242A</Color>
-    <Color x:Key="Color.Text.Muted.Dark">#232830</Color>
+    <Color x:Key="Color.Text.Primary.Inverted">#1A1D21</Color>
+    <Color x:Key="Color.Text.Secondary.Inverted">#20242A</Color>
+    <Color x:Key="Color.Text.Muted.Inverted">#232830</Color>
+    <Color x:Key="Color.Text.Recurring">#7A4A00</Color>
 
     <SolidColorBrush x:Key="Brush.Text.Primary" Color="{StaticResource Color.Text.Primary}" />
     <SolidColorBrush x:Key="Brush.Text.Secondary" Color="{StaticResource Color.Text.Secondary}" />
     <SolidColorBrush x:Key="Brush.Text.Muted" Color="{StaticResource Color.Text.Muted}" />
-    <SolidColorBrush x:Key="Brush.Text.Primary.Dark" Color="{StaticResource Color.Text.Primary.Dark}" />
-    <SolidColorBrush x:Key="Brush.Text.Secondary.Dark" Color="{StaticResource Color.Text.Secondary.Dark}" />
-    <SolidColorBrush x:Key="Brush.Text.Muted.Dark" Color="{StaticResource Color.Text.Muted.Dark}" />
+    <SolidColorBrush x:Key="Brush.Text.Primary.Inverted" Color="{StaticResource Color.Text.Primary.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Text.Secondary.Inverted" Color="{StaticResource Color.Text.Secondary.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Text.Muted.Inverted" Color="{StaticResource Color.Text.Muted.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Text.Recurring" Color="{StaticResource Color.Text.Recurring}" />
 
     <!--  =============================  -->
     <!--  BORDER  -->
@@ -154,19 +156,19 @@
     <Color x:Key="Color.Account.Credit">#9D7FE8</Color>
     <Color x:Key="Color.Account.Saving">#E8A84D</Color>
 
-    <Color x:Key="Color.Account.Checking.Dark">#0E1A27</Color>
-    <Color x:Key="Color.Account.Cash.Dark">#121416</Color>
-    <Color x:Key="Color.Account.Credit.Dark">#180F2A</Color>
-    <Color x:Key="Color.Account.Saving.Dark">#1F1508</Color>
+    <Color x:Key="Color.Account.Checking.Inverted">#0E1A27</Color>
+    <Color x:Key="Color.Account.Cash.Inverted">#121416</Color>
+    <Color x:Key="Color.Account.Credit.Inverted">#180F2A</Color>
+    <Color x:Key="Color.Account.Saving.Inverted">#1F1508</Color>
 
     <SolidColorBrush x:Key="Brush.Account.Checking" Color="{StaticResource Color.Account.Checking}" />
     <SolidColorBrush x:Key="Brush.Account.Cash" Color="{StaticResource Color.Account.Cash}" />
     <SolidColorBrush x:Key="Brush.Account.Credit" Color="{StaticResource Color.Account.Credit}" />
     <SolidColorBrush x:Key="Brush.Account.Saving" Color="{StaticResource Color.Account.Saving}" />
-    <SolidColorBrush x:Key="Brush.Account.Checking.Dark" Color="{StaticResource Color.Account.Checking.Dark}" />
-    <SolidColorBrush x:Key="Brush.Account.Cash.Dark" Color="{StaticResource Color.Account.Cash.Dark}" />
-    <SolidColorBrush x:Key="Brush.Account.Credit.Dark" Color="{StaticResource Color.Account.Credit.Dark}" />
-    <SolidColorBrush x:Key="Brush.Account.Saving.Dark" Color="{StaticResource Color.Account.Saving.Dark}" />
+    <SolidColorBrush x:Key="Brush.Account.Checking.Inverted" Color="{StaticResource Color.Account.Checking.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Account.Cash.Inverted" Color="{StaticResource Color.Account.Cash.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Account.Credit.Inverted" Color="{StaticResource Color.Account.Credit.Inverted}" />
+    <SolidColorBrush x:Key="Brush.Account.Saving.Inverted" Color="{StaticResource Color.Account.Saving.Inverted}" />
 
     <!--  =============================  -->
     <!--  RESERVED  -->
@@ -174,6 +176,9 @@
 
     <Color x:Key="Color.Reserved">#7C8796</Color>
     <SolidColorBrush x:Key="Brush.Reserved" Color="{StaticResource Color.Reserved}" />
+
+    <Color x:Key="Color.Background.Recurring">#FFEBD2</Color>
+    <SolidColorBrush x:Key="Brush.Background.Recurring" Color="{StaticResource Color.Background.Recurring}" />
 
     <!--  =============================  -->
     <!--  OVERLAY  -->

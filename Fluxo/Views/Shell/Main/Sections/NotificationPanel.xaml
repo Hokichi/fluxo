@@ -36,7 +36,7 @@
                                     VerticalAlignment="Center"
                                     FontFamily="{StaticResource Bold}"
                                     FontSize="10"
-                                    Foreground="{StaticResource Brush.Text.Primary.Dark}"
+                                    Foreground="{StaticResource Brush.Text.Primary.Inverted}"
                                     Text="{Binding Count}" />
                             </Border>
                         </StackPanel>
