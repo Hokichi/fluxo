@@ -121,29 +121,6 @@ public partial class QuickSetupWizard : BasePopup
 
     public async void OnNextClick(object sender, RoutedEventArgs e)
     {
-        if (_viewModel.IsStep2Active && !_viewModel.HasAccounts)
-        {
-            var dialogResult = FluxoMessageBox.Show(this,
-                "A account is required to calculate budgets and linked transactions. If there are no available sources, Recurring transactions, Saving goals, and Budget allocation setup will be skipped. Do you want to continue without adding a source?",
-                "Startup Wizard",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question);
-
-            if (dialogResult == MessageBoxResult.Yes)
-            {
-                await AnimateStepTransitionAsync(() =>
-                {
-                    _viewModel.NavigateToStep(6);
-                });
-                return;
-            }
-            else
-            {
-                OnAddAccountClick(sender, e);
-                return;
-            }
-        }
-
         var result = await AnimateStepTransitionAsync(_viewModel.GoNextAsync);
         if (!result.IsSuccess && !string.IsNullOrWhiteSpace(result.ErrorMessage))
         {
@@ -200,6 +177,14 @@ public partial class QuickSetupWizard : BasePopup
 
         _allowClose = true;
         Close();
+    }
+
+    public async void OnNavigatorStepClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string tag } || !int.TryParse(tag, out var stepIndex))
+            return;
+
+        await AnimateStepTransitionAsync(() => _viewModel.NavigateToStep(stepIndex));
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -363,9 +348,9 @@ public partial class QuickSetupWizard : BasePopup
         return true;
     }
 
-    private Border? GetStripeForStep(int stepIndex) => MiddleStepPage?.GetStripeForStep(stepIndex);
+    private Border? GetStripeForStep(int stepIndex) => null;
 
-    private bool IsMiddleStep(int stepIndex) => stepIndex >= 2 && stepIndex <= 8;
+    private static bool IsMiddleStep(int stepIndex) => false;
 
     private static bool IsLoadingFinalTransition(int fromStep, int toStep) =>
         (fromStep == 9 && toStep == 10) || (fromStep == 10 && toStep == 9);
@@ -455,16 +440,10 @@ public partial class QuickSetupWizard : BasePopup
             }
             else
             {
-                var middleContent = MiddleStepPage?.StepContentElement;
-                if (middleContent is not null)
-                    await FadeElementAsync(middleContent, 1, 0);
-
+                await FadeElementAsync(ContentContainer, 1, 0);
                 changeStep();
                 SyncStripeOpacities();
-                ScrollCurrentStepToTop();
-
-                if (middleContent is not null)
-                    await FadeElementAsync(middleContent, 0, 1);
+                await FadeElementAsync(ContentContainer, 0, 1);
             }
         }
         finally
@@ -517,17 +496,10 @@ public partial class QuickSetupWizard : BasePopup
             }
             else
             {
-                var middleContent = MiddleStepPage?.StepContentElement;
-                if (middleContent is not null)
-                    await FadeElementAsync(middleContent, 1, 0);
-
+                await FadeElementAsync(ContentContainer, 1, 0);
                 var result = await changeStepAsync();
                 SyncStripeOpacities();
-                ScrollCurrentStepToTop();
-
-                if (middleContent is not null)
-                    await FadeElementAsync(middleContent, 0, 1);
-
+                await FadeElementAsync(ContentContainer, 0, 1);
                 return result;
             }
         }
@@ -556,7 +528,6 @@ public partial class QuickSetupWizard : BasePopup
 
     private void ScrollCurrentStepToTop()
     {
-        MiddleStepPage?.ScrollCurrentStepToTop();
     }
 
     private Task FadeElementAsync(UIElement element, double from, double to)

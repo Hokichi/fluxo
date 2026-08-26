@@ -37,6 +37,13 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
 
     public bool HasAccounts => Accounts.Count > 0;
 
+    public bool HasFunctionalAccount => _draftSources.Values.Any(source =>
+        AccountDeletionConfirmationHelper.IsFunctioning(
+            source.AccountType,
+            source.IsEnabled,
+            source.Balance,
+            source.AccountLimit));
+
     public decimal TotalBudgetAmount => Accounts.Sum(source => source.PrimaryAmount);
 
     public IReadOnlyDictionary<int, int> LastPersistedIdMap => _lastPersistedIdMap;
@@ -374,6 +381,7 @@ public partial class QuickSetupWizardAccountsVM : ObservableObject
                 .Select(source => new QuickSetupWizardAccountItemVM(source)));
 
         OnPropertyChanged(nameof(HasAccounts));
+        OnPropertyChanged(nameof(HasFunctionalAccount));
         OnPropertyChanged(nameof(TotalBudgetAmount));
         PublishSnapshot();
     }

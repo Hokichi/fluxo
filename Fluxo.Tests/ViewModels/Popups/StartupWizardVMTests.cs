@@ -86,15 +86,14 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
-    public void QuickSetupWizardVM_GoBack_FromPreferencesWithoutAccounts_ReturnsToAccounts()
+    public void QuickSetupWizardVM_GoBack_FromBudgetAllocation_ReturnsToBudgetIntroduction()
     {
         var viewModel = CreateViewModel();
         viewModel.CurrentStepIndex = 6;
-        viewModel.HasAccounts = false;
 
         viewModel.GoBack();
 
-        Assert.Equal(2, viewModel.CurrentStepIndex);
+        Assert.Equal(5, viewModel.CurrentStepIndex);
     }
 
     [Fact]

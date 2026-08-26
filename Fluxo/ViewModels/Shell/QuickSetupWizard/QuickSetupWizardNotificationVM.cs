@@ -2,10 +2,8 @@ using System.Collections.ObjectModel;
 using Fluxo.Helpers.Settings;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
-using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Popups.Settings;
@@ -18,8 +16,6 @@ public partial class QuickSetupWizardNotificationVM : ObservableObject
     private readonly IMessenger _messenger;
 
     [ObservableProperty] private bool _isStep7Active;
-    [ObservableProperty] private bool _shouldRunAtStartup;
-    [ObservableProperty] private AppCloseBehavior _closeBehavior = AppCloseBehavior.Exit;
 
     public QuickSetupWizardNotificationVM(IAppDataService appData, IMessenger? messenger = null)
     {
@@ -28,10 +24,6 @@ public partial class QuickSetupWizardNotificationVM : ObservableObject
     }
 
     public ObservableCollection<SettingsNotificationOptionVM> NotificationSettings { get; } = [];
-
-    public bool IsMinimizeToTrayCloseBehaviorSelected => CloseBehavior == AppCloseBehavior.MinimizeToTray;
-
-    public bool IsExitCloseBehaviorSelected => CloseBehavior == AppCloseBehavior.Exit;
 
     public async Task LoadAsync()
     {
@@ -77,9 +69,6 @@ public partial class QuickSetupWizardNotificationVM : ObservableObject
                 QuickSetupWizardShared.ParseBool(settingsByName, UserSettingNames.IsLowAccountBalanceNotifEnabled, false))
         ]);
 
-        ShouldRunAtStartup = QuickSetupWizardShared.ParseBool(settingsByName, UserSettingNames.ShouldRunAtStartup, false);
-        CloseBehavior = QuickSetupWizardShared.ParseCloseBehavior(settingsByName, UserSettingNames.CloseBehavior, AppCloseBehavior.Exit);
-
         PublishSnapshot();
     }
 
@@ -100,15 +89,6 @@ public partial class QuickSetupWizardNotificationVM : ObservableObject
                 setting.SettingName,
                 setting.IsEnabled.ToString());
 
-        await QuickSetupWizardShared.UpsertUserSettingAsync(
-            appData,
-            UserSettingNames.ShouldRunAtStartup,
-            ShouldRunAtStartup.ToString());
-
-        await QuickSetupWizardShared.UpsertUserSettingAsync(
-            appData,
-            UserSettingNames.CloseBehavior,
-            CloseBehavior.ToString());
     }
 
     private void ReplaceNotificationSettings(IEnumerable<SettingsNotificationOptionVM> options)
@@ -138,16 +118,5 @@ public partial class QuickSetupWizardNotificationVM : ObservableObject
                 TotalCount: NotificationSettings.Count)));
     }
 
-    partial void OnCloseBehaviorChanged(AppCloseBehavior value)
-    {
-        OnPropertyChanged(nameof(IsMinimizeToTrayCloseBehaviorSelected));
-        OnPropertyChanged(nameof(IsExitCloseBehaviorSelected));
-    }
-
-    [RelayCommand]
-    private void SetCloseBehavior(AppCloseBehavior closeBehavior)
-    {
-        CloseBehavior = closeBehavior;
-    }
 }
 

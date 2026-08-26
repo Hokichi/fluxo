@@ -19,6 +19,12 @@ public partial class Accounts : UserControl
             FindPopup(source)?.OnEditAccountClick(sender, e);
     }
 
+    private void OnAddAccountClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is DependencyObject source)
+            FindPopup(source)?.OnAddAccountClick(sender, e);
+    }
+
     private void OnDeleteAccountClick(object sender, RoutedEventArgs e)
     {
         if (sender is DependencyObject source)

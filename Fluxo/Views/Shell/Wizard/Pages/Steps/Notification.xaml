@@ -2,7 +2,6 @@
     x:Class="Fluxo.Views.Shell.Wizard.Pages.Steps.Notification"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
     <UserControl.Resources>
@@ -17,12 +16,12 @@
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding Title}" />
+                            Text="{Binding Title, Mode=OneWay}" />
                         <TextBlock
                             Margin="0,6,0,0"
                             FontFamily="{StaticResource Medium}"
                             Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="{Binding Description}"
+                            Text="{Binding Description, Mode=OneWay}"
                             TextWrapping="Wrap" />
                     </StackPanel>
                     <ToggleButton
@@ -35,83 +34,11 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <!--  Step 7: Notifications  -->
-    <StackPanel Visibility="{Binding IsStep7Active, Converter={StaticResource BoolToVisibilityConverter}}">
-        <Border Margin="0,0,0,12" Style="{StaticResource CardBorderStyle}">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="Run with Windows" />
-                        <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
-                            <TextBlock
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
-                                TextWrapping="Wrap">
-                                <Run Text="Start " />
-                            </TextBlock>
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
-                                Text="flux" />
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Mint.Muted}"
-                                Text="o" />
-                            <TextBlock
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
-                                TextWrapping="Wrap">
-                                <Run Text=" in the system tray when Windows signs in." />
-                            </TextBlock>
-                        </StackPanel>
-                    </StackPanel>
-                    <ToggleButton
-                        Grid.Column="1"
-                        VerticalAlignment="Center"
-                        IsChecked="{Binding ShouldRunAtStartup, Mode=TwoWay}"
-                        Style="{StaticResource ToggleSwitchStyle}" />
-                </Grid>
-                <Grid Margin="0,12,0,0" VerticalAlignment="Center">
-                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="When closing " />
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="flux" />
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Mint}"
-                            Text="o" />
-                    </StackPanel>
-                    <customControls:SegmentedToggleGroup Width="252" HorizontalAlignment="Right">
-                        <customControls:SegmentedToggleOption
-                            Command="{Binding SetCloseBehaviorCommand}"
-                            CommandParameter="{x:Static coreEnums:AppCloseBehavior.MinimizeToTray}"
-                            Content="Minimize to tray"
-                            IsSelected="{Binding IsMinimizeToTrayCloseBehaviorSelected, Mode=OneWay}"
-                            SelectOnClick="False" />
-                        <customControls:SegmentedToggleOption
-                            Command="{Binding SetCloseBehaviorCommand}"
-                            CommandParameter="{x:Static coreEnums:AppCloseBehavior.Exit}"
-                            Content="Exit"
-                            IsSelected="{Binding IsExitCloseBehaviorSelected, Mode=OneWay}"
-                            SelectOnClick="False" />
-                    </customControls:SegmentedToggleGroup>
-                </Grid>
-            </StackPanel>
-        </Border>
-
-        <ItemsControl ItemTemplate="{StaticResource WizardNotificationSettingItemTemplate}" ItemsSource="{Binding NotificationSettings}" />
+    <!--  Notifications  -->
+    <StackPanel>
+        <TextBlock Margin="0,0,0,12" FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Notifications" />
+        <TextBlock Margin="0,0,0,20" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Choose the alerts that are useful to you." TextWrapping="Wrap" />
+        <ItemsControl ItemTemplate="{StaticResource WizardNotificationSettingItemTemplate}" ItemsSource="{Binding NotificationSettings, Mode=OneWay}" />
     </StackPanel>
 
 </UserControl>

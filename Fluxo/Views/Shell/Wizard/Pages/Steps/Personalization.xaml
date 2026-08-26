@@ -2,8 +2,35 @@
     x:Class="Fluxo.Views.Shell.Wizard.Pages.Steps.Personalization"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
-    <StackPanel Visibility="{Binding IsStep6Active, Converter={StaticResource BoolToVisibilityConverter}}">
+    <StackPanel>
+        <Border Margin="0,0,0,12" Style="{StaticResource CardBorderStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="Run with Windows" />
+                        <TextBlock Margin="0,6,0,0" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Start fluxo in the system tray when Windows signs in." TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1" VerticalAlignment="Center" IsChecked="{Binding ShouldRunAtStartup, Mode=TwoWay}" Style="{StaticResource ToggleSwitchStyle}" />
+                </Grid>
+                <Grid Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="252" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock VerticalAlignment="Center" FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="When closing fluxo" />
+                    <customControls:SegmentedToggleGroup Grid.Column="1">
+                        <customControls:SegmentedToggleOption Command="{Binding SetCloseBehaviorCommand, Mode=OneWay}" CommandParameter="{x:Static coreEnums:AppCloseBehavior.MinimizeToTray}" Content="Minimize to tray" IsSelected="{Binding IsMinimizeToTrayCloseBehaviorSelected, Mode=OneWay}" SelectOnClick="False" />
+                        <customControls:SegmentedToggleOption Command="{Binding SetCloseBehaviorCommand, Mode=OneWay}" CommandParameter="{x:Static coreEnums:AppCloseBehavior.Exit}" Content="Exit" IsSelected="{Binding IsExitCloseBehaviorSelected, Mode=OneWay}" SelectOnClick="False" />
+                    </customControls:SegmentedToggleGroup>
+                </Grid>
+            </StackPanel>
+        </Border>
         <Border Margin="0,0,0,12" Style="{StaticResource CardBorderStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -33,7 +60,7 @@
         <Border
             Margin="0,0,0,12"
             Style="{StaticResource CardBorderStyle}"
-            Visibility="{Binding HasAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}">
+            Visibility="{Binding HasAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
             <StackPanel>
                 <TextBlock
                     FontFamily="{StaticResource Bold}"
@@ -51,7 +78,7 @@
                     Margin="0,10,0,0"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal"
-                    Visibility="{Binding IsCustomAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding IsCustomAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <customControls:NumericUpDown
                         Width="96"
                         LowerLimit="1"
@@ -90,13 +117,13 @@
                         Padding="12,0,24,0"
                         PasswordChanged="OnUiLockingPasswordBoxPasswordChanged"
                         Style="{StaticResource RoundedPasswordInputStyle}"
-                        Visibility="{Binding IsUiLockingPasswordVisible, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                        Visibility="{Binding IsUiLockingPasswordVisible, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}" />
                     <TextBox
                         x:Name="UiLockingPasswordVisibleTextBox"
                         Padding="12,0,24,0"
                         Style="{StaticResource RoundedTextInputStyle}"
                         TextChanged="OnUiLockingPasswordVisibleTextBoxTextChanged"
-                        Visibility="{Binding IsUiLockingPasswordVisible, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        Visibility="{Binding IsUiLockingPasswordVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                     <customControls:BalloonCheckBox
                         Margin="0,0,8,0"
                         HorizontalAlignment="Right"

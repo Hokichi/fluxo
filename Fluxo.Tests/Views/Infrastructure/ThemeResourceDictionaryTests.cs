@@ -42,7 +42,7 @@ public sealed class ThemeResourceDictionaryTests
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Light);
 
-            Assert.Equal(Color.FromRgb(0xF0, 0xF5, 0xF1), GetBackgroundColor(consumer));
+            Assert.Equal(Color.FromRgb(0xF2, 0xF8, 0xF5), GetBackgroundColor(consumer));
             Assert.Equal(ApplicationTheme.Light, ThemeManager.CurrentTheme);
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Dark);
@@ -75,7 +75,7 @@ public sealed class ThemeResourceDictionaryTests
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Light);
 
-            Assert.Equal(Color.FromRgb(0xF0, 0xF5, 0xF1), GetBackgroundColor(consumer));
+            Assert.Equal(Color.FromRgb(0xF2, 0xF8, 0xF5), GetBackgroundColor(consumer));
 
             ThemeManager.SwitchTheme(resources, ApplicationTheme.Dark);
         });
@@ -100,7 +100,7 @@ public sealed class ThemeResourceDictionaryTests
 
                 ThemeManager.SwitchTheme(resources, ApplicationTheme.Light);
 
-                Assert.Equal(Color.FromRgb(0x14, 0x25, 0x1D), foreground.Color);
+                Assert.Equal(Color.FromRgb(0x1F, 0x24, 0x22), foreground.Color);
                 Assert.Same(foreground, consumer.Foreground);
             }
             finally

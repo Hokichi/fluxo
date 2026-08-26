@@ -4,10 +4,83 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:pages="clr-namespace:Fluxo.Views.Shell.Wizard.Pages"
+    xmlns:steps="clr-namespace:Fluxo.Views.Shell.Wizard.Pages.Steps"
     Title="fluxo Wizard"
     Icon="/Fluxo.Resources;component/Resources/fluxo.ico"
     ShowInTaskbar="True"
     Style="{StaticResource QuickSetupWizardPopupStyle}">
+
+    <customControls:BasePopup.Resources>
+        <ResourceDictionary>
+            <Style x:Key="WizardNavigationButtonStyle" BasedOn="{StaticResource ActionTextButtonStyle}" TargetType="Button">
+                <Setter Property="Height" Value="40" />
+                <Setter Property="Margin" Value="8,0" />
+            </Style>
+            <Style x:Key="WizardNameNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="1" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsNameStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="WizardThemeNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="2" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsThemeStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="WizardPersonalizationNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="3" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsPersonalizationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="WizardNotificationsNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="4" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsNotificationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="WizardAllocationNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="6" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsBudgetAllocationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="WizardBudgetConfigurationNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="7" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsBudgetConfigurationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="WizardAccountsNavigationButtonStyle" BasedOn="{StaticResource WizardNavigationButtonStyle}" TargetType="Button">
+                <Setter Property="Tag" Value="8" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding DataContext.IsAccountsStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" Value="True">
+                        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </customControls:BasePopup.Resources>
 
     <customControls:BasePopup.PopupTitleContent>
         <StackPanel Orientation="Horizontal">
@@ -33,30 +106,90 @@
         Width="860"
         Height="560"
         Margin="24,0,24,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="0,0,0,20">
+            <StackPanel
+                HorizontalAlignment="Center"
+                Visibility="{Binding DataContext.IsPersonalSetupStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                <customControls:StepNavigatorControl StepCount="4" CurrentStep="{Binding DataContext.PersonalSetupNavigatorStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" />
+                <StackPanel Margin="0,10,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button AutomationProperties.Name="Navigate to name step" Click="OnNavigatorStepClick" Content="Name" Style="{StaticResource WizardNameNavigationButtonStyle}" />
+                    <Button AutomationProperties.Name="Navigate to theme step" Click="OnNavigatorStepClick" Content="Theme" Style="{StaticResource WizardThemeNavigationButtonStyle}" />
+                    <Button AutomationProperties.Name="Navigate to personalization step" Click="OnNavigatorStepClick" Content="Personalization" Style="{StaticResource WizardPersonalizationNavigationButtonStyle}" />
+                    <Button AutomationProperties.Name="Navigate to notifications step" Click="OnNavigatorStepClick" Content="Notifications" Style="{StaticResource WizardNotificationsNavigationButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel
+                HorizontalAlignment="Center"
+                Visibility="{Binding DataContext.IsBudgetSetupStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                <customControls:StepNavigatorControl StepCount="3" CurrentStep="{Binding DataContext.BudgetSetupNavigatorStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Mode=OneWay}" />
+                <StackPanel Margin="0,10,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button AutomationProperties.Name="Navigate to budget allocation step" Click="OnNavigatorStepClick" Content="Allocation" Style="{StaticResource WizardAllocationNavigationButtonStyle}" />
+                    <Button AutomationProperties.Name="Navigate to budget configuration step" Click="OnNavigatorStepClick" Content="Configuration" Style="{StaticResource WizardBudgetConfigurationNavigationButtonStyle}" />
+                    <Button AutomationProperties.Name="Navigate to accounts step" Click="OnNavigatorStepClick" Content="Accounts" Style="{StaticResource WizardAccountsNavigationButtonStyle}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid x:Name="ContentContainer">
             <!--  Greeting Page (Step 0)  -->
-            <pages:QuickSetupWizardGreetingPage DataContext="{Binding GreetingPage}" Visibility="{Binding DataContext.IsGreetingStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <pages:QuickSetupWizardGreetingPage DataContext="{Binding GreetingPage, Mode=OneWay}" Visibility="{Binding DataContext.IsGreetingStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
             <!--  Preferred Name Page (Step 1)  -->
-            <pages:QuickSetupWizardNamePage DataContext="{Binding NamePage}" Visibility="{Binding DataContext.IsNameStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <pages:QuickSetupWizardNamePage DataContext="{Binding NamePage, Mode=OneWay}" Visibility="{Binding DataContext.IsNameStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
-            <!--  Middle Steps (2-8): Sidebar + Content  -->
-            <pages:QuickSetupWizardMiddlePage
-                x:Name="MiddleStepPage"
-                DataContext="{Binding MiddlePage}"
-                Visibility="{Binding DataContext.IsMiddleStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <pages:QuickSetupWizardThemePage
+                Visibility="{Binding DataContext.IsThemeStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+
+            <steps:Personalization
+                DataContext="{Binding MiddlePage.Personalization, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsPersonalizationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+
+            <steps:Notification
+                DataContext="{Binding MiddlePage.Notification, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsNotificationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+
+            <pages:QuickSetupWizardBudgetIntroductionPage
+                Visibility="{Binding DataContext.IsBudgetIntroductionStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+
+            <steps:BudgetAllocation
+                DataContext="{Binding MiddlePage.BudgetAllocation, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsBudgetAllocationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+
+            <pages:QuickSetupWizardBudgetConfigurationPage
+                DataContext="{Binding MiddlePage.BudgetAllocation, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsBudgetConfigurationStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+
+            <steps:Accounts
+                DataContext="{Binding MiddlePage.Accounts, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsAccountsStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
             <!--  Loading Page (Step 9)  -->
             <pages:QuickSetupWizardLoadingPage
                 x:Name="LoadingStepPage"
-                DataContext="{Binding LoadingPage}"
-                Visibility="{Binding DataContext.IsLoadingStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                DataContext="{Binding LoadingPage, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsLoadingStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
             <!--  Welcome Page (Step 10)  -->
             <pages:QuickSetupWizardFinalPage
                 x:Name="FinalStepPage"
-                DataContext="{Binding FinalPage}"
-                Visibility="{Binding DataContext.IsFinalStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                DataContext="{Binding FinalPage, Mode=OneWay}"
+                Visibility="{Binding DataContext.IsFinalStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+        </Grid>
+        </ScrollViewer>
+
+        <Grid
+            Grid.Row="2"
+            Margin="0,20,0,0"
+            Visibility="{Binding DataContext.IsWizardActionStep, RelativeSource={RelativeSource AncestorType={x:Type customControls:BasePopup}}, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+            <Button Click="OnBackClick" Content="Back" HorizontalAlignment="Left" Style="{StaticResource DialogActionButtonStyle}" />
+            <Button Click="OnNextClick" Content="Next" HorizontalAlignment="Right" IsEnabled="{Binding IsNextEnabled, Mode=OneWay}" Style="{StaticResource PrimaryDialogActionButtonStyle}" />
         </Grid>
     </Grid>
 </customControls:BasePopup>

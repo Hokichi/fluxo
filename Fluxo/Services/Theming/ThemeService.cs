@@ -43,6 +43,11 @@ public sealed class ThemeService
         _previewOriginalTheme = null;
     }
 
+    public void AcceptPreviewTheme()
+    {
+        _previewOriginalTheme = null;
+    }
+
     internal async Task<ApplicationTheme> RestoreBeforeCacheAsync(
         Func<CancellationToken, Task<UserSettings?>> getSettingAsync,
         CancellationToken cancellationToken = default)

@@ -6,7 +6,7 @@
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
     <!--  Step 5: Budget Allocation  -->
-    <StackPanel Visibility="{Binding IsStep5Active, Converter={StaticResource BoolToVisibilityConverter}}">
+    <StackPanel>
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -38,7 +38,7 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding NeedsAllocationPercentage, StringFormat={}{0}%}"
+                            Text="{Binding NeedsAllocationPercentage, StringFormat={}{0}%, Mode=OneWay}"
                             TextAlignment="Center" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource PlusSolid}"
@@ -64,8 +64,8 @@
                     HorizontalAlignment="Right"
                     FontFamily="{StaticResource Medium}"
                     Foreground="{DynamicResource Brush.Text.Secondary}"
-                    Text="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}}"
-                    ToolTip="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
+                    Text="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}, Mode=OneWay}"
+                    ToolTip="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}, Mode=OneWay}" />
             </Grid>
         </Border>
         <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
@@ -99,7 +99,7 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding WantsAllocationPercentage, StringFormat={}{0}%}"
+                            Text="{Binding WantsAllocationPercentage, StringFormat={}{0}%, Mode=OneWay}"
                             TextAlignment="Center" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource PlusSolid}"
@@ -125,8 +125,8 @@
                     HorizontalAlignment="Right"
                     FontFamily="{StaticResource Medium}"
                     Foreground="{DynamicResource Brush.Text.Secondary}"
-                    Text="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}}"
-                    ToolTip="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
+                    Text="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}, Mode=OneWay}"
+                    ToolTip="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}, Mode=OneWay}" />
             </Grid>
         </Border>
         <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
@@ -160,7 +160,7 @@
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding InvestAllocationPercentage, StringFormat={}{0}%}"
+                            Text="{Binding InvestAllocationPercentage, StringFormat={}{0}%, Mode=OneWay}"
                             TextAlignment="Center" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource PlusSolid}"
@@ -186,8 +186,8 @@
                     HorizontalAlignment="Right"
                     FontFamily="{StaticResource Medium}"
                     Foreground="{DynamicResource Brush.Text.Secondary}"
-                    Text="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}}"
-                    ToolTip="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
+                    Text="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyDisplayConverter}, Mode=OneWay}"
+                    ToolTip="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}, Mode=OneWay}" />
             </Grid>
         </Border>
 
@@ -195,92 +195,8 @@
             Margin="0,8,0,0"
             FontFamily="{StaticResource Bold}"
             Foreground="{DynamicResource Brush.Danger}"
-            Text="{Binding BudgetAllocationErrorMessage}"
-            Visibility="{Binding HasBudgetAllocationError, Converter={StaticResource BoolToVisibilityConverter}}" />
+            Text="{Binding BudgetAllocationErrorMessage, Mode=OneWay}"
+            Visibility="{Binding HasBudgetAllocationError, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
-        <TextBlock
-            Margin="0,20,0,12"
-            FontFamily="{StaticResource Bold}"
-            FontSize="16"
-            Foreground="{DynamicResource Brush.Text.Primary}"
-            Text="Configuration" />
-
-        <Border Style="{StaticResource CardBorderStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="180" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Bold}"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="Spending Limit" />
-                <customControls:MoneyTextBox
-                    Grid.Column="1"
-                    Language="en-US"
-                    Style="{StaticResource RoundedMoneyTextInputStyle}"
-                    Text="{Binding AllocationLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-            </Grid>
-        </Border>
-
-        <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="360" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Bold}"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="Allocation Period" />
-                <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding AllocationPeriod, Mode=TwoWay}">
-                    <customControls:SegmentedToggleOption Content="Weekly" Value="{x:Static enums:AllocationPeriod.Weekly}" />
-                    <customControls:SegmentedToggleOption Content="Biweekly" Value="{x:Static enums:AllocationPeriod.Biweekly}" />
-                    <customControls:SegmentedToggleOption Content="Monthly" Value="{x:Static enums:AllocationPeriod.Monthly}" />
-                    <customControls:SegmentedToggleOption Content="Quarterly" Value="{x:Static enums:AllocationPeriod.Quarterly}" />
-                    <customControls:SegmentedToggleOption Content="Yearly" Value="{x:Static enums:AllocationPeriod.Yearly}" />
-                </customControls:SegmentedToggleGroup>
-            </Grid>
-        </Border>
-
-        <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="300" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Bold}"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="Budget Rollover" />
-                <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding RolloverPolicy, Mode=TwoWay}">
-                    <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:RolloverPolicy.None}" />
-                    <customControls:SegmentedToggleOption Content="Matching" Value="{x:Static enums:RolloverPolicy.Matching}" />
-                    <customControls:SegmentedToggleOption Content="Pooled" Value="{x:Static enums:RolloverPolicy.Pooled}" />
-                </customControls:SegmentedToggleGroup>
-            </Grid>
-        </Border>
-
-        <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="300" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Bold}"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="Overspend Behavior" />
-                <customControls:SegmentedToggleGroup Grid.Column="1" SelectedValue="{Binding OverspendPolicy, Mode=TwoWay}">
-                    <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:OverspendPolicy.Ignore}" />
-                    <customControls:SegmentedToggleOption Content="Soft Debt" Value="{x:Static enums:OverspendPolicy.SoftDebt}" />
-                    <customControls:SegmentedToggleOption Content="Hard Stop" Value="{x:Static enums:OverspendPolicy.HardStop}" />
-                </customControls:SegmentedToggleGroup>
-            </Grid>
-        </Border>
     </StackPanel>
 </UserControl>

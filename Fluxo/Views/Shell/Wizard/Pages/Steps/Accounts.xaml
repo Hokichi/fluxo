@@ -23,20 +23,20 @@
                             FontFamily="{StaticResource Bold}"
                             FontSize="15"
                             Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding Name}" />
+                            Text="{Binding Name, Mode=OneWay}" />
                         <TextBlock
                             Margin="0,8,0,0"
                             FontFamily="{StaticResource Medium}"
                             Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="{Binding TypeLabel}" />
+                            Text="{Binding TypeLabel, Mode=OneWay}" />
                         <TextBlock
                             Margin="0,12,0,0"
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Mint}"
-                            ToolTip="{Binding PrimaryAmount, Converter={StaticResource MoneyFullDisplayConverter}}">
-                            <Run Text="{Binding PrimaryAmountLabel}" />
+                            ToolTip="{Binding PrimaryAmount, Converter={StaticResource MoneyFullDisplayConverter}, Mode=OneWay}">
+                            <Run Text="{Binding PrimaryAmountLabel, Mode=OneWay}" />
                             <Run Text=": " />
-                            <Run Text="{Binding PrimaryAmount, Converter={StaticResource NumberWithCommasConverter}}" />
+                            <Run Text="{Binding PrimaryAmount, Converter={StaticResource NumberWithCommasConverter}, Mode=OneWay}" />
                         </TextBlock>
                     </StackPanel>
                 </Grid>
@@ -44,13 +44,18 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <!--  Step 2: Accounts  -->
-    <StackPanel Visibility="{Binding IsStep2Active, Converter={StaticResource BoolToVisibilityConverter}}">
+    <StackPanel>
+        <TextBlock Margin="0,0,0,8" FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Accounts" />
+        <TextBlock Margin="0,0,0,16" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Add accounts now, or do it later from Settings." TextWrapping="Wrap" />
+        <Border Margin="0,0,0,16" Padding="16" Background="{DynamicResource Brush.BalloonButton.Background.Caution}" CornerRadius="8" Visibility="{Binding HasFunctionalAccount, Converter={StaticResource BoolToVisibilityInvertedConverter}, Mode=OneWay}">
+            <TextBlock FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Primary}" Text="fluxo works best with at least one functional account. You can continue and add one later." TextWrapping="Wrap" />
+        </Border>
+        <Button Margin="0,0,0,16" Click="OnAddAccountClick" Content="Add account" HorizontalAlignment="Left" Style="{StaticResource ActionButtonStyle}" />
         <ItemsControl
             ItemContainerStyle="{StaticResource WizardItemContainerStyle}"
             ItemTemplate="{StaticResource WizardAccountsItemTemplate}"
             ItemsPanel="{StaticResource WizardItemsPanelTemplate}"
-            ItemsSource="{Binding Accounts}" />
+            ItemsSource="{Binding Accounts, Mode=OneWay}" />
     </StackPanel>
 
 </UserControl>

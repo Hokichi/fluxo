@@ -8,12 +8,14 @@ using Fluxo.Data.Context;
 using Fluxo.Services.Logging;
 using Fluxo.Services.Persistence;
 using Fluxo.Services.Caching;
+using Fluxo.Services.Theming;
 using Fluxo.ViewModels.Popups.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System.Runtime.ExceptionServices;
 using Fluxo.Resources.Resources.Messages;
+using Fluxo.Resources.Theming;
 using MainVM = Fluxo.ViewModels.Shell.Main.MainVM;
 
 namespace Fluxo.ViewModels.Shell.QuickSetupWizard;
@@ -27,12 +29,14 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
     private readonly IStartupRegistrationService _startupRegistrationService;
     private readonly IDataOperationScopeFactory _dataOperationScopeFactory;
     private readonly AppDataCommitCoordinator _appDataCommitCoordinator;
+    private readonly ThemeService? _themeService;
     private IDataOperationScope? _stagedScope;
     private Func<Task>? _stagedCommitAsync;
     private Func<Task>? _stagedRollbackAsync;
 
     [ObservableProperty] private int _currentStepIndex;
     [ObservableProperty] private bool _hasAccounts;
+    [ObservableProperty] private ApplicationTheme _selectedTheme;
 
     public QuickSetupWizardVM(
         MainVM mainViewModel,
@@ -45,7 +49,8 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         QuickSetupWizardMiddlePageVM middlePage,
         QuickSetupWizardLoadingPageVM loadingPage,
         QuickSetupWizardFinalPageVM finalPage,
-        IMessenger? messenger = null)
+        IMessenger? messenger = null,
+        ThemeService? themeService = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
         _mainViewModel = mainViewModel;
@@ -53,12 +58,14 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         _startupRegistrationService = startupRegistrationService;
         _dataOperationScopeFactory = dataOperationScopeFactory;
         _appDataCommitCoordinator = appDataCommitCoordinator;
+        _themeService = themeService;
 
         GreetingPage = greetingPage;
         NamePage = namePage;
         MiddlePage = middlePage;
         LoadingPage = loadingPage;
         FinalPage = finalPage;
+        _selectedTheme = _themeService?.CurrentTheme ?? ApplicationTheme.Dark;
 
         IsActive = true;
     }
@@ -81,7 +88,29 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
 
     public bool IsNameStep => CurrentStepIndex == 1;
 
-    public bool IsMiddleStep => CurrentStepIndex is >= 2 and <= 8;
+    public bool IsThemeStep => CurrentStepIndex == 2;
+
+    public bool IsPersonalizationStep => CurrentStepIndex == 3;
+
+    public bool IsNotificationStep => CurrentStepIndex == 4;
+
+    public bool IsBudgetIntroductionStep => CurrentStepIndex == 5;
+
+    public bool IsBudgetAllocationStep => CurrentStepIndex == 6;
+
+    public bool IsBudgetConfigurationStep => CurrentStepIndex == 7;
+
+    public bool IsAccountsStep => CurrentStepIndex == 8;
+
+    public bool IsPersonalSetupStep => CurrentStepIndex is >= 1 and <= 4;
+
+    public bool IsBudgetSetupStep => CurrentStepIndex is >= 6 and <= 8;
+
+    public bool IsWizardActionStep => CurrentStepIndex is >= 2 and <= 8;
+
+    public int PersonalSetupNavigatorStep => CurrentStepIndex;
+
+    public int BudgetSetupNavigatorStep => CurrentStepIndex - 5;
 
     public bool IsLoadingStep => CurrentStepIndex == 9;
 
@@ -89,21 +118,30 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
 
     public bool IsStep2Active => CurrentStepIndex == 2;
 
-    public bool IsNextEnabled => !(CurrentStepIndex == 5 && MiddlePage.BudgetAllocation.HasBudgetAllocationError);
+    public bool IsNextEnabled => !(CurrentStepIndex == 6 && MiddlePage.BudgetAllocation.HasBudgetAllocationError);
 
     partial void OnCurrentStepIndexChanged(int value)
     {
         OnPropertyChanged(nameof(IsGreetingStep));
         OnPropertyChanged(nameof(IsNameStep));
-        OnPropertyChanged(nameof(IsMiddleStep));
+        OnPropertyChanged(nameof(IsThemeStep));
+        OnPropertyChanged(nameof(IsPersonalizationStep));
+        OnPropertyChanged(nameof(IsNotificationStep));
+        OnPropertyChanged(nameof(IsBudgetIntroductionStep));
+        OnPropertyChanged(nameof(IsBudgetAllocationStep));
+        OnPropertyChanged(nameof(IsBudgetConfigurationStep));
+        OnPropertyChanged(nameof(IsAccountsStep));
+        OnPropertyChanged(nameof(IsPersonalSetupStep));
+        OnPropertyChanged(nameof(IsBudgetSetupStep));
+        OnPropertyChanged(nameof(IsWizardActionStep));
+        OnPropertyChanged(nameof(PersonalSetupNavigatorStep));
+        OnPropertyChanged(nameof(BudgetSetupNavigatorStep));
         OnPropertyChanged(nameof(IsLoadingStep));
         OnPropertyChanged(nameof(IsFinalStep));
         OnPropertyChanged(nameof(IsStep2Active));
         OnPropertyChanged(nameof(IsNextEnabled));
         OnPropertyChanged(nameof(CurrentStep));
 
-        if (value is >= 2 and <= 8)
-            MiddlePage.SetCurrentStepIndex(value);
     }
 
     public void Receive(QuickSetupWizardAccountsChangedMessage message)
@@ -122,6 +160,11 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         await MiddlePage.LoadAsync();
     }
 
+    partial void OnSelectedThemeChanged(ApplicationTheme value)
+    {
+        _themeService?.PreviewTheme(value);
+    }
+
     public void GoBack()
     {
         if (CurrentStepIndex <= 0)
@@ -129,13 +172,7 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
 
         if (IsFinalStep)
         {
-            CurrentStepIndex = 7;
-            return;
-        }
-
-        if (CurrentStepIndex == 6 && !HasAccounts)
-        {
-            CurrentStepIndex = 2;
+            CurrentStepIndex = 8;
             return;
         }
 
@@ -185,6 +222,8 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
             if (_stagedCommitAsync is not null)
                 await _stagedCommitAsync();
 
+            _themeService?.AcceptPreviewTheme();
+
             await SaveIsFirstRunAsync(false);
             try
             {
@@ -229,6 +268,7 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
         try
         {
             await ClearStagedAsync();
+            _themeService?.RestorePreviewTheme();
             await SaveIsFirstRunAsync(false);
 
             if (!_mainViewModel.IsInitialized)
@@ -268,6 +308,10 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
 
             var stagedAppData = new AppDataService(scope.UnitOfWork);
             await NamePage.ApplyAsync(stagedAppData);
+            await QuickSetupWizardShared.UpsertUserSettingAsync(
+                stagedAppData,
+                UserSettingNames.CurrentTheme,
+                SelectedTheme.ToString());
             var budgetAllocationResult = await MiddlePage.BudgetAllocation.ApplyAsync(stagedAppData);
             if (!budgetAllocationResult.IsSuccess)
                 throw new InvalidOperationException(budgetAllocationResult.ErrorMessage);
@@ -275,10 +319,6 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
             await MiddlePage.Personalization.ApplyAsync(stagedAppData);
             await MiddlePage.Notification.ApplyAsync(stagedAppData);
             await MiddlePage.Accounts.ApplyAsync(stagedAppData);
-            await MiddlePage.RecurringTransactions.ApplyAsync(
-                stagedAppData,
-                MiddlePage.Accounts.LastPersistedIdMap);
-            await MiddlePage.SavingGoals.ApplyAsync(stagedAppData);
             await stagedAppData.SaveChangesAsync();
 
             _stagedScope = scope;
