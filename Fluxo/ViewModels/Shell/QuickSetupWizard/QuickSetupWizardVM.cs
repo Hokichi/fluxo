@@ -106,7 +106,7 @@ public partial class QuickSetupWizardVM : ObservableRecipient,
 
     public bool IsBudgetSetupStep => CurrentStepIndex is >= 6 and <= 8;
 
-    public bool IsWizardActionStep => CurrentStepIndex is >= 2 and <= 8;
+    public bool IsWizardActionStep => CurrentStepIndex is >= 1 and <= 8;
 
     public int PersonalSetupNavigatorStep => CurrentStepIndex;
 

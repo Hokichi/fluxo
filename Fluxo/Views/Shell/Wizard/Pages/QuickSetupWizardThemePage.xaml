@@ -2,16 +2,138 @@
     x:Class="Fluxo.Views.Shell.Wizard.Pages.QuickSetupWizardThemePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:theming="clr-namespace:Fluxo.Resources.Theming;assembly=Fluxo.Resources"
-    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
-    <Border Style="{StaticResource CardBorderStyle}">
-        <StackPanel VerticalAlignment="Center">
-            <TextBlock FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="What is your preferred theme?" />
-            <TextBlock Margin="0,8,0,0" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Preview your choice now. You can change it later in Settings." TextWrapping="Wrap" />
-            <customControls:SegmentedToggleGroup Margin="0,24,0,0" SelectedValue="{Binding SelectedTheme, Mode=TwoWay}">
-                <customControls:SegmentedToggleOption Content="Light" Value="{x:Static theming:ApplicationTheme.Light}" />
-                <customControls:SegmentedToggleOption Content="Dark" Value="{x:Static theming:ApplicationTheme.Dark}" />
-            </customControls:SegmentedToggleGroup>
-        </StackPanel>
-    </Border>
+    xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
+    xmlns:theming="clr-namespace:Fluxo.Resources.Theming;assembly=Fluxo.Resources">
+    <StackPanel VerticalAlignment="Center">
+        <TextBlock
+            FontFamily="{StaticResource Bold}"
+            FontSize="22"
+            Foreground="{DynamicResource Brush.Text.Primary}"
+            Text="What is your preferred theme?" />
+        <TextBlock
+            Margin="0,8,0,0"
+            FontFamily="{StaticResource Medium}"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
+            Text="Preview your choice now. You can change it later in Settings."
+            TextWrapping="Wrap" />
+        <customControls:SegmentedToggleGroup Margin="0,24,0,0" SelectedValue="{Binding SelectedTheme, Mode=TwoWay}">
+            <customControls:SegmentedToggleOption Content="Light" Value="{x:Static theming:ApplicationTheme.Light}" />
+            <customControls:SegmentedToggleOption Content="Dark" Value="{x:Static theming:ApplicationTheme.Dark}" />
+        </customControls:SegmentedToggleGroup>
+        <Grid
+            Height="60"
+            Margin="0,32"
+            IsHitTestVisible="False">
+            <Grid Margin="24,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Margin="32,0,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Rectangle
+                        Width="24"
+                        Height="24"
+                        VerticalAlignment="Center"
+                        Fill="{StaticResource Brush.Mint}">
+                        <Rectangle.OpacityMask>
+                            <ImageBrush ImageSource="/Fluxo.Resources;component/Resources/fluxo.ico" Stretch="Uniform" />
+                        </Rectangle.OpacityMask>
+                    </Rectangle>
+                    <TextBlock
+                        Margin="8,1,0,0"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Black}"
+                        FontSize="18"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
+                        Text="flux" />
+                    <TextBlock
+                        Margin="0,1,0,0"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Black}"
+                        FontSize="18"
+                        Foreground="{DynamicResource Brush.Mint}"
+                        Text="o" />
+                    <Border Height="32" Style="{StaticResource VerticalSeparatorBorderStyle}" />
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Bold}"
+                        FontSize="14"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
+                        Text="Quick Setup" />
+                </StackPanel>
+                <TextBox
+                    Grid.Column="1"
+                    Width="160"
+                    Margin="16,0"
+                    IsReadOnly="True"
+                    Style="{StaticResource RoundedTextInputStyle}"
+                    Text="Sample text" />
+                <StackPanel
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Border
+                        Width="1"
+                        Margin="8,0"
+                        Background="{DynamicResource Brush.Border.Strong}"
+                        SnapsToDevicePixels="True" />
+                    <customControls:BalloonButton
+                        ButtonIcon="{StaticResource Bell}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                        IconSize="11"
+                        Style="{StaticResource HeaderButtonStyle}" />
+                    <customControls:BalloonButton
+                        ButtonIcon="{StaticResource BarsSolid}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                        IconSize="9"
+                        Style="{StaticResource HeaderButtonStyle}" />
+                    <Border
+                        Width="1"
+                        Margin="16,0,8,0"
+                        Background="{DynamicResource Brush.Border.Strong}"
+                        SnapsToDevicePixels="True" />
+                    <customControls:BalloonButton
+                        Padding="8,0"
+                        ButtonIcon="{StaticResource PlusSolid}"
+                        ButtonText="New Transaction"
+                        DefaultBackground="{DynamicResource Brush.Mint}"
+                        Foreground="{DynamicResource Brush.Text.Primary.Inverted}"
+                        HoveredBackground="{DynamicResource Brush.Mint.Muted}"
+                        ShouldExpand="True"
+                        Style="{StaticResource HeaderButtonStyle}" />
+                    <Border
+                        Width="1"
+                        Margin="16,0,8,0"
+                        Background="{DynamicResource Brush.Border.Strong}"
+                        SnapsToDevicePixels="True" />
+                    <customControls:BalloonButton
+                        ButtonIcon="{StaticResource Minus}"
+                        ButtonText="Minimize"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                        ShouldExpand="True"
+                        Style="{StaticResource HeaderButtonStyle}" />
+                    <customControls:BalloonButton
+                        ButtonIcon="{StaticResource ExpandAlt}"
+                        ButtonText="Maximize"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
+                        ShouldExpand="True"
+                        Style="{StaticResource HeaderButtonStyle}" />
+                    <customControls:BalloonButton
+                        ButtonIcon="{StaticResource Close}"
+                        ButtonText="Close"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Destructive}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Destructive.Hovered}"
+                        ShouldExpand="True"
+                        Style="{StaticResource HeaderButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </StackPanel>
 </UserControl>

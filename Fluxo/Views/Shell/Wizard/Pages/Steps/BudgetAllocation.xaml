@@ -7,6 +7,10 @@
     xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
     <!--  Step 5: Budget Allocation  -->
     <StackPanel>
+        <StackPanel Margin="0,0,0,20">
+            <TextBlock FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Budget allocation" />
+            <TextBlock Margin="0,8,0,0" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Set the Needs, Wants, and Invest split for your budget." TextWrapping="Wrap" />
+        </StackPanel>
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid>
                 <Grid.RowDefinitions>

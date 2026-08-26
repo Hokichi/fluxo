@@ -37,6 +37,28 @@ public sealed class QuickSetupWizardVMTests
     }
 
     [Fact]
+    public void QuickSetupWizardVM_IsWizardActionStep_AtNameStep_IsTrue()
+    {
+        var viewModel = CreateViewModel();
+        viewModel.CurrentStepIndex = 1;
+
+        Assert.True(viewModel.IsWizardActionStep);
+    }
+
+    [Fact]
+    public void QuickSetupWizardVM_IsWizardActionStep_AtGreetingLoadingAndFinal_IsFalse()
+    {
+        var viewModel = CreateViewModel();
+
+        viewModel.CurrentStepIndex = 0;
+        Assert.False(viewModel.IsWizardActionStep);
+        viewModel.CurrentStepIndex = 9;
+        Assert.False(viewModel.IsWizardActionStep);
+        viewModel.CurrentStepIndex = viewModel.TotalSteps - 1;
+        Assert.False(viewModel.IsWizardActionStep);
+    }
+
+    [Fact]
     public async Task QuickSetupWizardVM_GoNextAsync_OnStep1_DoesNotOverwriteExistingSalarySetting()
     {
         var userSettingsRepository = new TestUserSettingsRepository(

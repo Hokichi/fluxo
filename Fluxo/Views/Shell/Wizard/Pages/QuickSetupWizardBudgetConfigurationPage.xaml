@@ -4,8 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
-    <Border Style="{StaticResource CardBorderStyle}">
-        <StackPanel>
+    <StackPanel>
             <TextBlock FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Budget configuration" />
             <TextBlock Margin="0,8,0,20" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Choose how fluxo manages your budget." TextWrapping="Wrap" />
             <TextBlock FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="Spending limit" />
@@ -30,6 +29,5 @@
                 <customControls:SegmentedToggleOption Content="Soft debt" Value="{x:Static enums:OverspendPolicy.SoftDebt}" />
                 <customControls:SegmentedToggleOption Content="Hard stop" Value="{x:Static enums:OverspendPolicy.HardStop}" />
             </customControls:SegmentedToggleGroup>
-        </StackPanel>
-    </Border>
+    </StackPanel>
 </UserControl>

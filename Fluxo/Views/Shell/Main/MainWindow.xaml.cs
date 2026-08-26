@@ -156,6 +156,8 @@ public partial class MainWindow : Window, IPopupHost
         _appUpdateService = appUpdateService;
         _appUpdateInteractionService = appUpdateInteractionService;
         HeaderThemeToggle.IsChecked = _themeService.CurrentTheme == ApplicationTheme.Dark;
+        ThemeManager.ThemeChanged += OnThemeChanged;
+        Closed += (_, _) => ThemeManager.ThemeChanged -= OnThemeChanged;
         _logMemoryManager = new LogMemoryManager(_appData, _mainVM.ReloadCurrentDataAsync);
         WeakReferenceMessenger.Default.Register<MainWindow, NavigateToLedgerRequestedMessage>(
             this,
@@ -218,6 +220,22 @@ public partial class MainWindow : Window, IPopupHost
     internal static ApplicationTheme ResolveThemeFromToggle(bool? isChecked)
     {
         return isChecked == true ? ApplicationTheme.Dark : ApplicationTheme.Light;
+    }
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        if (!Dispatcher.CheckAccess())
+        {
+            _ = Dispatcher.BeginInvoke(RefreshHeaderThemeToggle);
+            return;
+        }
+
+        RefreshHeaderThemeToggle();
+    }
+
+    private void RefreshHeaderThemeToggle()
+    {
+        HeaderThemeToggle.IsChecked = _themeService.CurrentTheme == ApplicationTheme.Dark;
     }
 
     private async void OnHeaderThemeToggleClick(object sender, RoutedEventArgs e)

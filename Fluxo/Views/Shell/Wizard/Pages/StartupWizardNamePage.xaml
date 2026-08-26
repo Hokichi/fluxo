@@ -5,7 +5,10 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
-        <Style x:Key="WizardNameTextBoxStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
+        <Style
+            x:Key="WizardNameTextBoxStyle"
+            BasedOn="{StaticResource BaseTextBoxStyle}"
+            TargetType="TextBox">
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint.Muted}" />
@@ -44,60 +47,44 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Style="{StaticResource CardBorderStyle}">
-        <Grid>
+    <Grid>
 
-            <components:RisingFlowBackground Grid.RowSpan="5" AccentBrush="{DynamicResource Color.Mint}" />
-
-            <StackPanel
-                Width="420"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontFamily="{StaticResource Bold}"
-                        FontSize="28"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
-                        TextAlignment="Center"
-                        TextWrapping="Wrap">
-                        <Run Text="What should" />
-                        <Run Text="flux" />
-                    </TextBlock>
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontFamily="{StaticResource Bold}"
-                        FontSize="28"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
-                        TextAlignment="Center"
-                        TextWrapping="Wrap">
-                        <Run Foreground="{DynamicResource Brush.Mint}" Text="o" />
-                        <Run Text="call you?" />
-                    </TextBlock>
-                </StackPanel>
-                <TextBox
-                    Margin="0,28,0,0"
-                    CaretBrush="{DynamicResource Brush.Text.Primary}"
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="24"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    SelectionBrush="{DynamicResource Brush.Mint.Muted}"
-                    Text="{Binding UsernameText, UpdateSourceTrigger=PropertyChanged}"
-                    TextAlignment="Center"
-                    Style="{StaticResource WizardNameTextBoxStyle}" />
-                <Button
-                    Margin="0,30,0,0"
+        <StackPanel
+            Width="420"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <TextBlock
                     HorizontalAlignment="Center"
-                    Click="OnContinueClick"
-                    Style="{StaticResource WizardCircleActionButtonStyle}"
-                    Visibility="{Binding HasUsernameInput, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <components:Icon
-                        Width="16"
-                        Height="16"
-                        Path="{StaticResource AngleRight}"
-                        Color="{DynamicResource Brush.Background.Surface}" />
-                </Button>
+                    FontFamily="{StaticResource Bold}"
+                    FontSize="28"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap">
+                    <Run Text="What should" />
+                    <Run Text="flux" />
+                </TextBlock>
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontFamily="{StaticResource Bold}"
+                    FontSize="28"
+                    Foreground="{DynamicResource Brush.Text.Primary}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap">
+                    <Run Foreground="{DynamicResource Brush.Mint}" Text="o" />
+                    <Run Text="call you?" />
+                </TextBlock>
             </StackPanel>
-        </Grid>
-    </Border>
+            <TextBox
+                Margin="0,28,0,0"
+                CaretBrush="{DynamicResource Brush.Text.Primary}"
+                FontFamily="{StaticResource Medium}"
+                FontSize="24"
+                Foreground="{DynamicResource Brush.Text.Primary}"
+                SelectionBrush="{DynamicResource Brush.Mint.Muted}"
+                Style="{StaticResource WizardNameTextBoxStyle}"
+                Text="{Binding UsernameText, UpdateSourceTrigger=PropertyChanged}"
+                TextAlignment="Center" />
+        </StackPanel>
+    </Grid>
 </UserControl>

@@ -2,10 +2,34 @@
     x:Class="Fluxo.Views.Shell.Wizard.Pages.QuickSetupWizardBudgetIntroductionPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Border Style="{StaticResource CardBorderStyle}">
-        <StackPanel VerticalAlignment="Center">
-            <TextBlock FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Now let's set up your budget" />
-            <TextBlock Margin="0,8,0,0" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Start with a simple split, then choose how fluxo should manage it." TextWrapping="Wrap" />
-        </StackPanel>
-    </Border>
+    <StackPanel VerticalAlignment="Center">
+        <Border
+            Width="84"
+            Height="84"
+            HorizontalAlignment="Center"
+            Background="{DynamicResource Brush.Background.Surface}"
+            BorderBrush="{DynamicResource Brush.Border.Subtle}"
+            BorderThickness="1"
+            CornerRadius="42">
+            <Image
+                Margin="20"
+                Source="/Fluxo.Resources;component/Resources/fluxo.ico"
+                Stretch="Uniform" />
+        </Border>
+        <TextBlock
+            Margin="0,24,0,0"
+            FontFamily="{StaticResource Bold}"
+            FontSize="22"
+            Foreground="{DynamicResource Brush.Text.Primary}"
+            Text="Now let's set up your budget"
+            TextAlignment="Center" />
+        <TextBlock
+            Margin="0,8,0,0"
+            FontFamily="{StaticResource Medium}"
+            FontSize="10"
+            Foreground="{DynamicResource Brush.Text.Secondary}"
+            Text="A quick glance on how you want to spend."
+            TextAlignment="Center"
+            TextWrapping="Wrap" />
+    </StackPanel>
 </UserControl>

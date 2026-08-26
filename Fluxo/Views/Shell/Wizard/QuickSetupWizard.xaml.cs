@@ -179,14 +179,6 @@ public partial class QuickSetupWizard : BasePopup
         Close();
     }
 
-    public async void OnNavigatorStepClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is not FrameworkElement { Tag: string tag } || !int.TryParse(tag, out var stepIndex))
-            return;
-
-        await AnimateStepTransitionAsync(() => _viewModel.NavigateToStep(stepIndex));
-    }
-
     protected override void OnPreviewKeyDown(KeyEventArgs e)
     {
         if (e.Key == Key.Enter && Keyboard.Modifiers == ModifierKeys.None)

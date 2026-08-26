@@ -5,6 +5,10 @@
     xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <StackPanel>
+        <StackPanel Margin="0,0,0,20">
+            <TextBlock FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Personalization" />
+            <TextBlock Margin="0,8,0,0" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Choose how fluxo starts, closes, and protects your workspace." TextWrapping="Wrap" />
+        </StackPanel>
         <Border Margin="0,0,0,12" Style="{StaticResource CardBorderStyle}">
             <StackPanel>
                 <Grid>
