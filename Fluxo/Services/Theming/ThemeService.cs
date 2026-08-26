@@ -10,6 +10,7 @@ public sealed class ThemeService
     private readonly IAppDataService _appData;
     private readonly Action<ApplicationTheme> _applyTheme;
     private readonly Func<ApplicationTheme> _getCurrentTheme;
+    private ApplicationTheme? _previewOriginalTheme;
 
     public ThemeService(IAppDataService appData)
         : this(appData, ThemeManager.SwitchTheme, () => ThemeManager.CurrentTheme)
@@ -27,6 +28,20 @@ public sealed class ThemeService
     }
 
     public ApplicationTheme CurrentTheme => _getCurrentTheme();
+
+    public void PreviewTheme(ApplicationTheme theme)
+    {
+        _previewOriginalTheme ??= CurrentTheme;
+        _applyTheme(theme);
+    }
+
+    public void RestorePreviewTheme()
+    {
+        if (_previewOriginalTheme is { } originalTheme)
+            _applyTheme(originalTheme);
+
+        _previewOriginalTheme = null;
+    }
 
     internal async Task<ApplicationTheme> RestoreBeforeCacheAsync(
         Func<CancellationToken, Task<UserSettings?>> getSettingAsync,

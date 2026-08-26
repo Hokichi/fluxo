@@ -97,6 +97,20 @@ public sealed class ThemeServiceTests
         Assert.Equal([ApplicationTheme.Light, ApplicationTheme.Dark], appliedThemes);
     }
 
+    [Fact]
+    public void PreviewTheme_ThenRestorePreview_AppliesOriginalThemeWithoutPersisting()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        var appliedThemes = new List<ApplicationTheme>();
+        var service = CreateService(appData, appliedThemes, ApplicationTheme.Dark);
+
+        service.PreviewTheme(ApplicationTheme.Light);
+        service.RestorePreviewTheme();
+
+        Assert.Equal([ApplicationTheme.Light, ApplicationTheme.Dark], appliedThemes);
+        appData.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
     private static ThemeService CreateService(
         IAppDataService appData,
         List<ApplicationTheme> appliedThemes,
