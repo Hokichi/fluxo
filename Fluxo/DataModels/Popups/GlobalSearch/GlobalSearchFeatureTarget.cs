@@ -9,6 +9,7 @@ public enum GlobalSearchFeatureTarget
     QuickAccess,
     NewAccount,
     NewTransaction,
+    NewRecurringTransaction,
     NewTag,
     NewSavingGoal,
     ViewAccounts,
@@ -17,6 +18,7 @@ public enum GlobalSearchFeatureTarget
     CheckForUpdates,
     PlanningReport,
     BudgetForecast,
+    SearchEverything,
     DataManagement,
     Hotkeys,
     LockApplication

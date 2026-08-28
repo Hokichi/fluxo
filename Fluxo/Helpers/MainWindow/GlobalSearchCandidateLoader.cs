@@ -47,6 +47,7 @@ public sealed class GlobalSearchCandidateLoader(IAppDataService appData)
         Feature("Quick access", GlobalSearchFeatureTarget.QuickAccess),
         Feature("New account", GlobalSearchFeatureTarget.NewAccount),
         Feature("New transaction", GlobalSearchFeatureTarget.NewTransaction),
+        Feature("New recurring transaction", GlobalSearchFeatureTarget.NewRecurringTransaction),
         Feature("New tag", GlobalSearchFeatureTarget.NewTag),
         Feature("New saving goal", GlobalSearchFeatureTarget.NewSavingGoal),
         Feature("View accounts", GlobalSearchFeatureTarget.ViewAccounts),

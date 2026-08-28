@@ -549,8 +549,7 @@
                                         <Button
                                             x:Name="QuickAddMenuButton"
                                             Click="OnQuickAddButtonClick"
-                                            Style="{StaticResource HeaderMenuActionButtonStyle}"
-                                            Visibility="{Binding IsSufficientFundsActionGateLocked, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
+                                            Style="{StaticResource HeaderMenuActionButtonStyle}">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="16" />

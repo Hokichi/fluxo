@@ -9,7 +9,7 @@ namespace Fluxo.Views.Shell.Main;
 
 public partial class MainWindow
 {
-    private async Task OpenGlobalSearchAsync()
+    internal async Task OpenGlobalSearchAsync()
     {
         var candidateTask = new GlobalSearchCandidateLoader(_appData).LoadAsync();
         var result = _dialogService.ShowGlobalSearch(candidateTask, this);
@@ -40,7 +40,7 @@ public partial class MainWindow
                     return;
 
                 case GlobalSearchResultType.Features when result.FeatureTarget is GlobalSearchFeatureTarget featureTarget:
-                    await ActivateGlobalSearchFeatureAsync(featureTarget);
+                    await MainWindowFeatureActivationHelper.ActivateAsync(this, featureTarget);
                     return;
 
                 case GlobalSearchResultType.Settings when result.SettingsTarget is not null:
@@ -72,70 +72,7 @@ public partial class MainWindow
                 tags.UpdateTagAsync(tagId, name, hexCode, spendingLimit), this);
     }
 
-    private async Task ActivateGlobalSearchFeatureAsync(GlobalSearchFeatureTarget target)
-    {
-        switch (target)
-        {
-            case GlobalSearchFeatureTarget.Dashboard:
-                await NavigateToMainPageAsync(MainPage.Dashboard);
-                break;
-            case GlobalSearchFeatureTarget.Analytics:
-                await NavigateToMainPageAsync(MainPage.Analytics);
-                break;
-            case GlobalSearchFeatureTarget.Calendar:
-                await NavigateToMainPageAsync(MainPage.Calendar);
-                break;
-            case GlobalSearchFeatureTarget.Ledger:
-                await NavigateToMainPageAsync(MainPage.Ledger);
-                break;
-            case GlobalSearchFeatureTarget.QuickAccess:
-                OpenQuickAddPopup();
-                break;
-            case GlobalSearchFeatureTarget.NewAccount:
-                OpenAddAccountPopup();
-                break;
-            case GlobalSearchFeatureTarget.NewTransaction:
-                OpenAddNewTransactionPopup();
-                break;
-            case GlobalSearchFeatureTarget.NewTag:
-                OpenGlobalSearchNewTag();
-                break;
-            case GlobalSearchFeatureTarget.NewSavingGoal:
-                OpenAddSavingGoalPopup();
-                break;
-            case GlobalSearchFeatureTarget.ViewAccounts:
-                OpenAccountsListPopup();
-                break;
-            case GlobalSearchFeatureTarget.OpenSettings:
-                OpenSettingsPopup();
-                break;
-            case GlobalSearchFeatureTarget.RunQuickSetup:
-                OpenQuickSetupWizardPopup();
-                break;
-            case GlobalSearchFeatureTarget.CheckForUpdates:
-                await CheckForUpdatesFromQuickAccessAsync();
-                break;
-            case GlobalSearchFeatureTarget.PlanningReport:
-                OpenPlanningReport();
-                break;
-            case GlobalSearchFeatureTarget.BudgetForecast:
-                OpenBudgetForecast();
-                break;
-            case GlobalSearchFeatureTarget.DataManagement:
-                OpenDataManagementPopup();
-                break;
-            case GlobalSearchFeatureTarget.Hotkeys:
-                OpenHotkeysOverviewPopup();
-                break;
-            case GlobalSearchFeatureTarget.LockApplication:
-                LockAppUiFromUser();
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(target));
-        }
-    }
-
-    private void OpenGlobalSearchNewTag()
+    internal void OpenNewTagPopup()
     {
         using var scope = _serviceProvider.CreateScope();
         var tags = scope.ServiceProvider.GetRequiredService<SettingsTagsTabVM>();

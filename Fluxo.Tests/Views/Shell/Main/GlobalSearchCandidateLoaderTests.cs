@@ -40,4 +40,27 @@ public sealed class GlobalSearchCandidateLoaderTests
         await appData.Received(1).GetTagsAsync(Arg.Any<CancellationToken>());
         await appData.Received(1).GetSavingGoalsAsync(Arg.Any<CancellationToken>());
     }
+
+    [Fact]
+    public async Task LoadAsync_OffersRecurringTransactionButNotRecursiveSearchFeature()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns([]);
+
+        var candidates = await new GlobalSearchCandidateLoader(appData).LoadAsync();
+
+        var recurringCandidates = candidates.Where(result =>
+            result is
+            {
+                Type: GlobalSearchResultType.Features,
+                FeatureTarget: GlobalSearchFeatureTarget.NewRecurringTransaction
+            }).ToArray();
+        Assert.Single(recurringCandidates);
+        Assert.Equal("New recurring transaction", recurringCandidates[0].Name);
+        Assert.DoesNotContain(candidates, result =>
+            result.FeatureTarget == GlobalSearchFeatureTarget.SearchEverything);
+    }
 }

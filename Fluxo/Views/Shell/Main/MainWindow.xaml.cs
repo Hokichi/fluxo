@@ -14,6 +14,7 @@ using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.DataModels.Messages;
+using Fluxo.DataModels.Popups.GlobalSearch;
 using Fluxo.Helpers.MainWindow;
 using Fluxo.Helpers.Settings;
 using Fluxo.Resources.Infrastructure;
@@ -839,12 +840,6 @@ public partial class MainWindow : Window, IPopupHost
 
         if (MainWindowShortcutMatcher.IsOpenQuickAccessShortcut(e.Key, Keyboard.Modifiers))
         {
-            if (IsSufficientFundsActionGateLocked())
-            {
-                e.Handled = true;
-                return;
-            }
-
             OpenQuickAddPopup();
             e.Handled = true;
             return;
@@ -1192,9 +1187,6 @@ public partial class MainWindow : Window, IPopupHost
     private void OnQuickAddButtonClick(object sender, RoutedEventArgs e)
     {
         CloseHeaderMenu();
-        if (IsSufficientFundsActionGateLocked())
-            return;
-
         OpenQuickAddPopup();
     }
 
@@ -1294,9 +1286,6 @@ public partial class MainWindow : Window, IPopupHost
             OpenAddNewTransactionPopup(popupDraft);
             return;
         }
-
-        if (IsSufficientFundsActionGateLocked())
-            return;
 
         _dialogService.ShowQuickAdd(this);
     }
@@ -1622,6 +1611,16 @@ public partial class MainWindow : Window, IPopupHost
         _dashboardPageView = _dashboardPageScope.ServiceProvider.GetRequiredService<Dashboard>();
         SetDashboardMainContentHitTestVisible(!_mainVM.IsAppLocked);
     }
+
+    internal Task NavigateToFeaturePageAsync(GlobalSearchFeatureTarget target) =>
+        NavigateToMainPageAsync(target switch
+        {
+            GlobalSearchFeatureTarget.Dashboard => MainPage.Dashboard,
+            GlobalSearchFeatureTarget.Analytics => MainPage.Analytics,
+            GlobalSearchFeatureTarget.Calendar => MainPage.Calendar,
+            GlobalSearchFeatureTarget.Ledger => MainPage.Ledger,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), target, null)
+        });
 
     private void EnsureAnalyticsPageLoaded()
     {
@@ -2412,7 +2411,7 @@ public partial class MainWindow : Window, IPopupHost
         _appAutoLockCountdownTimer.Stop();
     }
 
-    private void LockAppUiFromUser()
+    internal void LockAppUiFromUser()
     {
         if (IsAppLocked())
             return;
