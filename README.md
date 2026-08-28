@@ -87,15 +87,22 @@ Quick Setup configures the initial display name, preferences, accounts, allocati
 
 Quick Access opens common actions:
 
-- New Account.
 - New Transaction.
-- New Saving Goal.
-- Open Settings.
-- Run Quick Setup.
-- Check for Updates.
 - View Accounts.
+- New Account.
+- New Recurring Transaction.
+- New Saving Goal.
+- New Tag.
 - Planning Report.
 - Budget Forecast.
+- Search Everything.
+- Data Management.
+- Lock Application.
+- Run Quick Setup.
+- Hotkeys.
+- Check for Updates.
+
+Choose **Edit** to show the complete catalog and select which tiles appear in the panel. Hidden tiles are dimmed while editing, and the selection is saved for future sessions. Actions that are temporarily unavailable remain visible but dimmed in normal mode and become fully visible while editing.
 
 > **Screenshot placeholder:** Quick Access panel.
 
