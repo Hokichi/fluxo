@@ -82,6 +82,32 @@ public sealed class QuickAccessVMTests
     }
 
     [Fact]
+    public void TileRows_CompactNormalTilesAndRestoreFullCatalogForEditing()
+    {
+        RunInSta(() =>
+        {
+            var sut = CreateSut(setting: new UserSettings
+            {
+                Name = UserSettingNames.DisabledQuickAccessTiles,
+                Value = "ViewAccounts,NewAccount,NewTag"
+            });
+
+            sut.LoadAsync().GetAwaiter().GetResult();
+
+            Assert.Equal(
+                sut.Tiles.Where(tile => tile.IsUserEnabled).Select(tile => tile.Target),
+                sut.TileRows.SelectMany(row => row).Select(tile => tile.Target));
+            Assert.Equal([3, 3, 3, 2], sut.TileRows.Select(row => row.Count));
+
+            sut.BeginEditing();
+
+            Assert.Equal(sut.Tiles.Select(tile => tile.Target),
+                sut.TileRows.SelectMany(row => row).Select(tile => tile.Target));
+            Assert.Equal([3, 3, 3, 3, 2], sut.TileRows.Select(row => row.Count));
+        });
+    }
+
+    [Fact]
     public void Toggle_StagesChangesAndCanReturnToBaseline()
     {
         RunInSta(() =>

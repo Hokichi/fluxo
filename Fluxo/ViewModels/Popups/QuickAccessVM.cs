@@ -14,19 +14,17 @@ public sealed class QuickAccessVM : ObservableObject
     private HashSet<GlobalSearchFeatureTarget> _baselineDisabledTargets = [];
     private bool _isEditing;
     private UserSettings? _setting;
+    private IReadOnlyList<IReadOnlyList<QuickAccessTileVM>> _tileRows = [];
 
     public QuickAccessVM(IAppDataService appData)
     {
         _appData = appData;
         Tiles = CreateTiles();
-        TileRows = Tiles
-            .Chunk(3)
-            .Select(row => (IReadOnlyList<QuickAccessTileVM>)row)
-            .ToArray();
+        RebuildTileRows();
     }
 
     public IReadOnlyList<QuickAccessTileVM> Tiles { get; }
-    public IReadOnlyList<IReadOnlyList<QuickAccessTileVM>> TileRows { get; }
+    public IReadOnlyList<IReadOnlyList<QuickAccessTileVM>> TileRows => _tileRows;
 
     public bool IsEditing
     {
@@ -39,11 +37,14 @@ public sealed class QuickAccessVM : ObservableObject
             foreach (var tile in Tiles)
                 tile.IsEditing = value;
             OnPropertyChanged(nameof(EditButtonText));
+            OnPropertyChanged(nameof(IsEmptyStateVisible));
+            RebuildTileRows();
         }
     }
 
     public bool HasPendingChanges => !_baselineDisabledTargets.SetEquals(CurrentDisabledTargets());
     public string EditButtonText => IsEditing ? "Done" : "Edit";
+    public bool IsEmptyStateVisible => !IsEditing && Tiles.All(tile => !tile.IsUserEnabled);
 
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
@@ -56,7 +57,9 @@ public sealed class QuickAccessVM : ObservableObject
 
         _baselineDisabledTargets = disabledTargets;
         IsEditing = false;
+        RebuildTileRows();
         OnPropertyChanged(nameof(HasPendingChanges));
+        OnPropertyChanged(nameof(IsEmptyStateVisible));
     }
 
     public void BeginEditing()
@@ -71,6 +74,7 @@ public sealed class QuickAccessVM : ObservableObject
 
         tile.IsUserEnabled = !tile.IsUserEnabled;
         OnPropertyChanged(nameof(HasPendingChanges));
+        OnPropertyChanged(nameof(IsEmptyStateVisible));
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
@@ -130,6 +134,16 @@ public sealed class QuickAccessVM : ObservableObject
 
     private HashSet<GlobalSearchFeatureTarget> CurrentDisabledTargets() =>
         Tiles.Where(tile => !tile.IsUserEnabled).Select(tile => tile.Target).ToHashSet();
+
+    private void RebuildTileRows()
+    {
+        var visibleTiles = IsEditing ? Tiles : Tiles.Where(tile => tile.IsUserEnabled);
+        _tileRows = visibleTiles
+            .Chunk(3)
+            .Select(row => (IReadOnlyList<QuickAccessTileVM>)row)
+            .ToArray();
+        OnPropertyChanged(nameof(TileRows));
+    }
 
     private static IReadOnlyList<QuickAccessTileVM> CreateTiles() =>
     [
