@@ -25,4 +25,5 @@ public static class UserSettingNames
     public const string IsRecurringOverdueNotifEnabled = nameof(IsRecurringOverdueNotifEnabled);
     public const string IsGoalOverdueNotifEnabled = nameof(IsGoalOverdueNotifEnabled);
     public const string IsDailyAllowanceNotifEnabled = nameof(IsDailyAllowanceNotifEnabled);
+    public const string DisabledQuickAccessTiles = nameof(DisabledQuickAccessTiles);
 }

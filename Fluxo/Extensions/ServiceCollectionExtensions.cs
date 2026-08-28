@@ -109,6 +109,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<AddSavingGoalVM>();
         services.AddTransient<PlanningReportVM>();
         services.AddTransient<BudgetForecastVM>();
+        services.AddTransient<QuickAccessVM>();
         services.AddTransient<AnalyticsVM>();
         services.AddTransient<CalendarVM>();
         services.AddTransient<SettingsBudgetTabVM>();
