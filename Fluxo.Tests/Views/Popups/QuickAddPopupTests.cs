@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.Messaging;
@@ -26,7 +27,7 @@ public sealed class QuickAddPopupTests
     {
         RunOnStaThread(() =>
         {
-            var (popup, viewModel) = CreateShownPopup("ViewAccounts,NewTag");
+            var (popup, viewModel, _, _) = CreateShownPopup("ViewAccounts,NewTag");
             var editButton = Assert.IsType<BalloonButton>(popup.FindName("EditQuickAccessButton"));
             var rows = Assert.IsType<ItemsControl>(popup.FindName("QuickAccessRows"));
 
@@ -51,7 +52,7 @@ public sealed class QuickAddPopupTests
     {
         RunOnStaThread(() =>
         {
-            var (popup, viewModel) = CreateShownPopup("NewTransaction");
+            var (popup, viewModel, _, _) = CreateShownPopup("NewTransaction");
             var editButton = Assert.IsType<BalloonButton>(popup.FindName("EditQuickAccessButton"));
 
             Assert.DoesNotContain(VisualChildren<Button>(popup), button =>
@@ -87,7 +88,7 @@ public sealed class QuickAddPopupTests
     {
         RunOnStaThread(() =>
         {
-            var (popup, viewModel) = CreateShownPopup(isSufficientFundsLocked: true);
+            var (popup, viewModel, _, _) = CreateShownPopup(isSufficientFundsLocked: true);
             var tileButton = TileButton(popup, GlobalSearchFeatureTarget.NewTransaction);
 
             Assert.True(double.IsNaN(tileButton.Height));
@@ -135,7 +136,7 @@ public sealed class QuickAddPopupTests
                 GlobalSearchFeatureTarget.Hotkeys,
                 GlobalSearchFeatureTarget.CheckForUpdates
             });
-            var (popup, _) = CreateShownPopup(disabledTargets);
+            var (popup, _, _, _) = CreateShownPopup(disabledTargets);
 
             var emptyState = Assert.IsType<TextBlock>(popup.FindName("QuickAccessEmptyState"));
             var editButton = Assert.IsType<BalloonButton>(popup.FindName("EditQuickAccessButton"));
@@ -146,9 +147,99 @@ public sealed class QuickAddPopupTests
         });
     }
 
-    private static (QuickAddPopup Popup, QuickAccessVM ViewModel) CreateShownPopup(
+    [Fact]
+    public void TitleClose_WithoutChanges_ClosesWithoutPrompt()
+    {
+        RunOnStaThread(() =>
+        {
+            var (popup, _, dialogService, _) = CreateShownPopup();
+
+            ClickTitleClose(popup);
+            PumpDispatcherUntil(() => !popup.IsVisible);
+
+            dialogService.DidNotReceive().ShowQuestion(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<Window?>(),
+                Arg.Any<MessageBoxButton>());
+        });
+    }
+
+    [Fact]
+    public void TitleClose_WithChangesAndYes_SavesThenClosesWithoutCancelOption()
+    {
+        RunOnStaThread(() =>
+        {
+            var (popup, viewModel, dialogService, appData) = CreateShownPopup(
+                closeAnswer: MessageBoxResult.Yes);
+            ToggleFirstTile(viewModel);
+
+            ClickTitleClose(popup);
+            PumpDispatcherUntil(() => !popup.IsVisible);
+
+            dialogService.Received(1).ShowQuestion(
+                Arg.Is<string>(message => message.Contains("Save Quick Access changes")),
+                Arg.Any<string>(),
+                popup,
+                MessageBoxButton.YesNo);
+            appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+            Assert.False(viewModel.HasPendingChanges);
+        });
+    }
+
+    [Fact]
+    public void Escape_WithChangesAndNo_RemainsOpenWithStagedChanges()
+    {
+        RunOnStaThread(() =>
+        {
+            var (popup, viewModel, dialogService, _) = CreateShownPopup();
+            var tile = ToggleFirstTile(viewModel);
+
+            RaiseEscape(popup);
+            PumpDispatcher();
+
+            Assert.True(popup.IsVisible);
+            Assert.True(viewModel.IsEditing);
+            Assert.True(viewModel.HasPendingChanges);
+            dialogService.Received(1).ShowQuestion(
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                popup,
+                MessageBoxButton.YesNo);
+
+            viewModel.Toggle(tile);
+            popup.Close();
+        });
+    }
+
+    [Fact]
+    public void TitleClose_WhenSaveFails_RemainsOpenWithStagedChanges()
+    {
+        RunOnStaThread(() =>
+        {
+            var (popup, viewModel, _, _) = CreateShownPopup(
+                closeAnswer: MessageBoxResult.Yes,
+                saveFailure: new InvalidOperationException("save failed"));
+            var tile = ToggleFirstTile(viewModel);
+
+            ClickTitleClose(popup);
+            PumpDispatcher();
+
+            Assert.True(popup.IsVisible);
+            Assert.True(viewModel.IsEditing);
+            Assert.True(viewModel.HasPendingChanges);
+
+            viewModel.Toggle(tile);
+            popup.Close();
+        });
+    }
+
+    private static (QuickAddPopup Popup, QuickAccessVM ViewModel, IDialogService DialogService,
+        IAppDataService AppData) CreateShownPopup(
         string? disabledTiles = null,
-        bool isSufficientFundsLocked = false)
+        bool isSufficientFundsLocked = false,
+        MessageBoxResult closeAnswer = MessageBoxResult.No,
+        Exception? saveFailure = null)
     {
         EnsureApplicationResources();
         var appData = Substitute.For<IAppDataService>();
@@ -169,7 +260,8 @@ public sealed class QuickAddPopupTests
             });
         appData.AddUserSettingAsync(Arg.Any<UserSettings>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
-        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(Task.CompletedTask);
+        appData.SaveChangesAsync(Arg.Any<CancellationToken>()).Returns(
+            saveFailure is null ? Task.CompletedTask : Task.FromException(saveFailure));
         var messenger = new WeakReferenceMessenger();
         var dashboard = new DashboardVM(null!, null!, null!, null!, null!, null!)
         {
@@ -183,7 +275,7 @@ public sealed class QuickAddPopupTests
                 Arg.Any<string>(),
                 Arg.Any<Window?>(),
                 Arg.Any<MessageBoxButton>())
-            .Returns(MessageBoxResult.No);
+            .Returns(closeAnswer);
         var popup = new QuickAddPopup(viewModel, mainViewModel, dialogService, messenger)
         {
             ShowInTaskbar = false,
@@ -193,7 +285,36 @@ public sealed class QuickAddPopupTests
         PumpDispatcherUntil(() => loadCompleted);
         popup.UpdateLayout();
         PumpDispatcher();
-        return (popup, viewModel);
+        return (popup, viewModel, dialogService, appData);
+    }
+
+    private static QuickAccessTileVM ToggleFirstTile(QuickAccessVM viewModel)
+    {
+        viewModel.BeginEditing();
+        var tile = viewModel.Tiles[0];
+        viewModel.Toggle(tile);
+        return tile;
+    }
+
+    private static void ClickTitleClose(QuickAddPopup popup)
+    {
+        popup.ApplyTemplate();
+        var closeButton = Assert.IsAssignableFrom<ButtonBase>(
+            popup.Template.FindName("PART_CloseButton", popup));
+        closeButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, closeButton));
+    }
+
+    private static void RaiseEscape(QuickAddPopup popup)
+    {
+        var eventArgs = new KeyEventArgs(
+            Keyboard.PrimaryDevice,
+            PresentationSource.FromVisual(popup),
+            Environment.TickCount,
+            Key.Escape)
+        {
+            RoutedEvent = Keyboard.PreviewKeyDownEvent
+        };
+        popup.RaiseEvent(eventArgs);
     }
 
     private static Button TileButton(DependencyObject root, GlobalSearchFeatureTarget target) =>

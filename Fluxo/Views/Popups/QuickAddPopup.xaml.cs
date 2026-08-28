@@ -21,6 +21,8 @@ public partial class QuickAddPopup : BasePopup
     private readonly MainVM _mainViewModel;
     private readonly IMessenger _messenger;
     private readonly QuickAccessVM _viewModel;
+    private bool _allowClose;
+    private bool _isSavingBeforeClose;
 
     public QuickAddPopup(
         QuickAccessVM viewModel,
@@ -36,6 +38,7 @@ public partial class QuickAddPopup : BasePopup
         DataContext = viewModel;
         QuickAccessRows.AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler(OnTileClick));
         Loaded += OnLoadedAsync;
+        Closing += OnClosingAsync;
         Closed += OnClosed;
     }
 
@@ -113,10 +116,45 @@ public partial class QuickAddPopup : BasePopup
         _viewModel.SetSufficientFundsGate(_mainViewModel.IsSufficientFundsActionGateLocked);
     }
 
+    private async void OnClosingAsync(object? sender, CancelEventArgs e)
+    {
+        if (_allowClose || !_viewModel.HasPendingChanges)
+            return;
+
+        e.Cancel = true;
+        if (_isSavingBeforeClose)
+            return;
+
+        var answer = _dialogService.ShowQuestion(
+            "Save Quick Access changes before closing?",
+            "Quick Access",
+            this,
+            MessageBoxButton.YesNo);
+        if (answer != MessageBoxResult.Yes)
+            return;
+
+        _isSavingBeforeClose = true;
+        try
+        {
+            await _viewModel.SaveAsync();
+            _allowClose = true;
+            _ = Dispatcher.BeginInvoke(Close);
+        }
+        catch (Exception exception)
+        {
+            FloatingNotificationPublisher.LoggedFailure(_messenger, exception, "save Quick Access");
+        }
+        finally
+        {
+            _isSavingBeforeClose = false;
+        }
+    }
+
     private void OnClosed(object? sender, EventArgs e)
     {
         _mainViewModel.PropertyChanged -= OnMainViewModelPropertyChanged;
         Loaded -= OnLoadedAsync;
+        Closing -= OnClosingAsync;
         Closed -= OnClosed;
     }
 
