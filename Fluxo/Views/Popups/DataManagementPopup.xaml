@@ -8,6 +8,11 @@
     PopupTitle="Data Management"
     Mode="None">
 <customControls:BasePopup.Resources>
+        <Style x:Key="DataManagementHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
         <Style x:Key="InitialPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
@@ -60,9 +65,7 @@
 <DataTemplate x:Key="DataManagementConflictTemplate">
                                     <Border Margin="0,0,0,8" Style="{StaticResource CardBorderStyle}">
                                         <StackPanel>
-                                            <TextBlock
-                                                FontFamily="{StaticResource Bold}"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
                                                 Text="{Binding Name}" />
                                             <TextBlock
                                                 Margin="0,4,0,0"
@@ -113,9 +116,7 @@
                     </customControls:SegmentedToggleGroup>
 
                     <Grid Margin="0,16,0,8">
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
                             Text="File path" />
                         <TextBlock
                             HorizontalAlignment="Right"
@@ -155,10 +156,8 @@
                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}" />
                     </Grid>
 
-                    <TextBlock
+                    <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
                         Margin="0,16,0,8"
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Entities" />
 <ItemsControl Margin="0,16,0,0" ItemsSource="{Binding Entities}" ItemsPanel="{StaticResource DataManagementEntityItemsPanelTemplate}" ItemTemplate="{StaticResource DataManagementEntityTemplate}">
 
@@ -197,12 +196,10 @@
                                 Source="/Fluxo.Resources;component/Resources/fluxo.ico"
                                 Stretch="Uniform" />
                         </Border>
-                        <TextBlock
+                        <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
                             Margin="0,24,0,0"
                             HorizontalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
                             FontSize="28"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding OperationTitle}" />
                         <TextBlock
                             Margin="0,12,0,0"
@@ -231,10 +228,8 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
+                        <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
                             FontSize="18"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Append conflict handling" />
                         <TextBlock
                             Margin="0,8,0,0"
@@ -278,11 +273,9 @@
 
         <Grid Style="{StaticResource ResultPageStyle}">
             <StackPanel VerticalAlignment="Center">
-                    <TextBlock
+                    <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
                         HorizontalAlignment="Center"
-                        FontFamily="{StaticResource Bold}"
                         FontSize="22"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Result" />
                     <TextBlock
                         Margin="0,16,0,0"

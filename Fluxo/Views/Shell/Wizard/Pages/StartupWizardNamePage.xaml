@@ -5,6 +5,15 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
+        <Style x:Key="WizardNameHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
         <ControlTemplate x:Key="WizardNameTextBoxTemplate" TargetType="TextBox">
             <Border
                 x:Name="InputRoot"
@@ -56,23 +65,11 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    FontFamily="{StaticResource Bold}"
-                    FontSize="28"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap">
+                <TextBlock Style="{StaticResource WizardNameHeadingTextStyle}">
                     <Run Text="What should" />
                     <Run Text="flux" />
                 </TextBlock>
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    FontFamily="{StaticResource Bold}"
-                    FontSize="28"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
-                    TextAlignment="Center"
-                    TextWrapping="Wrap">
+                <TextBlock Style="{StaticResource WizardNameHeadingTextStyle}">
                     <Run Foreground="{DynamicResource Brush.Mint}" Text="o" />
                     <Run Text="call you?" />
                 </TextBlock>

@@ -273,10 +273,9 @@
                             ShouldShowText="True"
                             UncheckedText="Needs" />
                         <customControls:BalloonRadioButton
-                            Margin="8,0,0,0"
+                            Style="{StaticResource BalloonChoiceOptionStyle}"
                             ButtonIcon="{StaticResource ShoppingBag}"
                             CheckedBackground="{DynamicResource Brush.Mint}"
-                            CornerRadius="8"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             GroupName="BudgetForecastPurchaseCategory"
                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -285,10 +284,9 @@
                             ShouldShowText="True"
                             UncheckedText="Wants" />
                         <customControls:BalloonRadioButton
-                            Margin="8,0,0,0"
+                            Style="{StaticResource BalloonChoiceOptionStyle}"
                             ButtonIcon="{StaticResource TrendingUp}"
                             CheckedBackground="{DynamicResource Brush.Mint}"
-                            CornerRadius="8"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             GroupName="BudgetForecastPurchaseCategory"
                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"

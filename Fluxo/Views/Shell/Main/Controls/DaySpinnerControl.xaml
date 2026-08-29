@@ -5,6 +5,14 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
 <UserControl.Resources>
+        <Style x:Key="DaySpinnerSelectionIndicatorStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="4" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+            <Setter Property="CornerRadius" Value="4 4 0 0" />
+        </Style>
+
 <Style x:Key="PreviousDayTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
@@ -41,7 +49,7 @@
                                                     </Style.Triggers>
                                                 </Style>
 
-<Style x:Key="DayBackgroundBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+<Style x:Key="DayBackgroundBorderStyle" BasedOn="{StaticResource DaySpinnerSelectionIndicatorStyle}" TargetType="Border">
                                                 <Setter Property="Opacity" Value="0" />
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
@@ -73,7 +81,7 @@
                                                 </Style.Triggers>
                                             </Style>
 
-<Style x:Key="TodayIndicatorBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+<Style x:Key="TodayIndicatorBorderStyle" BasedOn="{StaticResource DaySpinnerSelectionIndicatorStyle}" TargetType="Border">
                                                 <Setter Property="Opacity" Value="0" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -132,12 +140,7 @@
                                             </TextBlock.Style>
                                         </TextBlock>
                                     </StackPanel>
-                                    <Border
-                                        Width="32"
-                                        Height="4"
-                                        VerticalAlignment="Bottom"
-                                        Background="{DynamicResource Brush.Mint}"
-                                        CornerRadius="4 4 0 0">
+                                    <Border>
                                         <Border.Style>
                                                                                         <StaticResource ResourceKey="DayBackgroundBorderStyle" />
                                         </Border.Style>
@@ -149,12 +152,7 @@
                                         </Border.Effect>
                                     </Border>
 
-                                    <Border
-                                        Width="32"
-                                        Height="4"
-                                        VerticalAlignment="Bottom"
-                                        Background="{DynamicResource Brush.Mint}"
-                                        CornerRadius="4 4 0 0">
+                                    <Border>
                                         <Border.Style>
                                                                                         <StaticResource ResourceKey="TodayIndicatorBorderStyle" />
                                         </Border.Style>

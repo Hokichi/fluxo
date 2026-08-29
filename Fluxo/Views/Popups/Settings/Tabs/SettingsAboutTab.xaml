@@ -7,6 +7,26 @@
     AutomationProperties.AutomationId="Settings.Configuration.Root">
 
     <UserControl.Resources>
+        <Style x:Key="AboutMutedAccentTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Mint.Muted}" />
+        </Style>
+
+        <Style x:Key="AboutSecondaryHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style x:Key="AboutInlineStackStyle" BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+
+        <Style x:Key="AboutMetadataStackStyle" BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,6,0,0" />
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+
         <Style x:Key="AboutDescriptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
@@ -38,17 +58,13 @@
                 <StackPanel>
                     <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="Run with Windows" />
-                    <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <StackPanel Style="{StaticResource AboutMetadataStackStyle}">
                         <TextBlock Style="{StaticResource AboutDescriptionTextStyle}">
                             <Run Text="Start " />
                         </TextBlock>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <TextBlock Style="{StaticResource AboutSecondaryHeadingTextStyle}"
                             Text="flux" />
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Mint.Muted}"
+                        <TextBlock Style="{StaticResource AboutMutedAccentTextStyle}"
                             Text="o" />
                         <TextBlock Style="{StaticResource AboutDescriptionTextStyle}">
                             <Run Text=" in the system tray when Windows signs in." />
@@ -66,7 +82,7 @@
 
         <Border Margin="0,6,0,0" Style="{StaticResource RowCardStyle}">
             <Grid>
-                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Style="{StaticResource AboutInlineStackStyle}">
                     <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="When closing " />
                     <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
@@ -104,23 +120,17 @@
                 <StackPanel>
                     <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="Current Version" />
-                    <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
+                    <StackPanel Style="{StaticResource AboutMetadataStackStyle}">
                         <TextBlock Style="{StaticResource AboutDescriptionTextStyle}"
                             Text="Currently installed version of " />
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <TextBlock Style="{StaticResource AboutSecondaryHeadingTextStyle}"
                             Text="flux" />
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Mint.Muted}"
+                        <TextBlock Style="{StaticResource AboutMutedAccentTextStyle}"
                             Text="o." />
                     </StackPanel>
                 </StackPanel>
-                <StackPanel
-                    Grid.Column="1"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
+                <StackPanel Style="{StaticResource AboutInlineStackStyle}"
+                    Grid.Column="1">
                     <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         VerticalAlignment="Center"
                         Text="{Binding CurrentVersion}" />

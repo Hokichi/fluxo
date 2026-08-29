@@ -5,19 +5,24 @@
     xmlns:primitives="clr-namespace:System.Windows.Controls.Primitives;assembly=PresentationFramework">
 
     <UserControl.Resources>
-        <Style x:Key="SummaryCaptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style x:Key="SummaryMutedTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        </Style>
+
+        <Style x:Key="SummaryCaptionBaseStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Margin" Value="0,4,0,0" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="11" />
+        </Style>
+
+        <Style x:Key="SummaryCaptionTextStyle" BasedOn="{StaticResource SummaryCaptionBaseStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
         </Style>
 
-        <Style x:Key="SummaryMutedCaptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,4,0,0" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
-            <Setter Property="FontSize" Value="11" />
+        <Style x:Key="SummaryMutedCaptionTextStyle" BasedOn="{StaticResource SummaryCaptionBaseStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
@@ -39,10 +44,7 @@
         <!--  Profile  -->
         <Border Style="{StaticResource CardBorderStyle}">
             <StackPanel>
-                <TextBlock
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="11"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource SummaryMutedTextStyle}"
                     Text="Username" />
                 <TextBlock Style="{StaticResource SummaryLabelTextStyle}"
                     Text="{Binding ReportUsernameText}" />
@@ -100,10 +102,7 @@
         <!--  Budget Allocation  -->
         <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
             <StackPanel>
-                <TextBlock
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="11"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource SummaryMutedTextStyle}"
                     Text="Budget Allocation" />
                 <TextBlock Style="{StaticResource SummaryLabelTextStyle}"
                     Text="{Binding ReportBudgetAllocationText}" />
@@ -113,10 +112,7 @@
         <!--  Notifications  -->
         <Border Margin="0,12,0,0" Style="{StaticResource CardBorderStyle}">
             <StackPanel>
-                <TextBlock
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="11"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource SummaryMutedTextStyle}"
                     Text="Notifications Enabled" />
                 <TextBlock Style="{StaticResource SummaryLabelTextStyle}">
                     <Run Text="{Binding ReportNotificationsEnabledCount, Mode=OneWay}" />

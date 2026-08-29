@@ -14,6 +14,29 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <Style x:Key="LedgerRecurringBadgeTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Recurring}" />
+        </Style>
+
+        <Style x:Key="LedgerMintValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+        </Style>
+
+        <Style x:Key="LedgerCompactTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="LedgerInlineStackStyle" BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+
         <Style x:Key="LedgerColumnHeaderTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -471,11 +494,9 @@
                         <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel
+                    <StackPanel Style="{StaticResource LedgerInlineStackStyle}"
                         x:Name="ChildRowNameContent"
-                        Grid.Column="1"
-                        Margin="8"
-                        Orientation="Horizontal">
+                        Grid.Column="1">
                         <StackPanel.RenderTransform>
                             <TranslateTransform />
                         </StackPanel.RenderTransform>
@@ -489,10 +510,7 @@
                             CornerRadius="4"
                             Style="{StaticResource BaseBorderStyle}"
                             Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="9"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
+                            <TextBlock Style="{StaticResource LedgerCompactTextStyle}"
                                 Text="GOAL" />
                         </Border>
                         <Border
@@ -502,10 +520,7 @@
                             CornerRadius="4"
                             Style="{StaticResource BaseBorderStyle}"
                             Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="9"
-                                Foreground="{DynamicResource Brush.Text.Recurring}"
+                            <TextBlock Style="{StaticResource LedgerRecurringBadgeTextStyle}"
                                 Text="RECURRING" />
                         </Border>
                     </StackPanel>
@@ -571,10 +586,7 @@
                         <Border.RenderTransform>
                             <TranslateTransform />
                         </Border.RenderTransform>
-                        <TextBlock
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Mint}"
+                        <TextBlock Style="{StaticResource LedgerMintValueTextStyle}"
                             Text="{Binding AccountName}" />
                     </Border>
 
@@ -680,11 +692,9 @@
                             <ColumnDefinition Width="200" />
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel
+                        <StackPanel Style="{StaticResource LedgerInlineStackStyle}"
                             x:Name="RowNameContent"
-                            Grid.Column="0"
-                            Margin="8"
-                            Orientation="Horizontal">
+                            Grid.Column="0">
                             <StackPanel.RenderTransform>
                                 <TranslateTransform />
                             </StackPanel.RenderTransform>
@@ -715,10 +725,7 @@
                                 CornerRadius="4"
                                 Style="{StaticResource BaseBorderStyle}"
                                 Visibility="{Binding IsGoal, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBlock
-                                    FontFamily="{StaticResource Bold}"
-                                    FontSize="9"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                <TextBlock Style="{StaticResource LedgerCompactTextStyle}"
                                     Text="GOAL" />
                             </Border>
 
@@ -729,10 +736,7 @@
                                 CornerRadius="4"
                                 Style="{StaticResource BaseBorderStyle}"
                                 Visibility="{Binding IsRecurring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBlock
-                                    FontFamily="{StaticResource Bold}"
-                                    FontSize="9"
-                                    Foreground="{DynamicResource Brush.Text.Recurring}"
+                                <TextBlock Style="{StaticResource LedgerRecurringBadgeTextStyle}"
                                     Text="RECURRING" />
                             </Border>
                         </StackPanel>
@@ -797,10 +801,7 @@
                                 CornerRadius="12"
                                 Cursor="Hand"
                                 PreviewMouseLeftButtonDown="OnTransactionAccountPreviewMouseLeftButtonDown">
-                                <TextBlock
-                                    FontFamily="{StaticResource Medium}"
-                                    FontSize="11"
-                                    Foreground="{DynamicResource Brush.Mint}"
+                                <TextBlock Style="{StaticResource LedgerMintValueTextStyle}"
                                     Text="{Binding AccountName}" />
                             </Border>
                         </Grid>

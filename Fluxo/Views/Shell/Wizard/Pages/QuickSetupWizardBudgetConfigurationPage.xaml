@@ -4,12 +4,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core">
+
+    <UserControl.Resources>
+        <Style x:Key="BudgetConfigurationLabelTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+    </UserControl.Resources>
     <StackPanel>
-            <TextBlock FontFamily="{StaticResource Bold}" FontSize="22" Foreground="{DynamicResource Brush.Text.Primary}" Text="Budget configuration" />
+            <TextBlock Style="{StaticResource BudgetConfigurationLabelTextStyle}" FontSize="22" Text="Budget configuration" />
             <TextBlock Margin="0,8,0,20" FontFamily="{StaticResource Medium}" Foreground="{DynamicResource Brush.Text.Secondary}" Text="Choose how fluxo manages your budget." TextWrapping="Wrap" />
-            <TextBlock FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="Spending limit" />
+            <TextBlock Style="{StaticResource BudgetConfigurationLabelTextStyle}" Text="Spending limit" />
             <customControls:MoneyTextBox Margin="0,8,0,16" Language="en-US" Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding AllocationLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-            <TextBlock FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="Allocation period" />
+            <TextBlock Style="{StaticResource BudgetConfigurationLabelTextStyle}" Text="Allocation period" />
             <customControls:SegmentedToggleGroup Margin="0,8,0,16" SelectedValue="{Binding AllocationPeriod, Mode=TwoWay}">
                 <customControls:SegmentedToggleOption Content="Weekly" Value="{x:Static enums:AllocationPeriod.Weekly}" />
                 <customControls:SegmentedToggleOption Content="Biweekly" Value="{x:Static enums:AllocationPeriod.Biweekly}" />
@@ -17,13 +24,13 @@
                 <customControls:SegmentedToggleOption Content="Quarterly" Value="{x:Static enums:AllocationPeriod.Quarterly}" />
                 <customControls:SegmentedToggleOption Content="Yearly" Value="{x:Static enums:AllocationPeriod.Yearly}" />
             </customControls:SegmentedToggleGroup>
-            <TextBlock FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="Budget rollover" />
+            <TextBlock Style="{StaticResource BudgetConfigurationLabelTextStyle}" Text="Budget rollover" />
             <customControls:SegmentedToggleGroup Margin="0,8,0,16" SelectedValue="{Binding RolloverPolicy, Mode=TwoWay}">
                 <customControls:SegmentedToggleOption Content="None" Value="{x:Static enums:RolloverPolicy.None}" />
                 <customControls:SegmentedToggleOption Content="Matching" Value="{x:Static enums:RolloverPolicy.Matching}" />
                 <customControls:SegmentedToggleOption Content="Pooled" Value="{x:Static enums:RolloverPolicy.Pooled}" />
             </customControls:SegmentedToggleGroup>
-            <TextBlock FontFamily="{StaticResource Bold}" Foreground="{DynamicResource Brush.Text.Primary}" Text="Overspend behavior" />
+            <TextBlock Style="{StaticResource BudgetConfigurationLabelTextStyle}" Text="Overspend behavior" />
             <customControls:SegmentedToggleGroup Margin="0,8,0,0" SelectedValue="{Binding OverspendPolicy, Mode=TwoWay}">
                 <customControls:SegmentedToggleOption Content="Ignore" Value="{x:Static enums:OverspendPolicy.Ignore}" />
                 <customControls:SegmentedToggleOption Content="Soft debt" Value="{x:Static enums:OverspendPolicy.SoftDebt}" />

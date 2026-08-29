@@ -30,6 +30,18 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/MainWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="MainWindowTitleTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource Black}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            </Style>
+
+            <Style x:Key="MainWindowAccentTitleTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{StaticResource Black}" />
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+            </Style>
+
             <Style x:Key="MainWindowMenuTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                 <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="FontFamily" Value="{StaticResource Bold}" />
@@ -376,20 +388,14 @@
                                 </Rectangle.OpacityMask>
                             </Rectangle>
 
-                            <TextBlock
+                            <TextBlock Style="{StaticResource MainWindowTitleTextStyle}"
                                 Margin="8,1,0,0"
                                 VerticalAlignment="Center"
-                                FontFamily="{StaticResource Black}"
-                                FontSize="18"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="flux" />
 
-                            <TextBlock
+                            <TextBlock Style="{StaticResource MainWindowAccentTitleTextStyle}"
                                 Margin="0,1,0,0"
                                 VerticalAlignment="Center"
-                                FontFamily="{StaticResource Black}"
-                                FontSize="18"
-                                Foreground="{DynamicResource Brush.Mint}"
                                 Text="o" />
 
                             <Border Height="32" Style="{StaticResource VerticalSeparatorBorderStyle}" />
@@ -703,11 +709,7 @@
                                 </Border>
                             </Popup>
 
-                            <Border
-                                Width="1"
-                                Margin="16,0,8,0"
-                                Background="{DynamicResource Brush.Border.Strong}"
-                                SnapsToDevicePixels="True" />
+                            <Border Style="{StaticResource HeaderVerticalSeparatorBorderStyle}" />
 
                             <customControls:BalloonButton
                                 x:Name="HeaderQuickAddButton"
@@ -721,11 +723,7 @@
                                 ShouldExpand="True"
                                 Style="{StaticResource HeaderButtonDisableWhenAppLockedAndSufficientFundsActionGateLockedStyle}" />
 
-                            <Border
-                                Width="1"
-                                Margin="16,0,8,0"
-                                Background="{DynamicResource Brush.Border.Strong}"
-                                SnapsToDevicePixels="True" />
+                            <Border Style="{StaticResource HeaderVerticalSeparatorBorderStyle}" />
 
                             <customControls:BalloonButton
                                 ButtonIcon="{StaticResource Minus}"
@@ -802,15 +800,9 @@
                                 Text="Insufficient fund. Please include a account with sufficient funds to start using "
                                 TextAlignment="Center" />
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    FontFamily="{StaticResource Black}"
-                                    FontSize="18"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                <TextBlock Style="{StaticResource MainWindowTitleTextStyle}"
                                     Text="flux" />
-                                <TextBlock
-                                    FontFamily="{StaticResource Black}"
-                                    FontSize="18"
-                                    Foreground="{DynamicResource Brush.Mint}"
+                                <TextBlock Style="{StaticResource MainWindowAccentTitleTextStyle}"
                                     Text="o" />
                             </StackPanel>
                         </StackPanel>
@@ -832,15 +824,9 @@
                     Visibility="{Binding IsAppLocked, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            FontFamily="{StaticResource Black}"
-                            FontSize="18"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource MainWindowTitleTextStyle}"
                             Text="flux" />
-                        <TextBlock
-                            FontFamily="{StaticResource Black}"
-                            FontSize="18"
-                            Foreground="{DynamicResource Brush.Mint}"
+                        <TextBlock Style="{StaticResource MainWindowAccentTitleTextStyle}"
                             Text="o" />
                         <TextBlock
                             FontFamily="{StaticResource Medium}"

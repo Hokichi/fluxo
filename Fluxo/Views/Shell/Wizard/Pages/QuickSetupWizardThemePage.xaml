@@ -94,11 +94,7 @@
                         HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Neutral.Hovered}"
                         IconSize="9"
                         Style="{StaticResource HeaderButtonStyle}" />
-                    <Border
-                        Width="1"
-                        Margin="16,0,8,0"
-                        Background="{DynamicResource Brush.Border.Strong}"
-                        SnapsToDevicePixels="True" />
+                    <Border Style="{StaticResource HeaderVerticalSeparatorBorderStyle}" />
                     <customControls:BalloonButton
                         Padding="8,0"
                         ButtonIcon="{StaticResource PlusSolid}"
@@ -108,11 +104,7 @@
                         HoveredBackground="{DynamicResource Brush.Mint.Muted}"
                         ShouldExpand="True"
                         Style="{StaticResource HeaderButtonStyle}" />
-                    <Border
-                        Width="1"
-                        Margin="16,0,8,0"
-                        Background="{DynamicResource Brush.Border.Strong}"
-                        SnapsToDevicePixels="True" />
+                    <Border Style="{StaticResource HeaderVerticalSeparatorBorderStyle}" />
                     <customControls:BalloonButton
                         ButtonIcon="{StaticResource Minus}"
                         ButtonText="Minimize"

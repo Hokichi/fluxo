@@ -52,11 +52,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             </Style>
 
-            <Style x:Key="TransactionChoiceRadioStyle" BasedOn="{StaticResource BaseBalloonRadioButtonStyle}" TargetType="customControls:BalloonRadioButton">
-                <Setter Property="Margin" Value="8,0,0,0" />
-                <Setter Property="CornerRadius" Value="8" />
-            </Style>
-
             <Style
                 x:Key="TransactionFeedbackIconStyle"
                 BasedOn="{StaticResource BaseIconStyle}"
@@ -976,7 +971,7 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardAlt}"
                                             UncheckedText="Regular" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                             Grid.Column="2"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -988,7 +983,7 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource RegularRepeat}"
                                             UncheckedText="Recurring" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                             Grid.Column="4"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1000,7 +995,7 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardClockOutline}"
                                             UncheckedText="Installment" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                             Grid.Column="6"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1012,7 +1007,7 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                             UncheckedText="Unposted IoU" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                             Grid.Column="8"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1163,7 +1158,7 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Needs" />
-                                                    <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                                    <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                                         ButtonIcon="{StaticResource ShoppingBag}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1174,7 +1169,7 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Wants" />
-                                                    <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                                    <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                                         ButtonIcon="{StaticResource TrendingUp}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1185,7 +1180,7 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Invest" />
-                                                    <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
+                                                    <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
                                                         ButtonIcon="{StaticResource CreditCardOff}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"

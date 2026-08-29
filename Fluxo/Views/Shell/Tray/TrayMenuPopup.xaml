@@ -9,6 +9,12 @@
     Topmost="True"
     WindowStyle="None">
     <Window.Resources>
+        <Style x:Key="TrayAccentTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Black}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+        </Style>
+
         <Style x:Key="TrayMenuOptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="13" />
@@ -83,10 +89,7 @@
                         FontFamily="{StaticResource Black}"
                         Style="{StaticResource TrayMenuOptionTextStyle}"
                         Text=" flux" />
-                    <TextBlock
-                        FontFamily="{StaticResource Black}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Mint}"
+                    <TextBlock Style="{StaticResource TrayAccentTextStyle}"
                         Text="o" />
                 </StackPanel>
             </Button>
@@ -97,10 +100,7 @@
                         FontFamily="{StaticResource Black}"
                         Style="{StaticResource TrayMenuOptionTextStyle}"
                         Text=" flux" />
-                    <TextBlock
-                        FontFamily="{StaticResource Black}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Mint}"
+                    <TextBlock Style="{StaticResource TrayAccentTextStyle}"
                         Text="o" />
                 </StackPanel>
             </Button>

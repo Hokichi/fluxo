@@ -5,8 +5,62 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources">
 
 <UserControl.Resources>
+        <Style x:Key="BaseRunStyle" TargetType="Run" />
 
-<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="NeedsAllocationProgressStyle">
+        <Style x:Key="AllocationRightHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontFamily" Value="{StaticResource Light}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        </Style>
+
+        <Style x:Key="AllocationHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Light}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        </Style>
+
+        <Style x:Key="AllocationCenteredHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Light}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style x:Key="AllocationMetricStackStyle" BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+
+        <Style x:Key="AllocationScaleBadgeStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <Style x:Key="AllocationAmountRunStyle" BasedOn="{StaticResource BaseRunStyle}" TargetType="Run">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="AllocationCapacityRunStyle" BasedOn="{StaticResource BaseRunStyle}" TargetType="Run">
+            <Setter Property="FontFamily" Value="{StaticResource Regular}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+
+        <Style x:Key="AllocationProgressStyle" BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar">
+            <Setter Property="Height" Value="4" />
+            <Setter Property="Margin" Value="0,16,0,0" />
+        </Style>
+
+<Style BasedOn="{StaticResource AllocationProgressStyle}" TargetType="ProgressBar" x:Key="NeedsAllocationProgressStyle">
                                 <Setter Property="Foreground" Value="{DynamicResource Brush.Category.Needs}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsNeedsOverflowing}" Value="True">
@@ -15,7 +69,7 @@
                                 </Style.Triggers>
                             </Style>
 
-<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="WantsAllocationProgressStyle">
+<Style BasedOn="{StaticResource AllocationProgressStyle}" TargetType="ProgressBar" x:Key="WantsAllocationProgressStyle">
                                 <Setter Property="Foreground" Value="{DynamicResource Brush.Category.Wants}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsWantsOverflowing}" Value="True">
@@ -24,7 +78,7 @@
                                 </Style.Triggers>
                             </Style>
 
-<Style BasedOn="{StaticResource RoundedProgressBarStyle}" TargetType="ProgressBar" x:Key="InvestmentAllocationProgressStyle">
+<Style BasedOn="{StaticResource AllocationProgressStyle}" TargetType="ProgressBar" x:Key="InvestmentAllocationProgressStyle">
                                 <Setter Property="Foreground" Value="{DynamicResource Brush.Category.Investments}" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsInvestOverflowing}" Value="True">
@@ -60,7 +114,7 @@
                                 Foreground="{DynamicResource Brush.Category.Needs}"
                                 Text="NEEDS" />
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <StackPanel Style="{StaticResource AllocationMetricStackStyle}">
                             <components:Icon
                                 Width="14"
                                 Height="14"
@@ -69,45 +123,23 @@
                                 Path="{StaticResource ExclamationTriangle}"
                                 Visibility="{Binding IsNeedsOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                 Color="{DynamicResource Brush.Danger}" />
-                            <Border
-                                Height="24"
-                                Padding="12,0"
-                                VerticalAlignment="Center"
-                                Background="{DynamicResource Brush.Background.Deepened}"
-                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                                BorderThickness="2"
-                                CornerRadius="4">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{StaticResource Light}"
-                                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                            <Border Style="{StaticResource AllocationScaleBadgeStyle}">
+                                <TextBlock Style="{StaticResource AllocationCenteredHintTextStyle}"
                                     Text="{Binding NeedsAllocationPercentage, Mode=OneWay, StringFormat={}{0}%}" />
                             </Border>
                         </StackPanel>
                     </Grid>
 
                     <TextBlock Margin="0,0,0,-8">
-                        <Run
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="24"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <Run Style="{StaticResource AllocationAmountRunStyle}"
                             Text="{Binding NeedsSpent, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-                        <Run
-                            FontFamily="{StaticResource Regular}"
-                            FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <Run Style="{StaticResource AllocationCapacityRunStyle}"
                             Text="/" />
-                        <Run
-                            FontFamily="{StaticResource Regular}"
-                            FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <Run Style="{StaticResource AllocationCapacityRunStyle}"
                             Text="{Binding NeedsAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
 <ProgressBar
-                        Height="4"
-                        Margin="0,16,0,0"
                         Maximum="100"
                         Minimum="0"
                         Value="{Binding NeedsPercentage, Mode=OneWay}" Style="{StaticResource NeedsAllocationProgressStyle}">
@@ -115,19 +147,12 @@
                     </ProgressBar>
 
                     <Grid Margin="0,4,0,0">
-                        <TextBlock
-                            FontFamily="{StaticResource Light}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}">
+                        <TextBlock Style="{StaticResource AllocationHintTextStyle}">
                             <Run Text="{Binding NeedsRemainingDisplay, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             <Run Text="{Binding NeedsRemainingLabel, Mode=OneWay}" />
                         </TextBlock>
 
-                        <TextBlock
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Light}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource AllocationRightHintTextStyle}"
                             Text="{Binding NeedsPercentage, Mode=OneWay, StringFormat={}{0}% spent}" />
                     </Grid>
                 </StackPanel>
@@ -151,7 +176,7 @@
                                 Foreground="{DynamicResource Brush.Category.Wants}"
                                 Text="WANTS" />
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <StackPanel Style="{StaticResource AllocationMetricStackStyle}">
                             <components:Icon
                                 Width="14"
                                 Height="14"
@@ -167,37 +192,22 @@
                                 BorderBrush="{DynamicResource Brush.Border.Subtle}"
                                 BorderThickness="2"
                                 CornerRadius="4">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{StaticResource Light}"
-                                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                                <TextBlock Style="{StaticResource AllocationCenteredHintTextStyle}"
                                     Text="{Binding WantsAllocationPercentage, Mode=OneWay, StringFormat={}{0}%}" />
                             </Border>
                         </StackPanel>
                     </Grid>
 
                     <TextBlock Margin="0,0,0,-8">
-                        <Run
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="24"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <Run Style="{StaticResource AllocationAmountRunStyle}"
                             Text="{Binding WantsSpent, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-                        <Run
-                            FontFamily="{StaticResource Regular}"
-                            FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <Run Style="{StaticResource AllocationCapacityRunStyle}"
                             Text="/" />
-                        <Run
-                            FontFamily="{StaticResource Regular}"
-                            FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <Run Style="{StaticResource AllocationCapacityRunStyle}"
                             Text="{Binding WantsAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
 <ProgressBar
-                        Height="4"
-                        Margin="0,16,0,0"
                         Maximum="100"
                         Minimum="0"
                         Value="{Binding WantsPercentage, Mode=OneWay}" Style="{StaticResource WantsAllocationProgressStyle}">
@@ -205,19 +215,12 @@
                     </ProgressBar>
 
                     <Grid Margin="0,4,0,0">
-                        <TextBlock
-                            FontFamily="{StaticResource Light}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}">
+                        <TextBlock Style="{StaticResource AllocationHintTextStyle}">
                             <Run Text="{Binding WantsRemainingDisplay, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             <Run Text="{Binding WantsRemainingLabel, Mode=OneWay}" />
                         </TextBlock>
 
-                        <TextBlock
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Light}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource AllocationRightHintTextStyle}"
                             Text="{Binding WantsPercentage, Mode=OneWay, StringFormat={}{0}% spent}" />
                     </Grid>
                 </StackPanel>
@@ -241,7 +244,7 @@
                                 Foreground="{DynamicResource Brush.Category.Investments}"
                                 Text="INVEST" />
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <StackPanel Style="{StaticResource AllocationMetricStackStyle}">
                             <components:Icon
                                 Width="14"
                                 Height="14"
@@ -250,45 +253,23 @@
                                 Path="{StaticResource ExclamationTriangle}"
                                 Visibility="{Binding IsInvestOverflowing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                 Color="{DynamicResource Brush.Danger}" />
-                            <Border
-                                Height="24"
-                                Padding="12,0"
-                                VerticalAlignment="Center"
-                                Background="{DynamicResource Brush.Background.Deepened}"
-                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                                BorderThickness="2"
-                                CornerRadius="4">
-                                <TextBlock
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{StaticResource Light}"
-                                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                            <Border Style="{StaticResource AllocationScaleBadgeStyle}">
+                                <TextBlock Style="{StaticResource AllocationCenteredHintTextStyle}"
                                     Text="{Binding InvestAllocationPercentage, Mode=OneWay, StringFormat={}{0}%}" />
                             </Border>
                         </StackPanel>
                     </Grid>
 
                     <TextBlock Margin="0,0,0,-8">
-                        <Run
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="24"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <Run Style="{StaticResource AllocationAmountRunStyle}"
                             Text="{Binding InvestSpent, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-                        <Run
-                            FontFamily="{StaticResource Regular}"
-                            FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <Run Style="{StaticResource AllocationCapacityRunStyle}"
                             Text="/" />
-                        <Run
-                            FontFamily="{StaticResource Regular}"
-                            FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <Run Style="{StaticResource AllocationCapacityRunStyle}"
                             Text="{Binding InvestAvailable, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                     </TextBlock>
 
 <ProgressBar
-                        Height="4"
-                        Margin="0,16,0,0"
                         Maximum="100"
                         Minimum="0"
                         Value="{Binding InvestPercentage, Mode=OneWay}" Style="{StaticResource InvestmentAllocationProgressStyle}">
@@ -296,19 +277,12 @@
                     </ProgressBar>
 
                     <Grid Margin="0,4,0,0">
-                        <TextBlock
-                            FontFamily="{StaticResource Light}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}">
+                        <TextBlock Style="{StaticResource AllocationHintTextStyle}">
                             <Run Text="{Binding InvestRemainingDisplay, Mode=OneWay, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             <Run Text="{Binding InvestRemainingLabel, Mode=OneWay}" />
                         </TextBlock>
 
-                        <TextBlock
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Light}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource AllocationRightHintTextStyle}"
                             Text="{Binding InvestPercentage, Mode=OneWay, StringFormat={}{0}% spent}" />
                     </Grid>
                 </StackPanel>

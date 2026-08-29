@@ -55,4 +55,14 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Border.Strong}" />
     </Style>
 
+    <Style
+        x:Key="HeaderVerticalSeparatorBorderStyle"
+        BasedOn="{StaticResource BaseBorderStyle}"
+        TargetType="Border">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Margin" Value="16,0,8,0" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Border.Strong}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
 </ResourceDictionary>

@@ -10,22 +10,29 @@
     Icon="/Fluxo.Resources;component/Resources/fluxo.ico"
     ShowInTaskbar="True"
     Style="{StaticResource QuickSetupWizardPopupStyle}">
+
+    <customControls:BasePopup.Resources>
+        <Style x:Key="QuickSetupHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="QuickSetupNavigationIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
+        </Style>
+    </customControls:BasePopup.Resources>
     <customControls:BasePopup.PopupTitleContent>
         <StackPanel Orientation="Horizontal">
-            <TextBlock
-                FontFamily="{StaticResource Bold}"
-                FontSize="18"
-                Foreground="{DynamicResource Brush.Text.Primary}"
+            <TextBlock Style="{StaticResource QuickSetupHeadingTextStyle}"
                 Text="flux" />
             <TextBlock
                 FontFamily="{StaticResource Bold}"
                 FontSize="18"
                 Foreground="{DynamicResource Brush.Mint}"
                 Text="o" />
-            <TextBlock
-                FontFamily="{StaticResource Bold}"
-                FontSize="18"
-                Foreground="{DynamicResource Brush.Text.Primary}"
+            <TextBlock Style="{StaticResource QuickSetupHeadingTextStyle}"
                 Text=" Quick Setup" />
         </StackPanel>
     </customControls:BasePopup.PopupTitleContent>
@@ -78,9 +85,7 @@
                         Click="OnBackClick"
                         Style="{StaticResource QuickSetupPreviousChevronButtonStyle}"
                         ToolTip="Previous">
-                        <components:Icon
-                            Width="12"
-                            Height="12"
+                        <components:Icon Style="{StaticResource QuickSetupNavigationIconStyle}"
                             Path="{StaticResource AngleLeft}"
                             Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                     </Button>
@@ -102,9 +107,7 @@
                         IsEnabled="{Binding IsNextEnabled, Mode=OneWay}"
                         Style="{StaticResource QuickSetupNextChevronButtonStyle}"
                         ToolTip="Next">
-                        <components:Icon
-                            Width="12"
-                            Height="12"
+                        <components:Icon Style="{StaticResource QuickSetupNavigationIconStyle}"
                             Path="{StaticResource AngleRight}"
                             Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                     </Button>

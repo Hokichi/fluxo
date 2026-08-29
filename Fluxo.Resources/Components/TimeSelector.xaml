@@ -9,6 +9,11 @@
     PreviewTextInput="OnPreviewTextInput">
 
     <UserControl.Resources>
+        <Style x:Key="TimeSelectorTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
         <Style x:Key="TimeSegmentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Padding" Value="8,0" />
             <Setter Property="Background" Value="Transparent" />
@@ -33,9 +38,7 @@
                 x:Name="HoursSegment"
                 MouseLeftButtonDown="OnHoursSegmentMouseLeftButtonDown"
                 Style="{StaticResource TimeSegmentStyle}">
-                <TextBlock
-                    FontFamily="{DynamicResource Medium}"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
+                <TextBlock Style="{StaticResource TimeSelectorTextStyle}"
                     Text="{Binding FormattedHours, ElementName=Root, Mode=OneWay}" />
             </Border>
             <TextBlock
@@ -47,9 +50,7 @@
                 x:Name="MinutesSegment"
                 MouseLeftButtonDown="OnMinutesSegmentMouseLeftButtonDown"
                 Style="{StaticResource TimeSegmentStyle}">
-                <TextBlock
-                    FontFamily="{DynamicResource Medium}"
-                    Foreground="{DynamicResource Brush.Text.Primary}"
+                <TextBlock Style="{StaticResource TimeSelectorTextStyle}"
                     Text="{Binding FormattedMinutes, ElementName=Root, Mode=OneWay}" />
             </Border>
         </StackPanel>
