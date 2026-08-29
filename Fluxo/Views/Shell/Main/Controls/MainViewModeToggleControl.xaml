@@ -6,6 +6,15 @@
     xmlns:enums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:viewModels="clr-namespace:Fluxo.ViewModels.Shell">
     <UserControl.Resources>
+<ControlTemplate x:Key="MoveToCurrentPeriodButtonTemplate" TargetType="Button">
+                    <TextBlock
+                        Padding="{TemplateBinding Padding}"
+                        FontFamily="{TemplateBinding FontFamily}"
+                        FontSize="{TemplateBinding FontSize}"
+                        Foreground="{TemplateBinding Foreground}"
+                        Text="{TemplateBinding Content}" />
+                </ControlTemplate>
+
 <Style x:Key="MoveToCurrentPeriodButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -14,18 +23,7 @@
         <Setter Property="FontFamily" Value="{StaticResource Medium}" />
         <Setter Property="FontSize" Value="10" />
         <Setter Property="Padding" Value="8,2" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <TextBlock
-                        Padding="{TemplateBinding Padding}"
-                        FontFamily="{TemplateBinding FontFamily}"
-                        FontSize="{TemplateBinding FontSize}"
-                        Foreground="{TemplateBinding Foreground}"
-                        Text="{TemplateBinding Content}" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource MoveToCurrentPeriodButtonTemplate}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />

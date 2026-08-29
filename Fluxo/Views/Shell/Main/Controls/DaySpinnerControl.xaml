@@ -5,29 +5,7 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework">
 <UserControl.Resources>
-<Style x:Key="DaysOfWeekStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
-        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListViewItem">
-                    <RadioButton GroupName="DaysOfWeek" IsChecked="{Binding IsSelected}">
-                        <RadioButton.Template>
-                            <ControlTemplate TargetType="RadioButton">
-                                <Grid>
-                                    <StackPanel
-                                        Width="48"
-                                        VerticalAlignment="Center"
-                                        Background="Transparent">
-                                        <TextBlock
-                                            x:Name="DayOfWeekName"
-                                            Margin="0,0,0,6"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            FontFamily="{StaticResource Bold}"
-                                            FontSize="12"
-                                            Text="{Binding DayName}">
-                                            <TextBlock.Style>
-                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+<Style x:Key="PreviousDayTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -44,18 +22,8 @@
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                        <TextBlock
-                                            x:Name="DayOfWeekDate"
-                                            Margin="0,0,0,8"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            FontFamily="{StaticResource Black}"
-                                            FontSize="14"
-                                            Text="{Binding DayNumber}">
-                                            <TextBlock.Style>
-                                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+
+<Style x:Key="CurrentDayTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
                                                     <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -72,17 +40,8 @@
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </StackPanel>
-                                    <Border
-                                        Width="32"
-                                        Height="4"
-                                        VerticalAlignment="Bottom"
-                                        Background="{DynamicResource Brush.Mint}"
-                                        CornerRadius="4 4 0 0">
-                                        <Border.Style>
-                                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+
+<Style x:Key="DayBackgroundBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                                 <Setter Property="Opacity" Value="0" />
                                                 <Style.Triggers>
                                                     <MultiDataTrigger>
@@ -113,23 +72,8 @@
                                                     </MultiDataTrigger>
                                                 </Style.Triggers>
                                             </Style>
-                                        </Border.Style>
-                                        <Border.Effect>
-                                            <DropShadowEffect
-                                                BlurRadius="10"
-                                                ShadowDepth="0"
-                                                Color="{DynamicResource Color.Mint}" />
-                                        </Border.Effect>
-                                    </Border>
 
-                                    <Border
-                                        Width="32"
-                                        Height="4"
-                                        VerticalAlignment="Bottom"
-                                        Background="{DynamicResource Brush.Mint}"
-                                        CornerRadius="4 4 0 0">
-                                        <Border.Style>
-                                            <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+<Style x:Key="TodayIndicatorBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
                                                 <Setter Property="Opacity" Value="0" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsSelected}" Value="True">
@@ -156,6 +100,63 @@
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
+
+<ControlTemplate x:Key="DayRadioButtonTemplate" TargetType="RadioButton">
+                                <Grid>
+                                    <StackPanel
+                                        Width="48"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent">
+                                        <TextBlock
+                                            x:Name="DayOfWeekName"
+                                            Margin="0,0,0,6"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Bold}"
+                                            FontSize="12"
+                                            Text="{Binding DayName}">
+                                            <TextBlock.Style>
+                                                                                                <StaticResource ResourceKey="PreviousDayTextStyle" />
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock
+                                            x:Name="DayOfWeekDate"
+                                            Margin="0,0,0,8"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            FontFamily="{StaticResource Black}"
+                                            FontSize="14"
+                                            Text="{Binding DayNumber}">
+                                            <TextBlock.Style>
+                                                                                                <StaticResource ResourceKey="CurrentDayTextStyle" />
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <Border
+                                        Width="32"
+                                        Height="4"
+                                        VerticalAlignment="Bottom"
+                                        Background="{DynamicResource Brush.Mint}"
+                                        CornerRadius="4 4 0 0">
+                                        <Border.Style>
+                                                                                        <StaticResource ResourceKey="DayBackgroundBorderStyle" />
+                                        </Border.Style>
+                                        <Border.Effect>
+                                            <DropShadowEffect
+                                                BlurRadius="10"
+                                                ShadowDepth="0"
+                                                Color="{DynamicResource Color.Mint}" />
+                                        </Border.Effect>
+                                    </Border>
+
+                                    <Border
+                                        Width="32"
+                                        Height="4"
+                                        VerticalAlignment="Bottom"
+                                        Background="{DynamicResource Brush.Mint}"
+                                        CornerRadius="4 4 0 0">
+                                        <Border.Style>
+                                                                                        <StaticResource ResourceKey="TodayIndicatorBorderStyle" />
                                         </Border.Style>
                                         <Border.Effect>
                                             <DropShadowEffect
@@ -166,30 +167,35 @@
                                     </Border>
                                 </Grid>
                             </ControlTemplate>
+
+<ControlTemplate x:Key="DaysOfWeekTemplate" TargetType="ListViewItem">
+                    <RadioButton GroupName="DaysOfWeek" IsChecked="{Binding IsSelected}">
+                        <RadioButton.Template>
+                                                        <StaticResource ResourceKey="DayRadioButtonTemplate" />
                         </RadioButton.Template>
                     </RadioButton>
                 </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+
+<Style x:Key="DaysOfWeekStyle" BasedOn="{StaticResource BaseListViewItemStyle}" TargetType="ListViewItem">
+        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+        <Setter Property="Template" Value="{StaticResource DaysOfWeekTemplate}" />
     </Style>
-        <Style x:Key="TransparentDaySpinnerListViewStyle" BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
+                <ControlTemplate x:Key="TransparentDaySpinnerListViewTemplate" TargetType="ListView">
+                                <Border
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                    <ScrollViewer
+                                        Padding="{TemplateBinding Padding}"
+                                        Focusable="False">
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </Border>
+                            </ControlTemplate>
+
+<Style x:Key="TransparentDaySpinnerListViewStyle" BasedOn="{StaticResource BaseListViewStyle}" TargetType="ListView">
             <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListView">
-                        <Border
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <ScrollViewer
-                                Padding="{TemplateBinding Padding}"
-                                Focusable="False">
-                                <ItemsPresenter />
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource TransparentDaySpinnerListViewTemplate}" />
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Background" Value="Transparent" />
@@ -264,4 +270,3 @@
         </Button>
     </Grid>
 </UserControl>
-
