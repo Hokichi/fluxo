@@ -4,6 +4,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
+        <Style x:Key="SavingGoalTitleTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,4,0,0" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <Style x:Key="SavingGoalHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="SavingGoalMetricCardStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+
         <Style
             x:Key="SavingGoalActionBalloonButtonStyle"
             BasedOn="{StaticResource ToolbarActionBalloonButtonStyle}"
@@ -93,78 +116,36 @@
                         </StackPanel>
                     </Grid>
 
-                    <Border
+                    <Border Style="{StaticResource SavingGoalMetricCardStyle}"
                         Grid.Row="2"
-                        Grid.Column="0"
-                        Padding="8"
-                        Background="{DynamicResource Brush.Background.Deepened}"
-                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                        BorderThickness="1"
-                        CornerRadius="8">
+                        Grid.Column="0">
                         <StackPanel>
-                            <TextBlock
-                                FontFamily="{StaticResource Medium}"
-                                FontSize="10"
-                                Foreground="{DynamicResource Brush.Text.Muted}"
-                                Text="Amount Left"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                Margin="0,4,0,0"
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="12"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
-                                Text="{Binding AmountLeftText}"
-                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock Style="{StaticResource SavingGoalHintTextStyle}"
+                                Text="Amount Left" />
+                            <TextBlock Style="{StaticResource SavingGoalTitleTextStyle}"
+                                Text="{Binding AmountLeftText}" />
                         </StackPanel>
                     </Border>
 
-                    <Border
+                    <Border Style="{StaticResource SavingGoalMetricCardStyle}"
                         Grid.Row="2"
-                        Grid.Column="2"
-                        Padding="8"
-                        Background="{DynamicResource Brush.Background.Deepened}"
-                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                        BorderThickness="1"
-                        CornerRadius="8">
+                        Grid.Column="2">
                         <StackPanel>
-                            <TextBlock
-                                FontFamily="{StaticResource Medium}"
-                                FontSize="10"
-                                Foreground="{DynamicResource Brush.Text.Muted}"
-                                Text="Weekly Average"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                Margin="0,4,0,0"
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="12"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
-                                Text="{Binding WeeklyAverageText}"
-                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock Style="{StaticResource SavingGoalHintTextStyle}"
+                                Text="Weekly Average" />
+                            <TextBlock Style="{StaticResource SavingGoalTitleTextStyle}"
+                                Text="{Binding WeeklyAverageText}" />
                         </StackPanel>
                     </Border>
 
-                    <Border
+                    <Border Style="{StaticResource SavingGoalMetricCardStyle}"
                         Grid.Row="2"
-                        Grid.Column="4"
-                        Padding="8"
-                        Background="{DynamicResource Brush.Background.Deepened}"
-                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                        BorderThickness="1"
-                        CornerRadius="8">
+                        Grid.Column="4">
                         <StackPanel>
-                            <TextBlock
-                                FontFamily="{StaticResource Medium}"
-                                FontSize="10"
-                                Foreground="{DynamicResource Brush.Text.Muted}"
-                                Text="Estimated Deadline"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                Margin="0,4,0,0"
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="12"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
-                                Text="{Binding EstimatedDeadlineText}"
-                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock Style="{StaticResource SavingGoalHintTextStyle}"
+                                Text="Estimated Deadline" />
+                            <TextBlock Style="{StaticResource SavingGoalTitleTextStyle}"
+                                Text="{Binding EstimatedDeadlineText}" />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -310,6 +291,5 @@
         </Grid>
     </Border>
 </UserControl>
-
 
 

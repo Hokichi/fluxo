@@ -14,6 +14,34 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <Style x:Key="LedgerColumnHeaderTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        </Style>
+
+        <Style x:Key="LedgerPrimaryCellTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="LedgerNameCellTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="LedgerSecondaryCellTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
         <Style
             x:Key="LedgerChildRowBorderStyle"
             BasedOn="{StaticResource BaseBorderStyle}"
@@ -152,11 +180,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontFamily="{StaticResource Medium}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource LedgerPrimaryCellTextStyle}"
                         Text="{Binding Tag.Label, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
 
                     <Border
@@ -300,11 +324,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontFamily="{StaticResource Medium}"
-                        FontSize="13"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource LedgerPrimaryCellTextStyle}"
                         Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
 
                     <Path
@@ -395,18 +415,12 @@
         </Style>
 
         <DataTemplate x:Key="LedgerFilterOptionTemplate">
-            <TextBlock
-                FontFamily="{StaticResource Medium}"
-                FontSize="12"
-                Foreground="{DynamicResource Brush.Text.Primary}"
+            <TextBlock Style="{StaticResource LedgerSecondaryCellTextStyle}"
                 Text="{Binding Label}" />
         </DataTemplate>
 
         <DataTemplate x:Key="LedgerGroupingModeTemplate">
-            <TextBlock
-                FontFamily="{StaticResource Medium}"
-                FontSize="12"
-                Foreground="{DynamicResource Brush.Text.Primary}"
+            <TextBlock Style="{StaticResource LedgerSecondaryCellTextStyle}"
                 Text="{Binding Mode=OneWay}" />
         </DataTemplate>
 
@@ -465,12 +479,7 @@
                         <StackPanel.RenderTransform>
                             <TranslateTransform />
                         </StackPanel.RenderTransform>
-                        <TextBlock
-                            MinWidth="120"
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource LedgerNameCellTextStyle}"
                             Text="{Binding Name, Mode=OneWay}" />
                         <Border
                             Margin="8,4,0,0"
@@ -679,12 +688,7 @@
                             <StackPanel.RenderTransform>
                                 <TranslateTransform />
                             </StackPanel.RenderTransform>
-                            <TextBlock
-                                MinWidth="120"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="13"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
+                            <TextBlock Style="{StaticResource LedgerNameCellTextStyle}"
                                 Text="{Binding Name, Mode=OneWay}" />
                             <Border
                                 x:Name="LedgerChildCountBadge"
@@ -1198,11 +1202,7 @@
                 Columns="4">
                 <Border Margin="0,0,8,0" Style="{StaticResource CardBorderStyle}">
                     <Grid VerticalAlignment="Center">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource LedgerColumnHeaderTextStyle}"
                             Text="SPENT" />
                         <TextBlock
                             HorizontalAlignment="Right"
@@ -1215,11 +1215,7 @@
                 </Border>
                 <Border Margin="8,0" Style="{StaticResource CardBorderStyle}">
                     <Grid VerticalAlignment="Center">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource LedgerColumnHeaderTextStyle}"
                             Text="EARNED" />
                         <TextBlock
                             HorizontalAlignment="Right"
@@ -1232,11 +1228,7 @@
                 </Border>
                 <Border Margin="8,0" Style="{StaticResource CardBorderStyle}">
                     <Grid VerticalAlignment="Center">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource LedgerColumnHeaderTextStyle}"
                             Text="GOAL" />
                         <TextBlock
                             HorizontalAlignment="Right"
@@ -1249,11 +1241,7 @@
                 </Border>
                 <Border Margin="8,0,0,0" Style="{StaticResource CardBorderStyle}">
                     <Grid VerticalAlignment="Center">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="12"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
+                        <TextBlock Style="{StaticResource LedgerColumnHeaderTextStyle}"
                             Text="NET" />
                         <TextBlock
                             HorizontalAlignment="Right"

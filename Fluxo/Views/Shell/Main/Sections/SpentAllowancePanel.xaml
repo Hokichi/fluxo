@@ -4,6 +4,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
 
+    <UserControl.Resources>
+        <Style x:Key="AllowanceMetricTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        </Style>
+    </UserControl.Resources>
+
     <customControls:SpacedUniformGrid
         VerticalAlignment="Center"
         Columns="4"
@@ -12,11 +21,7 @@
         VerticalGap="8">
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid VerticalAlignment="Center">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="10"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource AllowanceMetricTextStyle}"
                     Text="SPENT" />
 
                 <TextBlock
@@ -32,11 +37,7 @@
 
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid VerticalAlignment="Center">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="10"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource AllowanceMetricTextStyle}"
                     Text="EARNED" />
 
                 <TextBlock
@@ -52,11 +53,7 @@
 
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid VerticalAlignment="Center">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="10"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource AllowanceMetricTextStyle}"
                     Text="ALLOWANCE" />
 
                 <TextBlock
@@ -79,11 +76,7 @@
 
         <Border Style="{StaticResource CardBorderStyle}">
             <Grid VerticalAlignment="Center">
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontFamily="{StaticResource Medium}"
-                    FontSize="10"
-                    Foreground="{DynamicResource Brush.Text.Muted}"
+                <TextBlock Style="{StaticResource AllowanceMetricTextStyle}"
                     Text="NET" />
 
                 <TextBlock

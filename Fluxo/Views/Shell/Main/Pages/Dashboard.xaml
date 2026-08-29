@@ -8,6 +8,11 @@
     xmlns:sections="clr-namespace:Fluxo.Views.Shell.Main.Sections">
 
     <UserControl.Resources>
+        <Style x:Key="DashboardLegendIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
+        </Style>
+
         <DataTemplate x:Key="MainWindowAccountItemTemplate">
             <components:Account />
         </DataTemplate>
@@ -153,9 +158,7 @@
                             PreviewMouseLeftButtonUp="OnDashboardAccountsScrollButtonReleased"
                             Style="{StaticResource DashboardAccountsScrollButtonStyle}"
                             Visibility="Collapsed">
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource DashboardLegendIconStyle}"
                                 Path="{StaticResource AngleLeft}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                         </Button>
@@ -171,9 +174,7 @@
                             PreviewMouseLeftButtonUp="OnDashboardAccountsScrollButtonReleased"
                             Style="{StaticResource DashboardAccountsScrollButtonStyle}"
                             Visibility="Collapsed">
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource DashboardLegendIconStyle}"
                                 Path="{StaticResource AngleRight}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
                         </Button>

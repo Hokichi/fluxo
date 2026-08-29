@@ -14,6 +14,18 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <Style x:Key="CalendarItemDetailTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,3,0,0" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style x:Key="CalendarItemTitleTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
         <Style x:Key="CalendarDayNumberTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Style.Triggers>
@@ -206,15 +218,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource CalendarItemTitleTextStyle}"
                             Text="{Binding Name}" />
-                        <TextBlock
-                            Margin="0,3,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <TextBlock Style="{StaticResource CalendarItemDetailTextStyle}"
                             Text="{Binding AccountName}" />
                     </StackPanel>
                     <TextBlock
@@ -234,15 +240,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource CalendarItemTitleTextStyle}"
                             Text="{Binding Name}" />
-                        <TextBlock
-                            Margin="0,3,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <TextBlock Style="{StaticResource CalendarItemDetailTextStyle}"
                             Text="{Binding AccountName}" />
                     </StackPanel>
                     <TextBlock
@@ -257,15 +257,9 @@
         <DataTemplate x:Key="GoalDeadlineItemTemplate">
             <Border Style="{StaticResource CalendarListItemHoverBorderStyle}">
                 <StackPanel>
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource CalendarItemTitleTextStyle}"
                         Text="{Binding Name}" />
-                    <TextBlock
-                        Margin="0,3,0,0"
-                        FontFamily="{StaticResource Medium}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Brush.Text.Secondary}"
+                    <TextBlock Style="{StaticResource CalendarItemDetailTextStyle}"
                         Text="{Binding ProgressText}" />
                 </StackPanel>
             </Border>
@@ -279,15 +273,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource CalendarItemTitleTextStyle}"
                             Text="{Binding Name}" />
-                        <TextBlock
-                            Margin="0,3,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Text.Secondary}">
+                        <TextBlock Style="{StaticResource CalendarItemDetailTextStyle}">
                             <Run Text="{Binding TypeText}" />
                             <Run Text=" - " />
                             <Run Text="{Binding SourceName}" />
@@ -334,11 +322,9 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock
+                    <TextBlock Style="{StaticResource CalendarItemTitleTextStyle}"
                         VerticalAlignment="Center"
-                        FontFamily="{StaticResource Bold}"
                         FontSize="18"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding VisibleMonthLabel}" />
                     <StackPanel
                         Grid.Column="1"

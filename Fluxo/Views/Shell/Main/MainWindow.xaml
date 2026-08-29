@@ -30,6 +30,22 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/MainWindowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="MainWindowMenuTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            </Style>
+
+            <Style x:Key="MainWindowMenuIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+                <Setter Property="Width" Value="14" />
+                <Setter Property="Height" Value="14" />
+            </Style>
+
+            <Style x:Key="MainWindowActionIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+                <Setter Property="Width" Value="16" />
+                <Setter Property="Height" Value="16" />
+            </Style>
+
 
             <Style
                 x:Key="DashboardSpendingAmountGateLockedContentStyle"
@@ -378,12 +394,9 @@
 
                             <Border Height="32" Style="{StaticResource VerticalSeparatorBorderStyle}" />
 
-                            <TextBlock
+                            <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                 Margin="0,4,0,0"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
                                 FontSize="14"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="{Binding ActivePageTitle, RelativeSource={RelativeSource AncestorType=Window}}" />
                         </StackPanel>
 
@@ -530,16 +543,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource MagnifyingGlass}"
                                                     Color="{DynamicResource Brush.Mint}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Search" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -560,16 +568,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource AppsSolid}"
                                                     Color="{DynamicResource Brush.Mint}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Quick Access" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -590,16 +593,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource Bank}"
                                                     Color="{DynamicResource Brush.Mint}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Accounts" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -620,16 +618,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource History}"
                                                     Color="{DynamicResource Brush.Text.Muted}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="History" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -647,16 +640,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource KeyboardBoxFill}"
                                                     Color="{DynamicResource Brush.Info}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Hotkeys" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -674,16 +662,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource Cog}"
                                                     Color="{DynamicResource Brush.Info}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Settings" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -704,16 +687,11 @@
                                                     <ColumnDefinition Width="8" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
-                                                <components:Icon
-                                                    Width="14"
-                                                    Height="14"
+                                                <components:Icon Style="{StaticResource MainWindowMenuIconStyle}"
                                                     Path="{StaticResource Lock}"
                                                     Color="{DynamicResource Brush.Text.Muted}" />
-                                                <TextBlock
+                                                <TextBlock Style="{StaticResource MainWindowMenuTextStyle}"
                                                     Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
                                                     Text="Lock" />
                                                 <TextBlock
                                                     Grid.Column="4"
@@ -893,9 +871,7 @@
                             Click="OnHomeNavigationClick"
                             IsChecked="True"
                             Style="{StaticResource FloatingSideNavigationButtonStyle}">
-                            <components:Icon
-                                Width="16"
-                                Height="16"
+                            <components:Icon Style="{StaticResource MainWindowActionIconStyle}"
                                 Path="{StaticResource Home}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
                         </ToggleButton>
@@ -906,9 +882,7 @@
                             AutomationProperties.Name="Navigate Analytics"
                             Click="OnAnalyticsNavigationClick"
                             Style="{StaticResource FloatingSideNavigationButtonStyle}">
-                            <components:Icon
-                                Width="16"
-                                Height="16"
+                            <components:Icon Style="{StaticResource MainWindowActionIconStyle}"
                                 Path="{StaticResource ChartColumn}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
                         </ToggleButton>
@@ -919,9 +893,7 @@
                             AutomationProperties.Name="Navigate Calendar"
                             Click="OnCalendarNavigationClick"
                             Style="{StaticResource FloatingSideNavigationButtonStyle}">
-                            <components:Icon
-                                Width="16"
-                                Height="16"
+                            <components:Icon Style="{StaticResource MainWindowActionIconStyle}"
                                 Path="{StaticResource Calendar}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
                         </ToggleButton>
@@ -932,9 +904,7 @@
                             AutomationProperties.Name="Navigate Ledger"
                             Click="OnLedgerNavigationClick"
                             Style="{StaticResource FloatingSideNavigationButtonStyle}">
-                            <components:Icon
-                                Width="16"
-                                Height="16"
+                            <components:Icon Style="{StaticResource MainWindowActionIconStyle}"
                                 Path="{StaticResource BookAiFill}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}" />
                         </ToggleButton>

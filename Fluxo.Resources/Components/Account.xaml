@@ -12,6 +12,17 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <Style x:Key="AccountMetricTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="AccountMetricIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Height" Value="14" />
+        </Style>
+
         <Style
             x:Key="AccountAccentStyle"
             BasedOn="{StaticResource BaseBorderStyle}"
@@ -158,16 +169,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource Eye}"
                                 Color="{DynamicResource Brush.Info}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="View" />
                         </Grid>
                     </Button>
@@ -179,16 +185,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource Delete}"
                                 Color="{DynamicResource Brush.Danger}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Delete" />
                         </Grid>
                     </Button>
@@ -200,16 +201,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource Unpin}"
                                 Color="{DynamicResource Brush.Warning}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Unpin" />
                         </Grid>
                     </Button>
@@ -224,16 +220,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource LightningSlashFill}"
                                 Color="{DynamicResource Brush.Warning}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Disable" />
                         </Grid>
                     </Button>
@@ -248,16 +239,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource Exchange}"
                                 Color="{DynamicResource Brush.Mint}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Transfer" />
                         </Grid>
                     </Button>
@@ -272,16 +258,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource Bill}"
                                 Color="{DynamicResource Brush.Mint}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Repayment" />
                         </Grid>
                     </Button>
@@ -296,16 +277,11 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <components:Icon
-                                Width="14"
-                                Height="14"
+                            <components:Icon Style="{StaticResource AccountMetricIconStyle}"
                                 Path="{StaticResource MoneyExchange}"
                                 Color="{DynamicResource Brush.Warning}" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountMetricTextStyle}"
                                 Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Reconciliation" />
                         </Grid>
                     </Button>
