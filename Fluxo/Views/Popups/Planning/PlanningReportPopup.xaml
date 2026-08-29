@@ -10,6 +10,32 @@
     SizeToContent="WidthAndHeight">
 
 <customControls:BasePopup.Resources>
+        <Style x:Key="ReportChartCaptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,10,0,0" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style x:Key="ReportRightValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="ReportSectionHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="ReportChartHostStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+            <Setter Property="Width" Value="64" />
+            <Setter Property="Height" Value="64" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
         <converters:SourceSequenceLabelConverter x:Key="SourceSequenceLabelConverter" />
 
         <Style x:Key="SummaryLabelStyle" BasedOn="{StaticResource CardLabelTextStyle}" TargetType="TextBlock">
@@ -246,15 +272,9 @@
                                 <Border>
                                     <StackPanel>
                                         <Grid>
-                                            <TextBlock
-                                                FontFamily="{StaticResource Bold}"
-                                                FontSize="14"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource ReportSectionHeadingTextStyle}"
                                                 Text="Needs" />
-                                            <TextBlock
-                                                HorizontalAlignment="Right"
-                                                FontFamily="{StaticResource Bold}"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource ReportRightValueTextStyle}"
                                                 Text="{Binding NeedsPercent, StringFormat={}{0}%}" />
                                         </Grid>
                                         <Slider
@@ -272,15 +292,9 @@
                                 <Border>
                                     <StackPanel>
                                         <Grid>
-                                            <TextBlock
-                                                FontFamily="{StaticResource Bold}"
-                                                FontSize="14"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource ReportSectionHeadingTextStyle}"
                                                 Text="Wants" />
-                                            <TextBlock
-                                                HorizontalAlignment="Right"
-                                                FontFamily="{StaticResource Bold}"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource ReportRightValueTextStyle}"
                                                 Text="{Binding WantsPercent, StringFormat={}{0}%}" />
                                         </Grid>
                                         <Slider
@@ -298,15 +312,9 @@
                                 <Border>
                                     <StackPanel>
                                         <Grid>
-                                            <TextBlock
-                                                FontFamily="{StaticResource Bold}"
-                                                FontSize="14"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource ReportSectionHeadingTextStyle}"
                                                 Text="Invest" />
-                                            <TextBlock
-                                                HorizontalAlignment="Right"
-                                                FontFamily="{StaticResource Bold}"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource ReportRightValueTextStyle}"
                                                 Text="{Binding InvestPercent, StringFormat={}{0}%}" />
                                         </Grid>
                                         <Slider
@@ -351,10 +359,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <Grid
-                                        Width="64"
-                                        Height="64"
-                                        HorizontalAlignment="Center">
+                                    <Grid Style="{StaticResource ReportChartHostStyle}">
                                         <Canvas
                                             Width="80"
                                             Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
@@ -396,13 +401,8 @@
                                             Text="{Binding AnimatedNeedsUsagePercent, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, StringFormat={}{0:0}%}" />
                                     </Grid>
 
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Center"
-                                        FontFamily="{StaticResource Medium}"
-                                        FontSize="11"
-                                        Foreground="{DynamicResource Brush.Text.Secondary}">
+                                    <TextBlock Style="{StaticResource ReportChartCaptionTextStyle}"
+                                        Grid.Row="1">
                                         <Run Text="{Binding NeedsSpent, Converter={StaticResource MoneyDisplayConverter}}" />
                                         <Run Text="/" />
                                         <Run Text="{Binding NeedsAllocated, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -426,10 +426,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <Grid
-                                        Width="64"
-                                        Height="64"
-                                        HorizontalAlignment="Center">
+                                    <Grid Style="{StaticResource ReportChartHostStyle}">
                                         <Canvas
                                             Width="80"
                                             Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
@@ -471,13 +468,8 @@
                                             Text="{Binding AnimatedWantsUsagePercent, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, StringFormat={}{0:0}%}" />
                                     </Grid>
 
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Center"
-                                        FontFamily="{StaticResource Medium}"
-                                        FontSize="11"
-                                        Foreground="{DynamicResource Brush.Text.Secondary}">
+                                    <TextBlock Style="{StaticResource ReportChartCaptionTextStyle}"
+                                        Grid.Row="1">
                                         <Run Text="{Binding WantsSpent, Converter={StaticResource MoneyDisplayConverter}}" />
                                         <Run Text="/" />
                                         <Run Text="{Binding WantsAllocated, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -501,10 +493,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <Grid
-                                        Width="64"
-                                        Height="64"
-                                        HorizontalAlignment="Center">
+                                    <Grid Style="{StaticResource ReportChartHostStyle}">
                                         <Canvas
                                             Width="80"
                                             Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
@@ -546,13 +535,8 @@
                                             Text="{Binding AnimatedInvestUsagePercent, RelativeSource={RelativeSource AncestorType={x:Type local:PlanningReportPopup}}, StringFormat={}{0:0}%}" />
                                     </Grid>
 
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Center"
-                                        FontFamily="{StaticResource Medium}"
-                                        FontSize="11"
-                                        Foreground="{DynamicResource Brush.Text.Secondary}">
+                                    <TextBlock Style="{StaticResource ReportChartCaptionTextStyle}"
+                                        Grid.Row="1">
                                         <Run Text="{Binding InvestSpent, Converter={StaticResource MoneyDisplayConverter}}" />
                                         <Run Text="/" />
                                         <Run Text="{Binding InvestAllocated, Converter={StaticResource MoneyDisplayConverter}}" />

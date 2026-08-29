@@ -5,11 +5,22 @@
     xmlns:coreEnums="clr-namespace:Fluxo.Core.Enums;assembly=Fluxo.Core"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     AutomationProperties.AutomationId="Settings.Configuration.Root">
+
+    <UserControl.Resources>
+        <Style x:Key="AboutDescriptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="AboutHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+    </UserControl.Resources>
     <StackPanel>
-        <TextBlock
-            FontFamily="{StaticResource Bold}"
+        <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
             FontSize="16"
-            Foreground="{DynamicResource Brush.Text.Primary}"
             Text="Configuration" />
         <TextBlock
             Margin="0,8,0,16"
@@ -25,15 +36,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="Run with Windows" />
                     <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
-                        <TextBlock
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            TextWrapping="Wrap">
+                        <TextBlock Style="{StaticResource AboutDescriptionTextStyle}">
                             <Run Text="Start " />
                         </TextBlock>
                         <TextBlock
@@ -44,10 +50,7 @@
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Mint.Muted}"
                             Text="o" />
-                        <TextBlock
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            TextWrapping="Wrap">
+                        <TextBlock Style="{StaticResource AboutDescriptionTextStyle}">
                             <Run Text=" in the system tray when Windows signs in." />
                         </TextBlock>
                     </StackPanel>
@@ -64,13 +67,9 @@
         <Border Margin="0,6,0,0" Style="{StaticResource RowCardStyle}">
             <Grid>
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="When closing " />
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="flux" />
                     <TextBlock
                         FontFamily="{StaticResource Bold}"
@@ -103,16 +102,11 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         Text="Current Version" />
                     <StackPanel Margin="0,6,0,0" Orientation="Horizontal">
-                        <TextBlock
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="Currently installed version of "
-                            TextWrapping="Wrap" />
+                        <TextBlock Style="{StaticResource AboutDescriptionTextStyle}"
+                            Text="Currently installed version of " />
                         <TextBlock
                             FontFamily="{StaticResource Bold}"
                             Foreground="{DynamicResource Brush.Text.Secondary}"
@@ -127,10 +121,8 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
-                    <TextBlock
+                    <TextBlock Style="{StaticResource AboutHeadingTextStyle}"
                         VerticalAlignment="Center"
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="{Binding CurrentVersion}" />
                     <Button
                         x:Name="CheckForUpdatesButton"

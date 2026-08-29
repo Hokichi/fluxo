@@ -8,6 +8,32 @@
     xmlns:viewModels="clr-namespace:Fluxo.ViewModels.Popups.Settings">
 
     <UserControl.Resources>
+        <Style x:Key="BudgetPercentTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Width" Value="56" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="BudgetFieldTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style x:Key="BudgetValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style x:Key="BudgetSectionHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
 
         <Style
             x:Key="SettingsBudgetContentStyle"
@@ -71,10 +97,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="14"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
+                            <TextBlock Style="{StaticResource BudgetSectionHeadingTextStyle}"
                                 Text="Needs" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <customControls:BalloonButton
@@ -85,13 +108,8 @@
                                     PreviewMouseLeftButtonUp="OnAllocationAdjustButtonMouseUp"
                                     Style="{StaticResource StepperButtonStyle}"
                                     Tag="Needs:-1" />
-                                <TextBlock
-                                    Width="56"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{StaticResource Bold}"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                    Text="{Binding NeedsAllocationPercentage, StringFormat={}{0}%}"
-                                    TextAlignment="Center" />
+                                <TextBlock Style="{StaticResource BudgetPercentTextStyle}"
+                                    Text="{Binding NeedsAllocationPercentage, StringFormat={}{0}%}" />
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource PlusSolid}"
                                     Click="OnAllocationAdjustButtonClick"
@@ -111,11 +129,8 @@
                             Style="{StaticResource BudgetSliderStyle}"
                             TickFrequency="1"
                             Value="{Binding NeedsAllocationPercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock
+                        <TextBlock Style="{StaticResource BudgetValueTextStyle}"
                             Grid.Row="2"
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding NeedsAllocationAmountText}"
                             ToolTip="{Binding NeedsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
                     </Grid>
@@ -133,10 +148,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="14"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
+                            <TextBlock Style="{StaticResource BudgetSectionHeadingTextStyle}"
                                 Text="Wants" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <customControls:BalloonButton
@@ -147,13 +159,8 @@
                                     PreviewMouseLeftButtonUp="OnAllocationAdjustButtonMouseUp"
                                     Style="{StaticResource StepperButtonStyle}"
                                     Tag="Wants:-1" />
-                                <TextBlock
-                                    Width="56"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{StaticResource Bold}"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                    Text="{Binding WantsAllocationPercentage, StringFormat={}{0}%}"
-                                    TextAlignment="Center" />
+                                <TextBlock Style="{StaticResource BudgetPercentTextStyle}"
+                                    Text="{Binding WantsAllocationPercentage, StringFormat={}{0}%}" />
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource PlusSolid}"
                                     Click="OnAllocationAdjustButtonClick"
@@ -173,11 +180,8 @@
                             Style="{StaticResource BudgetSliderStyle}"
                             TickFrequency="1"
                             Value="{Binding WantsAllocationPercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock
+                        <TextBlock Style="{StaticResource BudgetValueTextStyle}"
                             Grid.Row="2"
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding WantsAllocationAmountText}"
                             ToolTip="{Binding WantsAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
                     </Grid>
@@ -195,10 +199,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock
-                                FontFamily="{StaticResource Bold}"
-                                FontSize="14"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
+                            <TextBlock Style="{StaticResource BudgetSectionHeadingTextStyle}"
                                 Text="Invest" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <customControls:BalloonButton
@@ -209,13 +210,8 @@
                                     PreviewMouseLeftButtonUp="OnAllocationAdjustButtonMouseUp"
                                     Style="{StaticResource StepperButtonStyle}"
                                     Tag="Invest:-1" />
-                                <TextBlock
-                                    Width="56"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{StaticResource Bold}"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                    Text="{Binding InvestAllocationPercentage, StringFormat={}{0}%}"
-                                    TextAlignment="Center" />
+                                <TextBlock Style="{StaticResource BudgetPercentTextStyle}"
+                                    Text="{Binding InvestAllocationPercentage, StringFormat={}{0}%}" />
                                 <customControls:BalloonButton
                                     ButtonIcon="{StaticResource PlusSolid}"
                                     Click="OnAllocationAdjustButtonClick"
@@ -235,11 +231,8 @@
                             Style="{StaticResource BudgetSliderStyle}"
                             TickFrequency="1"
                             Value="{Binding InvestAllocationPercentage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <TextBlock
+                        <TextBlock Style="{StaticResource BudgetValueTextStyle}"
                             Grid.Row="2"
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding InvestAllocationAmountText}"
                             ToolTip="{Binding InvestAllocationAmountText, Converter={StaticResource MoneyFullDisplayConverter}}" />
                     </Grid>
@@ -261,10 +254,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="180" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource BudgetFieldTextStyle}"
                             Text="Spending Limit" />
                         <customControls:MoneyTextBox
                             Grid.Column="1"
@@ -281,10 +271,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="360" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource BudgetFieldTextStyle}"
                             Text="Allocation Period" />
                         <customControls:SegmentedToggleGroup
                             Grid.Column="1"
@@ -305,10 +292,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="220" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource BudgetFieldTextStyle}"
                             Text="Period Start" />
                         <Grid Grid.Column="1" AutomationProperties.AutomationId="Settings.Budget.PeriodStart">
                             <ComboBox
@@ -347,10 +331,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="300" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource BudgetFieldTextStyle}"
                             Text="Budget Rollover" />
                         <customControls:SegmentedToggleGroup
                             Grid.Column="1"
@@ -369,10 +350,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="300" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource BudgetFieldTextStyle}"
                             Text="Overspend Behavior" />
                         <customControls:SegmentedToggleGroup
                             Grid.Column="1"

@@ -3,6 +3,14 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources">
+
+    <UserControl.Resources>
+        <Style x:Key="WizardFinalHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
 
             <StackPanel
@@ -26,23 +34,14 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        FontSize="28"
-                        Foreground="{DynamicResource Brush.Text.Primary}">
+                    <TextBlock Style="{StaticResource WizardFinalHeadingTextStyle}">
                         <Run Text="Welcome to" />
                         <Run Text="flux" />
                     </TextBlock>
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        FontSize="28"
-                        Foreground="{DynamicResource Brush.Text.Primary}">
+                    <TextBlock Style="{StaticResource WizardFinalHeadingTextStyle}">
                         <Run Foreground="{DynamicResource Brush.Mint}" Text="o" />
                     </TextBlock>
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        FontSize="28"
-                        Foreground="{DynamicResource Brush.Text.Primary}">
+                    <TextBlock Style="{StaticResource WizardFinalHeadingTextStyle}">
                         <Run Text=", " />
                         <Run Text="{Binding ResolvedUsername, Mode=OneWay}" />
                     </TextBlock>

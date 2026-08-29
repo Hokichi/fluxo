@@ -5,6 +5,11 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     AutomationProperties.AutomationId="Settings.Personalization.Root">
     <UserControl.Resources>
+        <Style x:Key="PersonalizationOptionTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
         <DataTemplate x:Key="SettingsNotificationItemTemplate">
             <Border Style="{StaticResource RowCardStyle}">
                 <Grid>
@@ -13,9 +18,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                             Text="{Binding Title}" />
                         <TextBlock
                             Margin="0,6,0,0"
@@ -39,10 +42,8 @@
             <StackPanel>
                 <Grid Margin="0,0,0,16">
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{StaticResource Bold}"
+                        <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                             FontSize="16"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="Preferences" />
                         <TextBlock
                             Margin="0,8,0,0"
@@ -63,9 +64,7 @@
                 </Grid>
 
                 <StackPanel Visibility="{Binding IsPersonalizationPageSelected, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <TextBlock
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
+                    <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                         Text="Username" />
                     <TextBox
                         x:Name="UsernameTextBox"
@@ -77,18 +76,14 @@
                         Text="{Binding PreferredAppName, UpdateSourceTrigger=PropertyChanged}"
                         TextChanged="OnUsernameTextBoxTextChanged" />
 
-                    <TextBlock
+                    <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                         Margin="0,24,0,0"
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Security" />
 
                     <Border Margin="0,8,0,0" Style="{StaticResource RowCardStyle}">
                         <StackPanel>
                             <Grid>
-                                <TextBlock
-                                    FontFamily="{StaticResource Bold}"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                                     Text="Lock UI when away" />
                                 <ToggleButton
                                     AutomationProperties.AutomationId="Settings.Personalization.AutoLock"
@@ -104,9 +99,7 @@
                                 Background="{DynamicResource Brush.Border.Subtle}" />
 
                             <StackPanel Margin="0,16,0,0" Visibility="{Binding HasAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}">
-                                <TextBlock
-                                    FontFamily="{StaticResource Bold}"
-                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                                     Text="Auto-lock after" />
                                 <customControls:SegmentedToggleGroup AutomationProperties.AutomationId="Settings.Personalization.AutoLockInterval" Margin="0,10,0,0" SelectedValue="{Binding SelectedAppAutoLockPreset, Mode=TwoWay}">
                                     <customControls:SegmentedToggleOption Content="30 seconds" Value="30" />
@@ -140,11 +133,9 @@
                                 Background="{DynamicResource Brush.Border.Subtle}"
                                 Visibility="{Binding HasAutoLockInterval, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                            <TextBlock
+                            <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                                 Margin="0,16,0,0"
                                 VerticalAlignment="Center"
-                                FontFamily="{StaticResource Bold}"
-                                Foreground="{DynamicResource Brush.Text.Primary}"
                                 Text="Unlock password" />
 
                             <Grid AutomationProperties.AutomationId="Settings.Personalization.Password" Margin="0,8,0,0">
@@ -183,10 +174,8 @@
                         </StackPanel>
                     </Border>
 
-                    <TextBlock
+                    <TextBlock Style="{StaticResource PersonalizationOptionTextStyle}"
                         Margin="0,24,0,0"
-                        FontFamily="{StaticResource Bold}"
-                        Foreground="{DynamicResource Brush.Text.Primary}"
                         Text="Data Management" />
 
                     <Grid Margin="0,8,0,16">
@@ -221,4 +210,3 @@
         </customControls:FadingScrollViewer>
     </Border>
 </UserControl>
-

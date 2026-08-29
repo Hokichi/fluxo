@@ -9,6 +9,11 @@
     PopupTitle="Income Detail">
 
 <customControls:BasePopup.Resources>
+        <Style x:Key="AccountDetailSecondaryTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
         <Style x:Key="AccountActivityAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
             <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
@@ -68,11 +73,9 @@
                             FontSize="12"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Title}" />
-                        <TextBlock
+                        <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                             Margin="0,4,0,0"
-                            FontFamily="{StaticResource Medium}"
                             FontSize="10"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
                             Text="{Binding Detail}"
                             TextWrapping="Wrap" />
                         <TextBlock
@@ -293,10 +296,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Inflow" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding MoneyIn, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding MoneyIn, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </TextBlock>
@@ -307,10 +308,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Outflow" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding MoneyOut, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding MoneyOut, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </TextBlock>
@@ -321,10 +320,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Spent" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding SpentAmountText, Converter={StaticResource MoneyFullDisplayConverter}}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <Run Text="{Binding SpentAmountText, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
@@ -342,10 +339,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Limit" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding AccountLimitText, Converter={StaticResource MoneyFullDisplayConverter}}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <Run Text="{Binding AccountLimitText, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -363,10 +358,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Due Date" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding MonthlyDueDateDisplay}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <TextBox
@@ -389,10 +382,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Deduct Source" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding DeductSourceDisplay}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <ComboBox
@@ -415,10 +406,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Balance" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 ToolTip="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource NumberWithCommasConverter}}" />
                             </TextBlock>
@@ -429,10 +418,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="APY" />
-                            <TextBlock
+                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Grid.Column="1"
-                                FontFamily="{StaticResource Medium}"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
                                 Text="{Binding ApyText, StringFormat={}{0}%}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <customControls:MoneyTextBox

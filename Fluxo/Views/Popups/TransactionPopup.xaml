@@ -25,6 +25,38 @@
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionBalanceUpdateStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <Style x:Key="TransactionOptionTitleTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            </Style>
+
+            <Style x:Key="TransactionOptionHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="Margin" Value="0,3,0,0" />
+                <Setter Property="FontFamily" Value="{DynamicResource Regular}" />
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            </Style>
+
+            <Style x:Key="TransactionRightValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            </Style>
+
+            <Style x:Key="TransactionPrimaryTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            </Style>
+
+            <Style x:Key="TransactionChoiceRadioStyle" BasedOn="{StaticResource BaseBalloonRadioButtonStyle}" TargetType="customControls:BalloonRadioButton">
+                <Setter Property="Margin" Value="8,0,0,0" />
+                <Setter Property="CornerRadius" Value="8" />
+            </Style>
+
             <Style
                 x:Key="TransactionFeedbackIconStyle"
                 BasedOn="{StaticResource BaseIconStyle}"
@@ -351,26 +383,13 @@
                         VerticalAlignment="Top"
                         Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock
-                            FontFamily="{DynamicResource Bold}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding Name, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis" />
-                        <TextBlock
-                            Margin="0,3,0,0"
-                            FontFamily="{DynamicResource Regular}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
-                            Text="{Binding AccountName, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}"
+                            Text="{Binding Name, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionHintTextStyle}"
+                            Text="{Binding AccountName, Mode=OneWay}" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Margin="12,0,0,0">
-                        <TextBlock
-                            HorizontalAlignment="Right"
-                            FontFamily="{DynamicResource Bold}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource TransactionRightValueTextStyle}"
                             Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
                         <TextBlock
                             Margin="0,3,0,0"
@@ -397,26 +416,13 @@
                         VerticalAlignment="Top"
                         Fill="{Binding Tag.HexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock
-                            FontFamily="{DynamicResource Bold}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding Name, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis" />
-                        <TextBlock
-                            Margin="0,3,0,0"
-                            FontFamily="{DynamicResource Regular}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
-                            Text="{Binding Account.Name, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}"
+                            Text="{Binding Name, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionHintTextStyle}"
+                            Text="{Binding Account.Name, Mode=OneWay}" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Margin="12,0,0,0">
-                        <TextBlock
-                            HorizontalAlignment="Right"
-                            FontFamily="{DynamicResource Bold}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
+                        <TextBlock Style="{StaticResource TransactionRightValueTextStyle}"
                             Text="{Binding Amount, StringFormat={}{0:N0}, Mode=OneWay}" />
                         <components:Icon Style="{StaticResource TransactionCardStatusIconStyle}" />
                     </StackPanel>
@@ -533,12 +539,8 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock
-                            FontFamily="{DynamicResource Bold}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Primary}"
-                            Text="{Binding Name, Mode=OneWay}"
-                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}"
+                            Text="{Binding Name, Mode=OneWay}" />
                         <TextBlock
                             FontFamily="{DynamicResource Regular}"
                             FontSize="11"
@@ -974,11 +976,9 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardAlt}"
                                             UncheckedText="Regular" />
-                                        <customControls:BalloonRadioButton
+                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                             Grid.Column="2"
-                                            Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
-                                            CornerRadius="8"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
                                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -988,11 +988,9 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource RegularRepeat}"
                                             UncheckedText="Recurring" />
-                                        <customControls:BalloonRadioButton
+                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                             Grid.Column="4"
-                                            Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
-                                            CornerRadius="8"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
                                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1002,11 +1000,9 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardClockOutline}"
                                             UncheckedText="Installment" />
-                                        <customControls:BalloonRadioButton
+                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                             Grid.Column="6"
-                                            Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
-                                            CornerRadius="8"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
                                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1016,11 +1012,9 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                             UncheckedText="Unposted IoU" />
-                                        <customControls:BalloonRadioButton
+                                        <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                             Grid.Column="8"
-                                            Margin="8,0,0,0"
                                             CheckedBackground="{DynamicResource Brush.Success}"
-                                            CornerRadius="8"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                             GroupName="AddTransactionMode"
                                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1169,11 +1163,9 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Needs" />
-                                                    <customControls:BalloonRadioButton
-                                                        Margin="8,0,0,0"
+                                                    <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                                         ButtonIcon="{StaticResource ShoppingBag}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
-                                                        CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
                                                         HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1182,11 +1174,9 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Wants" />
-                                                    <customControls:BalloonRadioButton
-                                                        Margin="8,0,0,0"
+                                                    <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                                         ButtonIcon="{StaticResource TrendingUp}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
-                                                        CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
                                                         HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1195,11 +1185,9 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Invest" />
-                                                    <customControls:BalloonRadioButton
-                                                        Margin="8,0,0,0"
+                                                    <customControls:BalloonRadioButton Style="{StaticResource TransactionChoiceRadioStyle}"
                                                         ButtonIcon="{StaticResource CreditCardOff}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
-                                                        CornerRadius="8"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                                                         GroupName="ExpenseCategory"
                                                         HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
@@ -1606,24 +1594,18 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock
-                                            FontFamily="{DynamicResource Medium}"
-                                            Foreground="{DynamicResource Brush.Text.Primary}"
+                                        <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}"
                                             Text="{Binding BalanceUpdateAccountName, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis" />
                                         <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <TextBlock
-                                                FontFamily="{DynamicResource Medium}"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}"
                                                 Text="{Binding BalanceUpdateAccountCurrent, Mode=OneWay, StringFormat={}{0:N0}}" />
                                             <components:Icon
                                                 Width="6"
                                                 Margin="12,0"
                                                 Path="{StaticResource AngleRight}"
                                                 Color="{DynamicResource Brush.Text.Primary}" />
-                                            <TextBlock
-                                                FontFamily="{DynamicResource Medium}"
-                                                Foreground="{DynamicResource Brush.Text.Primary}"
+                                            <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}"
                                                 Text="{Binding BalanceUpdateAccountToBe, Mode=OneWay, StringFormat={}{0:N0}}" />
                                         </StackPanel>
                                     </Grid>

@@ -6,6 +6,25 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:steps="clr-namespace:Fluxo.Views.Shell.Wizard.Pages.Steps">
     <UserControl.Resources>
+        <Style x:Key="WizardActiveStepIndicatorStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+            <Setter Property="Width" Value="4" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+
+        <Style x:Key="WizardStepContentStackStyle" BasedOn="{StaticResource BaseStackPanelStyle}" TargetType="StackPanel">
+            <Setter Property="Margin" Value="14,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+
+        <Style x:Key="WizardStepIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
+        </Style>
+
         <Style x:Key="WizardStep1SidebarStyle" BasedOn="{StaticResource SidebarStepStyle}" TargetType="Border">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsStep2Active}" Value="True">
@@ -96,13 +115,8 @@
                             Background="{DynamicResource Brush.Mint}"
                             CornerRadius="0"
                             Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource BookDollar}"
                                 Color="{Binding Foreground, ElementName=Step1Label}" />
                             <TextBlock
@@ -119,20 +133,10 @@
                 <!--  Step 2  -->
                 <Border Style="{StaticResource WizardStep2SidebarStyle}" Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid>
-                        <Border
-                            x:Name="Step2Stripe"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Mint}"
-                            CornerRadius="2"
-                            Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <Border Style="{StaticResource WizardActiveStepIndicatorStyle}"
+                            x:Name="Step2Stripe" />
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource InvoiceLight}"
                                 Color="{Binding Foreground, ElementName=Step2Label}" />
                             <TextBlock
@@ -149,20 +153,10 @@
                 <!--  Step 3  -->
                 <Border Style="{StaticResource WizardStep3SidebarStyle}" Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid>
-                        <Border
-                            x:Name="Step3Stripe"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Mint}"
-                            CornerRadius="2"
-                            Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <Border Style="{StaticResource WizardActiveStepIndicatorStyle}"
+                            x:Name="Step3Stripe" />
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource BullseyeSolid}"
                                 Color="{Binding Foreground, ElementName=Step3Label}" />
                             <TextBlock
@@ -179,20 +173,10 @@
                 <!--  Step 4  -->
                 <Border Style="{StaticResource WizardStep4SidebarStyle}" Visibility="{Binding HasAccounts, Converter={StaticResource BoolToVisibilityConverter}}">
                     <Grid>
-                        <Border
-                            x:Name="Step4Stripe"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Mint}"
-                            CornerRadius="2"
-                            Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <Border Style="{StaticResource WizardActiveStepIndicatorStyle}"
+                            x:Name="Step4Stripe" />
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource AccountBalanceWalletRound}"
                                 Color="{Binding Foreground, ElementName=Step4Label}" />
                             <TextBlock
@@ -209,20 +193,10 @@
                 <!--  Step 5  -->
                 <Border Style="{StaticResource WizardStep5SidebarStyle}">
                     <Grid>
-                        <Border
-                            x:Name="Step5Stripe"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Mint}"
-                            CornerRadius="2"
-                            Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <Border Style="{StaticResource WizardActiveStepIndicatorStyle}"
+                            x:Name="Step5Stripe" />
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource Lock}"
                                 Color="{Binding Foreground, ElementName=Step5Label}" />
                             <TextBlock
@@ -239,20 +213,10 @@
                 <!--  Step 6  -->
                 <Border Style="{StaticResource WizardStep6SidebarStyle}">
                     <Grid>
-                        <Border
-                            x:Name="Step6Stripe"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Mint}"
-                            CornerRadius="2"
-                            Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <Border Style="{StaticResource WizardActiveStepIndicatorStyle}"
+                            x:Name="Step6Stripe" />
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource RegularBell}"
                                 Color="{Binding Foreground, ElementName=Step6Label}" />
                             <TextBlock
@@ -269,20 +233,10 @@
                 <!--  Step 7  -->
                 <Border Style="{StaticResource WizardStep7SidebarStyle}">
                     <Grid>
-                        <Border
-                            x:Name="Step7Stripe"
-                            Width="4"
-                            HorizontalAlignment="Left"
-                            Background="{DynamicResource Brush.Mint}"
-                            CornerRadius="2"
-                            Opacity="0" />
-                        <StackPanel
-                            Margin="14,0,0,0"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                        <Border Style="{StaticResource WizardActiveStepIndicatorStyle}"
+                            x:Name="Step7Stripe" />
+                        <StackPanel Style="{StaticResource WizardStepContentStackStyle}">
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 Path="{StaticResource InvoiceLight}"
                                 Color="{Binding Foreground, ElementName=Step7Label}" />
                             <TextBlock
@@ -377,9 +331,7 @@
                         Style="{StaticResource ActionButtonStyle}"
                         Visibility="{Binding IsStep2Active, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                         <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 VerticalAlignment="Center"
                                 Path="{StaticResource AngleLeft}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
@@ -407,9 +359,7 @@
                                 Margin="0,0,6,0"
                                 VerticalAlignment="Center"
                                 Text="Next" />
-                            <components:Icon
-                                Width="12"
-                                Height="12"
+                            <components:Icon Style="{StaticResource WizardStepIconStyle}"
                                 VerticalAlignment="Center"
                                 Path="{StaticResource AngleRight}"
                                 Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
@@ -420,6 +370,5 @@
         </Border>
     </Grid>
 </UserControl>
-
 
 

@@ -5,6 +5,12 @@
 
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
+        <Style x:Key="RecurringTransactionHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,8,0,0" />
+            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
         <DataTemplate x:Key="WizardRecurringTransactionsItemTemplate">
             <Border Style="{StaticResource CardBorderStyle}">
                 <Grid>
@@ -25,10 +31,7 @@
                             FontSize="15"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Name}" />
-                        <TextBlock
-                            Margin="0,8,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}">
+                        <TextBlock Style="{StaticResource RecurringTransactionHintTextStyle}">
                             <Run Text="{Binding CategoryLabel}" />
                             <Run Text=" &#183; " />
                             <Run Text="{Binding AccountName}" />
@@ -39,10 +42,7 @@
                             Foreground="{DynamicResource Brush.Warning}"
                             Text="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}}"
                             ToolTip="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}}" />
-                        <TextBlock
-                            Margin="0,8,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
+                        <TextBlock Style="{StaticResource RecurringTransactionHintTextStyle}"
                             Text="{Binding DueDateDisplay}" />
                     </StackPanel>
                 </Grid>
@@ -59,7 +59,6 @@
             ItemsSource="{Binding RecurringTransactions}" />
     </StackPanel>
 </UserControl>
-
 
 
 
