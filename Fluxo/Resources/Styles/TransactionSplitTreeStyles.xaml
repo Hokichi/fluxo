@@ -28,43 +28,37 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="SplitTransactionTreeViewStyle" BasedOn="{StaticResource BaseTreeViewStyle}" TargetType="TreeView">
+        <ControlTemplate x:Key="SplitTransactionTreeViewTemplate" TargetType="TreeViewItem">
+                                    <ContentPresenter ContentSource="Header" />
+                                </ControlTemplate>
+
+    <Style x:Key="SplitTransactionTreeItemContainerStyle" BasedOn="{StaticResource BaseTreeViewItemStyle}" TargetType="TreeViewItem">
+                        <Setter Property="Template" Value="{StaticResource SplitTransactionTreeViewTemplate}" />
+                    </Style>
+
+<Style x:Key="SplitTransactionTreeViewStyle" BasedOn="{StaticResource BaseTreeViewStyle}" TargetType="TreeView">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="ItemContainerStyle">
-            <Setter.Value>
-                <Style BasedOn="{StaticResource BaseTreeViewItemStyle}" TargetType="TreeViewItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="TreeViewItem">
-                                <ContentPresenter ContentSource="Header" />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource SplitTransactionTreeItemContainerStyle}" />
     </Style>
 
-    <Style x:Key="SplitTransactionCardStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+        <ControlTemplate x:Key="SplitTransactionCardTemplate" TargetType="Button">
+                        <Border
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+
+<Style x:Key="SplitTransactionCardStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Padding" Value="16" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
-                        <ContentPresenter />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource SplitTransactionCardTemplate}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />

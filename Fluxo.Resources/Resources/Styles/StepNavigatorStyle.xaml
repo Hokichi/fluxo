@@ -7,141 +7,149 @@
         <Setter Property="OverridesDefaultStyle" Value="True" />
     </Style>
 
-    <Style BasedOn="{StaticResource BaseStepNavigatorControlStyle}" TargetType="{x:Type customControls:StepNavigatorControl}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type customControls:StepNavigatorControl}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+        <Style x:Key="StepNavigatorStepBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+                                                        <Setter Property="Background" Value="{DynamicResource Brush.Text.Muted}" />
+                                                        <Setter Property="Width" Value="12" />
+                                                        <Style.Triggers>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding IsCompleted}" Value="True" />
+                                                                    <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
+                                                            </MultiDataTrigger>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding IsActive}" Value="True" />
+                                                                    <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
+                                                            </MultiDataTrigger>
 
-                        <ItemsControl
-                            Grid.Column="0"
-                            IsHitTestVisible="False"
-                            ItemsSource="{TemplateBinding Dots}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                                            <DataTrigger Binding="{Binding IsFirst}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
 
-                                        <Border
-                                            Height="1"
-                                            Margin="3,0"
-                                            SnapsToDevicePixels="True">
-                                            <Border.Style>
-                                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                                    <Setter Property="Background" Value="{DynamicResource Brush.Text.Muted}" />
-                                                    <Setter Property="Width" Value="12" />
-                                                    <Style.Triggers>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding IsCompleted}" Value="True" />
-                                                                <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
-                                                        </MultiDataTrigger>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding IsActive}" Value="True" />
-                                                                <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
-                                                        </MultiDataTrigger>
+                                                            <DataTrigger Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="False">
+                                                                <Setter Property="Width" Value="0" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
 
-                                                        <DataTrigger Binding="{Binding IsFirst}" Value="True">
-                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                        </DataTrigger>
+    <Style x:Key="StepNavigatorConnectorBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+                                                        <Setter Property="Width" Value="8" />
+                                                        <Setter Property="Background" Value="{DynamicResource Brush.Text.Muted}" />
+                                                        <Style.Triggers>
+                                                            <MultiDataTrigger>
+                                                                <MultiDataTrigger.Conditions>
+                                                                    <Condition Binding="{Binding IsCompleted}" Value="True" />
+                                                                    <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
+                                                                </MultiDataTrigger.Conditions>
+                                                                <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
+                                                            </MultiDataTrigger>
+                                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
+                                                                <DataTrigger.EnterActions>
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation
+                                                                                Storyboard.TargetProperty="Width"
+                                                                                To="28"
+                                                                                Duration="0:0:0.2">
+                                                                                <DoubleAnimation.EasingFunction>
+                                                                                    <CubicEase EasingMode="EaseOut" />
+                                                                                </DoubleAnimation.EasingFunction>
+                                                                            </DoubleAnimation>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </DataTrigger.EnterActions>
+                                                                <DataTrigger.ExitActions>
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation
+                                                                                Storyboard.TargetProperty="Width"
+                                                                                To="8"
+                                                                                Duration="0:0:0.2">
+                                                                                <DoubleAnimation.EasingFunction>
+                                                                                    <CubicEase EasingMode="EaseOut" />
+                                                                                </DoubleAnimation.EasingFunction>
+                                                                            </DoubleAnimation>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </DataTrigger.ExitActions>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
 
-                                                        <DataTrigger Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="False">
-                                                            <Setter Property="Width" Value="0" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                        </Border>
+    <ItemsPanelTemplate x:Key="StepNavigatorItemsPanelTemplate">
+                                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
 
-                                        <Border Height="8" CornerRadius="4">
-                                            <Border.Style>
-                                                <Style BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
-                                                    <Setter Property="Width" Value="8" />
-                                                    <Setter Property="Background" Value="{DynamicResource Brush.Text.Muted}" />
-                                                    <Style.Triggers>
-                                                        <MultiDataTrigger>
-                                                            <MultiDataTrigger.Conditions>
-                                                                <Condition Binding="{Binding IsCompleted}" Value="True" />
-                                                                <Condition Binding="{Binding ShouldIndicateProgress, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True" />
-                                                            </MultiDataTrigger.Conditions>
-                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint.Muted}" />
-                                                        </MultiDataTrigger>
-                                                        <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                            <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
-                                                            <DataTrigger.EnterActions>
-                                                                <BeginStoryboard>
-                                                                    <Storyboard>
-                                                                        <DoubleAnimation
-                                                                            Storyboard.TargetProperty="Width"
-                                                                            To="28"
-                                                                            Duration="0:0:0.2">
-                                                                            <DoubleAnimation.EasingFunction>
-                                                                                <CubicEase EasingMode="EaseOut" />
-                                                                            </DoubleAnimation.EasingFunction>
-                                                                        </DoubleAnimation>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.EnterActions>
-                                                            <DataTrigger.ExitActions>
-                                                                <BeginStoryboard>
-                                                                    <Storyboard>
-                                                                        <DoubleAnimation
-                                                                            Storyboard.TargetProperty="Width"
-                                                                            To="8"
-                                                                            Duration="0:0:0.2">
-                                                                            <DoubleAnimation.EasingFunction>
-                                                                                <CubicEase EasingMode="EaseOut" />
-                                                                            </DoubleAnimation.EasingFunction>
-                                                                        </DoubleAnimation>
-                                                                    </Storyboard>
-                                                                </BeginStoryboard>
-                                                            </DataTrigger.ExitActions>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                        </Border>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+    <DataTemplate x:Key="StepNavigatorItemTemplate">
+                                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
 
-                        <TextBlock
-                            Grid.Column="1"
-                            Margin="8,0,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="10"
-                            Foreground="{DynamicResource Brush.Text.Muted}"
-                            IsHitTestVisible="False"
-                            Text="{TemplateBinding StepCounterText}">
-                            <TextBlock.Style>
-                                <Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ShouldPaginate, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+                                            <Border
+                                                Height="1"
+                                                Margin="3,0"
+                                                SnapsToDevicePixels="True">
+                                                <Border.Style>
+                                                                                                    <StaticResource ResourceKey="StepNavigatorStepBorderStyle" />
+                                                </Border.Style>
+                                            </Border>
+
+                                            <Border Height="8" CornerRadius="4">
+                                                <Border.Style>
+                                                                                                    <StaticResource ResourceKey="StepNavigatorConnectorBorderStyle" />
+                                                </Border.Style>
+                                            </Border>
+                                        </StackPanel>
+                                    </DataTemplate>
+
+    <Style x:Key="StepNavigatorLabelTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ShouldPaginate, RelativeSource={RelativeSource AncestorType={x:Type customControls:StepNavigatorControl}}}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+
+    <ControlTemplate x:Key="StepNavigatorTemplate" TargetType="{x:Type customControls:StepNavigatorControl}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <ItemsControl
+                                Grid.Column="0"
+                                IsHitTestVisible="False"
+                                ItemsSource="{TemplateBinding Dots}">
+                                <ItemsControl.ItemsPanel>
+                                                                    <StaticResource ResourceKey="StepNavigatorItemsPanelTemplate" />
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                                                    <StaticResource ResourceKey="StepNavigatorItemTemplate" />
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                FontFamily="{StaticResource Medium}"
+                                FontSize="10"
+                                Foreground="{DynamicResource Brush.Text.Muted}"
+                                IsHitTestVisible="False"
+                                Text="{TemplateBinding StepCounterText}">
+                                <TextBlock.Style>
+                                                                    <StaticResource ResourceKey="StepNavigatorLabelTextStyle" />
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </ControlTemplate>
+
+<Style BasedOn="{StaticResource BaseStepNavigatorControlStyle}" TargetType="{x:Type customControls:StepNavigatorControl}">
+        <Setter Property="Template" Value="{StaticResource StepNavigatorTemplate}" />
         <Style.Triggers>
             <Trigger Property="StepCount" Value="0">
                 <Setter Property="Visibility" Value="Collapsed" />
