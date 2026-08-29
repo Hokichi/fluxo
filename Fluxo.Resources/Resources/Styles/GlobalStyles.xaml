@@ -41,6 +41,10 @@
         <ContentPresenter />
     </ControlTemplate>
 
+    <ControlTemplate x:Key="PlainListBoxItemTemplate" TargetType="ListBoxItem">
+        <ContentPresenter />
+    </ControlTemplate>
+
     <Style x:Key="BaseListBoxStyle" TargetType="ListBox">
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
     </Style>
@@ -51,6 +55,26 @@
     </Style>
 
     <Style x:Key="BaseListViewItemStyle" TargetType="ListViewItem" />
+
+    <Style
+        x:Key="PlainListBoxItemStyle"
+        BasedOn="{StaticResource BaseListBoxItemStyle}"
+        TargetType="ListBoxItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template" Value="{StaticResource PlainListBoxItemTemplate}" />
+    </Style>
+
+    <Style
+        x:Key="PlainListViewItemStyle"
+        BasedOn="{StaticResource BaseListViewItemStyle}"
+        TargetType="ListViewItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Template" Value="{StaticResource PlainListViewItemTemplate}" />
+    </Style>
 
     <Style x:Key="BaseTreeViewStyle" TargetType="TreeView">
         <Setter Property="BorderThickness" Value="0" />

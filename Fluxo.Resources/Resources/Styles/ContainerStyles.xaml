@@ -1,13 +1,39 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Style x:Key="BaseFrameworkElementStyle" TargetType="FrameworkElement">
-        <Setter Property="Visibility" Value="Visible" />
-    </Style>
     <Style x:Key="BaseBorderStyle" TargetType="Border" />
     <Style x:Key="BaseColumnDefinitionStyle" TargetType="ColumnDefinition" />
     <Style x:Key="BaseContentPresenterStyle" TargetType="ContentPresenter" />
     <Style x:Key="BaseGridStyle" TargetType="Grid" />
     <Style x:Key="BaseStackPanelStyle" TargetType="StackPanel" />
     <Style x:Key="BaseTextBlockStyle" TargetType="TextBlock" />
+
+    <Style
+        x:Key="CenteredEmptyStateTextStyle"
+        BasedOn="{StaticResource BaseTextBlockStyle}"
+        TargetType="TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+    </Style>
+
+    <Style
+        x:Key="CardLabelTextStyle"
+        BasedOn="{StaticResource BaseTextBlockStyle}"
+        TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+    </Style>
+
+    <Style
+        x:Key="FieldLabelTextStyle"
+        BasedOn="{StaticResource BaseTextBlockStyle}"
+        TargetType="TextBlock">
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
 
     <Style
         x:Key="CardBorderStyle"
