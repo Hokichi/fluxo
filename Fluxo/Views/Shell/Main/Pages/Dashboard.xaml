@@ -20,6 +20,28 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
         </Style>
 
+        <ControlTemplate x:Key="DashboardAccountsScrollButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="ButtonSurface"
+                Background="{TemplateBinding Background}"
+                CornerRadius="8">
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                    <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.85" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.4" />
+                    <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <Style x:Key="DashboardAccountsScrollButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
             <Setter Property="Width" Value="28" />
             <Setter Property="Height" Value="80" />
@@ -32,27 +54,7 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            x:Name="ButtonSurface"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="8">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
-                                <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.85" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.4" />
-                                <Setter Property="Cursor" Value="Arrow" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="DashboardAccountsScrollButtonTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>

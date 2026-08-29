@@ -5,6 +5,31 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources">
     <UserControl.Resources>
+        <ControlTemplate x:Key="WizardNameTextBoxTemplate" TargetType="TextBox">
+            <Border
+                x:Name="InputRoot"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+                <customControls:FadingScrollViewer
+                    x:Name="PART_ContentHost"
+                    Margin="{TemplateBinding Padding}"
+                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                </Trigger>
+                <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                    <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                    <Setter TargetName="InputRoot" Property="BorderThickness" Value="0,0,0,1" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <Style
             x:Key="WizardNameTextBoxStyle"
             BasedOn="{StaticResource BaseTextBoxStyle}"
@@ -18,30 +43,7 @@
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border
-                            x:Name="InputRoot"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}">
-                            <customControls:FadingScrollViewer
-                                x:Name="PART_ContentHost"
-                                Margin="{TemplateBinding Padding}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                                <Setter TargetName="InputRoot" Property="BorderThickness" Value="0,0,0,1" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="WizardNameTextBoxTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>

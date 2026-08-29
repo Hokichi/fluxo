@@ -42,26 +42,28 @@
             <Setter Property="Text" Value="No Data Found" />
         </Style>
 
+        <ControlTemplate x:Key="AnalyticsCardProgressBarTemplate" TargetType="ProgressBar">
+            <Border
+                x:Name="ProgressTrack"
+                Background="{TemplateBinding Background}"
+                CornerRadius="3">
+                <Grid x:Name="PART_Track">
+                    <Border
+                        x:Name="PART_Indicator"
+                        HorizontalAlignment="Left"
+                        Background="{TemplateBinding Foreground}"
+                        CornerRadius="3" />
+                </Grid>
+            </Border>
+        </ControlTemplate>
+
         <Style x:Key="AnalyticsCardProgressBarStyle" BasedOn="{StaticResource BaseProgressBarStyle}" TargetType="ProgressBar">
             <Setter Property="Height" Value="6" />
             <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ProgressBar">
-                        <Border
-                            x:Name="ProgressTrack"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="3">
-                            <Grid x:Name="PART_Track">
-                                <Border
-                                    x:Name="PART_Indicator"
-                                    HorizontalAlignment="Left"
-                                    Background="{TemplateBinding Foreground}"
-                                    CornerRadius="3" />
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="AnalyticsCardProgressBarTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>
@@ -526,4 +528,3 @@
         </Grid>
     </Grid>
 </UserControl>
-

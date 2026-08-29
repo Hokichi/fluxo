@@ -77,6 +77,38 @@
                 </Setter>
             </Style>
 
+            <ControlTemplate x:Key="FloatingSideNavigationButtonTemplate" TargetType="ToggleButton">
+                <Border
+                    x:Name="ButtonSurface"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="0"
+                    CornerRadius="19">
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
+                        <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                        <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+                        <Setter TargetName="ButtonSurface" Property="BorderThickness" Value="1" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Main}" />
+                        <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Mint}" />
+                        <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                        <Setter TargetName="ButtonSurface" Property="BorderThickness" Value="1" />
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.88" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.4" />
+                        <Setter Property="Cursor" Value="Arrow" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
             <Style
                 x:Key="FloatingSideNavigationButtonStyle"
                 BasedOn="{StaticResource BaseToggleButtonStyle}"
@@ -92,37 +124,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="ToggleButton">
-                            <Border
-                                x:Name="ButtonSurface"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="0"
-                                CornerRadius="19">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
-                                    <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                    <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-                                    <Setter TargetName="ButtonSurface" Property="BorderThickness" Value="1" />
-                                </Trigger>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Main}" />
-                                    <Setter TargetName="ButtonSurface" Property="Background" Value="{DynamicResource Brush.Mint}" />
-                                    <Setter TargetName="ButtonSurface" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                                    <Setter TargetName="ButtonSurface" Property="BorderThickness" Value="1" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="ButtonSurface" Property="Opacity" Value="0.88" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Opacity" Value="0.4" />
-                                    <Setter Property="Cursor" Value="Arrow" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
+                        <StaticResource ResourceKey="FloatingSideNavigationButtonTemplate" />
                     </Setter.Value>
                 </Setter>
             </Style>

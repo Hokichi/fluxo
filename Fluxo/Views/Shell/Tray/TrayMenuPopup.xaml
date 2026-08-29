@@ -15,6 +15,28 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
+        <ControlTemplate x:Key="TrayMenuButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="ItemBackground"
+                Margin="2"
+                Padding="{TemplateBinding Padding}"
+                Background="Transparent"
+                CornerRadius="12">
+                <ContentPresenter
+                    TextElement.FontFamily="{StaticResource Black}"
+                    TextElement.FontSize="13"
+                    TextElement.Foreground="{DynamicResource Brush.Text.Primary}" />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="ItemBackground" Property="Opacity" Value="0.9" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <Style x:Key="TrayMenuButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -24,27 +46,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border
-                            x:Name="ItemBackground"
-                            Margin="2"
-                            Padding="{TemplateBinding Padding}"
-                            Background="Transparent"
-                            CornerRadius="12">
-                            <ContentPresenter
-                                TextElement.FontFamily="{StaticResource Black}"
-                                TextElement.FontSize="13"
-                                TextElement.Foreground="{DynamicResource Brush.Text.Primary}" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Opacity" Value="0.9" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="TrayMenuButtonTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>

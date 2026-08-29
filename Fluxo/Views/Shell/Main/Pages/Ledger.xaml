@@ -73,6 +73,57 @@
             </Style.Triggers>
         </Style>
 
+        <ControlTemplate x:Key="LedgerFilterComboBoxItemTemplate" TargetType="ComboBoxItem">
+            <Border
+                x:Name="ItemBackground"
+                Margin="2"
+                Padding="{TemplateBinding Padding}"
+                Background="Transparent"
+                CornerRadius="12">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <ContentPresenter
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        RecognizesAccessKey="True"
+                        TextElement.FontFamily="{TemplateBinding FontFamily}"
+                        TextElement.FontSize="{TemplateBinding FontSize}"
+                        TextElement.Foreground="{TemplateBinding Foreground}" />
+
+                    <Path
+                        x:Name="SelectedCheckmark"
+                        Grid.Column="1"
+                        Width="10"
+                        Height="10"
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource Check}"
+                        Fill="{TemplateBinding Foreground}"
+                        Opacity="0"
+                        Stretch="Uniform" />
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsHighlighted" Value="True">
+                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                </Trigger>
+                <DataTrigger Binding="{Binding IsChecked}" Value="True">
+                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    <Setter TargetName="SelectedCheckmark" Property="Opacity" Value="1" />
+                </DataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <Style
             x:Key="LedgerFilterComboBoxItemStyle"
             BasedOn="{StaticResource BaseComboBoxItemStyle}"
@@ -89,59 +140,130 @@
             <EventSetter Event="PreviewMouseLeftButtonUp" Handler="OnFilterOptionPreviewMouseLeftButtonUp" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ComboBoxItem">
-                        <Border
-                            x:Name="ItemBackground"
-                            Margin="2"
-                            Padding="{TemplateBinding Padding}"
-                            Background="Transparent"
-                            CornerRadius="12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <ContentPresenter
-                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                    VerticalAlignment="Center"
-                                    Content="{TemplateBinding Content}"
-                                    ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                    ContentTemplate="{TemplateBinding ContentTemplate}"
-                                    RecognizesAccessKey="True"
-                                    TextElement.FontFamily="{TemplateBinding FontFamily}"
-                                    TextElement.FontSize="{TemplateBinding FontSize}"
-                                    TextElement.Foreground="{TemplateBinding Foreground}" />
-
-                                <Path
-                                    x:Name="SelectedCheckmark"
-                                    Grid.Column="1"
-                                    Width="10"
-                                    Height="10"
-                                    Margin="12,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Data="{StaticResource Check}"
-                                    Fill="{TemplateBinding Foreground}"
-                                    Opacity="0"
-                                    Stretch="Uniform" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsHighlighted" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <DataTrigger Binding="{Binding IsChecked}" Value="True">
-                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                <Setter TargetName="SelectedCheckmark" Property="Opacity" Value="1" />
-                            </DataTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="LedgerFilterComboBoxItemTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <ControlTemplate x:Key="LedgerFilterComboBoxToggleButtonTemplate" TargetType="ToggleButton">
+            <Border
+                Padding="10,0,12,0"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Medium}"
+                        FontSize="13"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
+                        Text="{Binding Tag.Label, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
+
+                    <Border
+                        x:Name="SelectionCountBadge"
+                        Grid.Column="1"
+                        Height="16"
+                        MinWidth="16"
+                        Margin="8,0,8,0"
+                        Padding="4,0"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource Brush.Mint}"
+                        CornerRadius="8">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontFamily="{StaticResource Bold}"
+                            FontSize="10"
+                            Text="{Binding Tag.SelectionCount, RelativeSource={RelativeSource AncestorType=ComboBox}}">
+                            <TextBlock.Foreground>
+                                <Binding
+                                    Converter="{StaticResource BackgroundToForegroundConverter}"
+                                    ElementName="SelectionCountBadge"
+                                    Path="Background" />
+                            </TextBlock.Foreground>
+                        </TextBlock>
+                    </Border>
+
+                    <Path
+                        x:Name="DropDownChevron"
+                        Grid.Column="2"
+                        Width="8"
+                        Height="8"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource AngleDown}"
+                        Fill="{DynamicResource Brush.Text.Muted}"
+                        RenderTransformOrigin="0.5,0.5"
+                        Stretch="Uniform" />
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="DropDownChevron" Property="RenderTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="180" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <DataTrigger Binding="{Binding Tag.SelectionCount, RelativeSource={RelativeSource AncestorType=ComboBox}}" Value="0">
+                    <Setter TargetName="SelectionCountBadge" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="LedgerFilterComboBoxTemplate" TargetType="ComboBox">
+            <Grid SnapsToDevicePixels="True">
+                <ToggleButton
+                    x:Name="ToggleButton"
+                    Height="{TemplateBinding Height}"
+                    HorizontalAlignment="Stretch"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    ClickMode="Press"
+                    Focusable="False"
+                    Foreground="{TemplateBinding Foreground}"
+                    IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                    ToolTip="{Binding Tag.SelectionToolTip, RelativeSource={RelativeSource TemplatedParent}}">
+                    <ToggleButton.Template>
+                        <StaticResource ResourceKey="LedgerFilterComboBoxToggleButtonTemplate" />
+                    </ToggleButton.Template>
+                </ToggleButton>
+
+                <Popup
+                    x:Name="PART_Popup"
+                    AllowsTransparency="True"
+                    Focusable="False"
+                    IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                    Placement="Bottom"
+                    PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                    PopupAnimation="Fade"
+                    StaysOpen="False"
+                    VerticalOffset="8">
+                    <Border
+                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                        Background="{DynamicResource Brush.Background.Surface}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <customControls:FadingScrollViewer
+                            MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                            Margin="4"
+                            CanContentScroll="False"
+                            HorizontalScrollBarVisibility="Disabled"
+                            VerticalScrollBarVisibility="Hidden">
+                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                        </customControls:FadingScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+        </ControlTemplate>
 
         <Style
             x:Key="LedgerFilterComboStyle"
@@ -162,123 +284,7 @@
             <Setter Property="ItemContainerStyle" Value="{StaticResource LedgerFilterComboBoxItemStyle}" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid SnapsToDevicePixels="True">
-                            <ToggleButton
-                                x:Name="ToggleButton"
-                                Height="{TemplateBinding Height}"
-                                HorizontalAlignment="Stretch"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                ClickMode="Press"
-                                Focusable="False"
-                                Foreground="{TemplateBinding Foreground}"
-                                IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                ToolTip="{Binding Tag.SelectionToolTip, RelativeSource={RelativeSource TemplatedParent}}">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <Border
-                                            Padding="10,0,12,0"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Medium}"
-                                                    FontSize="13"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                                    Text="{Binding Tag.Label, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
-
-                                                <Border
-                                                    x:Name="SelectionCountBadge"
-                                                    Grid.Column="1"
-                                                    Height="16"
-                                                    MinWidth="16"
-                                                    Margin="8,0,8,0"
-                                                    Padding="4,0"
-                                                    VerticalAlignment="Center"
-                                                    Background="{DynamicResource Brush.Mint}"
-                                                    CornerRadius="8">
-                                                    <TextBlock
-                                                        HorizontalAlignment="Center"
-                                                        VerticalAlignment="Center"
-                                                        FontFamily="{StaticResource Bold}"
-                                                        FontSize="10"
-                                                        Text="{Binding Tag.SelectionCount, RelativeSource={RelativeSource AncestorType=ComboBox}}">
-                                                        <TextBlock.Foreground>
-                                                            <Binding
-                                                                Converter="{StaticResource BackgroundToForegroundConverter}"
-                                                                ElementName="SelectionCountBadge"
-                                                                Path="Background" />
-                                                        </TextBlock.Foreground>
-                                                    </TextBlock>
-                                                </Border>
-
-                                                <Path
-                                                    x:Name="DropDownChevron"
-                                                    Grid.Column="2"
-                                                    Width="8"
-                                                    Height="8"
-                                                    VerticalAlignment="Center"
-                                                    Data="{StaticResource AngleDown}"
-                                                    Fill="{DynamicResource Brush.Text.Muted}"
-                                                    RenderTransformOrigin="0.5,0.5"
-                                                    Stretch="Uniform" />
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter TargetName="DropDownChevron" Property="RenderTransform">
-                                                    <Setter.Value>
-                                                        <RotateTransform Angle="180" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Trigger>
-                                            <DataTrigger Binding="{Binding Tag.SelectionCount, RelativeSource={RelativeSource AncestorType=ComboBox}}" Value="0">
-                                                <Setter TargetName="SelectionCountBadge" Property="Visibility" Value="Collapsed" />
-                                            </DataTrigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                            </ToggleButton>
-
-                            <Popup
-                                x:Name="PART_Popup"
-                                AllowsTransparency="True"
-                                Focusable="False"
-                                IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                Placement="Bottom"
-                                PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                PopupAnimation="Fade"
-                                StaysOpen="False"
-                                VerticalOffset="8">
-                                <Border
-                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
-                                    Background="{DynamicResource Brush.Background.Surface}"
-                                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                                    BorderThickness="1"
-                                    CornerRadius="8">
-                                    <customControls:FadingScrollViewer
-                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                                        Margin="4"
-                                        CanContentScroll="False"
-                                        HorizontalScrollBarVisibility="Disabled"
-                                        VerticalScrollBarVisibility="Hidden">
-                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
-                                    </customControls:FadingScrollViewer>
-                                </Border>
-                            </Popup>
-                        </Grid>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="LedgerFilterComboBoxTemplate" />
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
@@ -288,6 +294,96 @@
             </Style.Triggers>
         </Style>
 
+        <ControlTemplate x:Key="LedgerGroupingComboBoxToggleButtonTemplate" TargetType="ToggleButton">
+            <Border
+                Padding="10,0,12,0"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Medium}"
+                        FontSize="13"
+                        Foreground="{DynamicResource Brush.Text.Primary}"
+                        Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
+
+                    <Path
+                        x:Name="DropDownChevron"
+                        Grid.Column="1"
+                        Width="8"
+                        Height="8"
+                        VerticalAlignment="Center"
+                        Data="{StaticResource AngleDown}"
+                        Fill="{DynamicResource Brush.Text.Muted}"
+                        RenderTransformOrigin="0.5,0.5"
+                        Stretch="Uniform" />
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="DropDownChevron" Property="RenderTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="180" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="LedgerGroupingComboBoxTemplate" TargetType="ComboBox">
+            <Grid SnapsToDevicePixels="True">
+                <ToggleButton
+                    x:Name="ToggleButton"
+                    Height="{TemplateBinding Height}"
+                    HorizontalAlignment="Stretch"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    ClickMode="Press"
+                    Focusable="False"
+                    Foreground="{TemplateBinding Foreground}"
+                    IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                    <ToggleButton.Template>
+                        <StaticResource ResourceKey="LedgerGroupingComboBoxToggleButtonTemplate" />
+                    </ToggleButton.Template>
+                </ToggleButton>
+
+                <Popup
+                    x:Name="PART_Popup"
+                    AllowsTransparency="True"
+                    Focusable="False"
+                    IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                    Placement="Bottom"
+                    PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                    PopupAnimation="Fade"
+                    StaysOpen="False"
+                    VerticalOffset="8">
+                    <Border
+                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
+                        Background="{DynamicResource Brush.Background.Surface}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <customControls:FadingScrollViewer
+                            MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                            Margin="4"
+                            CanContentScroll="False"
+                            HorizontalScrollBarVisibility="Disabled"
+                            VerticalScrollBarVisibility="Hidden">
+                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                        </customControls:FadingScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+        </ControlTemplate>
+
         <Style
             x:Key="LedgerGroupingComboStyle"
             BasedOn="{StaticResource LedgerFilterComboStyle}"
@@ -295,93 +391,7 @@
             <Setter Property="ItemContainerStyle" Value="{StaticResource FluxoComboBoxItemStyle}" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid SnapsToDevicePixels="True">
-                            <ToggleButton
-                                x:Name="ToggleButton"
-                                Height="{TemplateBinding Height}"
-                                HorizontalAlignment="Stretch"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                ClickMode="Press"
-                                Focusable="False"
-                                Foreground="{TemplateBinding Foreground}"
-                                IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <Border
-                                            Padding="10,0,12,0"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Medium}"
-                                                    FontSize="13"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                                    Text="{Binding Tag, RelativeSource={RelativeSource AncestorType=ComboBox}}" />
-
-                                                <Path
-                                                    x:Name="DropDownChevron"
-                                                    Grid.Column="1"
-                                                    Width="8"
-                                                    Height="8"
-                                                    VerticalAlignment="Center"
-                                                    Data="{StaticResource AngleDown}"
-                                                    Fill="{DynamicResource Brush.Text.Muted}"
-                                                    RenderTransformOrigin="0.5,0.5"
-                                                    Stretch="Uniform" />
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter TargetName="DropDownChevron" Property="RenderTransform">
-                                                    <Setter.Value>
-                                                        <RotateTransform Angle="180" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                            </ToggleButton>
-
-                            <Popup
-                                x:Name="PART_Popup"
-                                AllowsTransparency="True"
-                                Focusable="False"
-                                IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                Placement="Bottom"
-                                PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                PopupAnimation="Fade"
-                                StaysOpen="False"
-                                VerticalOffset="8">
-                                <Border
-                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}"
-                                    Background="{DynamicResource Brush.Background.Surface}"
-                                    BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                                    BorderThickness="1"
-                                    CornerRadius="8">
-                                    <customControls:FadingScrollViewer
-                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
-                                        Margin="4"
-                                        CanContentScroll="False"
-                                        HorizontalScrollBarVisibility="Disabled"
-                                        VerticalScrollBarVisibility="Hidden">
-                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
-                                    </customControls:FadingScrollViewer>
-                                </Border>
-                            </Popup>
-                        </Grid>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="LedgerGroupingComboBoxTemplate" />
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
@@ -407,6 +417,16 @@
                 Text="{Binding Mode=OneWay}" />
         </DataTemplate>
 
+        <ControlTemplate x:Key="LedgerListViewItemTemplate" TargetType="ListViewItem">
+            <ContentPresenter
+                Margin="0"
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                Content="{TemplateBinding Content}"
+                ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                ContentTemplate="{TemplateBinding ContentTemplate}"
+                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+        </ControlTemplate>
+
         <Style
             x:Key="LedgerListViewItemStyle"
             BasedOn="{StaticResource BaseListViewItemStyle}"
@@ -417,15 +437,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="ListViewItem">
-                        <ContentPresenter
-                            Margin="0"
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            Content="{TemplateBinding Content}"
-                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="LedgerListViewItemTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>
@@ -936,108 +948,112 @@
             </StackPanel>
         </DataTemplate>
 
+        <ControlTemplate x:Key="LedgerGroupItemToggleButtonTemplate" TargetType="ToggleButton">
+            <Grid
+                Height="20"
+                Margin="8,0,0,0"
+                Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock
+                    x:Name="LedgerGroupHeaderText"
+                    VerticalAlignment="Center"
+                    FontFamily="{StaticResource Bold}"
+                    FontSize="11"
+                    Foreground="{DynamicResource Brush.Text.Muted}"
+                    Text="{TemplateBinding Content}" />
+
+                <Border
+                    x:Name="LedgerGroupHeaderLine"
+                    Grid.Column="1"
+                    Height="1.5"
+                    Margin="12,0,0,0"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource Brush.Border.Subtle}" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="LedgerGroupHeaderText" Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                    <Setter TargetName="LedgerGroupHeaderLine" Property="Background" Value="{DynamicResource Brush.Mint}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="LedgerGroupItemTemplate" TargetType="GroupItem">
+            <Border
+                Margin="0,0,0,8"
+                Background="Transparent"
+                CornerRadius="8">
+                <StackPanel>
+                    <ToggleButton
+                        x:Name="LedgerGroupHeaderToggle"
+                        Margin="0,10,0,4"
+                        Content="{Binding Name}"
+                        Cursor="Hand"
+                        IsChecked="True">
+                        <ToggleButton.Template>
+                            <StaticResource ResourceKey="LedgerGroupItemToggleButtonTemplate" />
+                        </ToggleButton.Template>
+                    </ToggleButton>
+
+                    <Border
+                        x:Name="LedgerGroupItemsClip"
+                        MaxHeight="2000"
+                        ClipToBounds="True"
+                        Opacity="1">
+                        <ItemsPresenter x:Name="LedgerGroupItemsPresenter" />
+                    </Border>
+                </StackPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger SourceName="LedgerGroupHeaderToggle" Property="IsChecked" Value="False">
+                    <Setter TargetName="LedgerGroupHeaderToggle" Property="Margin" Value="0,10,0,8" />
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="LedgerGroupItemsClip"
+                                    Storyboard.TargetProperty="MaxHeight"
+                                    To="0"
+                                    Duration="0:0:0.16" />
+                                <DoubleAnimation
+                                    Storyboard.TargetName="LedgerGroupItemsClip"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0"
+                                    Duration="0:0:0.12" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetName="LedgerGroupItemsClip"
+                                    Storyboard.TargetProperty="MaxHeight"
+                                    To="2000"
+                                    Duration="0:0:0.18" />
+                                <DoubleAnimation
+                                    Storyboard.TargetName="LedgerGroupItemsClip"
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1"
+                                    Duration="0:0:0.14" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <Style
             x:Key="LedgerGroupItemStyle"
             BasedOn="{StaticResource BaseGroupItemStyle}"
             TargetType="GroupItem">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="GroupItem">
-                        <Border
-                            Margin="0,0,0,8"
-                            Background="Transparent"
-                            CornerRadius="8">
-                            <StackPanel>
-                                <ToggleButton
-                                    x:Name="LedgerGroupHeaderToggle"
-                                    Margin="0,10,0,4"
-                                    Content="{Binding Name}"
-                                    Cursor="Hand"
-                                    IsChecked="True">
-                                    <ToggleButton.Template>
-                                        <ControlTemplate TargetType="ToggleButton">
-                                            <Grid
-                                                Height="20"
-                                                Margin="8,0,0,0"
-                                                Background="Transparent">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock
-                                                    x:Name="LedgerGroupHeaderText"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    FontSize="11"
-                                                    Foreground="{DynamicResource Brush.Text.Muted}"
-                                                    Text="{TemplateBinding Content}" />
-
-                                                <Border
-                                                    x:Name="LedgerGroupHeaderLine"
-                                                    Grid.Column="1"
-                                                    Height="1.5"
-                                                    Margin="12,0,0,0"
-                                                    VerticalAlignment="Center"
-                                                    Background="{DynamicResource Brush.Border.Subtle}" />
-                                            </Grid>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="LedgerGroupHeaderText" Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-                                                    <Setter TargetName="LedgerGroupHeaderLine" Property="Background" Value="{DynamicResource Brush.Mint}" />
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </ToggleButton.Template>
-                                </ToggleButton>
-
-                                <Border
-                                    x:Name="LedgerGroupItemsClip"
-                                    MaxHeight="2000"
-                                    ClipToBounds="True"
-                                    Opacity="1">
-                                    <ItemsPresenter x:Name="LedgerGroupItemsPresenter" />
-                                </Border>
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger SourceName="LedgerGroupHeaderToggle" Property="IsChecked" Value="False">
-                                <Setter TargetName="LedgerGroupHeaderToggle" Property="Margin" Value="0,10,0,8" />
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation
-                                                Storyboard.TargetName="LedgerGroupItemsClip"
-                                                Storyboard.TargetProperty="MaxHeight"
-                                                To="0"
-                                                Duration="0:0:0.16" />
-                                            <DoubleAnimation
-                                                Storyboard.TargetName="LedgerGroupItemsClip"
-                                                Storyboard.TargetProperty="Opacity"
-                                                To="0"
-                                                Duration="0:0:0.12" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                                <Trigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation
-                                                Storyboard.TargetName="LedgerGroupItemsClip"
-                                                Storyboard.TargetProperty="MaxHeight"
-                                                To="2000"
-                                                Duration="0:0:0.18" />
-                                            <DoubleAnimation
-                                                Storyboard.TargetName="LedgerGroupItemsClip"
-                                                Storyboard.TargetProperty="Opacity"
-                                                To="1"
-                                                Duration="0:0:0.14" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
+                    <StaticResource ResourceKey="LedgerGroupItemTemplate" />
                 </Setter.Value>
             </Setter>
         </Style>
