@@ -37,7 +37,40 @@
                 </Style.Triggers>
             </Style>
 
-            <Style
+                        <ControlTemplate x:Key="PopupTagItemRadioTemplate" TargetType="RadioButton">
+                                        <Border
+                                            Padding="{TemplateBinding Padding}"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="14">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse
+                                                    x:Name="ColorDot"
+                                                    Width="6"
+                                                    Height="6"
+                                                    VerticalAlignment="Center"
+                                                    Fill="{Binding HexCode}" />
+                                                <TextBlock
+                                                    x:Name="TagText"
+                                                    Margin="6,0,0,0"
+                                                    VerticalAlignment="Center"
+                                                    FontFamily="{TemplateBinding FontFamily}"
+                                                    FontSize="{TemplateBinding FontSize}"
+                                                    Foreground="{DynamicResource Brush.Text.Primary}"
+                                                    Text="{TemplateBinding Content}" />
+                                            </StackPanel>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                                                <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+
+<Style
                 x:Key="PopupTagItemRadioStyle"
                 BasedOn="{StaticResource BaseRadioButtonStyle}"
                 TargetType="RadioButton">
@@ -51,42 +84,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
                 <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
                 <Setter Property="FontSize" Value="12" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="RadioButton">
-                            <Border
-                                Padding="{TemplateBinding Padding}"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="14">
-                                <StackPanel Orientation="Horizontal">
-                                    <Ellipse
-                                        x:Name="ColorDot"
-                                        Width="6"
-                                        Height="6"
-                                        VerticalAlignment="Center"
-                                        Fill="{Binding HexCode}" />
-                                    <TextBlock
-                                        x:Name="TagText"
-                                        Margin="6,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontFamily="{TemplateBinding FontFamily}"
-                                        FontSize="{TemplateBinding FontSize}"
-                                        Foreground="{DynamicResource Brush.Text.Primary}"
-                                        Text="{TemplateBinding Content}" />
-                                </StackPanel>
-                            </Border>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
-                                    <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource PopupTagItemRadioTemplate}" />
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
@@ -102,7 +100,36 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-            <Style
+                        <ControlTemplate x:Key="PopupTagButtonTemplate" TargetType="Button">
+                                        <Grid>
+                                            <Border
+                                                x:Name="Fill"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="14"
+                                                Opacity="0" />
+                                            <Rectangle
+                                                RadiusX="14"
+                                                RadiusY="14"
+                                                Stroke="{TemplateBinding Foreground}"
+                                                StrokeDashArray="5,3"
+                                                StrokeThickness="1" />
+                                            <TextBlock
+                                                Margin="{TemplateBinding Padding}"
+                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                VerticalAlignment="Center"
+                                                FontFamily="{TemplateBinding FontFamily}"
+                                                FontSize="{TemplateBinding FontSize}"
+                                                Foreground="{TemplateBinding Foreground}"
+                                                Text="{TemplateBinding Content}" />
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Fill" Property="Opacity" Value="1" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+
+<Style
                 x:Key="PopupTagButtonStyle"
                 BasedOn="{StaticResource BaseButtonStyle}"
                 TargetType="Button">
@@ -116,38 +143,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
                 <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
                 <Setter Property="FontSize" Value="12" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Grid>
-                                <Border
-                                    x:Name="Fill"
-                                    Background="{TemplateBinding Background}"
-                                    CornerRadius="14"
-                                    Opacity="0" />
-                                <Rectangle
-                                    RadiusX="14"
-                                    RadiusY="14"
-                                    Stroke="{TemplateBinding Foreground}"
-                                    StrokeDashArray="5,3"
-                                    StrokeThickness="1" />
-                                <TextBlock
-                                    Margin="{TemplateBinding Padding}"
-                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                    VerticalAlignment="Center"
-                                    FontFamily="{TemplateBinding FontFamily}"
-                                    FontSize="{TemplateBinding FontSize}"
-                                    Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Content}" />
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Fill" Property="Opacity" Value="1" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource PopupTagButtonTemplate}" />
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
                         <Setter Property="Foreground" Value="{DynamicResource Brush.Mint}" />
@@ -205,21 +201,12 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-            <Style
+<Style
                 x:Key="PopupTagListBoxItemStyle"
-                BasedOn="{StaticResource BaseListBoxItemStyle}"
+                BasedOn="{StaticResource PlainListBoxItemStyle}"
                 TargetType="ListBoxItem">
                 <Setter Property="Margin" Value="0,0,8,0" />
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <ContentPresenter />
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
             </Style>
 
             <DataTemplate x:Key="PopupTagTemplate">
@@ -243,34 +230,32 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             </Style>
 
-            <Style
+                        <ControlTemplate x:Key="TransactionNameSuggestionListBoxItemTemplate" TargetType="ListBoxItem">
+                                        <Border
+                                            x:Name="ItemBackground"
+                                            Padding="8,6"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="8">
+                                            <ContentPresenter />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+
+<Style
                 x:Key="TransactionNameSuggestionListBoxItemStyle"
                 BasedOn="{StaticResource BaseListBoxItemStyle}"
                 TargetType="ListBoxItem">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <Border
-                                x:Name="ItemBackground"
-                                Padding="8,6"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="8">
-                                <ContentPresenter />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource TransactionNameSuggestionListBoxItemTemplate}" />
             </Style>
 
             <Style
@@ -282,7 +267,34 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-            <Style
+                        <ControlTemplate x:Key="TransactionHistoryListBoxItemTemplate" TargetType="ListBoxItem">
+                                        <Border
+                                            x:Name="ItemBackground"
+                                            Padding="10,8"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{DynamicResource Brush.Border.Default}"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+                                            <ContentPresenter />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="False">
+                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
+                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+
+<Style
                 x:Key="TransactionHistoryListBoxItemStyle"
                 BasedOn="{StaticResource BaseListBoxItemStyle}"
                 TargetType="ListBoxItem">
@@ -290,39 +302,31 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <Border
-                                x:Name="ItemBackground"
-                                Padding="10,8"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{DynamicResource Brush.Border.Default}"
-                                BorderThickness="1"
-                                CornerRadius="8">
-                                <ContentPresenter />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
-                                </Trigger>
-                                <Trigger Property="IsMouseOver" Value="False">
-                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                                </Trigger>
-                                <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
-                                </DataTrigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource TransactionHistoryListBoxItemTemplate}" />
             </Style>
 
-            <Style
+                        <ControlTemplate x:Key="TransactionQueueListBoxItemTemplate" TargetType="ListBoxItem">
+                                        <Border
+                                            x:Name="ItemBackground"
+                                            Padding="10,8"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{DynamicResource Brush.Border.Default}"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+                                            <ContentPresenter />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+
+<Style
                 x:Key="TransactionQueueListBoxItemStyle"
                 BasedOn="{StaticResource BaseListBoxItemStyle}"
                 TargetType="ListBoxItem">
@@ -330,30 +334,7 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <Border
-                                x:Name="ItemBackground"
-                                Padding="10,8"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{DynamicResource Brush.Border.Default}"
-                                BorderThickness="1"
-                                CornerRadius="8">
-                                <ContentPresenter />
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-                                    <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource TransactionQueueListBoxItemTemplate}" />
             </Style>
 
             <DataTemplate x:Key="TransactionHistoryItemTemplate">

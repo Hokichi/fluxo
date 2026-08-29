@@ -10,17 +10,7 @@
     Mode="Modify">
 
     <customControls:BasePopup.Resources>
-<Style x:Key="CustomColorButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
-        <Setter Property="Width" Value="30" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="2,0,0,0" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
+<ControlTemplate x:Key="CustomColorButtonTemplate" TargetType="Button">
                     <Grid
                         Width="30"
                         Height="30"
@@ -42,57 +32,61 @@
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+
+<Style x:Key="CustomColorButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Margin" Value="2,0,0,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template" Value="{StaticResource CustomColorButtonTemplate}" />
     </Style>
-        <Style x:Key="ColorSelectorListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
+                <ControlTemplate x:Key="ColorSelectorListBoxTemplate" TargetType="ListBoxItem">
+                                            <Border
+                                                x:Name="ColorChip"
+                                                Width="30"
+                                                Height="30"
+                                                Background="{Binding HexCode}"
+                                                BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                                                BorderThickness="1"
+                                                CornerRadius="15">
+                                                <components:Icon
+                                                    x:Name="TickPath"
+                                                    Margin="8"
+                                                    Opacity="0"
+                                                    Path="{StaticResource Check}">
+                                                    <components:Icon.Color>
+                                                        <Binding
+                                                            ElementName="ColorChip"
+                                                            Path="Background"
+                                                            Converter="{StaticResource BackgroundToForegroundConverter}" />
+                                                    </components:Icon.Color>
+                                                </components:Icon>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="ColorChip" Property="BorderBrush" Value="{DynamicResource Brush.Text.Primary}" />
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="ColorChip" Property="BorderBrush" Value="{DynamicResource Brush.Text.Primary}" />
+                                                    <Setter TargetName="ColorChip" Property="BorderThickness" Value="2" />
+                                                    <Setter TargetName="TickPath" Property="Opacity" Value="1" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+
+        <Style x:Key="ColorSelectorListBoxItemStyle" BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
+                                <Setter Property="Margin" Value="0,0,10,10" />
+                                <Setter Property="Template" Value="{StaticResource ColorSelectorListBoxTemplate}" />
+                            </Style>
+
+<Style x:Key="ColorSelectorListBoxStyle" BasedOn="{StaticResource BaseListBoxStyle}" TargetType="ListBox">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-            <Setter Property="ItemContainerStyle">
-                <Setter.Value>
-                    <Style BasedOn="{StaticResource BaseListBoxItemStyle}" TargetType="ListBoxItem">
-                        <Setter Property="Margin" Value="0,0,10,10" />
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Border
-                                        x:Name="ColorChip"
-                                        Width="30"
-                                        Height="30"
-                                        Background="{Binding HexCode}"
-                                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                                        BorderThickness="1"
-                                        CornerRadius="15">
-                                        <components:Icon
-                                            x:Name="TickPath"
-                                            Margin="8"
-                                            Opacity="0"
-                                            Path="{StaticResource Check}">
-                                            <components:Icon.Color>
-                                                <Binding
-                                                    ElementName="ColorChip"
-                                                    Path="Background"
-                                                    Converter="{StaticResource BackgroundToForegroundConverter}" />
-                                            </components:Icon.Color>
-                                        </components:Icon>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="ColorChip" Property="BorderBrush" Value="{DynamicResource Brush.Text.Primary}" />
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="ColorChip" Property="BorderBrush" Value="{DynamicResource Brush.Text.Primary}" />
-                                            <Setter TargetName="ColorChip" Property="BorderThickness" Value="2" />
-                                            <Setter TargetName="TickPath" Property="Opacity" Value="1" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource ColorSelectorListBoxItemStyle}" />
             <Setter Property="ItemsPanel" Value="{StaticResource PopupWrapItemsPanelTemplate}" />
         </Style>
     </customControls:BasePopup.Resources>
@@ -138,6 +132,5 @@
         </StackPanel>
     </Grid>
 </customControls:BasePopup>
-
 
 

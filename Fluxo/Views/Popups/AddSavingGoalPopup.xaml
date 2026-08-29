@@ -9,7 +9,39 @@
     Mode="Modify">
 
     <customControls:BasePopup.Resources>
-        <Style x:Key="EndDateInfinityToggleStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
+                <ControlTemplate x:Key="EndDateInfinityToggleTemplate" TargetType="ToggleButton">
+                                <Border
+                                    x:Name="RootBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="12">
+                                    <Viewbox
+                                        Width="16"
+                                        Height="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <Path
+                                            x:Name="InfinityIcon"
+                                            Data="{StaticResource Infinity}"
+                                            Fill="{DynamicResource Brush.Text.Secondary}"
+                                            Stretch="Uniform" />
+                                    </Viewbox>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="InfinityIcon" Property="Fill" Value="{DynamicResource Brush.Mint}" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="RootBorder" Property="Opacity" Value="0.4" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+
+<Style x:Key="EndDateInfinityToggleStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="36" />
             <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
@@ -17,41 +49,7 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToggleButton">
-                        <Border
-                            x:Name="RootBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="12">
-                            <Viewbox
-                                Width="16"
-                                Height="16"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
-                                <Path
-                                    x:Name="InfinityIcon"
-                                    Data="{StaticResource Infinity}"
-                                    Fill="{DynamicResource Brush.Text.Secondary}"
-                                    Stretch="Uniform" />
-                            </Viewbox>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="InfinityIcon" Property="Fill" Value="{DynamicResource Brush.Mint}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="RootBorder" Property="Opacity" Value="0.4" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource EndDateInfinityToggleTemplate}" />
         </Style>
     </customControls:BasePopup.Resources>
 
@@ -105,6 +103,5 @@
         </StackPanel>
     </Grid>
 </customControls:BasePopup>
-
 
 

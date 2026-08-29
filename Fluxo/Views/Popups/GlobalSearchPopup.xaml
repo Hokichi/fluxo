@@ -19,22 +19,59 @@
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
         </Style>
-        <Style
+<Style
             x:Key="GlobalSearchTypeListBoxItemStyle"
-            BasedOn="{StaticResource BaseListBoxItemStyle}"
+            BasedOn="{StaticResource PlainListBoxItemStyle}"
             TargetType="ListBoxItem">
             <Setter Property="Margin" Value="0,0,8,0" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <ContentPresenter />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
-        <Style
+                <ControlTemplate x:Key="GlobalSearchTypePillRadioTemplate" TargetType="RadioButton">
+                                <Border
+                                    x:Name="PillBorder"
+                                    Padding="{TemplateBinding Padding}"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="14">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            FontFamily="{TemplateBinding FontFamily}"
+                                            FontSize="{TemplateBinding FontSize}"
+                                            Foreground="{TemplateBinding Foreground}"
+                                            Text="{TemplateBinding Content}" />
+                                        <components:Icon
+                                            x:Name="SelectedCheck"
+                                            Width="10"
+                                            Height="10"
+                                            Margin="6,0,0,0"
+                                            Path="{StaticResource Check}"
+                                            Visibility="Collapsed"
+                                            Color="{DynamicResource Brush.Mint}" />
+                                    </StackPanel>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                    </Trigger>
+                                    <Trigger Property="IsPressed" Value="True">
+                                        <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
+                                    </Trigger>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
+                                        <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                                        <Setter TargetName="SelectedCheck" Property="Visibility" Value="Visible" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="PillBorder" Property="Opacity" Value="0.4" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+
+<Style
             x:Key="GlobalSearchTypePillRadioStyle"
             BasedOn="{StaticResource BaseRadioButtonStyle}"
             TargetType="RadioButton">
@@ -47,55 +84,7 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border
-                            x:Name="PillBorder"
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="14">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    FontFamily="{TemplateBinding FontFamily}"
-                                    FontSize="{TemplateBinding FontSize}"
-                                    Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Content}" />
-                                <components:Icon
-                                    x:Name="SelectedCheck"
-                                    Width="10"
-                                    Height="10"
-                                    Margin="6,0,0,0"
-                                    Path="{StaticResource Check}"
-                                    Visibility="Collapsed"
-                                    Color="{DynamicResource Brush.Mint}" />
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                            </Trigger>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Setter TargetName="PillBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
-                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                                <Setter TargetName="SelectedCheck" Property="Visibility" Value="Visible" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="PillBorder" Property="Opacity" Value="0.4" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource GlobalSearchTypePillRadioTemplate}" />
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Cursor" Value="Arrow" />
@@ -163,7 +152,36 @@
                     TextTrimming="CharacterEllipsis" />
             </Grid>
         </DataTemplate>
-        <Style
+                <ControlTemplate x:Key="GlobalSearchResultItemContainerTemplate" TargetType="ListBoxItem">
+                                <Border
+                                    x:Name="ItemBorder"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
+                                    <ContentPresenter />
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                                    </Trigger>
+                                    <Trigger Property="IsMouseCaptureWithin" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
+                                        <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                                    </Trigger>
+                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                        <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="ItemBorder" Property="Opacity" Value="0.4" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+
+<Style
             x:Key="GlobalSearchResultItemContainerStyle"
             BasedOn="{StaticResource BaseListBoxItemStyle}"
             TargetType="ListBoxItem">
@@ -173,38 +191,7 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border
-                            x:Name="ItemBorder"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="8">
-                            <ContentPresenter />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseCaptureWithin" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Background.Deepened}" />
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource Brush.Mint.Tint}" />
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="ItemBorder" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="ItemBorder" Property="Opacity" Value="0.4" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource GlobalSearchResultItemContainerTemplate}" />
         </Style>
         <Style
             x:Key="GlobalSearchResultsListBoxStyle"

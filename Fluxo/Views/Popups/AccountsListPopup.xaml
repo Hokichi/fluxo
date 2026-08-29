@@ -7,16 +7,7 @@
     PopupTitle="Accounts">
 
 <customControls:BasePopup.Resources>
-<Style x:Key="SourceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
+<ControlTemplate x:Key="SourceButtonTemplate" TargetType="Button">
                     <Border
                         x:Name="RootBorder"
                         Padding="16"
@@ -32,8 +23,15 @@
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+
+<Style x:Key="SourceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template" Value="{StaticResource SourceButtonTemplate}" />
     </Style>
         <Style x:Key="AccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource Brush.Account.Checking}" />
@@ -232,7 +230,6 @@
         </Border>
     </Grid>
 </customControls:BasePopup>
-
 
 
 

@@ -6,116 +6,116 @@
     PopupTitle="Hotkeys Overview">
 
 <customControls:BasePopup.Resources>
-        <Style x:Key="HotkeyExpanderStyle" BasedOn="{StaticResource BaseExpanderStyle}" TargetType="Expander">
+                <ControlTemplate x:Key="HotkeyExpanderToggleButtonTemplate" TargetType="ToggleButton">
+                                                <Border
+                                                    x:Name="ExpanderHeaderContent"
+                                                    Padding="10,8"
+                                                    Background="Transparent"
+                                                    BorderBrush="Transparent"
+                                                    BorderThickness="1"
+                                                    CornerRadius="8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="18" />
+                                                            <ColumnDefinition Width="8" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Path
+                                                            x:Name="ExpanderIcon"
+                                                            Width="10"
+                                                            Height="10"
+                                                            VerticalAlignment="Center"
+                                                            Data="{StaticResource AngleRight}"
+                                                            Stretch="Uniform">
+                                                            <Path.Fill>
+                                                                <SolidColorBrush x:Name="ExpanderIconBrush" Color="{DynamicResource Color.Text.Primary}" />
+                                                            </Path.Fill>
+                                                        </Path>
+                                                        <TextBlock
+                                                            x:Name="ExpanderHeaderText"
+                                                            Grid.Column="2"
+                                                            VerticalAlignment="Center"
+                                                            FontFamily="{StaticResource Bold}"
+                                                            FontSize="13"
+                                                            Text="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}">
+                                                            <TextBlock.Foreground>
+                                                                <SolidColorBrush x:Name="ExpanderHeaderTextBrush" Color="{DynamicResource Color.Text.Primary}" />
+                                                            </TextBlock.Foreground>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter TargetName="ExpanderIcon" Property="Data" Value="{StaticResource AngleDown}" />
+                                                    </Trigger>
+                                                    <Trigger SourceName="ExpanderHeaderContent" Property="IsMouseOver" Value="True">
+                                                        <Trigger.EnterActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="ExpanderIconBrush"
+                                                                        Storyboard.TargetProperty="Color"
+                                                                        To="{DynamicResource Color.Mint}"
+                                                                        Duration="0:0:0.14" />
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="ExpanderHeaderTextBrush"
+                                                                        Storyboard.TargetProperty="Color"
+                                                                        To="{DynamicResource Color.Mint}"
+                                                                        Duration="0:0:0.14" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.EnterActions>
+                                                        <Trigger.ExitActions>
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="ExpanderIconBrush"
+                                                                        Storyboard.TargetProperty="Color"
+                                                                        To="{DynamicResource Color.Text.Primary}"
+                                                                        Duration="0:0:0.14" />
+                                                                    <ColorAnimation
+                                                                        Storyboard.TargetName="ExpanderHeaderTextBrush"
+                                                                        Storyboard.TargetProperty="Color"
+                                                                        To="{DynamicResource Color.Text.Primary}"
+                                                                        Duration="0:0:0.14" />
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </Trigger.ExitActions>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+
+        <ControlTemplate x:Key="HotkeyExpanderTemplate" TargetType="Expander">
+                                <StackPanel>
+                                    <ToggleButton
+                                        x:Name="HeaderSite"
+                                        HorizontalContentAlignment="Stretch"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        FocusVisualStyle="{x:Null}"
+                                        IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <ToggleButton.Template>
+                                                                                <StaticResource ResourceKey="HotkeyExpanderToggleButtonTemplate" />
+                                        </ToggleButton.Template>
+                                    </ToggleButton>
+                                    <ContentPresenter
+                                        x:Name="ExpandSite"
+                                        ContentSource="Content"
+                                        Visibility="Collapsed" />
+                                </StackPanel>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsExpanded" Value="True">
+                                        <Setter TargetName="ExpandSite" Property="Visibility" Value="Visible" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+
+<Style x:Key="HotkeyExpanderStyle" BasedOn="{StaticResource BaseExpanderStyle}" TargetType="Expander">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Expander">
-                        <StackPanel>
-                            <ToggleButton
-                                x:Name="HeaderSite"
-                                HorizontalContentAlignment="Stretch"
-                                Background="Transparent"
-                                BorderBrush="Transparent"
-                                BorderThickness="0"
-                                Cursor="Hand"
-                                FocusVisualStyle="{x:Null}"
-                                IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="ToggleButton">
-                                        <Border
-                                            x:Name="ExpanderHeaderContent"
-                                            Padding="10,8"
-                                            Background="Transparent"
-                                            BorderBrush="Transparent"
-                                            BorderThickness="1"
-                                            CornerRadius="8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="18" />
-                                                    <ColumnDefinition Width="8" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Path
-                                                    x:Name="ExpanderIcon"
-                                                    Width="10"
-                                                    Height="10"
-                                                    VerticalAlignment="Center"
-                                                    Data="{StaticResource AngleRight}"
-                                                    Stretch="Uniform">
-                                                    <Path.Fill>
-                                                        <SolidColorBrush x:Name="ExpanderIconBrush" Color="{DynamicResource Color.Text.Primary}" />
-                                                    </Path.Fill>
-                                                </Path>
-                                                <TextBlock
-                                                    x:Name="ExpanderHeaderText"
-                                                    Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{StaticResource Bold}"
-                                                    FontSize="13"
-                                                    Text="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}">
-                                                    <TextBlock.Foreground>
-                                                        <SolidColorBrush x:Name="ExpanderHeaderTextBrush" Color="{DynamicResource Color.Text.Primary}" />
-                                                    </TextBlock.Foreground>
-                                                </TextBlock>
-                                            </Grid>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter TargetName="ExpanderIcon" Property="Data" Value="{StaticResource AngleDown}" />
-                                            </Trigger>
-                                            <Trigger SourceName="ExpanderHeaderContent" Property="IsMouseOver" Value="True">
-                                                <Trigger.EnterActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <ColorAnimation
-                                                                Storyboard.TargetName="ExpanderIconBrush"
-                                                                Storyboard.TargetProperty="Color"
-                                                                To="{DynamicResource Color.Mint}"
-                                                                Duration="0:0:0.14" />
-                                                            <ColorAnimation
-                                                                Storyboard.TargetName="ExpanderHeaderTextBrush"
-                                                                Storyboard.TargetProperty="Color"
-                                                                To="{DynamicResource Color.Mint}"
-                                                                Duration="0:0:0.14" />
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </Trigger.EnterActions>
-                                                <Trigger.ExitActions>
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <ColorAnimation
-                                                                Storyboard.TargetName="ExpanderIconBrush"
-                                                                Storyboard.TargetProperty="Color"
-                                                                To="{DynamicResource Color.Text.Primary}"
-                                                                Duration="0:0:0.14" />
-                                                            <ColorAnimation
-                                                                Storyboard.TargetName="ExpanderHeaderTextBrush"
-                                                                Storyboard.TargetProperty="Color"
-                                                                To="{DynamicResource Color.Text.Primary}"
-                                                                Duration="0:0:0.14" />
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-                                                </Trigger.ExitActions>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                            </ToggleButton>
-                            <ContentPresenter
-                                x:Name="ExpandSite"
-                                ContentSource="Content"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsExpanded" Value="True">
-                                <Setter TargetName="ExpandSite" Property="Visibility" Value="Visible" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Template" Value="{StaticResource HotkeyExpanderTemplate}" />
         </Style>
 
         <Style x:Key="HotkeyRowStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
