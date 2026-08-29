@@ -23,7 +23,32 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="RoundedTextInputStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
+        <ControlTemplate x:Key="RoundedTextInputTemplate" TargetType="TextBox">
+                        <Border
+                            x:Name="InputRoot"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <customControls:FadingScrollViewer
+                                x:Name="PART_ContentHost"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Stretch" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+<Style x:Key="RoundedTextInputStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
         <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
         <Setter Property="Height" Value="40" />
         <Setter Property="Padding" Value="4,0" />
@@ -35,71 +60,42 @@
         <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="TextBox">
-                    <Border
-                        x:Name="InputRoot"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
-                        <customControls:FadingScrollViewer
-                            x:Name="PART_ContentHost"
-                            Margin="{TemplateBinding Padding}"
-                            VerticalAlignment="Stretch" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource RoundedTextInputTemplate}" />
     </Style>
 
-    <Style x:Key="RoundedPasswordInputStyle" BasedOn="{StaticResource BasePasswordBoxStyle}" TargetType="PasswordBox">
+        <ControlTemplate x:Key="RoundedPasswordInputTemplate" TargetType="PasswordBox">
+                        <Border
+                            x:Name="InputRoot"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <ScrollViewer
+                                x:Name="PART_ContentHost"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Stretch" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+<Style x:Key="RoundedPasswordInputStyle" BasedOn="{StaticResource BasePasswordBoxStyle}" TargetType="PasswordBox">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="PasswordBox">
-                    <Border
-                        x:Name="InputRoot"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
-                        <ScrollViewer
-                            x:Name="PART_ContentHost"
-                            Margin="{TemplateBinding Padding}"
-                            VerticalAlignment="Stretch" />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource RoundedPasswordInputTemplate}" />
     </Style>
 
     <Style
@@ -109,80 +105,78 @@
         <Setter Property="OverridesDefaultStyle" Value="True" />
     </Style>
 
-    <Style
+        <ControlTemplate x:Key="RoundedMoneyTextInputTemplate" TargetType="{x:Type customControls:MoneyTextBox}">
+                        <Border
+                            x:Name="InputRoot"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <Grid>
+                                <TextBlock
+                                    x:Name="PlaceholderText"
+                                    Margin="12,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.Text.Muted}"
+                                    IsHitTestVisible="False"
+                                    Text="{TemplateBinding PlaceholderText}"
+                                    Visibility="Collapsed" />
+                                <customControls:FadingScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    Margin="{TemplateBinding Padding}"
+                                    VerticalAlignment="Stretch" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
+                                <Setter Property="Foreground" Value="Transparent" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsZeroAmount" Value="True">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
+                                <Setter Property="Foreground" Value="Transparent" />
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsKeyboardFocused" Value="True" />
+                                    <Condition Property="Text" Value="" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsKeyboardFocused" Value="True" />
+                                    <Condition Property="IsZeroAmount" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                            </MultiTrigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+<Style
         x:Key="RoundedMoneyTextInputStyle"
         BasedOn="{StaticResource BaseMoneyTextBoxStyle}"
         TargetType="{x:Type customControls:MoneyTextBox}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type customControls:MoneyTextBox}">
-                    <Border
-                        x:Name="InputRoot"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
-                        <Grid>
-                            <TextBlock
-                                x:Name="PlaceholderText"
-                                Margin="12,0,0,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource Brush.Text.Muted}"
-                                IsHitTestVisible="False"
-                                Text="{TemplateBinding PlaceholderText}"
-                                Visibility="Collapsed" />
-                            <customControls:FadingScrollViewer
-                                x:Name="PART_ContentHost"
-                                Margin="{TemplateBinding Padding}"
-                                VerticalAlignment="Stretch" />
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Text" Value="">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
-                            <Setter Property="Foreground" Value="Transparent" />
-                        </Trigger>
-                        <Trigger Property="Text" Value="{x:Null}">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                        </Trigger>
-                        <Trigger Property="IsZeroAmount" Value="True">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
-                            <Setter Property="Foreground" Value="Transparent" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsKeyboardFocused" Value="True" />
-                                <Condition Property="Text" Value="" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsKeyboardFocused" Value="True" />
-                                <Condition Property="IsZeroAmount" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-                        </MultiTrigger>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource RoundedMoneyTextInputTemplate}" />
     </Style>
 
     <Style
@@ -193,104 +187,100 @@
         <Setter Property="Padding" Value="4,0,28,0" />
     </Style>
 
-    <Style
+        <ControlTemplate x:Key="RoundedSuffixTextInputTemplate" TargetType="{x:Type customControls:SuffixTextBox}">
+                        <Border
+                            x:Name="InputRoot"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <Grid>
+                                <TextBlock
+                                    x:Name="PlaceholderText"
+                                    Margin="12,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.Text.Muted}"
+                                    IsHitTestVisible="False"
+                                    Text="{TemplateBinding PlaceholderText}"
+                                    Visibility="Collapsed" />
+                                <customControls:FadingScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    Margin="{TemplateBinding Padding}"
+                                    VerticalAlignment="Stretch" />
+                                <TextBlock
+                                    Margin="0,0,12,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                                    IsHitTestVisible="False"
+                                    Text="{TemplateBinding Suffix}" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
+                                <Setter Property="Foreground" Value="Transparent" />
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsZeroAmount" Value="True">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
+                                <Setter Property="Foreground" Value="Transparent" />
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsKeyboardFocused" Value="True" />
+                                    <Condition Property="Text" Value="" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsKeyboardFocused" Value="True" />
+                                    <Condition Property="IsZeroAmount" Value="True" />
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
+                                <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                            </MultiTrigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+<Style
         x:Key="RoundedSuffixTextInputStyle"
         BasedOn="{StaticResource BaseSuffixTextBoxStyle}"
         TargetType="{x:Type customControls:SuffixTextBox}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type customControls:SuffixTextBox}">
-                    <Border
-                        x:Name="InputRoot"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
-                        <Grid>
-                            <TextBlock
-                                x:Name="PlaceholderText"
-                                Margin="12,0,0,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource Brush.Text.Muted}"
-                                IsHitTestVisible="False"
-                                Text="{TemplateBinding PlaceholderText}"
-                                Visibility="Collapsed" />
-                            <customControls:FadingScrollViewer
-                                x:Name="PART_ContentHost"
-                                Margin="{TemplateBinding Padding}"
-                                VerticalAlignment="Stretch" />
-                            <TextBlock
-                                Margin="0,0,12,0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource Brush.Text.Secondary}"
-                                IsHitTestVisible="False"
-                                Text="{TemplateBinding Suffix}" />
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Text" Value="">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
-                            <Setter Property="Foreground" Value="Transparent" />
-                        </Trigger>
-                        <Trigger Property="Text" Value="{x:Null}">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                        </Trigger>
-                        <Trigger Property="IsZeroAmount" Value="True">
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Hidden" />
-                            <Setter Property="Foreground" Value="Transparent" />
-                        </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsKeyboardFocused" Value="True" />
-                                <Condition Property="Text" Value="" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsKeyboardFocused" Value="True" />
-                                <Condition Property="IsZeroAmount" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="PlaceholderText" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
-                            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-                        </MultiTrigger>
-                        <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource RoundedSuffixTextInputTemplate}" />
     </Style>
 
-    <Style x:Key="NumericUpDownArrowButtonStyle" BasedOn="{StaticResource BaseRepeatButtonStyle}" TargetType="RepeatButton">
+        <ControlTemplate x:Key="NumericUpDownArrowButtonTemplate" TargetType="RepeatButton">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+
+<Style x:Key="NumericUpDownArrowButtonStyle" BasedOn="{StaticResource BaseRepeatButtonStyle}" TargetType="RepeatButton">
         <Setter Property="Width" Value="28" />
         <Setter Property="Height" Value="20" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="RepeatButton">
-                    <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource NumericUpDownArrowButtonTemplate}" />
     </Style>
 
     <Style x:Key="BaseNumericUpDownStyle" TargetType="{x:Type customControls:NumericUpDown}">
@@ -300,99 +290,97 @@
         <Setter Property="FontSize" Value="13" />
     </Style>
 
-    <Style BasedOn="{StaticResource BaseNumericUpDownStyle}" TargetType="{x:Type customControls:NumericUpDown}">
+        <ControlTemplate x:Key="NumericUpDownTemplate" TargetType="{x:Type customControls:NumericUpDown}">
+                        <Border
+                            x:Name="InputRoot"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="28" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    x:Name="PART_TextBox"
+                                    Margin="4,0,0,0"
+                                    Padding="4,0"
+                                    VerticalContentAlignment="Center"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    CaretBrush="{DynamicResource Brush.Text.Primary}"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    Foreground="{TemplateBinding Foreground}" />
+
+                                <Grid
+                                    Grid.Column="1"
+                                    Height="24"
+                                    Margin="0,0,0,6">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <RepeatButton
+                                        x:Name="PART_UpButton"
+                                        Grid.Row="0"
+                                        Delay="200"
+                                        Interval="70"
+                                        Style="{StaticResource NumericUpDownArrowButtonStyle}">
+                                        <components:Icon
+                                            x:Name="UpIcon"
+                                            Width="8"
+                                            Height="8"
+                                            Path="{StaticResource AngleUp}"
+                                            Color="{DynamicResource Brush.Text.Secondary}" />
+                                    </RepeatButton>
+
+                                    <RepeatButton
+                                        x:Name="PART_DownButton"
+                                        Grid.Row="1"
+                                        Delay="200"
+                                        Interval="70"
+                                        Style="{StaticResource NumericUpDownArrowButtonStyle}">
+                                        <components:Icon
+                                            x:Name="DownIcon"
+                                            Width="8"
+                                            Height="8"
+                                            Path="{StaticResource AngleDown}"
+                                            Color="{DynamicResource Brush.Text.Secondary}" />
+                                    </RepeatButton>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="Validation.HasError" Value="True">
+                                <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                            </Trigger>
+                            <Trigger SourceName="PART_UpButton" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="UpIcon" Property="Color" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger SourceName="PART_DownButton" Property="IsMouseOver" Value="True">
+                                <Setter TargetName="DownIcon" Property="Color" Value="{DynamicResource Brush.Mint}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+
+<Style BasedOn="{StaticResource BaseNumericUpDownStyle}" TargetType="{x:Type customControls:NumericUpDown}">
         <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Subtle}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type customControls:NumericUpDown}">
-                    <Border
-                        x:Name="InputRoot"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="28" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBox
-                                x:Name="PART_TextBox"
-                                Margin="4,0,0,0"
-                                Padding="4,0"
-                                VerticalContentAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                CaretBrush="{DynamicResource Brush.Text.Primary}"
-                                FontFamily="{TemplateBinding FontFamily}"
-                                FontSize="{TemplateBinding FontSize}"
-                                Foreground="{TemplateBinding Foreground}" />
-
-                            <Grid
-                                Grid.Column="1"
-                                Height="24"
-                                Margin="0,0,0,6">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="*" />
-                                </Grid.RowDefinitions>
-
-                                <RepeatButton
-                                    x:Name="PART_UpButton"
-                                    Grid.Row="0"
-                                    Delay="200"
-                                    Interval="70"
-                                    Style="{StaticResource NumericUpDownArrowButtonStyle}">
-                                    <components:Icon
-                                        x:Name="UpIcon"
-                                        Width="8"
-                                        Height="8"
-                                        Path="{StaticResource AngleUp}"
-                                        Color="{DynamicResource Brush.Text.Secondary}" />
-                                </RepeatButton>
-
-                                <RepeatButton
-                                    x:Name="PART_DownButton"
-                                    Grid.Row="1"
-                                    Delay="200"
-                                    Interval="70"
-                                    Style="{StaticResource NumericUpDownArrowButtonStyle}">
-                                    <components:Icon
-                                        x:Name="DownIcon"
-                                        Width="8"
-                                        Height="8"
-                                        Path="{StaticResource AngleDown}"
-                                        Color="{DynamicResource Brush.Text.Secondary}" />
-                                </RepeatButton>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="Validation.HasError" Value="True">
-                            <Setter TargetName="InputRoot" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="InputRoot" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                        </Trigger>
-                        <Trigger SourceName="PART_UpButton" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="UpIcon" Property="Color" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger SourceName="PART_DownButton" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="DownIcon" Property="Color" Value="{DynamicResource Brush.Mint}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="InputRoot" Property="Opacity" Value="0.4" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="Template" Value="{StaticResource NumericUpDownTemplate}" />
     </Style>
 </ResourceDictionary>
