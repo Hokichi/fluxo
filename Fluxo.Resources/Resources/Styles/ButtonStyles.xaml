@@ -562,7 +562,7 @@
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
             CornerRadius="12">
-            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
         </Border>
     </ControlTemplate>
 
@@ -579,6 +579,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Template" Value="{StaticResource RoundedActionButtonTemplate}" />
     </Style>
 
@@ -609,7 +610,7 @@
         <Setter Property="DefaultBackground" Value="{DynamicResource Brush.Background.Main}" />
     </Style>
 
-        <ControlTemplate x:Key="CalendarNavButtonTemplate" TargetType="Button">
+        <ControlTemplate x:Key="HoverBackgroundButtonTemplate" TargetType="Button">
                         <Border
                             x:Name="ButtonBackground"
                             Background="{TemplateBinding Background}"
@@ -634,22 +635,8 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Template" Value="{StaticResource CalendarNavButtonTemplate}" />
+        <Setter Property="Template" Value="{StaticResource HoverBackgroundButtonTemplate}" />
     </Style>
-
-        <ControlTemplate x:Key="HeaderActionButtonTemplate" TargetType="Button">
-                        <Border
-                            x:Name="HeaderButtonBackground"
-                            Background="{TemplateBinding Background}"
-                            CornerRadius="10">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="HeaderButtonBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
 
 <Style
         x:Key="HeaderActionButtonStyle"
@@ -664,7 +651,7 @@
         <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Padding" Value="8,4" />
-        <Setter Property="Template" Value="{StaticResource HeaderActionButtonTemplate}" />
+        <Setter Property="Template" Value="{StaticResource HoverBackgroundButtonTemplate}" />
     </Style>
 
         <ControlTemplate x:Key="CalendarDayButtonTemplate" TargetType="Button">
@@ -1002,17 +989,6 @@
         <Setter Property="IconSize" Value="8" />
     </Style>
 
-        <ControlTemplate x:Key="HeaderMenuActionButtonTemplate" TargetType="Button">
-                        <Border
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="12">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-
 <Style
         x:Key="HeaderMenuActionButtonStyle"
         BasedOn="{StaticResource BaseButtonStyle}"
@@ -1027,7 +1003,7 @@
         <Setter Property="FontSize" Value="12" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="12,10" />
-        <Setter Property="Template" Value="{StaticResource HeaderMenuActionButtonTemplate}" />
+        <Setter Property="Template" Value="{StaticResource RoundedActionButtonTemplate}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{DynamicResource Brush.Background.Hover}" />

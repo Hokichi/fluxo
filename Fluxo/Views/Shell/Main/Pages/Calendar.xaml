@@ -56,11 +56,7 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="CalendarCardLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
-        </Style>
+        <Style x:Key="CalendarCardLabelStyle" BasedOn="{StaticResource CardLabelTextStyle}" TargetType="TextBlock" />
 
         <Style x:Key="CalendarListItemHoverBorderStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
             <Setter Property="Margin" Value="0,0,0,8" />
@@ -110,12 +106,7 @@
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
 
-        <Style x:Key="CalendarNoDataTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        <Style x:Key="CalendarNoDataTextStyle" BasedOn="{StaticResource CenteredEmptyStateTextStyle}" TargetType="TextBlock">
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 

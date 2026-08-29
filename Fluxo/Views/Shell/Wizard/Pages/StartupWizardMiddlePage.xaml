@@ -55,10 +55,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="WizardFinishButtonStyle" BasedOn="{StaticResource ActionButtonStyle}" TargetType="Button">
-            <Setter Property="Background" Value="{DynamicResource Brush.Mint}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Mint}" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Background.Surface}" />
+        <Style x:Key="WizardFinishButtonStyle" BasedOn="{StaticResource PrimaryDialogActionButtonStyle}" TargetType="Button">
             <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.4" />

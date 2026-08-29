@@ -12,19 +12,12 @@
 <customControls:BasePopup.Resources>
         <converters:SourceSequenceLabelConverter x:Key="SourceSequenceLabelConverter" />
 
-        <Style x:Key="SummaryLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        <Style x:Key="SummaryLabelStyle" BasedOn="{StaticResource CardLabelTextStyle}" TargetType="TextBlock">
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <Style x:Key="TableHeaderTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        <Style x:Key="TableHeaderTextStyle" BasedOn="{StaticResource SummaryLabelStyle}" TargetType="TextBlock">
             <Setter Property="TextAlignment" Value="Left" />
-            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
         <Style

@@ -9,12 +9,9 @@
 
     <Style
         x:Key="PopupFieldLabelStyle"
-        BasedOn="{StaticResource BaseTextBlockStyle}"
+        BasedOn="{StaticResource FieldLabelTextStyle}"
         TargetType="TextBlock">
-        <Setter Property="Margin" Value="0,0,0,8" />
-        <Setter Property="FontFamily" Value="{StaticResource Bold}" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
     </Style>
 
     <Style

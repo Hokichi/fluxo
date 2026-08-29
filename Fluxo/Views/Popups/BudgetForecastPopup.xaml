@@ -8,10 +8,7 @@
     SizeToContent="WidthAndHeight">
 
 <customControls:BasePopup.Resources>
-        <Style x:Key="ForecastLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        <Style x:Key="ForecastLabelStyle" BasedOn="{StaticResource CardLabelTextStyle}" TargetType="TextBlock">
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 

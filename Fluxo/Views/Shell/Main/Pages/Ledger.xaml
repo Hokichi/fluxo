@@ -126,16 +126,9 @@
 
         <Style
             x:Key="LedgerFilterComboBoxItemStyle"
-            BasedOn="{StaticResource BaseComboBoxItemStyle}"
+            BasedOn="{StaticResource FluxoComboBoxItemStyle}"
             TargetType="ComboBoxItem">
-            <Setter Property="Height" Value="36" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-            <Setter Property="FontFamily" Value="{StaticResource Medium}" />
-            <Setter Property="FontSize" Value="13" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="12,8" />
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
             <EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnFilterOptionPreviewMouseLeftButtonDown" />
             <EventSetter Event="PreviewMouseLeftButtonUp" Handler="OnFilterOptionPreviewMouseLeftButtonUp" />
             <Setter Property="Template">

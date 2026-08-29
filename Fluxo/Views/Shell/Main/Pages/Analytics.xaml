@@ -20,11 +20,7 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="AnalyticsCardLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="11" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
-        </Style>
+        <Style x:Key="AnalyticsCardLabelStyle" BasedOn="{StaticResource CardLabelTextStyle}" TargetType="TextBlock" />
 
         <Style x:Key="AnalyticsHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
@@ -33,12 +29,7 @@
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
 
-        <Style x:Key="AnalyticsNoDataTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontFamily" Value="{StaticResource Bold}" />
-            <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+        <Style x:Key="AnalyticsNoDataTextStyle" BasedOn="{StaticResource CenteredEmptyStateTextStyle}" TargetType="TextBlock">
             <Setter Property="Text" Value="No Data Found" />
         </Style>
 
