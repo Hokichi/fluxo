@@ -10,6 +10,7 @@ using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.DataModels.Popups.GlobalSearch;
+using Fluxo.Resources.Components;
 using Fluxo.Resources.CustomControls;
 using Fluxo.Services.Dialogs;
 using Fluxo.ViewModels.Popups;
@@ -70,7 +71,9 @@ public sealed class QuickAddPopupTests
             Assert.Equal(0.4d, tileButton.Opacity);
             Assert.Equal("New Transaction", AutomationProperties.GetName(tileButton));
             Assert.Contains("Hidden from Quick Access", AutomationProperties.GetHelpText(tileButton));
-            Assert.Contains(VisualChildren<TextBlock>(tileButton), text => text.Text == "Hidden");
+            Assert.DoesNotContain(VisualChildren<TextBlock>(tileButton), text => text.Text == "Hidden");
+            var eyeOff = Assert.IsAssignableFrom<Geometry>(popup.FindResource("EyeOff"));
+            Assert.DoesNotContain(VisualChildren<Icon>(tileButton), icon => Equals(icon.Path, eyeOff));
 
             tileButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, tileButton));
 
@@ -79,6 +82,29 @@ public sealed class QuickAddPopupTests
             Assert.Equal(1d, tileButton.Opacity);
             viewModel.Toggle(viewModel.Tiles.Single(tile =>
                 tile.Target == GlobalSearchFeatureTarget.NewTransaction));
+            popup.Close();
+        });
+    }
+
+    [Fact]
+    public void TileTemplate_UsesOriginalCenteredComposition()
+    {
+        RunOnStaThread(() =>
+        {
+            var (popup, _, _, _) = CreateShownPopup();
+            var tileButton = TileButton(popup, GlobalSearchFeatureTarget.NewTransaction);
+            var panel = Assert.IsType<StackPanel>(tileButton.Content);
+            var icon = Assert.IsType<Icon>(panel.Children[0]);
+            var title = Assert.IsType<TextBlock>(panel.Children[1]);
+            var description = Assert.IsType<TextBlock>(panel.Children[2]);
+
+            Assert.Equal(VerticalAlignment.Center, panel.VerticalAlignment);
+            Assert.Equal(24d, icon.Width);
+            Assert.Equal(HorizontalAlignment.Center, icon.HorizontalAlignment);
+            Assert.Equal(new Thickness(0, 12, 0, 0), title.Margin);
+            Assert.Equal(TextAlignment.Center, title.TextAlignment);
+            Assert.Equal(new Thickness(0, 8, 0, 0), description.Margin);
+            Assert.Equal(TextAlignment.Center, description.TextAlignment);
             popup.Close();
         });
     }
