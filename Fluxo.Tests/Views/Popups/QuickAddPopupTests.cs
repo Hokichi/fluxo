@@ -188,27 +188,26 @@ public sealed class QuickAddPopupTests
     }
 
     [Fact]
-    public void Escape_WithChangesAndNo_RemainsOpenWithStagedChanges()
+    public void Escape_WithChangesAndNo_DiscardsThenCloses()
     {
         RunOnStaThread(() =>
         {
-            var (popup, viewModel, dialogService, _) = CreateShownPopup();
+            var (popup, viewModel, dialogService, appData) = CreateShownPopup();
             var tile = ToggleFirstTile(viewModel);
+            var baselineEnabled = !tile.IsUserEnabled;
 
             RaiseEscape(popup);
-            PumpDispatcher();
+            PumpDispatcherUntil(() => !popup.IsVisible);
 
-            Assert.True(popup.IsVisible);
-            Assert.True(viewModel.IsEditing);
-            Assert.True(viewModel.HasPendingChanges);
+            Assert.Equal(baselineEnabled, tile.IsUserEnabled);
+            Assert.False(viewModel.IsEditing);
+            Assert.False(viewModel.HasPendingChanges);
             dialogService.Received(1).ShowQuestion(
                 Arg.Any<string>(),
                 Arg.Any<string>(),
                 popup,
                 MessageBoxButton.YesNo);
-
-            viewModel.Toggle(tile);
-            popup.Close();
+            _ = appData.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
         });
     }
 

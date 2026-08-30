@@ -130,8 +130,13 @@ public partial class QuickAddPopup : BasePopup
             "Quick Access",
             this,
             MessageBoxButton.YesNo);
-        if (answer != MessageBoxResult.Yes)
+        if (answer == MessageBoxResult.No)
+        {
+            _viewModel.DiscardChanges();
+            _allowClose = true;
+            _ = Dispatcher.BeginInvoke(Close);
             return;
+        }
 
         _isSavingBeforeClose = true;
         try
