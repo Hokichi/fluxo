@@ -131,6 +131,33 @@ public sealed class QuickAccessVMTests
     }
 
     [Fact]
+    public void DiscardChanges_RestoresPersistedBaselineAndExitsEditing()
+    {
+        RunInSta(() =>
+        {
+            var setting = new UserSettings
+            {
+                Name = UserSettingNames.DisabledQuickAccessTiles,
+                Value = "ViewAccounts,NewTag"
+            };
+            var sut = CreateSut(setting);
+            sut.LoadAsync().GetAwaiter().GetResult();
+            sut.BeginEditing();
+            sut.Toggle(Tile(sut, GlobalSearchFeatureTarget.ViewAccounts));
+            sut.Toggle(Tile(sut, GlobalSearchFeatureTarget.NewAccount));
+
+            sut.DiscardChanges();
+
+            Assert.False(sut.IsEditing);
+            Assert.False(sut.HasPendingChanges);
+            Assert.False(Tile(sut, GlobalSearchFeatureTarget.ViewAccounts).IsUserEnabled);
+            Assert.True(Tile(sut, GlobalSearchFeatureTarget.NewAccount).IsUserEnabled);
+            Assert.False(Tile(sut, GlobalSearchFeatureTarget.NewTag).IsUserEnabled);
+            Assert.Equal("ViewAccounts,NewTag", setting.Value);
+        });
+    }
+
+    [Fact]
     public void SaveAsync_PersistsDisabledTargetsInCatalogOrder()
     {
         RunInSta(() =>

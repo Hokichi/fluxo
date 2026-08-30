@@ -77,6 +77,19 @@ public sealed class QuickAccessVM : ObservableObject
         OnPropertyChanged(nameof(IsEmptyStateVisible));
     }
 
+    public void DiscardChanges()
+    {
+        foreach (var tile in Tiles)
+            tile.IsUserEnabled = !_baselineDisabledTargets.Contains(tile.Target);
+
+        if (_setting is not null)
+            _setting.Value = SerializeDisabledTargets(_baselineDisabledTargets);
+
+        IsEditing = false;
+        OnPropertyChanged(nameof(HasPendingChanges));
+        OnPropertyChanged(nameof(IsEmptyStateVisible));
+    }
+
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         var disabledTargets = CurrentDisabledTargets();
@@ -86,9 +99,7 @@ public sealed class QuickAccessVM : ObservableObject
             return;
         }
 
-        var value = string.Join(",", Tiles
-            .Where(tile => disabledTargets.Contains(tile.Target))
-            .Select(tile => tile.Target.ToString()));
+        var value = SerializeDisabledTargets(disabledTargets);
         if (_setting is null)
         {
             _setting = new UserSettings
@@ -134,6 +145,11 @@ public sealed class QuickAccessVM : ObservableObject
 
     private HashSet<GlobalSearchFeatureTarget> CurrentDisabledTargets() =>
         Tiles.Where(tile => !tile.IsUserEnabled).Select(tile => tile.Target).ToHashSet();
+
+    private string SerializeDisabledTargets(IReadOnlySet<GlobalSearchFeatureTarget> disabledTargets) =>
+        string.Join(",", Tiles
+            .Where(tile => disabledTargets.Contains(tile.Target))
+            .Select(tile => tile.Target.ToString()));
 
     private void RebuildTileRows()
     {
