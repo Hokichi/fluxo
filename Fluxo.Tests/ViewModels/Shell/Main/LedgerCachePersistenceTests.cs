@@ -1,5 +1,4 @@
 using AutoMapper;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
@@ -19,30 +18,23 @@ public sealed class LedgerCachePersistenceTests
         var entity = new Transaction { Id = 8, Type = TransactionType.Expense, Name = "Expense" };
         var appData = Substitute.For<IAppDataService>();
         appData.GetTransactionByIdAsync(8, Arg.Any<CancellationToken>()).Returns(entity);
-        var transactionService = Substitute.For<ITransactionService>();
-        transactionService.GetAllAsync(Arg.Any<CancellationToken>()).Returns([
-            new TransactionDto
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([
+            new Transaction
             {
                 Id = 8,
                 Type = TransactionType.Expense,
                 Name = "Expense",
                 OccurredOn = DateTime.Today,
-                LoggedOn = DateTime.Today
+                LoggedOn = DateTime.Today,
+                Account = new Account { Name = "Checking" }
             }
         ]);
-        var accountService = Substitute.For<IAccountService>();
-        accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var tagService = Substitute.For<ITagService>();
-        tagService.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns([]);
         var mapper = new MapperConfiguration(
-            configuration => configuration.AddProfile<DtoViewModelProfile>(),
+            configuration => configuration.AddProfile<EntityViewModelProfile>(),
             NullLoggerFactory.Instance).CreateMapper();
-        var viewModel = new LedgerVM(
-            transactionService,
-            accountService,
-            tagService,
-            appData,
-            mapper);
+        var viewModel = new LedgerVM(appData, mapper);
         await viewModel.LoadAsync();
 
         await viewModel.RemoveTransactionCommand.ExecuteAsync(

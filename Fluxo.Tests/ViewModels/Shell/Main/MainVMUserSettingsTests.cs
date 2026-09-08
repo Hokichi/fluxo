@@ -42,21 +42,14 @@ public sealed class MainVMUserSettingsTests
 
         var dashboard = new DashboardVM(
             new NotificationPanelVM(
-                Substitute.For<ITransactionService>(),
-                Substitute.For<IAccountService>(),
                 appData,
-                mapper,
                 messenger: messenger),
             new RecentActivitiesVM(
                 Substitute.For<ITransactionService>(),
-                Substitute.For<IAccountService>(),
-                Substitute.For<ITagService>(),
                 appData,
                 mapper,
                 messenger),
             new SpentAllowancePanelVM(
-                Substitute.For<ITransactionService>(),
-                Substitute.For<IAccountService>(),
                 appData,
                 mapper,
                 messenger),

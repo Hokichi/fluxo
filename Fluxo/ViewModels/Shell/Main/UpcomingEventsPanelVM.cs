@@ -3,7 +3,6 @@ using System.Globalization;
 using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
@@ -59,8 +58,8 @@ public partial class UpcomingEventsPanelVM : ObservableRecipient, IRecipient<Das
         var accounts = await _appData.GetAccountsAsync(cancellationToken);
         var snapshot = new UpcomingEventsSnapshot(recurring, goals, accounts);
 
-        var recurringDtos = _mapper.Map<IReadOnlyList<RecurringTransactionDto>>(snapshot.RecurringTransactions);
-        var recurringTransactions = _mapper.Map<IReadOnlyList<RecurringTransactionVM>>(recurringDtos);
+        var recurringTransactions = _mapper.Map<IReadOnlyList<RecurringTransactionVM>>(
+            snapshot.RecurringTransactions);
         var today = DateOnly.FromDateTime(_todayProvider().Date);
         var endDate = today.AddDays(UpcomingWindowDays);
 

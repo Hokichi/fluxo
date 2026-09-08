@@ -1,4 +1,3 @@
-using AutoMapper;
 using Fluxo.Core.Constants;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Interfaces.Services;
@@ -24,10 +23,7 @@ public sealed class CachedDashboardDataTests
             UserSettingNames.NotificationsSnoozeEndDate,
             Arg.Any<CancellationToken>()).Returns(setting);
         var viewModel = new NotificationPanelVM(
-            Substitute.For<ITransactionService>(),
-            Substitute.For<IAccountService>(),
             appData,
-            Substitute.For<IMapper>(),
             evaluator: new StartupNotificationEvaluator(appData));
 
         await viewModel.SnoozeAllNotificationsCommand.ExecuteAsync(null);

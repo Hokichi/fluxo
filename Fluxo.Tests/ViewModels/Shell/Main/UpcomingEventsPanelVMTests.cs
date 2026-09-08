@@ -1,6 +1,5 @@
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces;
@@ -34,7 +33,6 @@ public class UpcomingEventsPanelVMTests
             appData.GetAccountsAsync(Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult<IReadOnlyList<Account>>([]));
             var mapper = Substitute.For<IMapper>();
-            mapper.Map<IReadOnlyList<RecurringTransactionDto>>(Arg.Any<object>()).Returns([]);
             mapper.Map<IReadOnlyList<RecurringTransactionVM>>(Arg.Any<object>()).Returns([]);
             var vm = new UpcomingEventsPanelVM(appData, mapper, messenger: new WeakReferenceMessenger());
             _ = CollectionViewSource.GetDefaultView(vm.Events);
@@ -411,18 +409,6 @@ public class UpcomingEventsPanelVMTests
         unitOfWork.Accounts.Returns(accountRepository);
 
         var mapper = Substitute.For<IMapper>();
-        mapper.Map<IReadOnlyList<RecurringTransactionDto>>(Arg.Any<object>())
-            .Returns(recurringTransactions.Select(transaction => new RecurringTransactionDto
-            {
-                Id = transaction.Id,
-                Name = transaction.Name,
-                Amount = transaction.Amount,
-                RecurringPeriod = transaction.RecurringPeriod,
-                RecurringTime = transaction.RecurringTime,
-                Type = transaction.Type,
-                GoalId = transaction.GoalId,
-                IsEnabled = transaction.IsEnabled
-            }).ToList());
         mapper.Map<IReadOnlyList<RecurringTransactionVM>>(Arg.Any<object>())
             .Returns(recurringTransactions.Select(transaction => new RecurringTransactionVM
             {

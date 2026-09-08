@@ -7,7 +7,6 @@ using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces;
@@ -26,10 +25,7 @@ public partial class LedgerVM : ObservableRecipient,
     IRecipient<LedgerAllTimeRequestedMessage>
 {
     private readonly IAppDataService _appData;
-    private readonly ITransactionService _transactionService;
     private readonly IMapper _mapper;
-    private readonly IAccountService _accountService;
-    private readonly ITagService _tagService;
     private readonly IDialogService? _dialogService;
     private readonly IUiSettleAwaiter? _uiSettleAwaiter;
     private readonly ObservableCollection<LedgerTransactionItemVM> _transactions = [];
@@ -60,9 +56,6 @@ public partial class LedgerVM : ObservableRecipient,
     [ObservableProperty] private int? _selectedBatchTagId;
 
     public LedgerVM(
-        ITransactionService transactionService,
-        IAccountService accountService,
-        ITagService tagService,
         IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null,
@@ -70,9 +63,6 @@ public partial class LedgerVM : ObservableRecipient,
         IUiSettleAwaiter? uiSettleAwaiter = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _transactionService = transactionService;
-        _accountService = accountService;
-        _tagService = tagService;
         _appData = appData;
         _mapper = mapper;
         _dialogService = dialogService;
@@ -320,7 +310,7 @@ public partial class LedgerVM : ObservableRecipient,
 
     private async Task ReloadAllTransactionsAsync(CancellationToken cancellationToken)
     {
-        var source = await _transactionService.GetAllAsync(cancellationToken);
+        var source = await _appData.GetTransactionsAsync(cancellationToken);
         var range = DateRangeResolver.ResolveAllTransactions(
             source.Where(transaction => !transaction.IsForDeletion).Select(transaction => transaction.OccurredOn),
             DateTime.Today);
@@ -347,18 +337,18 @@ public partial class LedgerVM : ObservableRecipient,
 
     private async Task ReloadPeriodAsync(
         CancellationToken cancellationToken,
-        IReadOnlyList<TransactionDto>? source = null)
+        IReadOnlyList<Transaction>? source = null)
     {
-        source ??= await _transactionService.GetAllAsync(cancellationToken);
+        source ??= await _appData.GetTransactionsAsync(cancellationToken);
         var transactions = _mapper.Map<IReadOnlyList<TransactionVM>>(source);
         var expenseLogs = transactions.Where(transaction => transaction.Type == TransactionType.Expense)
             .Select(ToExpenseLogVm).ToList();
         var incomeLogs = transactions.Where(transaction => transaction.Type == TransactionType.Income)
             .Select(ToIncomeLogVm).ToList();
         var accounts = _mapper.Map<IReadOnlyList<AccountVM>>(
-            await _accountService.GetAllAsync(cancellationToken));
+            await _appData.GetAccountsAsync(cancellationToken));
         var tags = _mapper.Map<IReadOnlyList<TagVM>>(
-            await _tagService.GetAllAsync(cancellationToken));
+            await _appData.GetTagsAsync(cancellationToken));
 
         RebuildFilters(accounts, tags);
 

@@ -1,6 +1,5 @@
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Interfaces;
 using Fluxo.Core.Interfaces.Repositories;
@@ -31,7 +30,6 @@ public class SavingGoalsPanelVMTests
                 .Returns(Task.FromResult<IReadOnlyList<UserSettings>>([]));
             appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns(goalsCompletion.Task);
             var mapper = Substitute.For<IMapper>();
-            mapper.Map<IReadOnlyList<SavingGoalDto>>(Arg.Any<object>()).Returns([]);
             mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns([]);
             var vm = new SavingGoalsPanelVM(appData, mapper, new WeakReferenceMessenger());
             _ = CollectionViewSource.GetDefaultView(vm.SavingGoals);
@@ -173,7 +171,6 @@ public class SavingGoalsPanelVMTests
         var appData = new Fluxo.Services.Persistence.AppDataService(unitOfWork);
 
         var mapper = Substitute.For<IMapper>();
-        mapper.Map<IReadOnlyList<SavingGoalDto>>(Arg.Any<object>()).Returns(new List<SavingGoalDto>());
         mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns(goals);
 
         return new SavingGoalsPanelVM(

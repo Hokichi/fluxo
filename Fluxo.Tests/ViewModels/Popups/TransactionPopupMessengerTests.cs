@@ -108,29 +108,18 @@ public sealed class TransactionPopupMessengerTests
     public async Task TransactionPopupMessenger_BudgetInvalidation_ReloadsDashboardRecipientThroughInjectedMessenger()
     {
         var messenger = new WeakReferenceMessenger();
-        var unitOfWork = Substitute.For<IUnitOfWork>();
-        var budgetRepository = Substitute.For<Fluxo.Core.Interfaces.Repositories.IBudgetAllocationRepository>();
-        budgetRepository.GetAsync(Arg.Any<CancellationToken>()).Returns(new BudgetAllocation());
-        unitOfWork.BudgetAllocation.Returns(budgetRepository);
-        var transactionService = Substitute.For<ITransactionService>();
-        transactionService.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.TransactionDto>>([]));
-        var accountService = Substitute.For<IAccountService>();
-        accountService.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.AccountDto>>([]));
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(new BudgetAllocation());
         var mapper = Substitute.For<IMapper>();
         mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
-        _ = new SpentAllowancePanelVM(
-            transactionService,
-            accountService,
-            new Fluxo.Services.Persistence.AppDataService(unitOfWork),
-            mapper,
-            messenger);
+        _ = new SpentAllowancePanelVM(appData, mapper, messenger);
 
         messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
 
-        await transactionService.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
+        await appData.Received(1).GetTransactionsAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -219,18 +208,18 @@ public sealed class TransactionPopupMessengerTests
             TransactionDetailChangedFields.Amount)));
         await graph.LedgerFirstReload.Task.WaitAsync(TimeSpan.FromSeconds(2));
         Assert.Equal(1, graph.LedgerCalls());
-        await graph.BudgetTransactionService.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
-        await graph.SpentTransactionService.Received(1).GetAllAsync(Arg.Any<CancellationToken>());
+        await graph.BudgetAppData.Received(1).GetTransactionsAsync(Arg.Any<CancellationToken>());
+        await graph.SpentAppData.Received(1).GetTransactionsAsync(Arg.Any<CancellationToken>());
 
         messenger.Send(new DashboardDataInvalidatedMessage(DashboardDataInvalidationScope.Budget));
         await graph.LedgerSecondReload.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
         Assert.Equal(2, graph.LedgerCalls());
-        await graph.BudgetTransactionService.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
-        await graph.SpentTransactionService.Received(2).GetAllAsync(Arg.Any<CancellationToken>());
+        await graph.BudgetAppData.Received(2).GetTransactionsAsync(Arg.Any<CancellationToken>());
+        await graph.SpentAppData.Received(2).GetTransactionsAsync(Arg.Any<CancellationToken>());
     }
 
-    private static MainGraph CreateMainGraph(IMessenger messenger)
+    private static TransactionPopupMainGraph CreateMainGraph(IMessenger messenger)
     {
         var unitOfWork = Substitute.For<IUnitOfWork>();
         var userSettings = Substitute.For<IUserSettingsRepository>();
@@ -258,64 +247,58 @@ public sealed class TransactionPopupMessengerTests
         mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns([]);
-        mapper.Map<IReadOnlyList<Fluxo.Core.DTO.SavingGoalDto>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<RecurringTransactionVM>>(Arg.Any<object>()).Returns([]);
-        mapper.Map<IReadOnlyList<Fluxo.Core.DTO.RecurringTransactionDto>>(Arg.Any<object>()).Returns([]);
 
-        var budgetTransactions = Substitute.For<ITransactionService>();
-        budgetTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var budgetAccounts = Substitute.For<IAccountService>();
-        budgetAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var tags = Substitute.For<ITagService>();
-        tags.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var spentTransactions = Substitute.For<ITransactionService>();
-        spentTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var spentAccounts = Substitute.For<IAccountService>();
-        spentAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var notificationTransactions = Substitute.For<ITransactionService>();
-        notificationTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var notificationAccounts = Substitute.For<IAccountService>();
-        notificationAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
+        var budgetAppData = CreateEmptyDashboardAppData();
+        var spentAppData = CreateEmptyDashboardAppData();
+        var notificationAppData = CreateEmptyDashboardAppData();
+        var transactionService = Substitute.For<ITransactionService>();
 
         var dashboard = new DashboardVM(
-            new NotificationPanelVM(notificationTransactions, notificationAccounts, appData, mapper, messenger: messenger),
-            new RecentActivitiesVM(budgetTransactions, budgetAccounts, tags, appData, mapper, messenger),
-            new SpentAllowancePanelVM(spentTransactions, spentAccounts, appData, mapper, messenger),
+            new NotificationPanelVM(notificationAppData, messenger: messenger),
+            new RecentActivitiesVM(transactionService, budgetAppData, mapper, messenger),
+            new SpentAllowancePanelVM(spentAppData, mapper, messenger),
             new SavingGoalsPanelVM(appData, mapper, messenger),
             new UpcomingEventsPanelVM(appData, mapper, messenger: messenger),
             new MainViewModeToggleVM(messenger));
 
-        var ledgerTransactions = Substitute.For<ITransactionService>();
+        var ledgerAppData = CreateEmptyDashboardAppData();
         var ledgerReloads = new[]
         {
             new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously),
             new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
         };
         var ledgerCalls = 0;
-        ledgerTransactions.GetAllAsync(Arg.Any<CancellationToken>()).Returns(_ =>
+        ledgerAppData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(_ =>
         {
             var call = Interlocked.Increment(ref ledgerCalls);
             if (call <= ledgerReloads.Length)
                 ledgerReloads[call - 1].TrySetResult();
-            return Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.TransactionDto>>([]);
+            return Task.FromResult<IReadOnlyList<Transaction>>([]);
         });
-        var ledgerAccounts = Substitute.For<IAccountService>();
-        ledgerAccounts.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var ledgerTags = Substitute.For<ITagService>();
-        ledgerTags.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var ledger = new LedgerVM(ledgerTransactions, ledgerAccounts, ledgerTags, appData,
-            new MapperConfiguration(configuration => configuration.AddProfile<DtoViewModelProfile>(), NullLoggerFactory.Instance).CreateMapper(), messenger);
+        var ledger = new LedgerVM(ledgerAppData,
+            new MapperConfiguration(configuration => configuration.AddProfile<EntityViewModelProfile>(), NullLoggerFactory.Instance).CreateMapper(), messenger);
         var main = new MainVM(appData, dashboard, new DaySpinnerVM(messenger), ledger, messenger: messenger);
-        return new MainGraph(main, budgetTransactions, spentTransactions, ledgerReloads[0], ledgerReloads[1], () => ledgerCalls);
+        return new TransactionPopupMainGraph(
+            main,
+            budgetAppData,
+            spentAppData,
+            ledgerReloads[0],
+            ledgerReloads[1],
+            () => ledgerCalls);
     }
 
-    private sealed record MainGraph(
-        MainVM Main,
-        ITransactionService BudgetTransactionService,
-        ITransactionService SpentTransactionService,
-        TaskCompletionSource LedgerFirstReload,
-        TaskCompletionSource LedgerSecondReload,
-        Func<int> LedgerCalls);
+    private static IAppDataService CreateEmptyDashboardAppData()
+    {
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetSavingGoalsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetRecurringTransactionsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetBudgetAllocationAsync(Arg.Any<CancellationToken>()).Returns(new BudgetAllocation());
+        return appData;
+    }
 
     private static IAppDataService CreateAppData(Account account)
     {

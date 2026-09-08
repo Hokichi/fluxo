@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Globalization;
-using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -24,10 +23,7 @@ public partial class NotificationPanelVM : ObservableRecipient,
     private readonly StartupNotificationEvaluator _evaluator;
 
     public NotificationPanelVM(
-        ITransactionService transactionService,
-        IAccountService accountService,
         IAppDataService appData,
-        IMapper mapper,
         INotificationGroupingService? notificationGroupingService = null,
         IDialogService? dialogService = null,
         IMessenger? messenger = null,
@@ -35,9 +31,6 @@ public partial class NotificationPanelVM : ObservableRecipient,
         StartupNotificationEvaluator? evaluator = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _ = transactionService;
-        _ = accountService;
-        _ = mapper;
         _ = dialogService;
         _ = appUpdateInteractionService;
         _appData = appData;

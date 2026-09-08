@@ -5,7 +5,6 @@ using Fluxo.Core.Interfaces.Caching;
 using Fluxo.DataModels.Messages;
 using Fluxo.Mappings;
 using Fluxo.Services.Backups;
-using Fluxo.Services.Mappings;
 using Fluxo.Services.Persistence;
 using Fluxo.Services.Dialogs;
 using Fluxo.Services.Notifications;
@@ -53,15 +52,12 @@ public static class ServiceCollectionExtensions
     {
         var mapperConfig = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<EntityDtoProfile>();
-            cfg.AddProfile<DtoViewModelProfile>();
+            cfg.AddProfile<EntityViewModelProfile>();
         }, NullLoggerFactory.Instance);
 
         services.AddSingleton<IMapper>(_ => mapperConfig.CreateMapper());
 
         services.AddTransient<ITransactionService, TransactionService>();
-        services.AddTransient<IAccountService, AccountService>();
-        services.AddTransient<ITagService, TagService>();
         services.AddTransient<IAnalyticsService, AnalyticsService>();
         services.AddTransient<ICalendarService, CalendarService>();
         services.AddSingleton<AppDataCacheHydrator>();

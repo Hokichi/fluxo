@@ -1,23 +1,11 @@
-using AutoMapper;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 
 namespace Fluxo.Services.Persistence;
 
-public sealed class TransactionService(IAppDataService appData, IDataOperationRunner runner, IMapper mapper)
+public sealed class TransactionService(IAppDataService appData, IDataOperationRunner runner)
     : ITransactionService
 {
-    public async Task<IReadOnlyList<TransactionDto>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        mapper.Map<IReadOnlyList<TransactionDto>>(
-            await appData.GetTransactionsAsync(cancellationToken).ConfigureAwait(false));
-
-    public async Task<TransactionDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-    {
-        var transaction = await appData.GetTransactionByIdAsync(id, cancellationToken).ConfigureAwait(false);
-        return transaction is null ? null : mapper.Map<TransactionDto>(transaction);
-    }
-
     public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         var transaction = await appData.GetTransactionByIdAsync(id, cancellationToken).ConfigureAwait(false);

@@ -677,38 +677,21 @@ public sealed class TransactionPopupVMModeTests
         mapper.Map<IReadOnlyList<TransactionVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<AccountVM>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<TagVM>>(Arg.Any<object>()).Returns([]);
-        mapper.Map<IReadOnlyList<Fluxo.Core.DTO.RecurringTransactionDto>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<RecurringTransactionVM>>(Arg.Any<object>()).Returns([]);
-        mapper.Map<IReadOnlyList<Fluxo.Core.DTO.SavingGoalDto>>(Arg.Any<object>()).Returns([]);
         mapper.Map<IReadOnlyList<SavingGoalVM>>(Arg.Any<object>()).Returns([]);
 
         var transactionService = Substitute.For<ITransactionService>();
-        transactionService.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.TransactionDto>>([]));
-        var accountService = Substitute.For<IAccountService>();
-        accountService.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.AccountDto>>([]));
-        var tagService = Substitute.For<ITagService>();
-        tagService.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult<IReadOnlyList<Fluxo.Core.DTO.TagDto>>([]));
 
         var dashboard = new DashboardVM(
             new NotificationPanelVM(
-                transactionService,
-                accountService,
                 appData,
-                mapper,
                 messenger: messenger),
             new RecentActivitiesVM(
                 transactionService,
-                accountService,
-                tagService,
                 appData,
                 mapper,
                 messenger),
             new SpentAllowancePanelVM(
-                transactionService,
-                accountService,
                 appData,
                 mapper,
                 messenger),

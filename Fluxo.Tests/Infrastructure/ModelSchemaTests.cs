@@ -1,4 +1,3 @@
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Data.Context;
@@ -193,23 +192,14 @@ public sealed class ModelSchemaTests
         Assert.Equal(250m, tagVm.SpendingLimit);
 
         var transaction = new Transaction { IsPinned = true, ParentTransactionId = 10, IsIoU = true };
-        var transactionDto = new TransactionDto
+        var transactionVm = new TransactionVM
         {
             IsPinned = transaction.IsPinned,
             ParentTransactionId = transaction.ParentTransactionId,
             IsIoU = transaction.IsIoU
         };
-        var transactionVm = new TransactionVM
-        {
-            IsPinned = transaction.IsPinned,
-            ParentTransactionId = transactionDto.ParentTransactionId,
-            IsIoU = transactionDto.IsIoU
-        };
-        Assert.True(transactionDto.IsPinned);
         Assert.True(transactionVm.IsPinned);
-        Assert.True(transactionDto.IsIoU);
         Assert.True(transactionVm.IsIoU);
-        Assert.Equal(10, transactionDto.ParentTransactionId);
         Assert.Equal(10, transactionVm.ParentTransactionId);
 
         var goal = new SavingGoal { SavingEndDate = null };
@@ -226,10 +216,6 @@ public sealed class ModelSchemaTests
             RecurringTime = 5,
             Category = ExpenseCategory.Wants
         };
-        var recurringTransactionDto = new RecurringTransactionDto
-        {
-            Category = recurringTransaction.Category
-        };
         var recurringTransactionVm = new RecurringTransactionVM
         {
             RecurringPeriod = recurringTransaction.RecurringPeriod,
@@ -239,7 +225,6 @@ public sealed class ModelSchemaTests
 
         Assert.Null(typeof(SavingGoal).GetProperty("RecurringPeriod"));
         Assert.Null(typeof(SavingGoalVM).GetProperty("RecurringPeriod"));
-        Assert.Equal(ExpenseCategory.Wants, recurringTransactionDto.Category);
         Assert.Equal(RecurringPeriod.Biweekly, recurringTransactionVm.RecurringPeriod);
         Assert.Equal(5, recurringTransactionVm.RecurringTime);
         Assert.Equal(ExpenseCategory.Wants, recurringTransactionVm.Category);

@@ -1,5 +1,4 @@
 using AutoMapper;
-using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.ViewModels.Shell.Main;
 using NSubstitute;
@@ -43,8 +42,6 @@ public sealed class AllocationDataVMOverflowTests
     }
 
     private static AllocationDataVM CreateViewModel() => new(
-        Substitute.For<ITransactionService>(),
-        Substitute.For<IAccountService>(),
         Substitute.For<IAppDataService>(),
         Substitute.For<IMapper>());
 }

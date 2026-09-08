@@ -21,10 +21,8 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
     IRecipient<LogMemoryActionAppliedMessage>
 {
     private readonly IAppDataService _appData;
-    private readonly ITransactionService _transactionService;
     private readonly IMapper _mapper;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
-    private readonly IAccountService _accountService;
     private readonly Func<DateTime> _todayProvider;
 
     private List<TransactionVM> _allTransactions = [];
@@ -33,16 +31,12 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
     private List<AccountVM> _accounts = [];
 
     public SpentAllowancePanelVM(
-        ITransactionService transactionService,
-        IAccountService accountService,
         IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null,
         Func<DateTime>? todayProvider = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _transactionService = transactionService;
-        _accountService = accountService;
         _appData = appData;
         _mapper = mapper;
         _todayProvider = todayProvider ?? (() => DateTime.Today);
@@ -99,9 +93,9 @@ public partial class SpentAllowancePanelVM : ObservableRecipient,
         _budgetAllocation = await LoadBudgetAllocationAsync(cancellationToken);
 
         var transactions = _mapper.Map<IReadOnlyList<TransactionVM>>(
-            await _transactionService.GetAllAsync(cancellationToken));
+            await _appData.GetTransactionsAsync(cancellationToken));
         var accounts = _mapper.Map<IReadOnlyList<AccountVM>>(
-            await _accountService.GetAllAsync(cancellationToken));
+            await _appData.GetAccountsAsync(cancellationToken));
         _allTransactions = transactions
             .Where(transaction => !transaction.IsForDeletion)
             .OrderByDescending(transaction => transaction.OccurredOn)

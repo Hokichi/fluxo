@@ -1,4 +1,3 @@
-using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Services;
@@ -19,10 +18,7 @@ public sealed class NotificationPanelVMPersistenceTests
             .Returns(Task.FromException<IReadOnlyList<Fluxo.Core.Entities.Transaction>>(
                 new InvalidOperationException("evaluation failed")));
         var viewModel = new NotificationPanelVM(
-            Substitute.For<ITransactionService>(),
-            Substitute.For<IAccountService>(),
             appData,
-            Substitute.For<IMapper>(),
             messenger: new WeakReferenceMessenger());
 
         await viewModel.HandleNotificationEntityCreatedAsync(

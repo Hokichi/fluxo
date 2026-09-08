@@ -19,9 +19,7 @@ public partial class AllocationDataVM : ObservableRecipient,
     IRecipient<LogMemoryActionAppliedMessage>
 {
     private readonly IAppDataService _appData;
-    private readonly ITransactionService _transactionService;
     private readonly IMapper _mapper;
-    private readonly IAccountService _accountService;
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
 
     private List<TransactionVM> _allExpenseLogs = [];
@@ -30,15 +28,11 @@ public partial class AllocationDataVM : ObservableRecipient,
     private BudgetAllocation _budgetAllocation = new();
 
     public AllocationDataVM(
-        ITransactionService transactionService,
-        IAccountService accountService,
         IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null)
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
-        _transactionService = transactionService;
-        _accountService = accountService;
         _appData = appData;
         _mapper = mapper;
 
@@ -125,7 +119,7 @@ public partial class AllocationDataVM : ObservableRecipient,
         InvestThreshold = _budgetAllocation.InvestThreshold / 100m;
 
         var transactions = _mapper.Map<IReadOnlyList<TransactionVM>>(
-            await _transactionService.GetAllAsync(cancellationToken));
+            await _appData.GetTransactionsAsync(cancellationToken));
         _allExpenseLogs = transactions
             .Where(transaction => transaction.Type == TransactionType.Expense && !transaction.IsForDeletion)
             .OrderByDescending(log => log.OccurredOn)
@@ -137,7 +131,7 @@ public partial class AllocationDataVM : ObservableRecipient,
             .ThenByDescending(log => log.LoggedOn)
             .ToList();
         _accounts = _mapper.Map<IReadOnlyList<AccountVM>>(
-                await _accountService.GetAllAsync(cancellationToken))
+                await _appData.GetAccountsAsync(cancellationToken))
             .ToList();
 
         RefreshBudgetMetrics();

@@ -1,13 +1,8 @@
-using AutoMapper;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
-using Fluxo.Core.Filters;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
-using Fluxo.Services.Mappings;
 using Fluxo.Services.Persistence;
-using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Xunit;
 
@@ -15,24 +10,17 @@ namespace Fluxo.Tests.Services.Persistence;
 
 public sealed class CachedPersistenceServiceTests
 {
-    private static readonly IMapper Mapper = new MapperConfiguration(
-        configuration => configuration.AddProfile<EntityDtoProfile>(),
-        NullLoggerFactory.Instance).CreateMapper();
-
     [Fact]
     public async Task TransactionRuntimeMethods_UseAppDataAndSaveOneMutationBatch()
     {
         var appData = Substitute.For<IAppDataService>();
         var runner = Substitute.For<IDataOperationRunner>();
         var transaction = new Transaction { Id = 7, Name = "Expense" };
-        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns([transaction]);
         appData.GetTransactionByIdAsync(7, Arg.Any<CancellationToken>()).Returns(transaction);
-        var service = new TransactionService(appData, runner, Mapper);
+        var service = new TransactionService(appData, runner);
 
-        var items = await service.GetAllAsync();
         await service.DeleteAsync(7);
 
-        Assert.Equal("Expense", Assert.Single(items).Name);
         Assert.True(transaction.IsForDeletion);
         appData.Received(1).UpdateTransaction(transaction);
         await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
@@ -44,7 +32,7 @@ public sealed class CachedPersistenceServiceTests
     {
         var appData = Substitute.For<IAppDataService>();
         var runner = Substitute.For<IDataOperationRunner>();
-        var service = new TransactionService(appData, runner, Mapper);
+        var service = new TransactionService(appData, runner);
 
         await service.PostTerminationCleanupAsync();
 
@@ -53,40 +41,17 @@ public sealed class CachedPersistenceServiceTests
     }
 
     [Fact]
-    public async Task AccountSearchAndAdd_UseAppDataWithMappedEntities()
+    public async Task DeleteMissingTransaction_DoesNotSave()
     {
         var appData = Substitute.For<IAppDataService>();
-        var filter = new AccountFilter { EnabledOnly = true };
-        appData.SearchAccountsAsync(filter, Arg.Any<CancellationToken>()).Returns([
-            new Account { Id = 3, Name = "Checking", IsEnabled = true }
-        ]);
-        var service = new AccountService(appData, Mapper);
+        appData.GetTransactionByIdAsync(404, Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<Transaction?>(null));
+        var service = new TransactionService(appData, Substitute.For<IDataOperationRunner>());
 
-        var results = await service.SearchAsync(filter);
-        await service.AddAsync(new AccountDto { Id = 99, Name = "Savings" });
+        await service.DeleteAsync(404);
 
-        Assert.Equal("Checking", Assert.Single(results).Name);
-        await appData.Received(1).AddAccountAsync(
-            Arg.Is<Account>(account => account.Id == 0 && account.Name == "Savings"),
-            Arg.Any<CancellationToken>());
-        await appData.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task TagUpdateAndRemove_UseCachedLookupAndSaveEachBoundary()
-    {
-        var appData = Substitute.For<IAppDataService>();
-        var tag = new Tag { Id = 4, Name = "Old", HexCode = "#000000" };
-        appData.GetTagByIdAsync(4, Arg.Any<CancellationToken>()).Returns(tag);
-        var service = new TagService(appData, Mapper);
-
-        await service.UpdateAsync(new TagDto { Id = 4, Name = "New", HexCode = "#FFFFFF" });
-        await service.RemoveAsync(4);
-
-        Assert.Equal("New", tag.Name);
-        appData.Received(1).UpdateTag(tag);
-        appData.Received(1).RemoveTag(tag);
-        await appData.Received(2).SaveChangesAsync(Arg.Any<CancellationToken>());
+        appData.DidNotReceive().UpdateTransaction(Arg.Any<Transaction>());
+        await appData.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Fluxo.Core.Constants;
-using Fluxo.Core.DTO;
 using Fluxo.Core.Interfaces.Services;
 using Fluxo.Resources.Resources.Messages;
 using Fluxo.ViewModels.Entities;
@@ -62,10 +61,8 @@ public partial class SavingGoalsPanelVM : ObservableRecipient, IRecipient<Dashbo
     {
         await LoadSavingGoalSettingsAsync(cancellationToken);
 
-        var savingGoalDtos = _mapper.Map<IReadOnlyList<SavingGoalDto>>(
+        var savingGoals = _mapper.Map<IReadOnlyList<SavingGoalVM>>(
             await _appData.GetSavingGoalsAsync(cancellationToken));
-
-        var savingGoals = _mapper.Map<IReadOnlyList<SavingGoalVM>>(savingGoalDtos);
 
         var previousGoalId = CurrentGoal?.Id;
 

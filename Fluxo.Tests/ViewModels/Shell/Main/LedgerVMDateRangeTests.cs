@@ -1,6 +1,6 @@
 using AutoMapper;
 using CommunityToolkit.Mvvm.Messaging;
-using Fluxo.Core.DTO;
+using Fluxo.Core.Entities;
 using Fluxo.Core.Enums;
 using Fluxo.Core.Interfaces.Operations;
 using Fluxo.Core.Interfaces.Services;
@@ -22,8 +22,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Old", OccurredOn = DateTime.Today.AddDays(-20), LoggedOn = DateTime.Today.AddDays(-20) },
-            new TransactionDto { Id = 2, Type = TransactionType.Income, Name = "New", OccurredOn = DateTime.Today.AddDays(-2), LoggedOn = DateTime.Today.AddDays(-2) }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Old", OccurredOn = DateTime.Today.AddDays(-20), LoggedOn = DateTime.Today.AddDays(-20) },
+            new Transaction { Id = 2, Type = TransactionType.Income, Name = "New", OccurredOn = DateTime.Today.AddDays(-2), LoggedOn = DateTime.Today.AddDays(-2) }
         ]);
 
         await vm.LoadAllTransactionsAsync();
@@ -76,7 +76,7 @@ public sealed class LedgerVMDateRangeTests
         var messenger = new WeakReferenceMessenger();
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Old", OccurredOn = DateTime.Today.AddDays(-20), LoggedOn = DateTime.Today.AddDays(-20) }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Old", OccurredOn = DateTime.Today.AddDays(-20), LoggedOn = DateTime.Today.AddDays(-20) }
         ], messenger);
 
         messenger.Send(new LedgerAllTimeRequestedMessage());
@@ -122,8 +122,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Older", Amount = 1m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(8) },
-            new TransactionDto { Id = 2, Type = TransactionType.Expense, Name = "Newer", Amount = 100m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(9) }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Older", Amount = 1m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(8) },
+            new Transaction { Id = 2, Type = TransactionType.Expense, Name = "Newer", Amount = 100m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(9) }
         ]);
 
         await vm.LoadAsync();
@@ -136,8 +136,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Older", OccurredOn = DateTime.Today.AddDays(-1), LoggedOn = DateTime.Today.AddDays(-1) },
-            new TransactionDto { Id = 2, Type = TransactionType.Income, Name = "Today", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Older", OccurredOn = DateTime.Today.AddDays(-1), LoggedOn = DateTime.Today.AddDays(-1) },
+            new Transaction { Id = 2, Type = TransactionType.Income, Name = "Today", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
         ]);
 
         await vm.LoadAsync();
@@ -150,8 +150,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(CreateParentWithChildren(), tags:
         [
-            new TagDto { Id = 1, Name = "Food", HexCode = "#111111" },
-            new TagDto { Id = 2, Name = "Travel", HexCode = "#222222" }
+            new Tag { Id = 1, Name = "Food", HexCode = "#111111" },
+            new Tag { Id = 2, Name = "Travel", HexCode = "#222222" }
         ]);
         await vm.LoadAsync();
 
@@ -187,8 +187,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(CreateParentWithChildren(), tags:
         [
-            new TagDto { Id = 1, Name = "Food", HexCode = "#111111" },
-            new TagDto { Id = 2, Name = "Travel", HexCode = "#222222" }
+            new Tag { Id = 1, Name = "Food", HexCode = "#111111" },
+            new Tag { Id = 2, Name = "Travel", HexCode = "#222222" }
         ]);
         await vm.LoadAsync();
 
@@ -208,9 +208,9 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Parent", Amount = 40m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-            new TransactionDto { Id = 2, Type = TransactionType.Expense, ParentTransactionId = 1, Name = "Child", Amount = 40m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-            new TransactionDto { Id = 3, Type = TransactionType.Income, Name = "Income", Amount = 65m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Parent", Amount = 40m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+            new Transaction { Id = 2, Type = TransactionType.Expense, ParentTransactionId = 1, Name = "Child", Amount = 40m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+            new Transaction { Id = 3, Type = TransactionType.Income, Name = "Income", Amount = 65m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
         ]);
         await vm.LoadAsync();
 
@@ -224,8 +224,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Older expense", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(8) },
-            new TransactionDto { Id = 2, Type = TransactionType.Income, Name = "Newer income", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(9) }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Older expense", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(8) },
+            new Transaction { Id = 2, Type = TransactionType.Income, Name = "Newer income", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(9) }
         ]);
         await vm.LoadAsync();
 
@@ -239,8 +239,8 @@ public sealed class LedgerVMDateRangeTests
     {
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Older needs", ExpenseCategory = ExpenseCategory.Needs, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(8) },
-            new TransactionDto { Id = 2, Type = TransactionType.Expense, Name = "Newer wants", ExpenseCategory = ExpenseCategory.Wants, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(9) }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Older needs", ExpenseCategory = ExpenseCategory.Needs, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(8) },
+            new Transaction { Id = 2, Type = TransactionType.Expense, Name = "Newer wants", ExpenseCategory = ExpenseCategory.Wants, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(9) }
         ]);
         await vm.LoadAsync();
 
@@ -258,7 +258,7 @@ public sealed class LedgerVMDateRangeTests
             .Returns(call => call.Arg<Func<Task>>().Invoke());
         var vm = CreateVm(
         [
-            new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Transaction", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
+            new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Transaction", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
         ], dialogService: dialogService, uiSettleAwaiter: uiSettleAwaiter);
 
         await vm.LoadAllTransactionsAsync();
@@ -267,43 +267,38 @@ public sealed class LedgerVMDateRangeTests
         await uiSettleAwaiter.Received(1).WaitForUiReadyAsync();
     }
 
-    private static IReadOnlyList<TransactionDto> CreateCategoryFilterTransactions() =>
+    private static IReadOnlyList<Transaction> CreateCategoryFilterTransactions() =>
     [
-        new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Needs expense", ExpenseCategory = ExpenseCategory.Needs, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-        new TransactionDto { Id = 2, Type = TransactionType.Expense, Name = "Excluded expense", ExpenseCategory = ExpenseCategory.Excluded, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-        new TransactionDto { Id = 3, Type = TransactionType.Income, Name = "Excluded income", ExpenseCategory = ExpenseCategory.Excluded, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-        new TransactionDto { Id = 4, Type = TransactionType.Income, Name = "Included income", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
+        new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Needs expense", ExpenseCategory = ExpenseCategory.Needs, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+        new Transaction { Id = 2, Type = TransactionType.Expense, Name = "Excluded expense", ExpenseCategory = ExpenseCategory.Excluded, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+        new Transaction { Id = 3, Type = TransactionType.Income, Name = "Excluded income", ExpenseCategory = ExpenseCategory.Excluded, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+        new Transaction { Id = 4, Type = TransactionType.Income, Name = "Included income", OccurredOn = DateTime.Today, LoggedOn = DateTime.Today }
     ];
 
-    private static IReadOnlyList<TransactionDto> CreateParentWithChildren() =>
+    private static IReadOnlyList<Transaction> CreateParentWithChildren() =>
     [
-        new TransactionDto { Id = 1, Type = TransactionType.Expense, Name = "Parent", Amount = 50m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
-        new TransactionDto { Id = 2, Type = TransactionType.Expense, ParentTransactionId = 1, Name = "Food child", Amount = 20m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(2), Tag = new TagDto { Id = 1, Name = "Food", HexCode = "#111111" } },
-        new TransactionDto { Id = 3, Type = TransactionType.Expense, ParentTransactionId = 1, Name = "Travel child", Amount = 30m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(1), Tag = new TagDto { Id = 2, Name = "Travel", HexCode = "#222222" } }
+        new Transaction { Id = 1, Type = TransactionType.Expense, Name = "Parent", Amount = 50m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today },
+        new Transaction { Id = 2, Type = TransactionType.Expense, ParentTransactionId = 1, Name = "Food child", Amount = 20m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(2), Tag = new Tag { Id = 1, Name = "Food", HexCode = "#111111" } },
+        new Transaction { Id = 3, Type = TransactionType.Expense, ParentTransactionId = 1, Name = "Travel child", Amount = 30m, OccurredOn = DateTime.Today, LoggedOn = DateTime.Today.AddHours(1), Tag = new Tag { Id = 2, Name = "Travel", HexCode = "#222222" } }
     ];
 
     private static LedgerVM CreateVm(
-        IReadOnlyList<TransactionDto> transactions,
+        IReadOnlyList<Transaction> transactions,
         IMessenger? messenger = null,
-        IReadOnlyList<TagDto>? tags = null,
+        IReadOnlyList<Tag>? tags = null,
         IDialogService? dialogService = null,
         IUiSettleAwaiter? uiSettleAwaiter = null)
     {
-        var transactionService = Substitute.For<ITransactionService>();
-        transactionService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(transactions);
-        var accountService = Substitute.For<IAccountService>();
-        accountService.GetAllAsync(Arg.Any<CancellationToken>()).Returns([]);
-        var tagService = Substitute.For<ITagService>();
-        tagService.GetAllAsync(Arg.Any<CancellationToken>()).Returns(tags ?? []);
+        var appData = Substitute.For<IAppDataService>();
+        appData.GetTransactionsAsync(Arg.Any<CancellationToken>()).Returns(transactions);
+        appData.GetAccountsAsync(Arg.Any<CancellationToken>()).Returns([]);
+        appData.GetTagsAsync(Arg.Any<CancellationToken>()).Returns(tags ?? []);
         var mapper = new MapperConfiguration(
-            configuration => configuration.AddProfile<DtoViewModelProfile>(),
+            configuration => configuration.AddProfile<EntityViewModelProfile>(),
             NullLoggerFactory.Instance).CreateMapper();
 
         return new LedgerVM(
-            transactionService,
-            accountService,
-            tagService,
-            Substitute.For<IAppDataService>(),
+            appData,
             mapper,
             messenger,
             dialogService,

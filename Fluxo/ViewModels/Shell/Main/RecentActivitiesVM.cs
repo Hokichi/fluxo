@@ -41,8 +41,6 @@ public partial class RecentActivitiesVM : ObservableRecipient,
     private readonly HashSet<BudgetTransactionLogVM> _transactionsVisibleWindow = [];
     private readonly ObservableCollection<BudgetTransactionLogVM> _transactionsSource = [];
     private readonly SemaphoreSlim _reloadGate = new(1, 1);
-    private readonly IAccountService _accountService;
-    private readonly ITagService _tagService;
     private readonly HashSet<TransactionVM> _wantsVisibleWindow = [];
     private readonly ObservableCollection<TransactionVM> _wantsSource = [];
     private readonly ObservableCollection<AccountVM> _accounts = [];
@@ -65,8 +63,6 @@ public partial class RecentActivitiesVM : ObservableRecipient,
 
     public RecentActivitiesVM(
         ITransactionService transactionService,
-        IAccountService accountService,
-        ITagService tagService,
         IAppDataService appData,
         IMapper mapper,
         IMessenger? messenger = null,
@@ -76,8 +72,6 @@ public partial class RecentActivitiesVM : ObservableRecipient,
         : base(messenger ?? WeakReferenceMessenger.Default)
     {
         _transactionService = transactionService;
-        _accountService = accountService;
-        _tagService = tagService;
         _appData = appData;
         _mapper = mapper;
         _dialogService = dialogService;
@@ -266,7 +260,7 @@ public partial class RecentActivitiesVM : ObservableRecipient,
         InvestThreshold = _budgetAllocation.InvestThreshold / 100m;
 
         var transactions = _mapper.Map<IReadOnlyList<TransactionVM>>(
-            await _transactionService.GetAllAsync(cancellationToken));
+            await _appData.GetTransactionsAsync(cancellationToken));
         var expenseLogs = transactions
             .Where(transaction => transaction.Type == TransactionType.Expense)
             .ToList();
@@ -274,9 +268,9 @@ public partial class RecentActivitiesVM : ObservableRecipient,
             .Where(transaction => transaction.Type == TransactionType.Income)
             .ToList();
         var accounts = _mapper.Map<IReadOnlyList<AccountVM>>(
-            await _accountService.GetAllAsync(cancellationToken));
+            await _appData.GetAccountsAsync(cancellationToken));
         var tags = _mapper.Map<IReadOnlyList<TagVM>>(
-            await _tagService.GetAllAsync(cancellationToken));
+            await _appData.GetTagsAsync(cancellationToken));
 
         _allExpenseLogs = expenseLogs
             .Where(log => !log.IsForDeletion)
