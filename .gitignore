@@ -372,6 +372,8 @@ MigrationBackup/
 .planning/
 docs/superpowers/
 docs/*.md
+.agents/
+AGENTS.md
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd

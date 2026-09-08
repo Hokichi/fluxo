@@ -8,13 +8,19 @@
     MaxHeight="800"
     PopupTitle="Income Detail">
 
-<customControls:BasePopup.Resources>
-        <Style x:Key="AccountDetailSecondaryTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+    <customControls:BasePopup.Resources>
+        <Style
+            x:Key="AccountDetailSecondaryTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
         </Style>
 
-        <Style x:Key="AccountActivityAmountTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="AccountActivityAmountTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
             <Setter Property="Text" Value="{Binding Amount, Converter={StaticResource NumberWithCommasConverter}, StringFormat=+{0}}" />
             <Setter Property="ToolTip" Value="{Binding Amount, Converter={StaticResource MoneyFullDisplayConverter}, StringFormat=+{0}}" />
@@ -27,13 +33,19 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="LeftSideLabelStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="LeftSideLabelStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="InlineHeaderTextBoxBaseStyle" BasedOn="{StaticResource BaseTextBoxStyle}" TargetType="TextBox">
+        <Style
+            x:Key="InlineHeaderTextBoxBaseStyle"
+            BasedOn="{StaticResource BaseTextBoxStyle}"
+            TargetType="TextBox">
             <Setter Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
@@ -73,9 +85,10 @@
                             FontSize="12"
                             Foreground="{DynamicResource Brush.Text.Primary}"
                             Text="{Binding Title}" />
-                        <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                        <TextBlock
                             Margin="0,4,0,0"
                             FontSize="10"
+                            Style="{StaticResource AccountDetailSecondaryTextStyle}"
                             Text="{Binding Detail}"
                             TextWrapping="Wrap" />
                         <TextBlock
@@ -89,9 +102,8 @@
                         Grid.Column="1"
                         VerticalAlignment="Center"
                         FontFamily="{StaticResource Bold}"
-                        FontSize="12" Style="{StaticResource AccountActivityAmountTextStyle}">
-
-                    </TextBlock>
+                        FontSize="12"
+                        Style="{StaticResource AccountActivityAmountTextStyle}" />
                 </Grid>
             </Border>
         </DataTemplate>
@@ -144,39 +156,48 @@
             </Grid>
         </DataTemplate>
 
-<Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountDisableButtonStyle">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource LightningSlashFill}" />
-                                    <Setter Property="HoveredBackground" Value="{DynamicResource Brush.Warning}" />
-                                    <Setter Property="ToolTip" Value="Disable source" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsEnabled}" Value="False">
-                                            <Setter Property="ButtonIcon" Value="{StaticResource LightningFill}" />
-                                            <Setter Property="ToolTip" Value="Enable source" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
+        <Style
+            x:Key="AccountDisableButtonStyle"
+            BasedOn="{StaticResource DetailActionBalloonButtonStyle}"
+            TargetType="{x:Type customControls:BalloonButton}">
+            <Setter Property="ButtonIcon" Value="{StaticResource LightningSlashFill}" />
+            <Setter Property="HoveredBackground" Value="{DynamicResource Brush.Warning}" />
+            <Setter Property="ToolTip" Value="Disable source" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                    <Setter Property="ButtonIcon" Value="{StaticResource LightningFill}" />
+                    <Setter Property="ToolTip" Value="Enable source" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
 
-<Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountEditButtonStyle">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource Pen}" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsEditing}" Value="True">
-                                            <Setter Property="ButtonIcon" Value="{StaticResource ContentSave}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
+        <Style
+            x:Key="AccountEditButtonStyle"
+            BasedOn="{StaticResource DetailActionBalloonButtonStyle}"
+            TargetType="{x:Type customControls:BalloonButton}">
+            <Setter Property="ButtonIcon" Value="{StaticResource Pen}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                    <Setter Property="ButtonIcon" Value="{StaticResource ContentSave}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
 
-<Style BasedOn="{StaticResource DetailActionBalloonButtonStyle}" TargetType="{x:Type customControls:BalloonButton}" x:Key="AccountPinButtonStyle">
-                                    <Setter Property="ButtonIcon" Value="{StaticResource Unpin}" />
-                                    <Setter Property="HoveredBackground" Value="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}" />
-                                    <Setter Property="ToolTip" Value="Unpin source" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsUnpinned}" Value="True">
-                                            <Setter Property="ButtonIcon" Value="{StaticResource Pin}" />
-                                            <Setter Property="ToolTip" Value="Pin source" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-</customControls:BasePopup.Resources>
+        <Style
+            x:Key="AccountPinButtonStyle"
+            BasedOn="{StaticResource DetailActionBalloonButtonStyle}"
+            TargetType="{x:Type customControls:BalloonButton}">
+            <Setter Property="ButtonIcon" Value="{StaticResource Unpin}" />
+            <Setter Property="HoveredBackground" Value="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}" />
+            <Setter Property="ToolTip" Value="Unpin source" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsUnpinned}" Value="True">
+                    <Setter Property="ButtonIcon" Value="{StaticResource Pin}" />
+                    <Setter Property="ToolTip" Value="Pin source" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </customControls:BasePopup.Resources>
 
     <Grid
         Width="720"
@@ -296,8 +317,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Inflow" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 ToolTip="{Binding MoneyIn, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding MoneyIn, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </TextBlock>
@@ -308,8 +330,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Outflow" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 ToolTip="{Binding MoneyOut, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding MoneyOut, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
                             </TextBlock>
@@ -320,8 +343,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Spent" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 ToolTip="{Binding SpentAmountText, Converter={StaticResource MoneyFullDisplayConverter}}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <Run Text="{Binding SpentAmountText, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
@@ -339,8 +363,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Limit" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 ToolTip="{Binding AccountLimitText, Converter={StaticResource MoneyFullDisplayConverter}}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}">
                                 <Run Text="{Binding AccountLimitText, Converter={StaticResource MoneyDisplayConverter}}" />
@@ -358,8 +383,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Due Date" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Text="{Binding MonthlyDueDateDisplay}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <TextBox
@@ -382,8 +408,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Deduct Source" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Text="{Binding DeductSourceDisplay}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <ComboBox
@@ -406,8 +433,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="Balance" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 ToolTip="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource MoneyFullDisplayConverter}}">
                                 <Run Text="{Binding DisplayPrimaryAmount, Mode=OneWay, Converter={StaticResource NumberWithCommasConverter}}" />
                             </TextBlock>
@@ -418,8 +446,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Style="{StaticResource LeftSideLabelStyle}" Text="APY" />
-                            <TextBlock Style="{StaticResource AccountDetailSecondaryTextStyle}"
+                            <TextBlock
                                 Grid.Column="1"
+                                Style="{StaticResource AccountDetailSecondaryTextStyle}"
                                 Text="{Binding ApyText, StringFormat={}{0}%}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
                             <customControls:MoneyTextBox
@@ -439,19 +468,17 @@
                         VerticalAlignment="Bottom"
                         Columns="3"
                         Rows="2">
-<customControls:BalloonButton
+                        <customControls:BalloonButton
                             Click="OnDisableButtonClick"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Caution}"
-                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Caution.Hovered}" Style="{StaticResource AccountDisableButtonStyle}">
-
-                        </customControls:BalloonButton>
-<customControls:BalloonButton
+                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Caution.Hovered}"
+                            Style="{StaticResource AccountDisableButtonStyle}" />
+                        <customControls:BalloonButton
                             Click="OnEditButtonClick"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
-                            ToolTip="{Binding EditButtonLabel}" Style="{StaticResource AccountEditButtonStyle}">
-
-                        </customControls:BalloonButton>
+                            Style="{StaticResource AccountEditButtonStyle}"
+                            ToolTip="{Binding EditButtonLabel}" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource Exchange}"
                             Click="OnTransferButtonClick"
@@ -460,13 +487,12 @@
                             IsEnabled="{Binding CanTransfer}"
                             Style="{StaticResource DetailActionBalloonButtonStyle}"
                             ToolTip="Transfer funds" />
-<customControls:BalloonButton
+                        <customControls:BalloonButton
                             Click="OnPinOrUnpinButtonClick"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                             HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
-                            IsEnabled="{Binding CanPinOrUnpin}" Style="{StaticResource AccountPinButtonStyle}">
-
-                        </customControls:BalloonButton>
+                            IsEnabled="{Binding CanPinOrUnpin}"
+                            Style="{StaticResource AccountPinButtonStyle}" />
                         <customControls:BalloonButton
                             ButtonIcon="{StaticResource SourceSwitch}"
                             Click="OnBackToSourcesButtonClick"

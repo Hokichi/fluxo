@@ -2,11 +2,10 @@
     x:Class="Fluxo.Views.Popups.DeleteAllDataPopup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-Width="560"
+    Width="560"
     PopupTitle="Delete All Data">
-<Grid Margin="24,0,24,24">
+    <Grid Margin="24,0,24,24">
         <StackPanel>
             <Button
                 Click="OnKeepSettingsClick"
@@ -27,9 +26,3 @@ Width="560"
         </StackPanel>
     </Grid>
 </customControls:BasePopup>
-
-
-
-
-
-

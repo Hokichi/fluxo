@@ -5,43 +5,46 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     IsSaveButtonEnabled="{Binding CanSave}"
-    PopupTitle="{Binding PopupTitle}"
-    Mode="Modify">
+    Mode="Modify"
+    PopupTitle="{Binding PopupTitle}">
 
     <customControls:BasePopup.Resources>
-                <ControlTemplate x:Key="EndDateInfinityToggleTemplate" TargetType="ToggleButton">
-                                <Border
-                                    x:Name="RootBorder"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    CornerRadius="12">
-                                    <Viewbox
-                                        Width="16"
-                                        Height="16"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center">
-                                        <Path
-                                            x:Name="InfinityIcon"
-                                            Data="{StaticResource Infinity}"
-                                            Fill="{DynamicResource Brush.Text.Secondary}"
-                                            Stretch="Uniform" />
-                                    </Viewbox>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                    </Trigger>
-                                    <Trigger Property="IsChecked" Value="True">
-                                        <Setter TargetName="InfinityIcon" Property="Fill" Value="{DynamicResource Brush.Mint}" />
-                                    </Trigger>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter TargetName="RootBorder" Property="Opacity" Value="0.4" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
+        <ControlTemplate x:Key="EndDateInfinityToggleTemplate" TargetType="ToggleButton">
+            <Border
+                x:Name="RootBorder"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="12">
+                <Viewbox
+                    Width="16"
+                    Height="16"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <Path
+                        x:Name="InfinityIcon"
+                        Data="{StaticResource Infinity}"
+                        Fill="{DynamicResource Brush.Text.Secondary}"
+                        Stretch="Uniform" />
+                </Viewbox>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="InfinityIcon" Property="Fill" Value="{DynamicResource Brush.Mint}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="RootBorder" Property="Opacity" Value="0.4" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
 
-<Style x:Key="EndDateInfinityToggleStyle" BasedOn="{StaticResource BaseToggleButtonStyle}" TargetType="ToggleButton">
+        <Style
+            x:Key="EndDateInfinityToggleStyle"
+            BasedOn="{StaticResource BaseToggleButtonStyle}"
+            TargetType="ToggleButton">
             <Setter Property="Width" Value="36" />
             <Setter Property="Height" Value="36" />
             <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
@@ -55,53 +58,51 @@
 
     <Grid Width="480" Margin="24,0,24,24">
         <StackPanel>
-                <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Goal Name" />
-                <TextBox
-                    x:Name="NameTextBox"
-                    Style="{StaticResource RoundedTextInputStyle}"
-                    Text="{Binding NameText, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Goal Name" />
+            <TextBox
+                x:Name="NameTextBox"
+                Style="{StaticResource RoundedTextInputStyle}"
+                Text="{Binding NameText, UpdateSourceTrigger=PropertyChanged}" />
 
-                <Grid Margin="0,14,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+            <Grid Margin="0,14,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Target Amount" />
-                        <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding TargetAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-                    </StackPanel>
+                <StackPanel>
+                    <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Target Amount" />
+                    <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding TargetAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
+                </StackPanel>
 
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Current Amount" />
-                        <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding CurrentAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
-                    </StackPanel>
-                </Grid>
+                <StackPanel Grid.Column="2">
+                    <TextBlock Style="{StaticResource PopupFieldLabelStyle}" Text="Current Amount" />
+                    <customControls:MoneyTextBox Style="{StaticResource RoundedMoneyTextInputStyle}" Text="{Binding CurrentAmountText, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MoneyAmountToCanonicalConverter}}" />
+                </StackPanel>
+            </Grid>
 
-                <TextBlock
-                    Margin="0,14,0,8"
-                    Style="{StaticResource PopupFieldLabelStyle}"
-                    Text="Target Date" />
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+            <TextBlock
+                Margin="0,14,0,8"
+                Style="{StaticResource PopupFieldLabelStyle}"
+                Text="Target Date" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                    <components:DateSelector
-                        x:Name="EndDateSelector"
-                        IsEnabled="{Binding HasDefiniteEndDate}"
-                        SelectedDate="{Binding EndDate, Mode=TwoWay}" />
-                    <ToggleButton
-                        Grid.Column="2"
-                        Margin="0,0,0,0"
-                        IsChecked="{Binding HasDefiniteEndDate, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
-                        Style="{StaticResource EndDateInfinityToggleStyle}" />
-                </Grid>
+                <components:DateSelector
+                    x:Name="EndDateSelector"
+                    IsEnabled="{Binding HasDefiniteEndDate}"
+                    SelectedDate="{Binding EndDate, Mode=TwoWay}" />
+                <ToggleButton
+                    Grid.Column="2"
+                    Margin="0,0,0,0"
+                    IsChecked="{Binding HasDefiniteEndDate, Mode=TwoWay, Converter={StaticResource BoolNegationConverter}}"
+                    Style="{StaticResource EndDateInfinityToggleStyle}" />
+            </Grid>
         </StackPanel>
     </Grid>
 </customControls:BasePopup>
-
-

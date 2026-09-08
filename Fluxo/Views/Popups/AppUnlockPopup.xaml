@@ -3,8 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-    PopupTitle="Unlock fluxo"
-    Mode="None">
+    Mode="None"
+    PopupTitle="Unlock fluxo">
     <Border Width="440" Padding="24,8,24,24">
         <StackPanel>
             <TextBlock

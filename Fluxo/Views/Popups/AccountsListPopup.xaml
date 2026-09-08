@@ -6,34 +6,40 @@
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     PopupTitle="Accounts">
 
-<customControls:BasePopup.Resources>
-<ControlTemplate x:Key="SourceButtonTemplate" TargetType="Button">
-                    <Border
-                        x:Name="RootBorder"
-                        Padding="16"
-                        Background="{DynamicResource Brush.Background.Elevated}"
-                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                        BorderThickness="1"
-                        CornerRadius="8">
-                        <ContentPresenter />
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
+    <customControls:BasePopup.Resources>
+        <ControlTemplate x:Key="SourceButtonTemplate" TargetType="Button">
+            <Border
+                x:Name="RootBorder"
+                Padding="16"
+                Background="{DynamicResource Brush.Background.Elevated}"
+                BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <ContentPresenter />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
 
-<Style x:Key="SourceButtonStyle" BasedOn="{StaticResource BaseButtonStyle}" TargetType="Button">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Template" Value="{StaticResource SourceButtonTemplate}" />
-    </Style>
-        <Style x:Key="AccentStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+        <Style
+            x:Key="SourceButtonStyle"
+            BasedOn="{StaticResource BaseButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template" Value="{StaticResource SourceButtonTemplate}" />
+        </Style>
+        <Style
+            x:Key="AccentStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource Brush.Account.Checking}" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Credit">
@@ -48,7 +54,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="BankIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+        <Style
+            x:Key="BankIconStyle"
+            BasedOn="{StaticResource BaseIconStyle}"
+            TargetType="components:Icon">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Checking">
@@ -60,7 +69,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="CreditIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+        <Style
+            x:Key="CreditIconStyle"
+            BasedOn="{StaticResource BaseIconStyle}"
+            TargetType="components:Icon">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Credit">
@@ -69,7 +81,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="AccountCardStateGridStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="AccountCardStateGridStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Setter Property="Opacity" Value="1" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsDisabled}" Value="True">
@@ -78,7 +93,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="SavingAccountIconStyle" BasedOn="{StaticResource BaseIconStyle}" TargetType="components:Icon">
+        <Style
+            x:Key="SavingAccountIconStyle"
+            BasedOn="{StaticResource BaseIconStyle}"
+            TargetType="components:Icon">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding AccountType}" Value="Saving">
@@ -87,7 +105,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="DisabledAccountBadgeStyle" BasedOn="{StaticResource BaseBorderStyle}" TargetType="Border">
+        <Style
+            x:Key="DisabledAccountBadgeStyle"
+            BasedOn="{StaticResource BaseBorderStyle}"
+            TargetType="Border">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <MultiDataTrigger>
@@ -135,9 +156,8 @@
                             <components:Icon
                                 Margin="10"
                                 Path="{StaticResource PiggyBank}"
-                                Color="{Binding Background, ElementName=AccentBorder, Converter={StaticResource BackgroundToForegroundConverter}}" Style="{StaticResource SavingAccountIconStyle}">
-
-                            </components:Icon>
+                                Style="{StaticResource SavingAccountIconStyle}"
+                                Color="{Binding Background, ElementName=AccentBorder, Converter={StaticResource BackgroundToForegroundConverter}}" />
                         </Grid>
                     </Border>
 
@@ -158,7 +178,8 @@
                             <Border
                                 Width="12"
                                 Height="12"
-                                Margin="8,0,0,0" Style="{StaticResource DisabledAccountBadgeStyle}">
+                                Margin="8,0,0,0"
+                                Style="{StaticResource DisabledAccountBadgeStyle}">
 
                                 <components:Icon Path="{StaticResource Unpin}" Color="{DynamicResource Brush.Warning}" />
                             </Border>
@@ -191,8 +212,7 @@
                 </Grid>
             </Button>
         </DataTemplate>
-
-</customControls:BasePopup.Resources>
+    </customControls:BasePopup.Resources>
 
     <Grid
         Width="400"
@@ -230,6 +250,3 @@
         </Border>
     </Grid>
 </customControls:BasePopup>
-
-
-

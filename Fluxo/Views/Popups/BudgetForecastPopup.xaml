@@ -7,12 +7,18 @@
     PopupTitle="Budget Forecast"
     SizeToContent="WidthAndHeight">
 
-<customControls:BasePopup.Resources>
-        <Style x:Key="ForecastLabelStyle" BasedOn="{StaticResource CardLabelTextStyle}" TargetType="TextBlock">
+    <customControls:BasePopup.Resources>
+        <Style
+            x:Key="ForecastLabelStyle"
+            BasedOn="{StaticResource CardLabelTextStyle}"
+            TargetType="TextBlock">
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <Style x:Key="ForecastValueStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="ForecastValueStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="Margin" Value="0,10,0,0" />
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="FontSize" Value="18" />
@@ -20,7 +26,10 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-        <Style x:Key="ForecastCellStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+        <Style
+            x:Key="ForecastCellStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontFamily" Value="{StaticResource Medium}" />
             <Setter Property="FontSize" Value="12" />
@@ -28,78 +37,83 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
 
-<Style BasedOn="{StaticResource ForecastCellStyle}" TargetType="TextBlock" x:Key="ForecastBalanceTextStyle">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsBalanceDecreased, Mode=OneWay}" Value="True">
-                                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding IsBalanceIncreased, Mode=OneWay}" Value="True">
-                                                            <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
+        <Style
+            x:Key="ForecastBalanceTextStyle"
+            BasedOn="{StaticResource ForecastCellStyle}"
+            TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsBalanceDecreased, Mode=OneWay}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsBalanceIncreased, Mode=OneWay}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
 
-<DataTemplate x:Key="ForecastAccountRowTemplate">
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="96" />
-                                            <ColumnDefinition Width="96" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Style="{StaticResource ForecastCellStyle}" Text="{Binding Name}" />
-                                        <TextBlock
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Right"
-                                            Style="{StaticResource ForecastCellStyle}"
-                                            Text="{Binding CurrentBalance, Converter={StaticResource MoneyDisplayConverter}}" />
-<TextBlock
-                                            Grid.Column="2"
-                                            HorizontalAlignment="Right"
-                                            Text="{Binding Balance, Converter={StaticResource MoneyDisplayConverter}}" Style="{StaticResource ForecastBalanceTextStyle}">
+        <DataTemplate x:Key="ForecastAccountRowTemplate">
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="96" />
+                    <ColumnDefinition Width="96" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource ForecastCellStyle}" Text="{Binding Name}" />
+                <TextBlock
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource ForecastCellStyle}"
+                    Text="{Binding CurrentBalance, Converter={StaticResource MoneyDisplayConverter}}" />
+                <TextBlock
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource ForecastBalanceTextStyle}"
+                    Text="{Binding Balance, Converter={StaticResource MoneyDisplayConverter}}" />
+            </Grid>
+        </DataTemplate>
 
-                                        </TextBlock>
-                                    </Grid>
-                                </DataTemplate>
+        <DataTemplate x:Key="ForecastRecurringRowTemplate">
+            <Grid Margin="0,0,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{StaticResource ForecastCellStyle}" Text="{Binding Name}" />
+                <TextBlock
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource ForecastCellStyle}"
+                    Text="{Binding SignedAmount, Converter={StaticResource MoneyDisplayConverter}}" />
+                <ToggleButton
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    IsChecked="{Binding IsIncluded, Mode=TwoWay}"
+                    Style="{StaticResource ToggleSwitchStyle}" />
+            </Grid>
+        </DataTemplate>
 
-<DataTemplate x:Key="ForecastRecurringRowTemplate">
-                                    <Grid Margin="0,0,0,8">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="3*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Style="{StaticResource ForecastCellStyle}" Text="{Binding Name}" />
-                                        <TextBlock
-                                            Grid.Column="1"
-                                            HorizontalAlignment="Right"
-                                            Style="{StaticResource ForecastCellStyle}"
-                                            Text="{Binding SignedAmount, Converter={StaticResource MoneyDisplayConverter}}" />
-                                        <ToggleButton
-                                            Grid.Column="2"
-                                            HorizontalAlignment="Right"
-                                            IsChecked="{Binding IsIncluded, Mode=TwoWay}"
-                                            Style="{StaticResource ToggleSwitchStyle}" />
-                                    </Grid>
-                                </DataTemplate>
-
-<Style BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock" x:Key="PurchaseMessageTextStyle">
-                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Success">
-                                <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Warning">
-                                <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Danger">
-                                <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding PurchaseMessage}" Value="">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-</customControls:BasePopup.Resources>
+        <Style
+            x:Key="PurchaseMessageTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Muted}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Success">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Success}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Warning">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Warning}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PurchaseMessageBrushKey}" Value="Brush.Danger">
+                    <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PurchaseMessage}" Value="">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </customControls:BasePopup.Resources>
 
     <Grid Width="960" Margin="24,0,24,24">
         <Grid.RowDefinitions>
@@ -191,9 +205,7 @@
                         Grid.Row="1"
                         Margin="0,12,0,0"
                         VerticalScrollBarVisibility="Hidden">
-<ItemsControl ItemsSource="{Binding Accounts}" ItemTemplate="{StaticResource ForecastAccountRowTemplate}">
-
-                        </ItemsControl>
+                        <ItemsControl ItemTemplate="{StaticResource ForecastAccountRowTemplate}" ItemsSource="{Binding Accounts}" />
                     </customControls:FadingScrollViewer>
                 </Grid>
             </Border>
@@ -209,9 +221,7 @@
                         Grid.Row="1"
                         Margin="0,12,0,0"
                         VerticalScrollBarVisibility="Hidden">
-<ItemsControl ItemsSource="{Binding RecurringTransactions}" ItemTemplate="{StaticResource ForecastRecurringRowTemplate}">
-
-                        </ItemsControl>
+                        <ItemsControl ItemTemplate="{StaticResource ForecastRecurringRowTemplate}" ItemsSource="{Binding RecurringTransactions}" />
                     </customControls:FadingScrollViewer>
                 </Grid>
             </Border>
@@ -273,7 +283,6 @@
                             ShouldShowText="True"
                             UncheckedText="Needs" />
                         <customControls:BalloonRadioButton
-                            Style="{StaticResource BalloonChoiceOptionStyle}"
                             ButtonIcon="{StaticResource ShoppingBag}"
                             CheckedBackground="{DynamicResource Brush.Mint}"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -282,9 +291,9 @@
                             IconSize="12"
                             IsChecked="{Binding IsPurchaseWantsCategory, Mode=TwoWay}"
                             ShouldShowText="True"
+                            Style="{StaticResource BalloonChoiceOptionStyle}"
                             UncheckedText="Wants" />
                         <customControls:BalloonRadioButton
-                            Style="{StaticResource BalloonChoiceOptionStyle}"
                             ButtonIcon="{StaticResource TrendingUp}"
                             CheckedBackground="{DynamicResource Brush.Mint}"
                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -293,18 +302,18 @@
                             IconSize="12"
                             IsChecked="{Binding IsPurchaseInvestCategory, Mode=TwoWay}"
                             ShouldShowText="True"
+                            Style="{StaticResource BalloonChoiceOptionStyle}"
                             UncheckedText="Invest" />
                     </StackPanel>
                 </Grid>
             </Border>
-<TextBlock
+            <TextBlock
                 Margin="0,10,0,0"
                 FontFamily="{StaticResource Medium}"
                 FontSize="12"
+                Style="{StaticResource PurchaseMessageTextStyle}"
                 Text="{Binding PurchaseMessage}"
-                TextWrapping="Wrap" Style="{StaticResource PurchaseMessageTextStyle}">
-
-            </TextBlock>
+                TextWrapping="Wrap" />
         </StackPanel>
     </Grid>
 </customControls:BasePopup>

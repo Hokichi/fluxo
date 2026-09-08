@@ -6,56 +6,57 @@
     Width="460"
     PopupTitle="Custom Tag Color">
 
-<customControls:BasePopup.Resources>
+    <customControls:BasePopup.Resources>
 
-<ControlTemplate TargetType="Thumb" x:Key="HueSliderThumbTemplate">
-                                                    <Border
-                                                        Background="{DynamicResource Brush.Background.Surface}"
-                                                        BorderBrush="{DynamicResource Brush.Text.Primary}"
-                                                        BorderThickness="1"
-                                                        CornerRadius="4" />
-                                                </ControlTemplate>
+        <ControlTemplate x:Key="HueSliderThumbTemplate" TargetType="Thumb">
+            <Border
+                Background="{DynamicResource Brush.Background.Surface}"
+                BorderBrush="{DynamicResource Brush.Text.Primary}"
+                BorderThickness="1"
+                CornerRadius="4" />
+        </ControlTemplate>
 
-<ControlTemplate TargetType="Slider" x:Key="HueSliderTemplate">
-                            <Grid>
-                                <Border Margin="5,0" CornerRadius="8">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                                            <GradientStop Offset="0" Color="#FFFF0000" />
-                                            <GradientStop Offset="0.17" Color="#FFFFFF00" />
-                                            <GradientStop Offset="0.33" Color="#FF00FF00" />
-                                            <GradientStop Offset="0.5" Color="#FF00FFFF" />
-                                            <GradientStop Offset="0.67" Color="#FF0000FF" />
-                                            <GradientStop Offset="0.83" Color="#FFFF00FF" />
-                                            <GradientStop Offset="1" Color="#FFFF0000" />
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                </Border>
-                                <Track
-                                    x:Name="PART_Track"
-                                    IsDirectionReversed="True"
-                                    Orientation="Vertical">
-                                    <Track.DecreaseRepeatButton>
-                                        <RepeatButton
-                                            Command="Slider.DecreaseLarge"
-                                            IsHitTestVisible="False"
-                                            Opacity="0" />
-                                    </Track.DecreaseRepeatButton>
-                                    <Track.Thumb>
-<Thumb Width="18" Height="8" Template="{StaticResource HueSliderThumbTemplate}">
-
-                                        </Thumb>
-                                    </Track.Thumb>
-                                    <Track.IncreaseRepeatButton>
-                                        <RepeatButton
-                                            Command="Slider.IncreaseLarge"
-                                            IsHitTestVisible="False"
-                                            Opacity="0" />
-                                    </Track.IncreaseRepeatButton>
-                                </Track>
-                            </Grid>
-                        </ControlTemplate>
-</customControls:BasePopup.Resources>
+        <ControlTemplate x:Key="HueSliderTemplate" TargetType="Slider">
+            <Grid>
+                <Border Margin="5,0" CornerRadius="8">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                            <GradientStop Offset="0" Color="#FFFF0000" />
+                            <GradientStop Offset="0.17" Color="#FFFFFF00" />
+                            <GradientStop Offset="0.33" Color="#FF00FF00" />
+                            <GradientStop Offset="0.5" Color="#FF00FFFF" />
+                            <GradientStop Offset="0.67" Color="#FF0000FF" />
+                            <GradientStop Offset="0.83" Color="#FFFF00FF" />
+                            <GradientStop Offset="1" Color="#FFFF0000" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <Track
+                    x:Name="PART_Track"
+                    IsDirectionReversed="True"
+                    Orientation="Vertical">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton
+                            Command="Slider.DecreaseLarge"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb
+                            Width="18"
+                            Height="8"
+                            Template="{StaticResource HueSliderThumbTemplate}" />
+                    </Track.Thumb>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton
+                            Command="Slider.IncreaseLarge"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+                    </Track.IncreaseRepeatButton>
+                </Track>
+            </Grid>
+        </ControlTemplate>
+    </customControls:BasePopup.Resources>
 
     <Grid Margin="24,0,24,24">
         <StackPanel>
@@ -103,17 +104,16 @@
                     </Grid>
                 </Border>
 
-<Slider
+                <Slider
                     x:Name="HueSlider"
                     Grid.Column="2"
                     Width="20"
                     Maximum="360"
                     Minimum="0"
                     Orientation="Vertical"
+                    Template="{StaticResource HueSliderTemplate}"
                     TickFrequency="1"
-                    ValueChanged="OnHueSliderValueChanged" Template="{StaticResource HueSliderTemplate}">
-
-                </Slider>
+                    ValueChanged="OnHueSliderValueChanged" />
             </Grid>
 
             <Grid Margin="0,12,0,0">

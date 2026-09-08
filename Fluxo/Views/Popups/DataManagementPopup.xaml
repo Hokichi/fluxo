@@ -5,15 +5,21 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     Width="640"
-    PopupTitle="Data Management"
-    Mode="None">
-<customControls:BasePopup.Resources>
-        <Style x:Key="DataManagementHeadingTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+    Mode="None"
+    PopupTitle="Data Management">
+    <customControls:BasePopup.Resources>
+        <Style
+            x:Key="DataManagementHeadingTextStyle"
+            BasedOn="{StaticResource BaseTextBlockStyle}"
+            TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource Bold}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
-        <Style x:Key="InitialPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="InitialPageStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="0">
@@ -22,7 +28,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ProcessingPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="ProcessingPageStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="1">
@@ -31,7 +40,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ConflictPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="ConflictPageStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="2">
@@ -40,7 +52,10 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ResultPageStyle" BasedOn="{StaticResource BaseGridStyle}" TargetType="Grid">
+        <Style
+            x:Key="ResultPageStyle"
+            BasedOn="{StaticResource BaseGridStyle}"
+            TargetType="Grid">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding PageIndex}" Value="3">
@@ -49,47 +64,46 @@
             </Style.Triggers>
         </Style>
 
-<ItemsPanelTemplate x:Key="DataManagementEntityItemsPanelTemplate">
-                                <customControls:SpacedUniformGrid Columns="3" />
-                            </ItemsPanelTemplate>
+        <ItemsPanelTemplate x:Key="DataManagementEntityItemsPanelTemplate">
+            <customControls:SpacedUniformGrid Columns="3" />
+        </ItemsPanelTemplate>
 
-<DataTemplate x:Key="DataManagementEntityTemplate">
-                                <CheckBox
-                                    Margin="0,0,0,8"
-                                    Content="{Binding Title}"
-                                    IsChecked="{Binding IsChecked, Mode=TwoWay}"
-                                    IsEnabled="{Binding IsEnabled}"
-                                    Style="{StaticResource ItemCheckBoxWithContentStyle}" />
-                            </DataTemplate>
+        <DataTemplate x:Key="DataManagementEntityTemplate">
+            <CheckBox
+                Margin="0,0,0,8"
+                Content="{Binding Title}"
+                IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                IsEnabled="{Binding IsEnabled}"
+                Style="{StaticResource ItemCheckBoxWithContentStyle}" />
+        </DataTemplate>
 
-<DataTemplate x:Key="DataManagementConflictTemplate">
-                                    <Border Margin="0,0,0,8" Style="{StaticResource CardBorderStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
-                                                Text="{Binding Name}" />
-                                            <TextBlock
-                                                Margin="0,4,0,0"
-                                                FontFamily="{StaticResource Medium}"
-                                                FontSize="10"
-                                                Foreground="{DynamicResource Brush.Text.Secondary}"
-                                                Text="{Binding EntityKind}" />
-                                            <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
-                                                <RadioButton Content="Replace" IsChecked="{Binding IsReplaceSelected, Mode=TwoWay}" />
-                                                <RadioButton
-                                                    Margin="14,0,0,0"
-                                                    Content="Append"
-                                                    IsChecked="{Binding IsAppendSelected, Mode=TwoWay}"
-                                                    Style="{StaticResource BaseRadioButtonStyle}"
-                                                    Visibility="{Binding IsTag, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
-                                                <RadioButton
-                                                    Margin="14,0,0,0"
-                                                    Content="Ignore"
-                                                    IsChecked="{Binding IsIgnoreSelected, Mode=TwoWay}" />
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-</customControls:BasePopup.Resources>
+        <DataTemplate x:Key="DataManagementConflictTemplate">
+            <Border Margin="0,0,0,8" Style="{StaticResource CardBorderStyle}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}" Text="{Binding Name}" />
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontFamily="{StaticResource Medium}"
+                        FontSize="10"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
+                        Text="{Binding EntityKind}" />
+                    <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                        <RadioButton Content="Replace" IsChecked="{Binding IsReplaceSelected, Mode=TwoWay}" />
+                        <RadioButton
+                            Margin="14,0,0,0"
+                            Content="Append"
+                            IsChecked="{Binding IsAppendSelected, Mode=TwoWay}"
+                            Style="{StaticResource BaseRadioButtonStyle}"
+                            Visibility="{Binding IsTag, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" />
+                        <RadioButton
+                            Margin="14,0,0,0"
+                            Content="Ignore"
+                            IsChecked="{Binding IsIgnoreSelected, Mode=TwoWay}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </customControls:BasePopup.Resources>
 
     <Grid
         Width="840"
@@ -97,72 +111,73 @@
         Margin="24,0,24,24">
         <Grid Style="{StaticResource InitialPageStyle}">
             <StackPanel>
-                    <customControls:SegmentedToggleGroup Width="360" Height="40">
-                        <customControls:SegmentedToggleOption
-                            Click="OnBackupModeClick"
-                            Content="Backup"
-                            IsSelected="{Binding IsBackupSelected, Mode=OneWay}"
-                            SelectOnClick="False" />
-                        <customControls:SegmentedToggleOption
-                            Click="OnAppendModeClick"
-                            Content="Append"
-                            IsSelected="{Binding IsAppendSelected, Mode=OneWay}"
-                            SelectOnClick="False" />
-                        <customControls:SegmentedToggleOption
-                            Click="OnOverwriteModeClick"
-                            Content="Overwrite"
-                            IsSelected="{Binding IsOverwriteSelected, Mode=OneWay}"
-                            SelectOnClick="False" />
-                    </customControls:SegmentedToggleGroup>
+                <customControls:SegmentedToggleGroup Width="360" Height="40">
+                    <customControls:SegmentedToggleOption
+                        Click="OnBackupModeClick"
+                        Content="Backup"
+                        IsSelected="{Binding IsBackupSelected, Mode=OneWay}"
+                        SelectOnClick="False" />
+                    <customControls:SegmentedToggleOption
+                        Click="OnAppendModeClick"
+                        Content="Append"
+                        IsSelected="{Binding IsAppendSelected, Mode=OneWay}"
+                        SelectOnClick="False" />
+                    <customControls:SegmentedToggleOption
+                        Click="OnOverwriteModeClick"
+                        Content="Overwrite"
+                        IsSelected="{Binding IsOverwriteSelected, Mode=OneWay}"
+                        SelectOnClick="False" />
+                </customControls:SegmentedToggleGroup>
 
-                    <Grid Margin="0,16,0,8">
-                        <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
-                            Text="File path" />
-                        <TextBlock
-                            HorizontalAlignment="Right"
-                            FontFamily="{StaticResource Bold}"
-                            FontSize="10"
-                            Foreground="{DynamicResource Brush.Danger}"
-                            Text="Overwrite will replace all of your data. Please ensure the data has been properly backed up."
-                            TextWrapping="Wrap"
-                            Visibility="{Binding IsOverwriteSelected, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
-                    </Grid>
+                <Grid Margin="0,16,0,8">
+                    <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}" Text="File path" />
                     <TextBlock
-                        Margin="0,0,0,8"
+                        HorizontalAlignment="Right"
                         FontFamily="{StaticResource Bold}"
-                        FontSize="11"
+                        FontSize="10"
                         Foreground="{DynamicResource Brush.Danger}"
-                        Text="{Binding FileValidationMessage}"
-                        Visibility="{Binding IsFileInvalid, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                            Grid.Column="0"
-                            Margin="0,0,8,0"
-                            IsReadOnly="True"
-                            Style="{StaticResource RoundedTextInputStyle}"
-                            Text="{Binding FilePath}" />
-                        <customControls:BalloonButton
-                            Grid.Column="1"
-                            Margin="0"
-                            VerticalAlignment="Center"
-                            ButtonIcon="{StaticResource DotsHorizontal}"
-                            Click="OnBrowseClick"
-                            Style="{StaticResource ToolbarActionBalloonButtonStyle}"
-                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
-                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}" />
-                    </Grid>
+                        Text="Overwrite will replace all of your data. Please ensure the data has been properly backed up."
+                        TextWrapping="Wrap"
+                        Visibility="{Binding IsOverwriteSelected, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                </Grid>
+                <TextBlock
+                    Margin="0,0,0,8"
+                    FontFamily="{StaticResource Bold}"
+                    FontSize="11"
+                    Foreground="{DynamicResource Brush.Danger}"
+                    Text="{Binding FileValidationMessage}"
+                    Visibility="{Binding IsFileInvalid, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        Grid.Column="0"
+                        Margin="0,0,8,0"
+                        IsReadOnly="True"
+                        Style="{StaticResource RoundedTextInputStyle}"
+                        Text="{Binding FilePath}" />
+                    <customControls:BalloonButton
+                        Grid.Column="1"
+                        Margin="0"
+                        VerticalAlignment="Center"
+                        ButtonIcon="{StaticResource DotsHorizontal}"
+                        Click="OnBrowseClick"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
+                        Style="{StaticResource ToolbarActionBalloonButtonStyle}" />
+                </Grid>
 
-                    <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
-                        Margin="0,16,0,8"
-                        Text="Entities" />
-<ItemsControl Margin="0,16,0,0" ItemsSource="{Binding Entities}" ItemsPanel="{StaticResource DataManagementEntityItemsPanelTemplate}" ItemTemplate="{StaticResource DataManagementEntityTemplate}">
-
-
-                    </ItemsControl>
+                <TextBlock
+                    Margin="0,16,0,8"
+                    Style="{StaticResource DataManagementHeadingTextStyle}"
+                    Text="Entities" />
+                <ItemsControl
+                    Margin="0,16,0,0"
+                    ItemTemplate="{StaticResource DataManagementEntityTemplate}"
+                    ItemsPanel="{StaticResource DataManagementEntityItemsPanelTemplate}"
+                    ItemsSource="{Binding Entities}" />
             </StackPanel>
             <customControls:BalloonButton
                 Margin="24"
@@ -170,129 +185,130 @@
                 VerticalAlignment="Bottom"
                 ButtonIcon="{StaticResource ControllerPlay}"
                 Click="OnStartClick"
+                DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
                 HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
-                Style="{StaticResource ToolbarActionBalloonButtonStyle}"
-                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}" />
+                Style="{StaticResource ToolbarActionBalloonButtonStyle}" />
         </Grid>
 
         <Grid Style="{StaticResource ProcessingPageStyle}">
             <Grid>
-                    <components:RisingFlowBackground Grid.RowSpan="5" AccentBrush="{DynamicResource Color.Mint}" />
+                <components:RisingFlowBackground Grid.RowSpan="5" AccentBrush="{DynamicResource Color.Mint}" />
 
-                    <StackPanel
-                        Margin="0,-40,0,0"
+                <StackPanel
+                    Margin="0,-40,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <Border
+                        Width="84"
+                        Height="84"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                        <Border
-                            Width="84"
-                            Height="84"
-                            HorizontalAlignment="Center"
-                            Background="{DynamicResource Brush.Background.Surface}"
-                            BorderBrush="{DynamicResource Brush.Border.Subtle}"
-                            BorderThickness="1"
-                            CornerRadius="42">
-                            <Image
-                                Margin="20"
-                                Source="/Fluxo.Resources;component/Resources/fluxo.ico"
-                                Stretch="Uniform" />
-                        </Border>
-                        <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
-                            Margin="0,24,0,0"
-                            HorizontalAlignment="Center"
-                            FontSize="28"
-                            Text="{Binding OperationTitle}" />
-                        <TextBlock
-                            Margin="0,12,0,0"
-                            HorizontalAlignment="Center"
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="13"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="{Binding OperationDescription}"
-                            TextAlignment="Center" />
-                    </StackPanel>
+                        Background="{DynamicResource Brush.Background.Surface}"
+                        BorderBrush="{DynamicResource Brush.Border.Subtle}"
+                        BorderThickness="1"
+                        CornerRadius="42">
+                        <Image
+                            Margin="20"
+                            Source="/Fluxo.Resources;component/Resources/fluxo.ico"
+                            Stretch="Uniform" />
+                    </Border>
+                    <TextBlock
+                        Margin="0,24,0,0"
+                        HorizontalAlignment="Center"
+                        FontSize="28"
+                        Style="{StaticResource DataManagementHeadingTextStyle}"
+                        Text="{Binding OperationTitle}" />
+                    <TextBlock
+                        Margin="0,12,0,0"
+                        HorizontalAlignment="Center"
+                        FontFamily="{StaticResource Medium}"
+                        FontSize="13"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
+                        Text="{Binding OperationDescription}"
+                        TextAlignment="Center" />
+                </StackPanel>
 
-                    <components:FluxoWave
-                        Height="120"
-                        Margin="0,200,0,0"
-                        VerticalAlignment="Bottom"
-                        ClipToBounds="True" />
+                <components:FluxoWave
+                    Height="120"
+                    Margin="0,200,0,0"
+                    VerticalAlignment="Bottom"
+                    ClipToBounds="True" />
             </Grid>
         </Grid>
 
         <Grid Style="{StaticResource ConflictPageStyle}">
             <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
-                            FontSize="18"
-                            Text="Append conflict handling" />
-                        <TextBlock
-                            Margin="0,8,0,0"
-                            FontFamily="{StaticResource Medium}"
-                            FontSize="11"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="Choose how to handle conflicts before continuing."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                <StackPanel>
+                    <TextBlock
+                        FontSize="18"
+                        Style="{StaticResource DataManagementHeadingTextStyle}"
+                        Text="Append conflict handling" />
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        FontFamily="{StaticResource Medium}"
+                        FontSize="11"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
+                        Text="Choose how to handle conflicts before continuing."
+                        TextWrapping="Wrap" />
+                </StackPanel>
 
-                    <customControls:FadingScrollViewer
-                        Grid.Row="1"
-                        Margin="0,16,0,0"
-                        VerticalScrollBarVisibility="Auto">
-<ItemsControl ItemsSource="{Binding Conflicts}" ItemTemplate="{StaticResource DataManagementConflictTemplate}">
+                <customControls:FadingScrollViewer
+                    Grid.Row="1"
+                    Margin="0,16,0,0"
+                    VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemTemplate="{StaticResource DataManagementConflictTemplate}" ItemsSource="{Binding Conflicts}" />
+                </customControls:FadingScrollViewer>
 
-                        </ItemsControl>
-                    </customControls:FadingScrollViewer>
-
-                    <StackPanel
-                        Grid.Row="2"
-                        Margin="0,12,0,0"
-                        HorizontalAlignment="Right"
-                        Orientation="Horizontal">
-                        <TextBlock
-                            Margin="0,0,8,0"
-                            VerticalAlignment="Center"
-                            FontFamily="{StaticResource Medium}"
-                            Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="Continue" />
-                        <customControls:BalloonButton
-                            Margin="0"
-                            ButtonIcon="{StaticResource ControllerPlay}"
-                            Click="OnStartClick"
-                            Style="{StaticResource ToolbarActionBalloonButtonStyle}"
-                            DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
-                            HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}" />
-                    </StackPanel>
+                <StackPanel
+                    Grid.Row="2"
+                    Margin="0,12,0,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Margin="0,0,8,0"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource Medium}"
+                        Foreground="{DynamicResource Brush.Text.Secondary}"
+                        Text="Continue" />
+                    <customControls:BalloonButton
+                        Margin="0"
+                        ButtonIcon="{StaticResource ControllerPlay}"
+                        Click="OnStartClick"
+                        DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
+                        HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
+                        Style="{StaticResource ToolbarActionBalloonButtonStyle}" />
+                </StackPanel>
             </Grid>
         </Grid>
 
         <Grid Style="{StaticResource ResultPageStyle}">
             <StackPanel VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource DataManagementHeadingTextStyle}"
-                        HorizontalAlignment="Center"
-                        FontSize="22"
-                        Text="Result" />
-                    <TextBlock
-                        Margin="0,16,0,0"
-                        HorizontalAlignment="Center"
-                        FontFamily="{StaticResource Medium}"
-                        Foreground="{DynamicResource Brush.Text.Secondary}"
-                        Text="{Binding ResultMessage}"
-                        TextAlignment="Center"
-                        TextWrapping="Wrap" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="22"
+                    Style="{StaticResource DataManagementHeadingTextStyle}"
+                    Text="Result" />
+                <TextBlock
+                    Margin="0,16,0,0"
+                    HorizontalAlignment="Center"
+                    FontFamily="{StaticResource Medium}"
+                    Foreground="{DynamicResource Brush.Text.Secondary}"
+                    Text="{Binding ResultMessage}"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap" />
 
-                    <Button
-                        Width="132"
-                        Margin="0,20,0,0"
-                        HorizontalAlignment="Center"
-                        Click="OnCloseClick"
-                        Content="Close"
-                        Style="{StaticResource PopupTextButtonStyle}" />
+                <Button
+                    Width="132"
+                    Margin="0,20,0,0"
+                    HorizontalAlignment="Center"
+                    Click="OnCloseClick"
+                    Content="Close"
+                    Style="{StaticResource PopupTextButtonStyle}" />
             </StackPanel>
         </Grid>
     </Grid>

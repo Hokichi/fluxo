@@ -18,9 +18,7 @@
         </ResourceDictionary>
     </customControls:BasePopup.Resources>
 
-    <Grid
-        Width="760"
-        Margin="40,6,40,24">
+    <Grid Width="760" Margin="40,6,40,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="12" />

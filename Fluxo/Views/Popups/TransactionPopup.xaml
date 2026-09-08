@@ -25,14 +25,20 @@
                 <ResourceDictionary Source="/Fluxo;component/Resources/Styles/TransactionBalanceUpdateStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="TransactionOptionTitleTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Style
+                x:Key="TransactionOptionTitleTextStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             </Style>
 
-            <Style x:Key="TransactionOptionHintTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Style
+                x:Key="TransactionOptionHintTextStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="Margin" Value="0,3,0,0" />
                 <Setter Property="FontFamily" Value="{DynamicResource Regular}" />
                 <Setter Property="FontSize" Value="11" />
@@ -40,14 +46,20 @@
                 <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             </Style>
 
-            <Style x:Key="TransactionRightValueTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Style
+                x:Key="TransactionRightValueTextStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="HorizontalAlignment" Value="Right" />
                 <Setter Property="FontFamily" Value="{DynamicResource Bold}" />
                 <Setter Property="FontSize" Value="13" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             </Style>
 
-            <Style x:Key="TransactionPrimaryTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}" TargetType="TextBlock">
+            <Style
+                x:Key="TransactionPrimaryTextStyle"
+                BasedOn="{StaticResource BaseTextBlockStyle}"
+                TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{DynamicResource Medium}" />
                 <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             </Style>
@@ -64,40 +76,40 @@
                 </Style.Triggers>
             </Style>
 
-                        <ControlTemplate x:Key="PopupTagItemRadioTemplate" TargetType="RadioButton">
-                                        <Border
-                                            Padding="{TemplateBinding Padding}"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            CornerRadius="14">
-                                            <StackPanel Orientation="Horizontal">
-                                                <Ellipse
-                                                    x:Name="ColorDot"
-                                                    Width="6"
-                                                    Height="6"
-                                                    VerticalAlignment="Center"
-                                                    Fill="{Binding HexCode}" />
-                                                <TextBlock
-                                                    x:Name="TagText"
-                                                    Margin="6,0,0,0"
-                                                    VerticalAlignment="Center"
-                                                    FontFamily="{TemplateBinding FontFamily}"
-                                                    FontSize="{TemplateBinding FontSize}"
-                                                    Foreground="{DynamicResource Brush.Text.Primary}"
-                                                    Text="{TemplateBinding Content}" />
-                                            </StackPanel>
-                                        </Border>
+            <ControlTemplate x:Key="PopupTagItemRadioTemplate" TargetType="RadioButton">
+                <Border
+                    Padding="{TemplateBinding Padding}"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="14">
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse
+                            x:Name="ColorDot"
+                            Width="6"
+                            Height="6"
+                            VerticalAlignment="Center"
+                            Fill="{Binding HexCode}" />
+                        <TextBlock
+                            x:Name="TagText"
+                            Margin="6,0,0,0"
+                            VerticalAlignment="Center"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            Foreground="{DynamicResource Brush.Text.Primary}"
+                            Text="{TemplateBinding Content}" />
+                    </StackPanel>
+                </Border>
 
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsChecked" Value="True">
-                                                <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
-                                                <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter TargetName="ColorDot" Property="Fill" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                        <Setter TargetName="TagText" Property="Foreground" Value="{Binding HexCode, Converter={StaticResource BackgroundToForegroundConverter}}" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
 
-<Style
+            <Style
                 x:Key="PopupTagItemRadioStyle"
                 BasedOn="{StaticResource BaseRadioButtonStyle}"
                 TargetType="RadioButton">
@@ -127,36 +139,36 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-                        <ControlTemplate x:Key="PopupTagButtonTemplate" TargetType="Button">
-                                        <Grid>
-                                            <Border
-                                                x:Name="Fill"
-                                                Background="{TemplateBinding Background}"
-                                                CornerRadius="14"
-                                                Opacity="0" />
-                                            <Rectangle
-                                                RadiusX="14"
-                                                RadiusY="14"
-                                                Stroke="{TemplateBinding Foreground}"
-                                                StrokeDashArray="5,3"
-                                                StrokeThickness="1" />
-                                            <TextBlock
-                                                Margin="{TemplateBinding Padding}"
-                                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                VerticalAlignment="Center"
-                                                FontFamily="{TemplateBinding FontFamily}"
-                                                FontSize="{TemplateBinding FontSize}"
-                                                Foreground="{TemplateBinding Foreground}"
-                                                Text="{TemplateBinding Content}" />
-                                        </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Fill" Property="Opacity" Value="1" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
+            <ControlTemplate x:Key="PopupTagButtonTemplate" TargetType="Button">
+                <Grid>
+                    <Border
+                        x:Name="Fill"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="14"
+                        Opacity="0" />
+                    <Rectangle
+                        RadiusX="14"
+                        RadiusY="14"
+                        Stroke="{TemplateBinding Foreground}"
+                        StrokeDashArray="5,3"
+                        StrokeThickness="1" />
+                    <TextBlock
+                        Margin="{TemplateBinding Padding}"
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                        VerticalAlignment="Center"
+                        FontFamily="{TemplateBinding FontFamily}"
+                        FontSize="{TemplateBinding FontSize}"
+                        Foreground="{TemplateBinding Foreground}"
+                        Text="{TemplateBinding Content}" />
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Fill" Property="Opacity" Value="1" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
 
-<Style
+            <Style
                 x:Key="PopupTagButtonStyle"
                 BasedOn="{StaticResource BaseButtonStyle}"
                 TargetType="Button">
@@ -228,7 +240,7 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-<Style
+            <Style
                 x:Key="PopupTagListBoxItemStyle"
                 BasedOn="{StaticResource PlainListBoxItemStyle}"
                 TargetType="ListBoxItem">
@@ -257,25 +269,25 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             </Style>
 
-                        <ControlTemplate x:Key="TransactionNameSuggestionListBoxItemTemplate" TargetType="ListBoxItem">
-                                        <Border
-                                            x:Name="ItemBackground"
-                                            Padding="8,6"
-                                            Background="{TemplateBinding Background}"
-                                            CornerRadius="8">
-                                            <ContentPresenter />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
+            <ControlTemplate x:Key="TransactionNameSuggestionListBoxItemTemplate" TargetType="ListBoxItem">
+                <Border
+                    x:Name="ItemBackground"
+                    Padding="8,6"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="8">
+                    <ContentPresenter />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
 
-<Style
+            <Style
                 x:Key="TransactionNameSuggestionListBoxItemStyle"
                 BasedOn="{StaticResource BaseListBoxItemStyle}"
                 TargetType="ListBoxItem">
@@ -294,34 +306,34 @@
                 <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
             </Style>
 
-                        <ControlTemplate x:Key="TransactionHistoryListBoxItemTemplate" TargetType="ListBoxItem">
-                                        <Border
-                                            x:Name="ItemBackground"
-                                            Padding="10,8"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{DynamicResource Brush.Border.Default}"
-                                            BorderThickness="1"
-                                            CornerRadius="8">
-                                            <ContentPresenter />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
-                                            </Trigger>
-                                            <Trigger Property="IsMouseOver" Value="False">
-                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                                            </Trigger>
-                                            <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
-                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
-                                            </DataTrigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
+            <ControlTemplate x:Key="TransactionHistoryListBoxItemTemplate" TargetType="ListBoxItem">
+                <Border
+                    x:Name="ItemBackground"
+                    Padding="10,8"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{DynamicResource Brush.Border.Default}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <ContentPresenter />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                        <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Accent.Muted}" />
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="False">
+                        <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                    </Trigger>
+                    <DataTrigger Binding="{Binding IsValid, Mode=OneWay}" Value="False">
+                        <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Danger}" />
+                    </DataTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
 
-<Style
+            <Style
                 x:Key="TransactionHistoryListBoxItemStyle"
                 BasedOn="{StaticResource BaseListBoxItemStyle}"
                 TargetType="ListBoxItem">
@@ -332,28 +344,28 @@
                 <Setter Property="Template" Value="{StaticResource TransactionHistoryListBoxItemTemplate}" />
             </Style>
 
-                        <ControlTemplate x:Key="TransactionQueueListBoxItemTemplate" TargetType="ListBoxItem">
-                                        <Border
-                                            x:Name="ItemBackground"
-                                            Padding="10,8"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{DynamicResource Brush.Border.Default}"
-                                            BorderThickness="1"
-                                            CornerRadius="8">
-                                            <ContentPresenter />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
-                                            </Trigger>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
-                                                <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
+            <ControlTemplate x:Key="TransactionQueueListBoxItemTemplate" TargetType="ListBoxItem">
+                <Border
+                    x:Name="ItemBackground"
+                    Padding="10,8"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{DynamicResource Brush.Border.Default}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <ContentPresenter />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Hover}" />
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="ItemBackground" Property="Background" Value="{DynamicResource Brush.Background.Elevated}" />
+                        <Setter TargetName="ItemBackground" Property="BorderBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
 
-<Style
+            <Style
                 x:Key="TransactionQueueListBoxItemStyle"
                 BasedOn="{StaticResource BaseListBoxItemStyle}"
                 TargetType="ListBoxItem">
@@ -378,14 +390,11 @@
                         VerticalAlignment="Top"
                         Fill="{Binding TagHexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}"
-                            Text="{Binding Name, Mode=OneWay}" />
-                        <TextBlock Style="{StaticResource TransactionOptionHintTextStyle}"
-                            Text="{Binding AccountName, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}" Text="{Binding Name, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionHintTextStyle}" Text="{Binding AccountName, Mode=OneWay}" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Margin="12,0,0,0">
-                        <TextBlock Style="{StaticResource TransactionRightValueTextStyle}"
-                            Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionRightValueTextStyle}" Text="{Binding Amount, StringFormat={}{0:N2}, Mode=OneWay}" />
                         <TextBlock
                             Margin="0,3,0,0"
                             HorizontalAlignment="Right"
@@ -411,14 +420,11 @@
                         VerticalAlignment="Top"
                         Fill="{Binding Tag.HexCode, FallbackValue={StaticResource Brush.Mint}, TargetNullValue={StaticResource Brush.Mint}, Mode=OneWay}" />
                     <StackPanel Grid.Column="1">
-                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}"
-                            Text="{Binding Name, Mode=OneWay}" />
-                        <TextBlock Style="{StaticResource TransactionOptionHintTextStyle}"
-                            Text="{Binding Account.Name, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}" Text="{Binding Name, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionHintTextStyle}" Text="{Binding Account.Name, Mode=OneWay}" />
                     </StackPanel>
                     <StackPanel Grid.Column="2" Margin="12,0,0,0">
-                        <TextBlock Style="{StaticResource TransactionRightValueTextStyle}"
-                            Text="{Binding Amount, StringFormat={}{0:N0}, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionRightValueTextStyle}" Text="{Binding Amount, StringFormat={}{0:N0}, Mode=OneWay}" />
                         <components:Icon Style="{StaticResource TransactionCardStatusIconStyle}" />
                     </StackPanel>
                 </Grid>
@@ -534,8 +540,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}"
-                            Text="{Binding Name, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource TransactionOptionTitleTextStyle}" Text="{Binding Name, Mode=OneWay}" />
                         <TextBlock
                             FontFamily="{DynamicResource Regular}"
                             FontSize="11"
@@ -971,7 +976,7 @@
                                             ShouldShowText="True"
                                             UncheckedIcon="{StaticResource CreditCardAlt}"
                                             UncheckedText="Regular" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                        <customControls:BalloonRadioButton
                                             Grid.Column="2"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -981,9 +986,10 @@
                                             IsChecked="{Binding IsRecurring, Mode=TwoWay}"
                                             IsEnabled="{Binding CanToggleRecurring, Mode=OneWay}"
                                             ShouldShowText="True"
+                                            Style="{StaticResource BalloonChoiceOptionStyle}"
                                             UncheckedIcon="{StaticResource RegularRepeat}"
                                             UncheckedText="Recurring" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                        <customControls:BalloonRadioButton
                                             Grid.Column="4"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -993,9 +999,10 @@
                                             IsChecked="{Binding IsInstallments, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseInstallments, Mode=OneWay}"
                                             ShouldShowText="True"
+                                            Style="{StaticResource BalloonChoiceOptionStyle}"
                                             UncheckedIcon="{StaticResource CreditCardClockOutline}"
                                             UncheckedText="Installment" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                        <customControls:BalloonRadioButton
                                             Grid.Column="6"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1005,9 +1012,10 @@
                                             IsChecked="{Binding IsUnpostedIoUMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
                                             ShouldShowText="True"
+                                            Style="{StaticResource BalloonChoiceOptionStyle}"
                                             UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                             UncheckedText="Unposted IoU" />
-                                        <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                        <customControls:BalloonRadioButton
                                             Grid.Column="8"
                                             CheckedBackground="{DynamicResource Brush.Success}"
                                             DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1017,6 +1025,7 @@
                                             IsChecked="{Binding IsPostedIoUMode, Mode=TwoWay}"
                                             IsEnabled="{Binding CanUseIoU, Mode=OneWay}"
                                             ShouldShowText="True"
+                                            Style="{StaticResource BalloonChoiceOptionStyle}"
                                             UncheckedIcon="{StaticResource CreditCardMinusSolid}"
                                             UncheckedText="Posted IoU" />
                                     </Grid>
@@ -1158,7 +1167,7 @@
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
                                                         UncheckedText="Needs" />
-                                                    <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                                    <customControls:BalloonRadioButton
                                                         ButtonIcon="{StaticResource ShoppingBag}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1168,8 +1177,9 @@
                                                         IsChecked="{Binding IsWantsCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
+                                                        Style="{StaticResource BalloonChoiceOptionStyle}"
                                                         UncheckedText="Wants" />
-                                                    <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                                    <customControls:BalloonRadioButton
                                                         ButtonIcon="{StaticResource TrendingUp}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1179,8 +1189,9 @@
                                                         IsChecked="{Binding IsInvestCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
+                                                        Style="{StaticResource BalloonChoiceOptionStyle}"
                                                         UncheckedText="Invest" />
-                                                    <customControls:BalloonRadioButton Style="{StaticResource BalloonChoiceOptionStyle}"
+                                                    <customControls:BalloonRadioButton
                                                         ButtonIcon="{StaticResource CreditCardOff}"
                                                         CheckedBackground="{DynamicResource Brush.Success}"
                                                         DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
@@ -1190,6 +1201,7 @@
                                                         IsChecked="{Binding IsExcludedCategory, Mode=TwoWay}"
                                                         IsEnabled="{Binding CanEditCategory, Mode=OneWay}"
                                                         ShouldShowText="True"
+                                                        Style="{StaticResource BalloonChoiceOptionStyle}"
                                                         UncheckedText="Excluded" />
                                                 </StackPanel>
                                             </StackPanel>
@@ -1589,19 +1601,18 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}"
+                                        <TextBlock
+                                            Style="{StaticResource TransactionPrimaryTextStyle}"
                                             Text="{Binding BalanceUpdateAccountName, Mode=OneWay}"
                                             TextTrimming="CharacterEllipsis" />
                                         <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}"
-                                                Text="{Binding BalanceUpdateAccountCurrent, Mode=OneWay, StringFormat={}{0:N0}}" />
+                                            <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}" Text="{Binding BalanceUpdateAccountCurrent, Mode=OneWay, StringFormat={}{0:N0}}" />
                                             <components:Icon
                                                 Width="6"
                                                 Margin="12,0"
                                                 Path="{StaticResource AngleRight}"
                                                 Color="{DynamicResource Brush.Text.Primary}" />
-                                            <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}"
-                                                Text="{Binding BalanceUpdateAccountToBe, Mode=OneWay, StringFormat={}{0:N0}}" />
+                                            <TextBlock Style="{StaticResource TransactionPrimaryTextStyle}" Text="{Binding BalanceUpdateAccountToBe, Mode=OneWay, StringFormat={}{0:N0}}" />
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel

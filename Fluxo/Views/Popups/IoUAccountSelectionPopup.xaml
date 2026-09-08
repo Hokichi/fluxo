@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     Width="460"
-    PopupTitle="Select Account"
-    Mode="Modify">
+    Mode="Modify"
+    PopupTitle="Select Account">
 
     <StackPanel Margin="24,0,24,24">
         <TextBlock

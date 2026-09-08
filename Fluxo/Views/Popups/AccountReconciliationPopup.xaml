@@ -6,11 +6,8 @@
     Width="600"
     Height="340"
     IsSaveButtonEnabled="{Binding CanSave}"
-    PopupTitle="Account Reconciliation"
-    Mode="Modify">
-
-    <customControls:BasePopup.Resources>
-    </customControls:BasePopup.Resources>
+    Mode="Modify"
+    PopupTitle="Account Reconciliation">
 
     <Grid Width="400" Margin="24,0,24,24">
         <Grid.RowDefinitions>
@@ -26,9 +23,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <TextBlock
-            Style="{StaticResource CompactPopupFieldLabelStyle}"
-            Text="{Binding NewAmountLabel, Mode=OneWay}" />
+        <TextBlock Style="{StaticResource CompactPopupFieldLabelStyle}" Text="{Binding NewAmountLabel, Mode=OneWay}" />
         <customControls:MoneyTextBox
             x:Name="AmountTextBox"
             Grid.Row="2"

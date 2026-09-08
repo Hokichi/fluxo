@@ -4,11 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
-    PopupTitle="Transfer Funds"
-    Mode="Update">
-
-    <customControls:BasePopup.Resources>
-    </customControls:BasePopup.Resources>
+    Mode="Update"
+    PopupTitle="Transfer Funds">
 
     <Grid Width="480" Margin="24,0,24,24">
         <Grid.RowDefinitions>
@@ -71,7 +68,3 @@
         </Grid>
     </Grid>
 </customControls:BasePopup>
-
-
-
-

@@ -5,8 +5,8 @@
     xmlns:components="clr-namespace:Fluxo.Resources.Components;assembly=Fluxo.Resources"
     xmlns:customControls="clr-namespace:Fluxo.Resources.CustomControls;assembly=Fluxo.Resources"
     xmlns:tabs="clr-namespace:Fluxo.Views.Popups.Settings.Tabs"
-    PopupTitle="Settings"
-    Mode="None">
+    Mode="None"
+    PopupTitle="Settings">
 
     <customControls:BasePopup.Resources>
         <ResourceDictionary>
@@ -194,7 +194,3 @@
         </Grid>
     </Grid>
 </customControls:BasePopup>
-
-
-
-
