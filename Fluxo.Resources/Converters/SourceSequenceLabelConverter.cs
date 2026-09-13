@@ -18,6 +18,6 @@ public sealed class SourceSequenceLabelConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        throw new NotSupportedException();
+        return Binding.DoNothing;
     }
 }

@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Windows.Data;
 using System.Windows.Media;
 using Fluxo.Resources.Converters;
 using Xunit;
@@ -64,15 +65,17 @@ public sealed class WizardStepForegroundConverterTests
     }
 
     [Fact]
-    public void WizardStepForegroundConverter_ConvertBack_ThrowsNotSupportedException()
+    public void WizardStepForegroundConverter_ConvertBack_ReturnsDoNothing()
     {
         var converter = CreateConverter();
 
-        Assert.Throws<NotSupportedException>(() => converter.ConvertBack(
+        var result = converter.ConvertBack(
             Brushes.White,
             typeof(Brush),
             null!,
-            CultureInfo.InvariantCulture));
+            CultureInfo.InvariantCulture);
+
+        Assert.Same(Binding.DoNothing, result);
     }
 
     private static WizardStepForegroundConverter CreateConverter() => new()

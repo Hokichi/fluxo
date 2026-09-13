@@ -28,7 +28,7 @@ public class MoneyAmountToCanonicalConverter : IValueConverter
         var text = value as string ?? System.Convert.ToString(value, sourceCulture) ?? string.Empty;
         var canonical = BuildCanonicalNumber(text, sourceCulture, options.AllowDecimal);
         if (canonical.Length == 0)
-            return 0m;
+            return Binding.DoNothing;
 
         return decimal.TryParse(
             canonical,
@@ -36,7 +36,7 @@ public class MoneyAmountToCanonicalConverter : IValueConverter
             CultureInfo.InvariantCulture,
             out var amount)
             ? amount
-            : 0m;
+            : Binding.DoNothing;
     }
 
     private static string BuildCanonicalNumber(string text, CultureInfo culture, bool allowDecimal)

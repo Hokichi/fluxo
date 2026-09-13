@@ -165,15 +165,17 @@ public sealed class BackgroundToForegroundConverterTests
     }
 
     [Fact]
-    public void BackgroundToForegroundConverter_ConvertBack_ThrowsNotSupportedException()
+    public void BackgroundToForegroundConverter_ConvertBack_ReturnsDoNothing()
     {
         var converter = new BackgroundToForegroundConverter();
 
-        Assert.Throws<NotSupportedException>(() => converter.ConvertBack(
+        var result = converter.ConvertBack(
             Brushes.White,
             typeof(Brush),
             null!,
-            CultureInfo.InvariantCulture));
+            CultureInfo.InvariantCulture);
+
+        Assert.Same(Binding.DoNothing, result);
     }
 
     private static double ContrastRatio(Color first, Color second)

@@ -16,6 +16,6 @@ public class CornerRadiusConverter : IMultiValueConverter
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        return Array.ConvertAll(targetTypes, _ => Binding.DoNothing);
     }
 }

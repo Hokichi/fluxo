@@ -50,5 +50,5 @@ public sealed class WizardStepForegroundConverter : IValueConverter
         Application.Current?.TryFindResource(resourceKey) as Brush;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-        throw new NotSupportedException();
+        Binding.DoNothing;
 }

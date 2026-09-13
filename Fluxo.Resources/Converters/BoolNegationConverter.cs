@@ -12,6 +12,6 @@ public class BoolNegationConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return value is bool b ? !b : false;
+        return value is bool b ? !b : Binding.DoNothing;
     }
 }
