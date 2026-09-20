@@ -5,17 +5,17 @@
     <InstallerPlatform>x64</InstallerPlatform>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <OutputName>Fluxo.Installer</OutputName>
-    <FluxoMsiVersion Condition="'$(FluxoMsiVersion)' == ''">1.0.5</FluxoMsiVersion>
     <FluxoAppRuntimeIdentifier>win-$(InstallerPlatform)</FluxoAppRuntimeIdentifier>
     <FluxoAppPayloadDir>$(MSBuildProjectDirectory)\obj\$(Configuration)\app-payload\$(FluxoAppRuntimeIdentifier)\</FluxoAppPayloadDir>
     <DefineConstants>$(DefineConstants);FluxoMsiVersion=$(FluxoMsiVersion);FluxoAppPayloadDir=$(FluxoAppPayloadDir)</DefineConstants>
   </PropertyGroup>
 
-  <Target Name="PublishFluxoApplicationForInstaller" BeforeTargets="BeforeBuild">
+  <Target Name="PublishFluxoApplicationForInstaller" BeforeTargets="BeforeBuild" DependsOnTargets="ValidateFluxoReleaseVersion">
     <RemoveDir Directories="$(FluxoAppPayloadDir)" />
     <MSBuild
       Projects="..\Fluxo\Fluxo.csproj"
       Targets="Restore;Publish"
-      Properties="Configuration=$(Configuration);RuntimeIdentifier=$(FluxoAppRuntimeIdentifier);SelfContained=false;PublishSelfContained=false;PublishSingleFile=false;PublishDir=$(FluxoAppPayloadDir)" />
+      Properties="Configuration=$(Configuration);FluxoInstallerVersion=$(FluxoInstallerVersion);Version=$(FluxoInstallerVersion);FileVersion=$(FluxoInstallerVersion).0;RuntimeIdentifier=$(FluxoAppRuntimeIdentifier);SelfContained=false;PublishSelfContained=false;PublishSingleFile=false;PublishDir=$(FluxoAppPayloadDir)" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\Build\Verify-Payload.ps1&quot; -PayloadDirectory &quot;$(FluxoAppPayloadDir).&quot; -ExpectedVersion &quot;$(FluxoInstallerVersion)&quot;" />
   </Target>
 </Project>

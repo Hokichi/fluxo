@@ -9,7 +9,6 @@
 	  <StartupObject>Fluxo.App</StartupObject>
 	  <EnableDefaultItems>true</EnableDefaultItems>
 	  <ApplicationIcon>..\Fluxo.Resources\Resources\fluxo.ico</ApplicationIcon>
-	  <Version>1.0.5</Version>
 	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	  <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 	  <AssemblyTitle>fluxo</AssemblyTitle>

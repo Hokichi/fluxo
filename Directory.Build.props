@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <!-- One release input for the bundle, MSI, app and referenced libraries. -->
+    <FluxoInstallerVersion Condition="'$(FluxoInstallerVersion)' == ''">1.0.7</FluxoInstallerVersion>
+    <FluxoMsiVersion Condition="'$(FluxoMsiVersion)' == ''">$(FluxoInstallerVersion)</FluxoMsiVersion>
+    <Version Condition="'$(Version)' == ''">$(FluxoInstallerVersion)</Version>
+    <FileVersion Condition="'$(FileVersion)' == ''">$(FluxoInstallerVersion).0</FileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Fluxo.Core' or '$(MSBuildProjectName)' == 'Fluxo.Data' or '$(MSBuildProjectName)' == 'Fluxo.Services' or '$(MSBuildProjectName)' == 'Fluxo.Resources'">
+    <!-- Keep CLR identity stable; MSI replacement uses FileVersion. -->
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+  </PropertyGroup>
+</Project>

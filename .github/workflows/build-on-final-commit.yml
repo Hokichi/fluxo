@@ -6,6 +6,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ startsWith(github.event.head_commit.message, 'Final commit for build v') && 'fluxo-release' || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -37,6 +41,20 @@ jobs:
             echo "Commit message does not match release pattern."
           fi
 
+      - name: Checkout release history
+        if: steps.parse.outputs.should_build == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate new release version
+        if: steps.parse.outputs.should_build == 'true'
+        env:
+          RELEASE_VERSION: ${{ steps.parse.outputs.version }}
+        run: |
+          python3 -m unittest discover -s .github/scripts -p test_release_version.py
+          python3 .github/scripts/check_release_version.py "$RELEASE_VERSION"
+
   build_installer:
     runs-on: windows-latest
     needs: prepare
@@ -61,6 +79,26 @@ jobs:
             .\Fluxo.Installer.Bundle\Fluxo.Installer.Bundle.wixproj `
             --configuration Release `
             -p:FluxoInstallerVersion=${{ needs.prepare.outputs.version }}
+
+      - name: Verify package contents and regression guards
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          ./Fluxo.Installer.Msi/Build/Test-PackageGuards.ps1 `
+            -PayloadDirectory ./Fluxo.Installer.Msi/obj/Release/app-payload/win-x64 `
+            -MsiPath ./Fluxo.Installer.Msi/bin/Release/en-US/Fluxo.Installer.msi `
+            -ExpectedVersion $env:RELEASE_VERSION
+
+      - name: Verify published assembly loading without starting application
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          $env:FLUXO_VERIFIED_PAYLOAD = (Resolve-Path ./Fluxo.Installer.Msi/obj/Release/app-payload/win-x64).Path
+          dotnet test ./Fluxo.Tests/Fluxo.Tests.csproj `
+            --filter FullyQualifiedName~PublishedAssemblyLoadTests `
+            -p:FluxoInstallerVersion=$env:RELEASE_VERSION
 
       - name: Locate installer executable
         id: locate_installer
@@ -110,8 +148,8 @@ jobs:
           SHA: ${{ github.sha }}
         run: |
           if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
-            echo "Tag ${TAG} already exists. Skipping."
-            exit 0
+            echo "Refusing to reuse existing release tag ${TAG}."
+            exit 1
           fi
 
           git tag "${TAG}" "${SHA}"

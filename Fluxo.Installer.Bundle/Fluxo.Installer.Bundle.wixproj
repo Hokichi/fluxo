@@ -1,7 +1,6 @@
 <Project Sdk="WixToolset.Sdk/7.0.0">
   <PropertyGroup>
     <OutputType>Bundle</OutputType>
-    <FluxoInstallerVersion Condition="'$(FluxoInstallerVersion)' == ''">1.0.5</FluxoInstallerVersion>
     <OutputName>fluxo-$(FluxoInstallerVersion)-Installer</OutputName>
     <AcceptEula>wix7</AcceptEula>
     <ManagedBootstrapperExe>$(MSBuildThisFileDirectory)..\Fluxo.Installer\bin\$(Configuration)\net10.0-windows\win-x64\Fluxo.Installer.exe</ManagedBootstrapperExe>
@@ -17,13 +16,13 @@
     <PackageReference Include="WixToolset.BootstrapperApplications.wixext" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Fluxo.Installer.Msi\Fluxo.Installer.Msi.wixproj" />
+    <ProjectReference Include="..\Fluxo.Installer.Msi\Fluxo.Installer.Msi.wixproj" AdditionalProperties="FluxoInstallerVersion=$(FluxoInstallerVersion)" />
   </ItemGroup>
-  <Target Name="BuildManagedBootstrapperForBundle" BeforeTargets="BeforeBuild">
+  <Target Name="BuildManagedBootstrapperForBundle" BeforeTargets="BeforeBuild" DependsOnTargets="ValidateFluxoReleaseVersion">
     <MSBuild
       Projects="$(MSBuildThisFileDirectory)..\Fluxo.Installer\Fluxo.Installer.csproj"
       Targets="Restore;Build"
-      Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true" />
+      Properties="Configuration=$(Configuration);FluxoInstallerVersion=$(FluxoInstallerVersion);RuntimeIdentifier=win-x64;SelfContained=true" />
   </Target>
   <Target Name="GenerateManagedBootstrapperPayloads" BeforeTargets="BeforeBuild" DependsOnTargets="BuildManagedBootstrapperForBundle">
     <!-- PayloadGroup Id="ManagedBootstrapperPayloads" -->
