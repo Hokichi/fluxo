@@ -10,6 +10,19 @@ Fluxo is a local-first Windows personal finance app. Track accounts, record tran
 
 Current release: **1.0.6**
 
+## Navigation
+
+- [Building a release](#building-a-release)
+- [Features](#features)
+- [Getting started](#getting-started)
+- [Major features](#major-features)
+- [Privacy and storage](#privacy-and-storage)
+- [Keyboard shortcuts](#keyboard-shortcuts)
+- [Build and test](#build-and-test)
+- [Troubleshooting](#troubleshooting)
+- [Support](#support)
+- [Release history](#release-history)
+
 ## Building a release
 
 Use one version input for the bundle, MSI, application, and first-party DLL file versions:
@@ -35,8 +48,9 @@ Successful verification reports matching release versions and packaged SHA256 ha
 
 ### Setup and navigation
 
-- Guided Quick Setup for identity, preferences, accounts, budget allocation, recurring transactions, goals, and notifications.
-- Quick Access for common creation, planning, account, settings, data, and update actions.
+- Guided Quick Setup for identity, theme, preferences, accounts, budget allocation, recurring transactions, goals, and notifications.
+- Customizable Quick Access for common creation, planning, account, settings, data, and update actions.
+- Global Search for transactions, accounts, tags, goals, features, and settings.
 - Dashboard, Analytics, Calendar, and Ledger pages.
 - Keyboard shortcuts with an in-app Hotkeys overview.
 
@@ -51,6 +65,8 @@ Successful verification reports matching release versions and packaged SHA256 ha
 
 - Tags, notes, Needs/Wants/Invest categories, budget exclusion, and pinned transactions.
 - Split transactions with nested child transactions.
+- Bulk transaction entry with an editable validation queue.
+- Live balance previews before a transaction is saved.
 - Recurring transactions and installment transactions with end dates.
 - Linked transactions, reversal, transaction history, debt/IOU flags, posted and unposted IOUs, and repayment modes.
 
@@ -104,7 +120,7 @@ Quick Setup can be run again from Settings. Add at least one account before ente
 
 ### Quick Setup and Quick Access
 
-Quick Setup configures the initial display name, preferences, accounts, allocation percentages, recurring transactions, saving goals, and notification settings.
+Quick Setup configures the initial display name, light or dark theme, preferences, accounts, allocation percentages, recurring transactions, saving goals, and notification settings. Theme changes are previewed immediately and saved when setup finishes.
 
 Quick Access opens common actions:
 
@@ -127,6 +143,12 @@ Choose **Edit** to show the complete catalog and select which tiles appear in th
 
 > **Screenshot placeholder:** Quick Access panel.
 
+### Global Search
+
+Press `Ctrl+F` or choose **Search Everything** from Quick Access to search across transactions, accounts, tags, saving goals, app features, and settings.
+
+Results are grouped by type. Opening a result can show a financial record, navigate to a main page, start a common action, or open the matching settings section.
+
 ### Dashboard
 
 Dashboard combines period totals, daily allowance, budget allocation, account cards, transaction activity, saving goals, notifications, and Upcoming Events.
@@ -143,7 +165,9 @@ Account detail supports balance or spent-credit editing, transfers, pinning, del
 
 New Transaction records expenses or incomes. Depending on the mode, it can also create goal contributions, recurring items, installments, repayments, debt/IOU entries, or split transactions.
 
-Transaction details support accounts, amounts, dates, categories, tags, notes, goals, budget exclusion, pinning, linked transactions, reversal, and child transactions. Transfer Funds moves money between accounts without requiring a manual pair of entries.
+Transaction details support accounts, amounts, dates, categories, tags, notes, goals, budget exclusion, pinning, linked transactions, reversal, and child transactions. The balance update card previews the resulting account, category, and tag amounts before saving. Transfer Funds moves money between accounts without requiring a manual pair of entries.
+
+Enable **Bulk Insert** while creating transactions to build a queue, review or edit each item, remove unwanted items, and save the valid queue together. Duplicate and incomplete entries are identified before the queue is persisted.
 
 ### Recurring transactions and installments
 
@@ -369,7 +393,8 @@ Report issues at the [Fluxo GitHub repository](https://github.com/Hokichi/Fluxo/
 
 ## Release history
 
-- **1.0.5** - Current release. Adds Calendar, Ledger tools, data management, transaction splitting, budget planning and forecasting, history actions, locking, installments, debt/IOUs, notifications, tray behavior, shortcuts, linked transactions, and related UI improvements and fixes.
+- **1.0.6** - Current release. Adds Global Search, persistent light and dark themes, a revamped Quick Setup flow, customizable Quick Access tiles, bulk transaction entry, live balance previews, improved split-transaction editing, faster cached data access, and safer installer reinstall, version, and package verification behavior.
+- **1.0.5** - Adds Calendar, Ledger tools, data management, transaction splitting, budget planning and forecasting, history actions, locking, installments, debt/IOUs, notifications, tray behavior, shortcuts, linked transactions, and related UI improvements and fixes.
 - **1.0.4** - Runtime-aware installer and Quick Setup, account, and dashboard improvements.
 - **1.0.3** - Installer fix, income search, and insufficient-funds protection.
 - **1.0.2** - Recurring transactions and expanded spending/saving records.
