@@ -68,6 +68,10 @@ public partial class InstallerViewModel : ObservableObject
 
     private bool installFolderExistedBeforeInstall;
     private bool installStarted;
+    private bool startupDetectionStarted;
+    private bool startupDetectionFailed;
+    private bool hasExistingInstallation;
+    private bool planRequested;
     private string installFolderForCurrentRun = string.Empty;
 
     public InstallerViewModel(
@@ -251,6 +255,24 @@ public partial class InstallerViewModel : ObservableObject
 
     public void Begin()
     {
+        if (!IsMaintenanceMode && !IsUninstallMode)
+        {
+            if (startupDetectionStarted) return;
+            startupDetectionStarted = true;
+            State = InstallerState.Detecting;
+            StatusMessage = "Checking existing installation...";
+            try
+            {
+                requestDetect();
+            }
+            catch (Exception ex)
+            {
+                startupDetectionFailed = true;
+                TransitionToFailure($"Could not detect the installed application. Close setup and try again. {ex.Message}");
+            }
+            return;
+        }
+
         if (!EnsureFluxoCanBeStoppedForOperation(GetStartupPreflightOperation()))
         {
             return;
@@ -268,6 +290,116 @@ public partial class InstallerViewModel : ObservableObject
         }
 
         StartUninstall();
+    }
+
+    public string ReinstallPrompt => $"fluxo {upToDateInstalledVersion} is already installed. Do you want to reinstall it?";
+
+    public bool CanEditInstallFolder => !hasExistingInstallation && CanChangeDirectory();
+
+    public bool IsInstallFolderReadOnly => !CanEditInstallFolder;
+
+    public void OnInstallationDetected(int status, InstallerUpToDateDecisionResult decision, string installFolder)
+    {
+        if (Screen == InstallerScreen.Finished || planRequested) return;
+        if (State == InstallerState.Detecting)
+        {
+            OnStartupDetectionComplete(status, decision, installFolder);
+            return;
+        }
+        if (status == SuccessStatus && decision.IsNewerVersion
+            && RequestedOperation != InstallerRequestedOperation.Uninstall)
+        {
+            OnDetectedUpToDateVersion(decision.InstalledVersion, true, installFolder);
+            return;
+        }
+        if (status == SuccessStatus && decision.RequiresReinstallConfirmation
+            && RequestedOperation == InstallerRequestedOperation.Install)
+        {
+            // An installation can appear between startup discovery and the install click.
+            installStarted = false;
+            State = InstallerState.Detecting;
+            OnStartupDetectionComplete(status, decision, installFolder);
+            return;
+        }
+        OnDetectComplete(status);
+    }
+
+    public void OnStartupDetectionComplete(int status, InstallerUpToDateDecisionResult decision, string installFolder)
+    {
+        if (State != InstallerState.Detecting) return;
+        if (status != SuccessStatus)
+        {
+            startupDetectionFailed = true;
+            TransitionToFailure("Could not detect the installed application. Close setup and try again.");
+            return;
+        }
+
+        InstallFolder = installFolder;
+        hasExistingInstallation = !string.IsNullOrWhiteSpace(decision.InstalledVersion);
+        upToDateInstalledVersion = decision.InstalledVersion;
+        OnPropertyChanged(nameof(ReinstallPrompt));
+        if (decision.IsNewerVersion)
+        {
+            OnDetectedUpToDateVersion(decision.InstalledVersion, true, installFolder);
+        }
+        else if (decision.RequiresReinstallConfirmation)
+        {
+            installFolderForCurrentRun = installFolder;
+            Screen = InstallerScreen.ReinstallConfirmation;
+            State = InstallerState.AwaitingReinstallConfirmation;
+            StatusMessage = string.Empty;
+        }
+        else
+        {
+            Screen = InstallerScreen.Welcome;
+            State = InstallerState.Welcome;
+            StatusMessage = hasExistingInstallation ? "Existing installation found." : string.Empty;
+        }
+    }
+
+    private bool CanConfirmReinstall() => State == InstallerState.AwaitingReinstallConfirmation;
+
+    [RelayCommand(CanExecute = nameof(CanConfirmReinstall))]
+    private void DeclineReinstall()
+    {
+        if (!CanConfirmReinstall()) return;
+        OnDetectedUpToDateVersion(upToDateInstalledVersion, installFolder: InstallFolder);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanConfirmReinstall))]
+    private async Task ReinstallAsync(CancellationToken cancellationToken)
+    {
+        if (!CanConfirmReinstall()) return;
+        RequestedOperation = InstallerRequestedOperation.Repair;
+        State = InstallerState.Installing;
+        Screen = InstallerScreen.Progress;
+        try
+        {
+            if (!EnsureFluxoCanBeStoppedForOperation(RequestedOperation)) return;
+            StatusMessage = "Checking .NET Desktop Runtime...";
+            var result = await runtimeInstaller.EnsureInstalledAsync(cancellationToken);
+            if (State != InstallerState.Installing) return;
+            if (result.Status is DotNetRuntimeInstallStatus.Failed or DotNetRuntimeInstallStatus.Cancelled)
+            {
+                TransitionToFailure($"Runtime installation failed: {result.Message}");
+                return;
+            }
+            StartRepair();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The cancel action already owns the terminal state.
+        }
+        catch (Exception ex)
+        {
+            if (State != InstallerState.FinishedCancelled)
+                TransitionToFailure($"Reinstallation failed: {ex.Message}");
+        }
+        finally
+        {
+            if (cancellationToken.IsCancellationRequested)
+                runtimeInstaller.CleanupDownloadedInstaller();
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanChangeDirectory))]
@@ -292,12 +424,13 @@ public partial class InstallerViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanInstall))]
     private async Task Install()
     {
-        if (IsMaintenanceMode || IsUninstallMode)
+        if (!CanInstall())
         {
             return;
         }
 
         RequestedOperation = InstallerRequestedOperation.Install;
+        planRequested = false;
         Screen = InstallerScreen.Progress;
         State = InstallerState.Installing;
         installStarted = false;
@@ -341,6 +474,14 @@ public partial class InstallerViewModel : ObservableObject
 
     public void OnDetectComplete(int status)
     {
+        if (planRequested || Screen == InstallerScreen.Finished
+            || State is InstallerState.Detecting or InstallerState.AwaitingReinstallConfirmation) return;
+        if (status != SuccessStatus)
+        {
+            TransitionToFailure("Could not detect the installed application. Close setup and try again.");
+            return;
+        }
+        planRequested = true;
         if (RequestedOperation == InstallerRequestedOperation.Uninstall)
         {
             StatusMessage = "Planning uninstall...";
@@ -510,12 +651,14 @@ public partial class InstallerViewModel : ObservableObject
     }
 
     private bool CanInstall() =>
+        !startupDetectionFailed &&
         !IsMaintenanceMode &&
         !IsUninstallMode &&
         (State == InstallerState.Welcome || State == InstallerState.FinishedFailed) &&
         IsValidInstallFolder(InstallFolder);
 
     private bool CanChangeDirectory() =>
+        !hasExistingInstallation && !startupDetectionFailed &&
         !IsMaintenanceMode &&
         !IsUninstallMode &&
         (State == InstallerState.Welcome || State == InstallerState.FinishedFailed);
@@ -577,6 +720,12 @@ public partial class InstallerViewModel : ObservableObject
             return;
         }
 
+        StartRepair();
+    }
+
+    private void StartRepair()
+    {
+        planRequested = false;
         installingChecklistStep.Label = RepairingChecklistLabel;
         Screen = InstallerScreen.Progress;
         State = InstallerState.Installing;
@@ -638,6 +787,7 @@ public partial class InstallerViewModel : ObservableObject
         State = InstallerState.FinishedCancelled;
         Screen = InstallerScreen.Finished;
         StatusMessage = "Installation cancelled.";
+        ReinstallCommand.Cancel();
     }
 
     private bool ConfirmCancellation()
@@ -870,6 +1020,10 @@ public partial class InstallerViewModel : ObservableObject
 
     partial void OnStateChanged(InstallerState value)
     {
+        ReinstallCommand.NotifyCanExecuteChanged();
+        DeclineReinstallCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanEditInstallFolder));
+        OnPropertyChanged(nameof(IsInstallFolderReadOnly));
         ChangeDirectoryCommand.NotifyCanExecuteChanged();
         InstallCommand.NotifyCanExecuteChanged();
         LaunchAppCommand.NotifyCanExecuteChanged();

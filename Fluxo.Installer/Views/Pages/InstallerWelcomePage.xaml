@@ -26,6 +26,15 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/StepNavigatorStyle.xaml" />
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="InstallerWelcomeActionStyle" TargetType="customControls:BalloonButton"
+                   BasedOn="{StaticResource BaseBalloonButtonStyle}">
+                <Style.Triggers>
+                    <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter Property="StrokeBrush" Value="{DynamicResource Brush.Border.Focus}" />
+                        <Setter Property="StrokeThickness" Value="2" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -84,51 +93,48 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Margin="0,24,0,0">
-                    <Grid VerticalAlignment="Center">
+                    <StackPanel>
                         <TextBlock
-                            Margin="2,14,0,0"
-                            HorizontalAlignment="Right"
+                            Margin="0,0,0,8"
                             VerticalAlignment="Center"
                             FontFamily="{StaticResource Medium}"
                             FontSize="11"
                             Foreground="{DynamicResource Brush.Text.Secondary}"
-                            Text="{Binding StatusMessage}"
+                            Text="{Binding StatusMessage, Mode=OneWay}"
                             TextWrapping="Wrap" />
                         <TextBlock
                             VerticalAlignment="Center"
                             Style="{StaticResource FieldLabelStyle}"
                             Text="Install location" />
-                    </Grid>
-                    <TextBox Style="{StaticResource RoundedTextInputStyle}" Text="{Binding InstallFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                    <TextBox IsReadOnly="{Binding IsInstallFolderReadOnly, Mode=OneWay}" AutomationProperties.Name="Install location" Style="{StaticResource RoundedTextInputStyle}" Text="{Binding InstallFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
-                <customControls:BalloonButton
+                <customControls:BalloonButton Style="{StaticResource InstallerWelcomeActionStyle}"
                     Grid.Column="2"
-                    Width="36"
-                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
+                    Width="40"
+                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Width, Mode=OneWay}"
                     Margin="0,0,0,4"
                     VerticalAlignment="Bottom"
                     ButtonIcon="{DynamicResource DotsHorizontal}"
-                    Command="{Binding ChangeDirectoryCommand}"
+                    Command="{Binding ChangeDirectoryCommand, Mode=OneWay}"
                     CornerRadius="8"
-                    Cursor="Hand"
                     DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Surface}"
                     HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Surface.Hovered}"
                     IconSize="16"
-                    ToolTip="Change Directory" />
-                <customControls:BalloonButton
+                    AutomationProperties.Name="Change install location" ToolTip="Change Directory" />
+                <customControls:BalloonButton Style="{StaticResource InstallerWelcomeActionStyle}"
                     Grid.Column="4"
-                    Width="36"
-                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Width}"
+                    Width="40"
+                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Width, Mode=OneWay}"
                     Margin="0,0,0,4"
                     VerticalAlignment="Bottom"
                     ButtonIcon="{DynamicResource ControllerPlay}"
-                    Command="{Binding InstallCommand}"
+                    Command="{Binding InstallCommand, Mode=OneWay}"
                     CornerRadius="8"
-                    Cursor="Hand"
                     DefaultBackground="{DynamicResource Brush.BalloonButton.Background.Default}"
                     HoveredBackground="{DynamicResource Brush.BalloonButton.Background.Default.Hovered}"
-                    IconSize="12" />
+                    IconSize="12" AutomationProperties.Name="Install fluxo" ToolTip="Install fluxo" />
             </Grid>
         </Grid>
     </Border>

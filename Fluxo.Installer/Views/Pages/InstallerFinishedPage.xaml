@@ -27,13 +27,25 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-<Style BasedOn="{StaticResource WizardCircleActionButtonStyle}" TargetType="Button" x:Key="InstallerFinishedActionButtonStyle">
+            <Style x:Key="InstallerFinishedCircleStyle" TargetType="Button"
+                   BasedOn="{StaticResource WizardCircleActionButtonStyle}">
+                <Style.Triggers>
+                    <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+                        <Setter Property="FocusVisualStyle" Value="{DynamicResource {x:Static SystemParameters.FocusVisualStyleKey}}" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Cursor" Value="Arrow" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+<Style BasedOn="{StaticResource InstallerFinishedCircleStyle}" TargetType="Button" x:Key="InstallerFinishedActionButtonStyle">
                                 <Setter Property="Visibility" Value="Collapsed" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding State}" Value="{x:Static models:InstallerState.FinishedSuccess}">
+                                    <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="{x:Static models:InstallerState.FinishedSuccess}">
                                         <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding State}" Value="{x:Static models:InstallerState.FinishedUpToDate}">
+                                    <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="{x:Static models:InstallerState.FinishedUpToDate}">
                                         <Setter Property="Visibility" Value="Visible" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -46,7 +58,7 @@
 
             <components:RisingFlowBackground Grid.RowSpan="2" AccentBrush="{DynamicResource Color.Mint}" />
 
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel MaxWidth="600" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 <Border
                     Width="84"
                     Height="84"
@@ -67,7 +79,7 @@
                     FontFamily="{StaticResource Bold}"
                     FontSize="30"
                     Foreground="{DynamicResource Brush.Text.Primary}"
-                    Text="{Binding FinishedTitle}" />
+                    Text="{Binding FinishedTitle, Mode=OneWay}" />
 
                 <TextBlock
                     Margin="0,12,0,0"
@@ -75,35 +87,33 @@
                     FontFamily="{StaticResource Medium}"
                     FontSize="13"
                     Foreground="{DynamicResource Brush.Text.Secondary}"
-                    Text="{Binding FinishedSubtitle}"
+                    Text="{Binding FinishedSubtitle, Mode=OneWay}" TextWrapping="Wrap"
                     TextAlignment="Center" />
 
                 <StackPanel
                     Margin="0,28,0,0"
                     HorizontalAlignment="Center"
                     Orientation="Horizontal">
-<Button Command="{Binding LaunchAppCommand}" Style="{StaticResource InstallerFinishedActionButtonStyle}">
+<Button AutomationProperties.Name="Launch fluxo" ToolTip="Launch fluxo" Command="{Binding LaunchAppCommand, Mode=OneWay}" Style="{StaticResource InstallerFinishedActionButtonStyle}">
 
-                        <Path
+                        <components:Icon
                             Width="14"
                             Height="14"
-                            Data="{StaticResource RocketSolid}"
-                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                            Stretch="Uniform" />
+                            Path="{StaticResource RocketSolid}"
+                            Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}, Mode=OneWay}" />
                     </Button>
 
                     <Button
                         Margin="12,0,0,0"
                         Background="{DynamicResource Brush.Background.Hover}"
-                        Command="{Binding CloseInstallerCommand}"
+                        AutomationProperties.Name="Close setup" ToolTip="Close setup" Command="{Binding CloseInstallerCommand, Mode=OneWay}"
                         Foreground="{DynamicResource Brush.Text.Primary}"
-                        Style="{DynamicResource WizardCircleActionButtonStyle}">
-                        <Path
+                        Style="{StaticResource InstallerFinishedCircleStyle}">
+                        <components:Icon
                             Width="14"
                             Height="14"
-                            Data="{StaticResource Close}"
-                            Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
-                            Stretch="Uniform" />
+                            Path="{StaticResource Close}"
+                            Color="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}, Mode=OneWay}" />
                     </Button>
                 </StackPanel>
 
@@ -113,7 +123,7 @@
                     FontFamily="{StaticResource Medium}"
                     FontSize="11"
                     Foreground="{DynamicResource Brush.Text.Muted}"
-                    Text="{Binding StatusMessage}"
+                    Text="{Binding StatusMessage, Mode=OneWay}"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
             </StackPanel>

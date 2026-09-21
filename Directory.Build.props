@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!-- One release input for the bundle, MSI, app and referenced libraries. -->
-    <FluxoInstallerVersion Condition="'$(FluxoInstallerVersion)' == ''">1.0.7</FluxoInstallerVersion>
+    <FluxoInstallerVersion Condition="'$(FluxoInstallerVersion)' == ''">1.0.6</FluxoInstallerVersion>
     <FluxoMsiVersion Condition="'$(FluxoMsiVersion)' == ''">$(FluxoInstallerVersion)</FluxoMsiVersion>
     <Version Condition="'$(Version)' == ''">$(FluxoInstallerVersion)</Version>
     <FileVersion Condition="'$(FileVersion)' == ''">$(FluxoInstallerVersion).0</FileVersion>

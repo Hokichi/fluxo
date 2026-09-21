@@ -8,14 +8,14 @@ Fluxo is a local-first Windows personal finance app. Track accounts, record tran
 
 > **Screenshot placeholder:** Dashboard overview.
 
-Current release: **1.0.5**
+Current release: **1.0.6**
 
 ## Building a release
 
 Use one version input for the bundle, MSI, application, and first-party DLL file versions:
 
 ```powershell
-dotnet build Fluxo.Installer.Bundle/Fluxo.Installer.Bundle.wixproj -c Release -p:FluxoInstallerVersion=1.0.7
+dotnet build Fluxo.Installer.Bundle/Fluxo.Installer.Bundle.wixproj -c Release -p:FluxoInstallerVersion=1.0.6
 ```
 
 Release numbers are immutable, strictly increasing `major.minor.patch` values (MSI limits: 255, 255, 65535). Do not rebuild different public binaries under an existing version. CI rejects reused or older release tags. `Directory.Build.props` provides the local default; use `FluxoInstallerVersion` for overrides, including direct application publishing. Conflicting `Version`, `FileVersion`, or `FluxoMsiVersion` inputs fail the build.
@@ -26,7 +26,7 @@ Before distributing a build, verify both the published files and actual MSI cont
 ./Fluxo.Installer.Msi/Build/Test-PackageGuards.ps1 `
   -PayloadDirectory ./Fluxo.Installer.Msi/obj/Release/app-payload/win-x64 `
   -MsiPath ./Fluxo.Installer.Msi/bin/Release/en-US/Fluxo.Installer.msi `
-  -ExpectedVersion 1.0.7
+  -ExpectedVersion 1.0.6
 ```
 
 Successful verification reports matching release versions and packaged SHA256 hashes, followed by passing rejection checks for deliberately broken payloads. CI requires these checks and non-displaying assembly-load tests before uploading an installer. Manual binary replacement or bypassing this pipeline can defeat these safeguards.

@@ -44,7 +44,11 @@ public static class InstalledVersionRegistryReader
     }
 
     public static string? ReadInstallLocation()
+        => ReadInstallLocations().FirstOrDefault();
+
+    public static IReadOnlyList<string> ReadInstallLocations()
     {
+        var locations = new List<string>();
         foreach (var registryView in new[] { RegistryView.Registry64, RegistryView.Registry32 })
         {
             try
@@ -53,7 +57,7 @@ public static class InstalledVersionRegistryReader
                 var installLocation = ReadInstallLocation(baseKey);
                 if (!string.IsNullOrWhiteSpace(installLocation))
                 {
-                    return installLocation;
+                    locations.Add(installLocation);
                 }
             }
             catch
@@ -61,7 +65,7 @@ public static class InstalledVersionRegistryReader
             }
         }
 
-        return null;
+        return locations;
     }
 
     public static string? ReadInstallLocation(RegistryKey baseKey, string subKeyPath = InstalledVersionSubKeyPath)

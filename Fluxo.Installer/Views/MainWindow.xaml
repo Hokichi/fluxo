@@ -30,6 +30,16 @@
                 <ResourceDictionary Source="/Fluxo.Resources;component/Resources/Styles/QuickSetupWizardStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <Style x:Key="BaseInstallerReinstallPageStyle" TargetType="{x:Type pages:InstallerReinstallPage}" />
+            <Style x:Key="InstallerReinstallPageStateStyle" TargetType="{x:Type pages:InstallerReinstallPage}"
+                   BasedOn="{StaticResource BaseInstallerReinstallPageStyle}">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.ReinstallConfirmation}">
+                        <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <Style x:Key="BaseInstallerWelcomePageStyle" TargetType="{x:Type pages:InstallerWelcomePage}">
                 <Setter Property="Visibility" Value="Collapsed" />
             </Style>
@@ -49,7 +59,7 @@
 <Style BasedOn="{StaticResource PopupTextButtonStyle}" TargetType="Button" x:Key="InstallerCloseButtonStyle">
                             <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Finished}">
+                                <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.Finished}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -57,7 +67,7 @@
 
 <Style BasedOn="{StaticResource BaseInstallerWelcomePageStyle}" TargetType="{x:Type pages:InstallerWelcomePage}" x:Key="InstallerWelcomePageStateStyle">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Welcome}">
+                                <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.Welcome}">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -65,7 +75,7 @@
 
 <Style BasedOn="{StaticResource BaseInstallerAppFoundPageStyle}" TargetType="{x:Type pages:InstallerAppFoundPage}" x:Key="InstallerAppFoundPageStateStyle">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.AppFound}">
+                                <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.AppFound}">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -73,7 +83,7 @@
 
 <Style BasedOn="{StaticResource BaseInstallerProgressPageStyle}" TargetType="{x:Type pages:InstallerProgressPage}" x:Key="InstallerProgressPageStateStyle">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Progress}">
+                                <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.Progress}">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -81,7 +91,7 @@
 
 <Style BasedOn="{StaticResource BaseUninstallPageStyle}" TargetType="{x:Type pages:UninstallPage}" x:Key="UninstallPageStateStyle">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Uninstall}">
+                                <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.Uninstall}">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -89,7 +99,7 @@
 
 <Style BasedOn="{StaticResource BaseInstallerFinishedPageStyle}" TargetType="{x:Type pages:InstallerFinishedPage}" x:Key="InstallerFinishedPageStateStyle">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Screen}" Value="{x:Static models:InstallerScreen.Finished}">
+                                <DataTrigger Binding="{Binding Screen, Mode=OneWay}" Value="{x:Static models:InstallerScreen.Finished}">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -151,6 +161,7 @@
             </Grid>
 
             <Grid Grid.Row="1">
+<pages:InstallerReinstallPage Style="{StaticResource InstallerReinstallPageStateStyle}" />
 <pages:InstallerWelcomePage Style="{StaticResource InstallerWelcomePageStateStyle}">
 
                 </pages:InstallerWelcomePage>

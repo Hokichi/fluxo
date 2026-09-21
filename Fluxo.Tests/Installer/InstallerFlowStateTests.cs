@@ -135,7 +135,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void InstallerFlowState_DetectComplete_Failure_ContinuesToPlanning()
+    public void InstallerFlowState_DetectComplete_Failure_StopsBeforePlanning()
     {
         var planCalls = 0;
         var folderVariableValues = new List<string>();
@@ -146,11 +146,10 @@ public sealed class InstallerFlowStateTests
 
         vm.OnDetectComplete(1);
 
-        Assert.Equal(InstallerState.Welcome, vm.State);
-        Assert.Equal("Planning installation...", vm.StatusMessage);
-        Assert.Single(folderVariableValues);
-        Assert.Equal(vm.InstallFolder, folderVariableValues[0]);
-        Assert.Equal(1, planCalls);
+        Assert.Equal(InstallerState.FinishedFailed, vm.State);
+        Assert.Contains("Could not detect", vm.StatusMessage);
+        Assert.Empty(folderVariableValues);
+        Assert.Equal(0, planCalls);
     }
 
     [Fact]
@@ -224,7 +223,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public async Task InstallerFlowState_DetectComplete_FailureAfterInstallStart_ContinuesToPlanning()
+    public async Task InstallerFlowState_DetectComplete_FailureAfterInstallStart_StopsBeforePlanning()
     {
         var planCalls = 0;
         var vm = CreateViewModel(
@@ -235,10 +234,10 @@ public sealed class InstallerFlowStateTests
         await vm.InstallCommand.ExecuteAsync(null);
         vm.OnDetectComplete(1);
 
-        Assert.Equal(1, planCalls);
-        Assert.Equal(InstallerState.Installing, vm.State);
-        Assert.Equal(InstallerScreen.Progress, vm.Screen);
-        Assert.Equal("Planning installation...", vm.StatusMessage);
+        Assert.Equal(0, planCalls);
+        Assert.Equal(InstallerState.FinishedFailed, vm.State);
+        Assert.Equal(InstallerScreen.Finished, vm.Screen);
+        Assert.Contains("Could not detect", vm.StatusMessage);
     }
 
     [Fact]
@@ -380,7 +379,7 @@ public sealed class InstallerFlowStateTests
     }
 
     [Fact]
-    public void InstallerFlowState_Begin_InstallModeWhenFluxoRunningAndUserDeclinesTermination_BlocksBeforeAnyAction()
+    public void InstallerFlowState_Begin_InstallModeWhenFluxoRunning_DetectsWithoutTermination()
     {
         var vm = CreateViewModel(
             getRunningFluxoProcessIds: static () => [1234],
@@ -389,10 +388,10 @@ public sealed class InstallerFlowStateTests
 
         vm.Begin();
 
-        Assert.Equal(InstallerState.FinishedFailed, vm.State);
-        Assert.Equal(InstallerScreen.Finished, vm.Screen);
+        Assert.Equal(InstallerState.Detecting, vm.State);
+        Assert.Equal(InstallerScreen.Welcome, vm.Screen);
         Assert.Equal(
-            "Installation did not run because fluxo is still open. Please close fluxo and run setup again.",
+            "Checking existing installation...",
             vm.StatusMessage);
     }
 

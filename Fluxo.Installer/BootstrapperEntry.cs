@@ -313,7 +313,11 @@ internal sealed class InstallerBootstrapperApplication : BootstrapperApplication
         _currentBundleVersion = GetCurrentBundleVersion();
         _hasOlderRelatedBundle = false;
         _registryInstalledVersion = InstalledVersionRegistryReader.ReadInstalledVersion();
-        _registryInstallLocation = InstalledVersionRegistryReader.ReadInstallLocation();
+        _registryInstallLocation = InstallerInstallLocationResolver.Resolve(
+            InstalledVersionRegistryReader.ReadInstallLocations(),
+            _viewModel?.InstallFolder ?? GetRequestedInstallFolder(),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), DefaultInstallFolderName),
+            Directory.Exists);
         _installedExecutableVersion = GetInstalledExecutableVersion();
     }
 
@@ -358,6 +362,12 @@ internal sealed class InstallerBootstrapperApplication : BootstrapperApplication
 
         if (_headlessMode)
         {
+            if (e.Status != 0)
+            {
+                _headlessExitCode = e.Status;
+                _headlessCompleted.Set();
+                return;
+            }
             if (upToDateDecision.ShouldSkipInstall)
             {
                 _headlessExitCode = SuccessExitCode;
@@ -370,16 +380,8 @@ internal sealed class InstallerBootstrapperApplication : BootstrapperApplication
             return;
         }
 
-        if (upToDateDecision.ShouldSkipInstall)
-        {
-            DispatchToUi(() => _viewModel?.OnDetectedUpToDateVersion(
-                upToDateDecision.InstalledVersion,
-                upToDateDecision.IsNewerVersion,
-                _registryInstallLocation));
-            return;
-        }
-
-        DispatchToUi(() => _viewModel?.OnDetectComplete(e.Status));
+        DispatchToUi(() => _viewModel?.OnInstallationDetected(
+            e.Status, upToDateDecision, _registryInstallLocation!));
     }
 
     private void OnPlanComplete(object? sender, PlanCompleteEventArgs e)
@@ -449,7 +451,7 @@ internal sealed class InstallerBootstrapperApplication : BootstrapperApplication
     {
         try
         {
-            var installFolder = GetInstallFolderVariable();
+            var installFolder = _registryInstallLocation ?? GetInstallFolderVariable();
             if (string.IsNullOrWhiteSpace(installFolder))
             {
                 installFolder = Path.Combine(
@@ -592,12 +594,7 @@ internal sealed class InstallerBootstrapperApplication : BootstrapperApplication
 
     private LaunchAction GetRequestedLaunchAction()
     {
-        return GetRequestedOperation() switch
-        {
-            InstallerRequestedOperation.Uninstall => LaunchAction.Uninstall,
-            InstallerRequestedOperation.Repair => LaunchAction.Repair,
-            _ => LaunchAction.Install,
-        };
+        return InstallerLaunchActionResolver.Resolve(GetRequestedOperation());
     }
 
     private BundleScope GetRequestedBundleScope()

@@ -1,10 +1,5 @@
 namespace Fluxo.Installer.Models;
 
-public readonly record struct InstallerUpToDateDecisionResult(
-    bool ShouldSkipInstall,
-    string? InstalledVersion,
-    bool IsNewerVersion);
-
 public static class InstallerUpToDateDecision
 {
     public static bool ShouldSkipInstall(
@@ -88,16 +83,12 @@ public static class InstallerUpToDateDecision
         ConsiderDetectedVersion(registryInstalledVersion);
         ConsiderDetectedVersion(installedExecutableVersion);
 
-        if (hasOlderRelatedBundle && highestDetectedComparison >= 0)
-        {
-            return new InstallerUpToDateDecisionResult(false, highestDetectedVersion, false);
-        }
-
         return highestDetectedComparison >= 0
             ? new InstallerUpToDateDecisionResult(
                 true,
                 highestDetectedVersion,
-                highestDetectedComparison > 0)
+                highestDetectedComparison > 0,
+                highestDetectedComparison == 0)
             : new InstallerUpToDateDecisionResult(false, highestDetectedVersion, false);
 
         void ConsiderDetectedVersion(string? detectedVersion)

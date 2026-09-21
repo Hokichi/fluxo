@@ -165,7 +165,7 @@ public sealed class InstallerUpToDateDecisionTests
     }
 
     [Fact]
-    public void InstallerUpToDateDecision_Install_WhenOlderRelatedBundleNeedsCleanup_ShouldNotSkip()
+    public void InstallerUpToDateDecision_Install_WhenOlderRelatedBundleNeedsCleanup_StillRequiresConsent()
     {
         var decision = InstallerUpToDateDecision.Evaluate(
             InstallerOperationMode.Install,
@@ -177,7 +177,8 @@ public sealed class InstallerUpToDateDecisionTests
             compareVersions: CompareVersions,
             hasOlderRelatedBundle: true);
 
-        Assert.False(decision.ShouldSkipInstall);
+        Assert.True(decision.ShouldSkipInstall);
+        Assert.True(decision.RequiresReinstallConfirmation);
         Assert.Equal("1.0.1", decision.InstalledVersion);
     }
 
